@@ -29,5 +29,5 @@ if __name__ == "__main__":
     f = open(testResultsFile, "w") 
 
     # run test and output results to log file
-    runner = unittest.TextTestRunner(f)
-    unittest.main(verbosity=2, defaultTest="testSuite", testRunner=runner)
+    runner = unittest.TextTestRunner(f, verbosity=2)
+    runner.run(testSuite)

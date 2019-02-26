@@ -126,7 +126,7 @@ class CommandModule:
         Encodes pigoData dictionary as JSON and stores it in pigoFileDirectory JSON file
         """
         if not bool(self.__pigoData):
-            self.__logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
+            raise ValueError("The current PIGO data dictionary is empty")
 
         with self.__pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
             json.dump(self.__pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
@@ -203,7 +203,7 @@ class CommandModule:
             Dictionary containing GPS coordinates to write
         """
         if gpsCoordinates is None:
-            raise TypeError("GPS Coordinates must be a dict and not None.")
+            raise ValueError("GPS Coordinates must be a dict and not None.")
         if type(gpsCoordinates) is not dict:
             raise TypeError("GPS Coordinates must be a dict and not {}".format(type(gpsCoordinates)))
         for attribute in ("latitude", "longitude", "altitude"):
@@ -226,7 +226,7 @@ class CommandModule:
             Dictionary containing heading (float) and latestDistance (float) to write
         """
         if groundCommands is None:
-            raise TypeError("Ground Commands must be a dict and not None.")
+            raise ValueError("Ground Commands must be a dict and not None.")
         if type(groundCommands) is not dict:
             raise TypeError("Ground Commands must be a dict and not {}".format(type(groundCommands)))
         for attribute in ("heading", "latestDistance"):
@@ -249,7 +249,7 @@ class CommandModule:
             Dictionary containing gimbal commands to write
         """
         if gimbalCommands is None:
-            raise TypeError("Gimbal Commands must be a dict and not None.")
+            raise ValueError("Gimbal Commands must be a dict and not None.")
         if type(gimbalCommands) is not dict:
             raise TypeError("Gimbal Commands must be a dict and not {}".format(type(gimbalCommands)))
         for attribute in ("pitch", "yaw"):
@@ -272,7 +272,7 @@ class CommandModule:
             Boolean containing whether or not to initiate landing sequence
         """
         if beginLanding is None:
-            raise TypeError("Begin Landing must be a bool and not None.")
+            raise ValueError("Begin Landing must be a bool and not None.")
         if type(beginLanding) is not bool:
             raise TypeError("Begin Landing must be a bool and not {}".format(type(beginLanding)))
 
@@ -289,7 +289,7 @@ class CommandModule:
             Boolean containing whether or not to initiate takeoff sequence
         """
         if beginTakeoff is None:
-            raise TypeError("Begin Takeoff must be a bool and not None.")
+            raise ValueError("Begin Takeoff must be a bool and not None.")
         if type(beginTakeoff) is not bool:
             raise TypeError("Begin Takeoff must be a bool and not {}".format(type(beginTakeoff)))
 
@@ -306,7 +306,7 @@ class CommandModule:
             Boolean containing whether or not to disconnect auto pilot
         """
         if disconnectAutoPilot is None:
-            raise TypeError("Disconnect Autopilot must be a bool and not None.")
+            raise ValueError("Disconnect Autopilot must be a bool and not None.")
         if type(disconnectAutoPilot) is not bool:
             raise TypeError("Disconnect Autopilot must be a bool and not {}".format(type(disconnectAutoPilot)))
 
@@ -336,7 +336,7 @@ class CommandModule:
             Contains directory to PIGO JSON file
         """
         if pigoFileDirectory is None:
-            raise TypeError("PIGO File Directory must be a str and not None.")
+            raise ValueError("PIGO File Directory must be a str and not None.")
         if type(pigoFileDirectory) is not str:
             raise TypeError("PIGO File Directory must be a str and not {}".format(type(pigoFileDirectory)))
         if not os.path.isfile(pigoFileDirectory):
@@ -368,7 +368,7 @@ class CommandModule:
             Contains directory to POGI JSON file
         """
         if pogiFileDirectory is None:
-            raise TypeError("POGI File Directory must be a str and not None.")
+            raise ValueError("POGI File Directory must be a str and not None.")
         if type(pogiFileDirectory) is not str:
             raise TypeError("POGI File Directory must be a str and not {}".format(type(pogiFileDirectory)))
         if not os.path.isfile(pogiFileDirectory):

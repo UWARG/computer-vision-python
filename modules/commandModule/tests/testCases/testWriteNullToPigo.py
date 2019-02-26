@@ -4,7 +4,7 @@ import os
 
 class TestCaseWritingNullToPIGOFile(unittest.TestCase):
     """
-    Test Case: Null written to PIGO file results in TypeError
+    Test Case: Null written to PIGO file results in ValueError
     Methods to test:
     - set_gps_coordintes
 	- set_ground_commands
@@ -21,26 +21,26 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
     def tearDown(self):
         open(self.pigoFile, "w").close() # delete file contents before next unit test
 
-    def test_type_error_if_set_gps_coords_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_gps_coords_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_gps_coordinates(None)
     
-    def test_type_error_if_set_ground_commands_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_ground_commands_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_ground_commands(None)
     
-    def test_type_error_if_set_gimbal_commands_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_gimbal_commands_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_gimbal_commands(None)
     
-    def test_type_error_if_set_begin_landing_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_begin_landing_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_begin_landing(None)
 
-    def test_type_error_if_set_begin_takeoff_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_begin_takeoff_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_begin_takeoff(None)
 
-    def test_type_error_if_set_disconnect_autopilot_to_null(self):
-        with self.assertRaises(TypeError):
+    def test_value_error_if_set_disconnect_autopilot_to_null(self):
+        with self.assertRaises(ValueError):
             self.commandModule.set_disconnect_autopilot(None)
