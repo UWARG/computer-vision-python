@@ -10,7 +10,7 @@ class DeckLinkSRC:
 
     def stop(self): #Logic for stopping video feed by releasing capture and destroying any windows open.
         self.capture.release()
-        cv.destroyAllWindows()
+        cv2.destroyAllWindows()
     
     def grab(self): #Logic for grabbing frame from deckLink
 
