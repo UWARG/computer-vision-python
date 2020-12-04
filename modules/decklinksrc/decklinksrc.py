@@ -12,12 +12,29 @@ class DeckLinkSRC:
         self.capture.release()
         cv2.destroyAllWindows()
     
-    def grab(self): #Logic for grabbing frame from deckLink
+    def grab(self, frame): #Logic for grabbing frame from deckLink
         self.cv2.imshow('Grabbedframe', frame)
     
-    def quitProgram():
+    def quitProgram(self):
         self.capture.release()
         self.cv2.destroyAllWindows()
+
+
+    # We need the file name, x dimensions, and y dimensions
+    def recordVideo(self, filename, xdim, ydim):
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim) )
+
+        while(self.capture.isOpened()):
+            ret, frame = self.capture.read()
+            if ret == True:
+                out.write(frame)
+
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            else:
+                break
+
 
     def display(self):
         while(True):
