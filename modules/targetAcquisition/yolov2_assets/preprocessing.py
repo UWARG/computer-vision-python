@@ -6,7 +6,7 @@ import imgaug as ia
 from imgaug import augmenters as iaa
 from keras.utils import Sequence
 import xml.etree.ElementTree as ET
-from utils import BoundBox, bbox_iou
+from .utils import BoundBox, bbox_iou
 
 def listdir_nohidden(path):
     for f in os.listdir(path):

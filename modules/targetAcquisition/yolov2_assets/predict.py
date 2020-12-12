@@ -1,13 +1,13 @@
 #! /usr/bin/env python
-
 import argparse
 import os
+import sys
 import cv2
 import numpy as np
 from tqdm import tqdm
-from preprocessing import parse_annotation
-from utils import draw_boxes
-from frontend import YOLO
+from .preprocessing import parse_annotation
+from .utils import draw_boxes
+from .frontend import YOLO
 import json
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -91,7 +91,20 @@ def _main_(args):
 
         cv2.imwrite(image_path[:-4] + '_detected' + image_path[-4:], image)
 
+def get_home_dir():
+    while True:
+        if 'modules' not in os.listdir():
+            path = os.getcwd()
+            os.chdir(os.path.abspath(os.path.join(path, os.pardir)))
+        else:
+            break
+    return os.getcwd()
+
+def set_curr_dir():
+    os.chdir(os.path.join(get_home_dir(), 'modules', 'targetAcquisition', 'yolov2_assets'))
+
 def yolo_predict(image):
+    set_curr_dir()
     with open('config.json') as config_buffer:
         config = json.load(config_buffer)
       

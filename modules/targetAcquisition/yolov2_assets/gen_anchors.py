@@ -2,7 +2,7 @@ import random
 import argparse
 import numpy as np
 
-from preprocessing import parse_annotation
+from .preprocessing import parse_annotation
 import json
 
 argparser = argparse.ArgumentParser()

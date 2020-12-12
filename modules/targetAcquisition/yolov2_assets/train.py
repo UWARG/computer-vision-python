@@ -3,8 +3,8 @@
 import argparse
 import os
 import numpy as np
-from preprocessing import parse_annotation
-from frontend import YOLO
+from .preprocessing import parse_annotation
+from .frontend import YOLO
 import json
 
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"

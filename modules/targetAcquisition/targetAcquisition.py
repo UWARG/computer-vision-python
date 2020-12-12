@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import cv2
-from predict import yolo_predict
+import os
+from yolov2_assets.predict import yolo_predict
 
 class TargetAcquisition:
     #deckLinkFrame is a numpy array of any size containing image pixels
@@ -9,15 +10,19 @@ class TargetAcquisition:
         self.boxes = [] # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
         self.tentCoordinates = dict()
         self.currentFrame = deckLinkFrame
+    
+    def set_curr_frame(self, newFrame):
+        self.currentFrame = newFrame
   
-    def predict(self):
+    def __predict(self):
         self.boxes = yolo_predict(self.currentFrame)
-        self.find_coordinates()
+        self.__find_coordinates()
     
     def get_coordinates(self):
+        self.__predict()
         return self.tentCoordinates
 
-    def find_coordinates(self):
+    def __find_coordinates(self):
         image_h = self.currentFrame.shape[0]
         image_w = self.currentFrame.shape[1]
         for box in self.boxes:
@@ -27,3 +32,7 @@ class TargetAcquisition:
             ymax = int(box.ymax*image_h)
 
             self.tentCoordinates[box] = ((xmin+xmax)/2, (ymin+ymax)/2)
+
+# Testing
+# tracker = TargetAcquisition(cv2.imread('yolov2_assets/single_test_images/raccoon-1.jpg'))
+# print(tracker.get_coordinates())
