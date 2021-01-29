@@ -14,6 +14,7 @@ class Geolocation:
                                   [0, 1000],
                                   [1000, 0],
                                   [1000, 1000]]
+        self.__cameraResolution = [1000, 1000]  # TODO Make global?
 
         return
 
@@ -27,6 +28,27 @@ class Geolocation:
     def gather_point_pairs(self):
 
         # Convert pixels to vectors in world space
+
+        pixels = np.array(self.__referencePixels).T
+
+        # Get u, v scaling from pixel coordinate and resolution
+        m = 2 * pixels[0] / self.__cameraResolution[0] - 1
+        m = np.atleast_2d(m).T
+        n = 2 * pixels[1] / self.__cameraResolution[1] - 1
+        n = np.atleast_2d(n).T
+
+        # Duplicate the vectors for numpy
+        points = len(self.__referencePixels)
+        c = np.tile(self.__cameraDirection3c, (points, 1))
+        u = np.tile(self.__cameraOrientation3u, (points, 1))
+        v = np.tile(self.__cameraOrientation3v, (points, 1))
+
+        # Formula
+        pixelsInWorldSpace = c + m * u + n * v
+
+
+        # Find intersection of the pixel line with the xy-plane
+
 
 
         return
