@@ -22,3 +22,5 @@ v = np.tile(v, (points, 1))
 a = c + m*u + n*v
 
 print(a)
+
+# Testing concatenation

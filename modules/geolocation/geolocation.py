@@ -10,11 +10,16 @@ class Geolocation:
         self.__cameraDirection3c = np.array([0.0, 0.0, -1.0])
         self.__cameraOrientation3u = np.array([1.0, 0.0, 0.0])
         self.__cameraOrientation3v = 1 * np.cross(self.__cameraDirection3c, self.__cameraOrientation3u)
-        self.__referencePixels = [[0, 0],
-                                  [0, 1000],
-                                  [1000, 0],
-                                  [1000, 1000]]
-        self.__cameraResolution = [1000, 1000]  # TODO Make global?
+        self.__referencePixels = np.array([[0, 0],
+                                           [0, 1000],
+                                           [1000, 0],
+                                           [1000, 1000]])
+        self.__cameraResolution = np.array([1000, 1000])  # TODO Make global?
+
+        self.__pixelsToGeographicals = np.array([[[0, 0], [0, 0]],
+                                                 [[1, 1], [1, 1]],
+                                                 [[2, 2], [2, 2]],
+                                                 [[3, 3], [3, 3]]])
 
         return
 
@@ -31,7 +36,7 @@ class Geolocation:
 
         pixels = np.array(self.__referencePixels).T
 
-        # Get u, v scaling from pixel coordinate and resolution
+        # Get scaling from pixel coordinate and resolution
         m = 2 * pixels[0] / self.__cameraResolution[0] - 1
         m = np.atleast_2d(m).T
         n = 2 * pixels[1] / self.__cameraResolution[1] - 1
@@ -48,7 +53,21 @@ class Geolocation:
 
 
         # Find intersection of the pixel line with the xy-plane
+        a = pixelsInWorldSpace.T
+        o = np.tile(self.__cameraOrigin3o, (points, 1))
+        o = o.T
 
+        # Verify that all pixels are pointing downwards
+        minimumZcomponent = 0.1  # This variable must be greater or equal to zero
+        # Replace invalid elements with false and check the resulting array for any false elements
+        a[2] = np.where(a[2] > minimumZcomponent, a[2], 0)
+        if (not np.all(a[2])):
+            return
 
+        # Formula
+        xCoordinates = o[0] - a[0] * o[2] / a[2]
+        yCoordinates = o[1] - a[1] * o[2] / a[2]
+
+        geographicalCoordinates = np.concatenate(xCoordinates, yCoordinates).T
 
         return
