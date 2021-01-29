@@ -10,11 +10,11 @@ class Geolocation:
         self.__cameraDirection3c = np.array([0.0, 0.0, -1.0])
         self.__cameraOrientation3u = np.array([1.0, 0.0, 0.0])
         self.__cameraOrientation3v = 1 * np.cross(self.__cameraDirection3c, self.__cameraOrientation3u)
+        self.__cameraResolution = np.array([1000, 1000])  # TODO Make global?
         self.__referencePixels = np.array([[0, 0],
                                            [0, 1000],
                                            [1000, 0],
                                            [1000, 1000]])
-        self.__cameraResolution = np.array([1000, 1000])  # TODO Make global?
 
         self.__pixelsToGeographicals = np.array([[[0, 0], [0, 0]],
                                                  [[1, 1], [1, 1]],
@@ -28,46 +28,41 @@ class Geolocation:
 
         return
 
-    # TODO Incomplete
+    # TODO Untested
     # Outputs pixel coordinate to geographical coordinate point pairs
     def gather_point_pairs(self):
 
-        # Convert pixels to vectors in world space
+        pixelGeoPairs = np.empty(shape=(0, 2, 2))
+        minimumPixelCount = 4  # Required for creating the map
+        validPixelCount = np.size(self.__referencePixels)  # Current number of valid pixels
+        maximumZcomponent = -0.1  # This must be lesser than zero and determines if the pixel is pointing downwards
 
-        pixels = np.array(self.__referencePixels).T
+        # Find corresponding geographical coordinate for every valid pixel
+        for i in range(0, np.size(self.__referencePixels)):
 
-        # Get scaling from pixel coordinate and resolution
-        m = 2 * pixels[0] / self.__cameraResolution[0] - 1
-        m = np.atleast_2d(m).T
-        n = 2 * pixels[1] / self.__cameraResolution[1] - 1
-        n = np.atleast_2d(n).T
+            # Not enough pixels to create the map, abort
+            if (validPixelCount < minimumPixelCount):
+                return np.empty(shape=(0, 2, 2))
 
-        # Duplicate the vectors for numpy
-        points = len(self.__referencePixels)
-        c = np.tile(self.__cameraDirection3c, (points, 1))
-        u = np.tile(self.__cameraOrientation3u, (points, 1))
-        v = np.tile(self.__cameraOrientation3v, (points, 1))
+            # Convert pixel to vector in world space
+            pixel = self.__referencePixels[i]
+            # Scaling in the u, v direction
+            m = 2 * pixel[0] / self.__cameraResolution[0] - 1
+            n = 2 * pixel[1] / self.__cameraResolution[1] - 1
 
-        # Formula
-        pixelsInWorldSpace = c + m * u + n * v
+            pixelInWorldSpace3a = c + m * self.__cameraOrientation3u + n * self.__cameraOrientation3v
 
+            # Verify pixel vector is pointing downwards
+            if (pixelInWorldSpace3a[2] > maximumZcomponent):
+                validPixelCount -= 1
+                continue
 
-        # Find intersection of the pixel line with the xy-plane
-        a = pixelsInWorldSpace.T
-        o = np.tile(self.__cameraOrigin3o, (points, 1))
-        o = o.T
+            # Find intersection of the pixel line with the xy-plane
+            x = self.__cameraOrigin3o[0] - pixelInWorldSpace3a[0] * self.__cameraOrigin3o[2] / pixelInWorldSpace3a[2]
+            y = self.__cameraOrigin3o[1] - pixelInWorldSpace3a[1] * self.__cameraOrigin3o[2] / pixelInWorldSpace3a[2]
 
-        # Verify that all pixels are pointing downwards
-        minimumZcomponent = 0.1  # This variable must be greater or equal to zero
-        # Replace invalid elements with false and check the resulting array for any false elements
-        a[2] = np.where(a[2] > minimumZcomponent, a[2], 0)
-        if (not np.all(a[2])):
-            return
+            # Insert result
+            pair = np.vstack((self.__referencePixels[i], [x, y]))
+            pixelGeoPairs = np.concatenate(pixelGeoPairs, [pair])
 
-        # Formula
-        xCoordinates = o[0] - a[0] * o[2] / a[2]
-        yCoordinates = o[1] - a[1] * o[2] / a[2]
-
-        geographicalCoordinates = np.concatenate(xCoordinates, yCoordinates).T
-
-        return
+        return pixelGeoPairs

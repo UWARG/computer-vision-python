@@ -2,25 +2,33 @@
 
 import numpy as np
 
-# Testing lists of vector addition TODO Remove
-c = np.array([0.0, 0.0, -1.0])
-u = np.array([1.0, 0.0, 0.0])
-v = 1 * np.cross(c, u)
+# Testing appending
 
-m = np.array([0.0, 1.0, -1.0, -1.0])
-n = np.array([0.0, 1.0, -1.0, 1.0])
+p0 = np.array([0, 0])
+g0 = np.array([1, 1])
+p1 = np.array([2, 2])
+g1 = np.array([3, 3])
+p2 = np.array([4, 4])
+g2 = np.array([5, 5])
 
-points = np.size(m)
+x = 6
+y = 7
+p3 = np.array([8, 9])
+pair3 = np.vstack((p3, [x, y]))
+print(pair3)
 
-m = np.atleast_2d(m).T
-n = np.atleast_2d(n).T
+pair0 = np.vstack((p0, g0))
+print(pair0)
+pair1 = np.vstack((p1, g1))
+print(pair1)
+pair2 = np.vstack((p2, g2))
+print(pair2)
 
-c = np.tile(c, (points, 1))
-u = np.tile(u, (points, 1))
-v = np.tile(v, (points, 1))
-
-a = c + m*u + n*v
-
-print(a)
-
-# Testing concatenation
+pairs = np.empty(shape=(0, 2, 2))
+print(pairs)
+pairs = np.concatenate((pairs, [pair1]))
+print(pairs)
+pairs = np.concatenate((pairs, [pair2]))
+print(pairs)
+pairs = np.concatenate((pairs, [pair3]))
+print(pairs)
