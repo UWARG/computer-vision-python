@@ -1,34 +1,69 @@
-# Unit tests for geolocation module
+"""
+Unit tests for geolocation module
+"""
 
+import unittest
 import numpy as np
 
-# Testing appending
+import geolocation
 
-p0 = np.array([0, 0])
-g0 = np.array([1, 1])
-p1 = np.array([2, 2])
-g1 = np.array([3, 3])
-p2 = np.array([4, 4])
-g2 = np.array([5, 5])
+class TestGatherPointPairs(unittest.TestCase):
+    """
+    Tests Geolocation.gather_point_pairs()
+    """
 
-x = 6
-y = 7
-p3 = np.array([8, 9])
-pair3 = np.vstack((p3, [x, y]))
-print(pair3)
+    def testCameraOffsetFromOriginPointingDown(self):
 
-pair0 = np.vstack((p0, g0))
-print(pair0)
-pair1 = np.vstack((p1, g1))
-print(pair1)
-pair2 = np.vstack((p2, g2))
-print(pair2)
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__cameraOrigin3o = np.array([2.0, 4.0, 2.0])
+        locator._Geolocation__cameraDirection3c = np.array([0.0, 0.0, -1.0])
+        locator._Geolocation__cameraOrientation3u = np.array([0.0, -2.0, 0.0])
+        locator._Geolocation__cameraOrientation3v = np.array([-1.0, 0.0, 0.0])
+        locator._Geolocation__cameraResolution = np.array([20, 10])
+        locator._Geolocation__referencePixels = np.array([[0, 0],
+                                                          [0, 10],
+                                                          [20, 0],
+                                                          [20, 10]])
 
-pairs = np.empty(shape=(0, 2, 2))
-print(pairs)
-pairs = np.concatenate((pairs, [pair1]))
-print(pairs)
-pairs = np.concatenate((pairs, [pair2]))
-print(pairs)
-pairs = np.concatenate((pairs, [pair3]))
-print(pairs)
+        expected = np.array([[[0, 0], [4.0, 8.0]],
+                             [[0, 10], [0.0, 8.0]],
+                             [[20, 0], [4.0, 0.0]],
+                             [[20, 10], [0.0, 0.0]]])
+
+        # Run
+        actual = locator.gather_point_pairs()
+
+        # Test
+        np.testing.assert_array_almost_equal(actual, expected)
+
+
+    def testCameraAtOriginPointingSlanted(self):
+
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__cameraOrigin3o = np.array([0.0, 0.0, 3.0])
+        locator._Geolocation__cameraDirection3c = np.array([0.0, 1.0, -1.0])
+        locator._Geolocation__cameraOrientation3u = np.array([-1.0, 0.0, 0.0])
+        locator._Geolocation__cameraOrientation3v = np.array([0.0, np.sqrt(2) / 2, np.sqrt(2) / 2])
+        locator._Geolocation__cameraResolution = np.array([10, 10])
+        locator._Geolocation__referencePixels = np.array([[0, 0],
+                                                          [0, 10],
+                                                          [10, 0],
+                                                          [10, 10]])
+
+        expected = np.array([[[0, 0], [6 - 3 * np.sqrt(2), 9 - 6 * np.sqrt(2)]],
+                             [[0, 10], [6 + 3 * np.sqrt(2), 9 + 6 * np.sqrt(2)]],
+                             [[10, 0], [-6 + 3 * np.sqrt(2), 9 - 6 * np.sqrt(2)]],
+                             [[10, 10], [-6 - 3 * np.sqrt(2), 9 + 6 * np.sqrt(2)]]])
+
+        # Run
+        actual = locator.gather_point_pairs()
+
+        # Test
+        np.testing.assert_array_almost_equal(actual, expected)
+
+
+if __name__ == "__main__":
+
+    unittest.main()
