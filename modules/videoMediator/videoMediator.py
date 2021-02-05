@@ -2,12 +2,12 @@ import TargetAcquisition
 import DecklinkSRC
 
 class VideoMediator:
-    tent_coordinates = None
-    decklinksrc=DecLinkSRC()
-    target_acquisition=TargetAcquisition()
+    tentCoordinates = None
+    decklinkSrc=DecLinkSRC()
+    targetAcquisition=TargetAcquisition()
 
     def __init__(self):
-        self.__current_frame=None
+        self.__currentFrame=None
 
         """
         initialize thread
@@ -16,5 +16,5 @@ class VideoMediator:
 
 
     def getTargets(self):
-        current_frame=decklinksrc.grab()
-        tent_coordinates=target_acquisition.get_coordinates(current_frame)
+        current_frame=decklinkSrc.grab()
+        tentCoordinates=targetAcquisition.get_coordinates(currentFrame)
