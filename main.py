@@ -19,6 +19,7 @@ def searchProgram():
     """
     Search program implementation here.
     Parameters: None
+    Returns: None
     """
     return
 
@@ -27,6 +28,7 @@ def taxiProgram():
     """
     Taxi program implementation here.
     Parameters: None
+    Returns: None
     """
     return
 
@@ -35,6 +37,7 @@ if __name__ == '__main__':
     """
     Starts the appropriate program based on what was passed in as a command line argument.
     Parameters: Args for commands
+    Returns: None
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
