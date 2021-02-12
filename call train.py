@@ -9,6 +9,7 @@ Changing directory to yolov2_assets to get config.json
 """
         from yolov2_assets import train
         train(config.json)
+        os.chdir("main.py")
     else :
         print ("YOLOV2_ASSETS Directory not found. Specify path")
 if _name_ == 'main':
