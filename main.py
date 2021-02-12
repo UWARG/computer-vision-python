@@ -10,6 +10,7 @@ def flightProgram():
         Feed tent coordinates from pipeline into geolocation
         Get GPS coordinates from geolocation
         Send coordinates to command module
+    Parameters: None
     """
     return
 
@@ -17,6 +18,7 @@ def flightProgram():
 def searchProgram():
     """
     Search program implementation here.
+    Parameters: None
     """
     return
 
@@ -24,6 +26,7 @@ def searchProgram():
 def taxiProgram():
     """
     Taxi program implementation here.
+    Parameters: None
     """
     return
 
@@ -31,6 +34,7 @@ def taxiProgram():
 if __name__ == '__main__':
     """
     Starts the appropriate program based on what was passed in as a command line argument.
+    Parameters: Args for commands
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
