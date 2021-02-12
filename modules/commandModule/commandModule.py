@@ -133,6 +133,18 @@ class CommandModule:
             json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
 
     """
+    TAKE IN PIGO DICT AND WRITE TO JSON FILE
+    """
+    def __is_null(self, value):
+        if value == None:
+            self.logger.error("Value that was passed is null. Exiting...")
+            return True
+        else:
+            return False
+
+
+
+    """
     PUBLIC METHODS
     """
     
@@ -153,17 +165,21 @@ class CommandModule:
                 self.logger.error("Error code found in the GIPO json file is not an int. Exiting...")
             sys.exit(1)
 
-    def get_current_altitude(self):
-        pass
+    def get_current_altitude(self) -> float:
 
-    def get_current_latitude(self):
-        pass
+        return self.gipoData["altitude"]
 
-    def get_current_longitude(self):
-        pass
+    def get_current_latitude(self) -> float:
 
-    def get_sensor_status(self):
-        pass
+        return self.gipoData["latitude"]
+
+    def get_current_longitude(self) -> float :
+
+        return self.gipoData["longitude"]
+
+    def get_sensor_status(self) -> float:
+
+        return self.gipoData["sensor_status"]
 
     ### PIGO TELEMETRY ###
     """
@@ -175,7 +191,7 @@ class CommandModule:
             self.logger.error("Value that was passed in to set latitude of object is null. Exiting...")
             sys.exit(1)
         elif type(latitudeOfObject) != float:   # TODO: replace float type with long double
-            self.logger.error("Value that was passed in to set latitude of obejct is a " + str(type(latitudeOfObject)) + 
+            self.logger.error("Value that was passed in to set latitude of object is a " + str(type(latitudeOfObject)) +
                                 " but should be a long double. Exiting...")
             sys.exit(1)
 
