@@ -2,24 +2,36 @@ import argparse
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 
+
 def flightProgram():
+    """
+    Flight program implementation goes here. Outline:
+        Instantiate pipeline, video mediator, start frame caputre, feed tent coordinates into pipeline.
+        Feed tent coordinates from pipeline into geolocation
+        Get GPS coordinates from geolocation
+        Send coordinates to command module
+    """
     return
-    # Flight program implementation goes here. Outline:
-    # Instantiate pipeline
-    # Instantiate video mediator, start frame capture, feed tent coordinates into pipeline
-    # Feed tent coordinates from pipeline into geolocation
-    # Get GPS coordinates from geolocation
-    # Send coordinates to command module
+
 
 def searchProgram():
+    """
+    Search program implementation here.
+    """
     return
-    # Search program implementation goes here
+
 
 def taxiProgram():
+    """
+    Taxi program implementation here.
+    """
     return
-    # Taxi program implementation goes here
+
 
 if __name__ == '__main__':
+    """
+    Starts the appropriate program based on what was passed in as a command line argument.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
     # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
