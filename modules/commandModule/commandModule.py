@@ -123,7 +123,7 @@ class CommandModule:
     """
     TAKE IN PIGO DICT AND WRITE TO JSON FILE
     """
-    def __pigo_file_writer(self):
+    def __write_to_pigo_file(self):
         if not os.path.isfile(self.pigoDirectory):
             self.logger.warning("The given PIGO json file directory: " + self.pigoDirectory + 
                              " does not exist. Creating a new json file to populate...")
@@ -136,8 +136,8 @@ class CommandModule:
     TAKE IN PIGO DICT AND WRITE TO JSON FILE
     """
     def __is_null(self, value):
-        if value == None:
-            self.logger.error("Value that was passed is null. Exiting...")
+        if value is None:
+            self.logger.error("Value that was passed is null.")
             return True
         else:
             return False
@@ -185,18 +185,13 @@ class CommandModule:
     """
     SETTERS FOR PIGO DATA
     """
-    def set_latitude_of_object(self, latitudeOfObject):
+    def set_latitude_of_object(self, latitudeOfObject: float):
 
-        if latitudeOfObject == None:
-            self.logger.error("Value that was passed in to set latitude of object is null. Exiting...")
+        if self.__is_null(latitudeOfObject):
             sys.exit(1)
-        elif type(latitudeOfObject) != float:   # TODO: replace float type with long double
-            self.logger.error("Value that was passed in to set latitude of object is a " + str(type(latitudeOfObject)) +
-                                " but should be a long double. Exiting...")
-            sys.exit(1)
-
+        
         self.pigoData.update({"latitudeOfObject" : latitudeOfObject})
-        self.__pigo_file_writer()
+        self.__write_to_pigo_file()
 
     def set_longitude_of_object(self, longitudeOfObject):
         pass
@@ -233,8 +228,6 @@ class CommandModule:
 
 if __name__ == "__main__":
 
-    #print(sys.float_info)
     logging.basicConfig(level=logging.INFO)
     test = CommandModule("test.json", "test.json")
-    test.testing()
-    #test.set_latitude_of_object("STRING")
+    test.set_latitude_of_object("test")
