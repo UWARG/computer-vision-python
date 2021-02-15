@@ -184,13 +184,13 @@ class CommandModule:
             euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
             return euler_tuple
 
-    def get_euler_plane(self) -> dict:
+    def get_euler_plane(self) -> tuple:
 
         if self.__is_null(self.gipoData["euler_plane"]):
             euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
             return euler_tuple
 
-    def get_gps_coordinate(self) -> dict:
+    def get_gps_coordinate(self) -> tuple:
         if self.__is_null(self.gipoData["euler_camera"]):
             gps_coordinate = (self.gipoData["lat"], self.gipoData["lng"], self.gipoData["alt"])
             return gps_coordinate
