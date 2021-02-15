@@ -90,6 +90,7 @@ import logging
 import sys
 import os
 
+
 class CommandModule:
 
     """
@@ -128,12 +129,12 @@ class CommandModule:
             self.logger.warning("The given PIGO json file directory: " + self.pigoDirectory + 
                              " does not exist. Creating a new json file to populate...")
         if not bool(self.pigoData):
-            self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoDirectory + " ...") 
+            self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoDirectory + " ...")
         with open(self.pigoDirectory, "w") as pigoFile:
             json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
 
     """
-    TAKE IN PIGO DICT AND WRITE TO JSON FILE
+    NULL CHECKER
     """
     def __is_null(self, value):
         if value is None:
@@ -141,7 +142,6 @@ class CommandModule:
             return True
         else:
             return False
-
 
 
     """
@@ -153,7 +153,7 @@ class CommandModule:
     GETTERS FOR GIPO DATA
     """
 
-    def get_error_code(self):
+    def get_error_code(self) -> int:
         self.__gipo_file_reader()
         errorCode = self.gipoData.get("errorCode")
         if type(errorCode) == int:
@@ -165,21 +165,37 @@ class CommandModule:
                 self.logger.error("Error code found in the GIPO json file is not an int. Exiting...")
             sys.exit(1)
 
-    def get_current_altitude(self) -> float:
+    def get_current_altitude(self) -> int:
+        if self.__is_null(self.gipoData["altitude"]):
+            return self.gipoData["altitude"]
 
-        return self.gipoData["altitude"]
 
-    def get_current_latitude(self) -> float:
+    def get_current_airspeed(self) -> int:
+        if self.__is_null(self.gipoData["airspeed"]):
+            return self.gipoData["airspeed"]
 
-        return self.gipoData["latitude"]
+    def get_is_landed(self) -> bool:
 
-    def get_current_longitude(self) -> float :
+        if self.__is_null(self.gipoData["isLanded"]):
+            return self.gipoData["isLanded"]
 
-        return self.gipoData["longitude"]
+    def get_euler_camera(self) -> tuple:
+        if self.__is_null(self.gipoData["euler_camera"]):
+            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
+            return euler_tuple
 
-    def get_sensor_status(self) -> float:
+    def get_euler_plane(self) -> dict:
 
-        return self.gipoData["sensor_status"]
+        if self.__is_null(self.gipoData["euler_plane"]):
+            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
+            return euler_tuple
+
+    def get_gps_coordinate(self) -> dict:
+        if self.__is_null(self.gipoData["euler_camera"]):
+            gps_coordinate = (self.gipoData["lat"], self.gipoData["lng"], self.gipoData["alt"])
+            return gps_coordinate
+
+
 
     ### PIGO TELEMETRY ###
     """
