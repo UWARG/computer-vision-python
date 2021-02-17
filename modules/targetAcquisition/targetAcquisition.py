@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import cv2
+import threading
 import os
 from yolov2_assets.predict import yolo_predict
 
@@ -34,7 +35,7 @@ class TargetAcquisition:
         Interprets BoundBox class values to populate self.tentCoordinates with centres of tents
     """
 
-    def __init__ (self, deckLinkFrame=np.zeros((416, 416, 3))):
+    def __init__ (self, videoPipeline, coordinatePipeline):
         """
         Initializes boxes, tentCoordinates attributes, sets currentFrame attribute to given frame, zeros otherwise
 
@@ -45,8 +46,17 @@ class TargetAcquisition:
         """
         self.boxes = [] # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
         self.tentCoordinates = dict()
-        self.currentFrame = deckLinkFrame
-    
+        self.currentFrame = np.array()
+        self.videoPipeline = videoPipeline
+        self.coordinatePipeline = coordinatePipeline
+        main = threading.Thread(target=self._main_())
+        main.start()
+
+    def _main_(self):
+        self.currentFrame = self.videoPipeline.getNewFrame()
+        self.coordinatePipeline.addNewPackage(self.get_coordinates(self.currentFrame))
+
+
     def set_curr_frame(self, newFrame):
         """
         Sets given frame to current frame
@@ -57,7 +67,8 @@ class TargetAcquisition:
             Variable size array containing data about a video frame (as given by cv2.imread())
         """
         self.currentFrame = newFrame
-    
+
+
     def get_coordinates(self, newFrame=np.zeros((416, 416, 3))):
         """
         Returns a list of co-ordinates along a video frame where tents are located by running YOLOV2 model

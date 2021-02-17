@@ -1,20 +1,20 @@
-import TargetAcquisition
-import DecklinkSRC
+from ..targetAcquisition.targetAcquisition import TargetAcquisition
+from ..decklinksrc.decklinksrc import DeckLinkSRC
+from ...pipelines.coordinatePipeline import CoordinatePipeline
+from ...pipelines.videoPipeline import VideoPipeline
+import threading
+
 
 class VideoMediator:
-    tentCoordinates = None
-    decklinkSrc=DecLinkSRC()
-    targetAcquisition=TargetAcquisition()
 
     def __init__(self):
-        self.__currentFrame=None
+        self.videoPipeline = VideoPipeline()
+        self.coordinatePipeline = CoordinatePipeline()
+        self.coordinates = []
+        DeckLinkSRC(self.videoPipeline)
+        TargetAcquisition(self.videoPipeline, self.coordinatePipeline)
+        main = threading.Thread(target=self._main_)
+        main.start()
 
-        """
-        initialize thread
-
-        """
-
-
-    def getTargets(self):
-        current_frame=decklinkSrc.grab()
-        tentCoordinates=targetAcquisition.get_coordinates(currentFrame)
+    def _main_(self):
+        self.coordinates.append(self.coordinatePipeline.getNewPackage())
