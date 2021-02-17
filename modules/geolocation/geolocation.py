@@ -4,6 +4,7 @@ Geolocation module to map pixel coordinates to geographical coordinates
 
 import numpy as np
 
+
 class Geolocation:
     """
     Locates the geographical position of a set of pixels
@@ -39,7 +40,6 @@ class Geolocation:
 
         return
 
-
     # TODO Placeholder, add functionality once we figure out how to convert raw plane data
     def convert_input(self):
         """
@@ -51,7 +51,6 @@ class Geolocation:
         """
 
         return
-
 
     def gather_point_pairs(self):
         """
@@ -97,3 +96,37 @@ class Geolocation:
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         return pixelGeoPairs
+
+    def calculate_pixel_to_geo_mapping(self):
+        """
+        Outputs transform matrix for mapping pixels to geographical points
+
+        Returns
+        -------
+        np.array(shape=(3,3))
+        """
+
+        # Declare 4 matrices
+        # Assign relevant values, shapes and data types
+        A = np.vstack((self.__pixelToGeoPairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        ARHS = np.vstack((self.__pixelToGeoPairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
+        B = np.vstack((self.__pixelToGeoPairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        BRHS = np.vstack((self.__pixelToGeoPairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
+
+        # Solve system of linear equations to get value of coefficients
+        AX = np.linalg.solve(A, ARHS)
+        BX = np.linalg.solve(B, BRHS)
+
+        # Multiply coefficients with corresponding columns in matrices A and B
+        for i in range(0, 3):
+            A[:, i] *= AX[i][0]
+            B[:, i] *= BX[i][0]
+
+        # Invert A
+        # Using pinv() instead of inv() for handling ill-conditioned matrices
+        A_1 = np.linalg.pinv(A)
+
+        # Store matrix product of B and A^-1 in C
+        C = B.dot(A_1)
+
+        return C
