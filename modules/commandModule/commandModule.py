@@ -71,6 +71,7 @@ dependencies needed:
 - json
 
 '''
+from datetime import time
 
 """
 TODO:
@@ -89,7 +90,12 @@ import json
 import logging
 import sys
 import os
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
+class MyHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        self.__gipo_file_reader()
 
 class CommandModule:
 
@@ -102,17 +108,39 @@ class CommandModule:
         self.gipoDirectory = gipoDirectory
         self.pigoDirectory = pigoDirectory
         self.logger = logging.getLogger()
+        self.__watchdog_listener()
+
+
 
     """
     PRIVATE METHODS
     """
 
     """
+    ASYNC WATCHDOG METHOD
+    """
+    async def __watchdog_listener(self):
+        if __name__ == "__main__":
+            event_handler = MyHandler()
+            observer = Observer()
+            observer.schedule(event_handler, self.gipoDirectory, recursive=False)
+            observer.start()
+            try:
+                while True:
+                    time.sleep(1)
+            finally:
+                observer.stop()
+                observer.join()
+
+
+    """
     GET DATA FROM GIPO JSON FILE AND SAVE AS DICT
     """
+
+
     def __gipo_file_reader(self):
         try:
-            with open(self.gipoDirectory, "r") as gipoFile:
+            with open(self.gipoDirectory) as gipoFile:
                 self.gipoData = json.load(gipoFile)
         except FileNotFoundError:
             self.logger.error("The given GIPO json file directory: " + self.gipoDirectory + " does not exist. Exiting...")
