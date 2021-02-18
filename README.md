@@ -135,7 +135,8 @@ class Line:
         Sets the point coordinates of __point2
     get_p2()
         Returns location of __point2
-"""
+    """
+    # Class code below
 ```
 Note that although the above class makes all of its attributes private and uses getters and setters, this is not always needed for our purposes. Use common sense when determining what members should be public vs private.
 
