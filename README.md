@@ -14,6 +14,7 @@ To implement a new feature:
 6. Any bug fixes in a separate commit, with a well-named message
 7. **Pull from main to get branch up to date, commit this change**
 8. Submit pull request with detailed message outlining:
+  * Description of purpose of PR
   * New changes
   * Outstanding changes
   * Any other comments
