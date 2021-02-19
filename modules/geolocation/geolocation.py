@@ -108,25 +108,24 @@ class Geolocation:
 
         # Declare 4 matrices
         # Assign relevant values, shapes and data types
-        A = np.vstack((self.__pixelToGeoPairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
-        ARHS = np.vstack((self.__pixelToGeoPairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
-        B = np.vstack((self.__pixelToGeoPairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
-        BRHS = np.vstack((self.__pixelToGeoPairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
+        # Create a 3x3 matrix with the coordinates as vectors with 1 as the z component => np.array([[x1, x2, x3], [y1, y2, y3], [1, 1, 1]])
+        sourcePixelMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        sourcePixelVector = np.vstack((self.__pixelToGeoPairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
+        mappedGeoMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        mappedGeoVector = np.vstack((self.__pixelToGeoPairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
 
         # Solve system of linear equations to get value of coefficients
-        AX = np.linalg.solve(A, ARHS)
-        BX = np.linalg.solve(B, BRHS)
+        solvedPixelVector = np.linalg.solve(sourcePixelMatrix, sourcePixelVector)
+        solvedGeoVector = np.linalg.solve(mappedGeoMatrix, mappedGeoVector)
 
-        # Multiply coefficients with corresponding columns in matrices A and B
+        # Multiply coefficients with corresponding columns in matrices sourcePixelMatrix and mappedGeoMatrix
         for i in range(0, 3):
-            A[:, i] *= AX[i][0]
-            B[:, i] *= BX[i][0]
+            sourcePixelMatrix[:, i] *= solvedPixelVector[i][0]
+            mappedGeoMatrix[:, i] *= solvedGeoVector[i][0]
 
-        # Invert A
+        # Invert sourcePixelMatrix
         # Using pinv() instead of inv() for handling ill-conditioned matrices
-        A_1 = np.linalg.pinv(A)
+        sourcePixelMatrixInverse = np.linalg.pinv(sourcePixelMatrix)
 
-        # Store matrix product of B and A^-1 in C
-        C = B.dot(A_1)
-
-        return C
+        # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
+        return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
