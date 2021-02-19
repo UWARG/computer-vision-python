@@ -117,6 +117,12 @@ class TestGatherPointPairs(unittest.TestCase):
         # Test
         np.testing.assert_equal(actual, expected)
 
+
+class TestPointMatrixToGeoMapping(unittest.TestCase):
+    """
+    Tests Geolocation.gather_point_pairs()
+    """
+
     def test_identity_mapping(self):
         # Setup
         locator = geolocation.Geolocation()
@@ -133,6 +139,7 @@ class TestGatherPointPairs(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
+        
     def test_rotation_90(self):
         # Setup
         locator = geolocation.Geolocation()
@@ -150,7 +157,8 @@ class TestGatherPointPairs(unittest.TestCase):
 
         # Test
         np.testing.assert_almost_equal(actual, expected)
-        
+     
+    
     def test_point_set_1(self):
 
         # Setup
@@ -170,6 +178,7 @@ class TestGatherPointPairs(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
+        
     def test_point_set_2(self):
 
         # Setup
@@ -186,6 +195,7 @@ class TestGatherPointPairs(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-
+        
+ 
 if __name__ == "__main__":
     unittest.main()
