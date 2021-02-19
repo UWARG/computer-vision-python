@@ -120,7 +120,7 @@ class TestGatherPointPairs(unittest.TestCase):
 
 class TestPointMatrixToGeoMapping(unittest.TestCase):
     """
-    Tests Geolocation.pixel_to_geo_mapping()
+    Tests Geolocation.calculate_pixel_to_geo_mapping()
     """
 
     def test_identity_mapping(self):
