@@ -85,7 +85,7 @@ class CommandModule:
         self.pogiLock = FileLock(pogiFileDirectory + ".lock")
         self.pigoLock = FileLock(pigoFileDirectory + ".lock")
         self.logger = logging.getLogger()
-        self.__watchdog_listener()
+        #self.__watchdog_listener()     # temporarily disabled: producing errors
 
     async def __watchdog_listener(self):
         """
