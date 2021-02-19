@@ -1,95 +1,12 @@
-'''
-
-PIGO (Plane in, Ground out):
-
-typedef struct IncomingTelemetry
-{
-    long double lattitudeOfObject;
-    long double longitudeOfObject;
-
-    gimbalCommands_t gimbalCommands;
-
-    bool beginLanding;
-    bool begin Takeoff;
-    bool disconnectAutoPilot;
-
-    char stuff[20];
-
-}IncomingTelemetry_t;
-
-GIPO (Ground in, Plane out):
-
-typedef struct OutgoingTelemetry
-{
-    int errorCode;
-
-    int currentAltitude;
-    long double currentLattitude;
-    long double currentLongitude;
-
-    int sensorStatus;
-
-    char stuff[20];
-
-}OutgoingTelemetry_t;
-
-- Ground station only communicates with telemetry manager, sends data after init. & gets data after report made
-
-Question for FW:
-- Update on complete struct data being processed through telemetry?
-- How are instructions for the plane (pitch, roll, rudder, airspeed) being sent? Does telemetry manager send instructions to the path manager?
-- Need PID controller sw for instr.?
-- What's the file directory on ground station? Limits on FW side for # of files, size, location?
-
-Question for Shrinjay:
-- What instructions are needed to be sent to the plane?
-- Should requirements.txt file be added for dependencies?
-
-CommandModule Arch.
-  ├── methods
-  │   ### private methods ###
-  │   ├── init
-  │   ├── file_reader
-  │   └── file_writer
-  │   ### public methods ####
-  │   # GIPO telemetry (getters)
-  │   ├── 
-  │   # PIGO telemetry (setters)
-  │   └── 
-      # misc.
-  │   ├── get_PIGO_directory
-  │   ├── set_GIPO_directory
-  │   ├── get_PIGO_directory
-  │   └── set_GIPO_directory
-  └── properties (all private)
-      # GIPO telemetry data
-      ├── GIPO dict
-      # PIGO telemetry data
-      └── PIGO dict
-
-dependencies needed:
-- json
-
-'''
-from datetime import time
-
-"""
-TODO:
-Figure out where to put file handling: (in file readers/writers, or in set directory methods)
-    - file reader/writer = tedious but integrated, set directory = need to be called first
-Figure out what to do with long double data type (numpy or some other type conversion?)
-    - numpy = extra dependency, type conversion = complicated
-FIGURE SHIT OUT WITH FW AND SHRINJAY....SPECIFICATIONS ARE ALL OVER THE PLACE!!!!
-"""
-
 # external dependencies
-#import numpy
+from filelock import FileLock
 
-# built in modules
+# built-in modules
 import json
 import logging
 import sys
 import os
+from datetime import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -98,28 +15,82 @@ class MyHandler(FileSystemEventHandler):
         self.__gipo_file_reader()
 
 class CommandModule:
+    """
+    Provides communication between CV system and telemetry manager to send data and instructions
 
+    ...
+
+    Attributes
+    ----------
+    pogiData : dict
+        dictionary of ground-in plane-out (POGI) data to be read from the POGI json file
+    pigoData : dict
+        dictionary of plane-in ground-out (PIGO) data to be written to the PIGO json file
+    pogiFileDirectory : str
+        string containing directory to POGI file
+    pigoFileDirectory : str
+        string containing directory to PIGO file
+    pogiLock : filelock.FileLock
+        FileLock used to lock the POGI file when being read
+    pigoLock : filelock.FileLock
+        FileLock used to lock the PIGO file when being written
+    logger : logging.Logger
+        Logger for outputing log messages
+
+    note: pogiData and pigoData are currently specified in https://docs.google.com/document/d/1j7zZJAirZ91-UeNFV-kRFMhTaT8Swr9J8PcyvD0fPpo/edit
+
+
+    Methods
+    -------
+    PRIVATE
+    __init__(pogiFileDirectory="", pigoFileDirectory="")
+    __read_from_pogi_file()
+    __write_to_pigo_file()
+    __is_null(value)
+
+    get_error_code() -> int
+    get_current_altitude() -> float
+    get_current_latitude() -> float
+    get_current_longitude() -> float
+    get_sensor_status() -> float
+
+    set_gps_coordinates(gpsCoordinates: dict)
+    set_ground_commands(groundCommands: dict)
+    set_gimbal_commands(gimbalCommands: dict)
+    set_begin_landing(beginLanding: bool)
+    set_begin_takeoff(beginTakeoff: bool)
+    set_disconnect_autopilot(disconnectAutoPilot: bool)
+
+    get_POGI_directory()
+    set_POGI_directory(pogiFileDirectory)
+    get_PIGO_directory()
+    set_PIGO_directory(pigoFileDirectory)
     """
-    CONSTRUCTOR
-    """
-    def __init__(self, gipoDirectory="", pigoDirectory=""):
-        self.gipoData = dict()
+
+    def __init__(self, pogiFileDirectory="", pigoFileDirectory=""):
+        """
+        Initializes POGI & PIGO empty dictionaries, POGI & PIGO file directories, PIGO file lock, and logger
+
+        Parameters
+        ----------
+        pogiFileDirectory: str
+            String of POGI file directory by default set to empty string
+        pigoFileDirectory: str
+            String of POGI file directory by default set to empty string
+        """
+        self.pogiData = dict()
         self.pigoData = dict()
-        self.gipoDirectory = gipoDirectory
-        self.pigoDirectory = pigoDirectory
+        self.pogiFileDirectory = pogiFileDirectory
+        self.pigoFileDirectory = pigoFileDirectory
+        self.pogiLock = FileLock(pogiFileDirectory + ".lock")
+        self.pigoLock = FileLock(pigoFileDirectory + ".lock")
         self.logger = logging.getLogger()
         self.__watchdog_listener()
 
-
-
-    """
-    PRIVATE METHODS
-    """
-
-    """
-    ASYNC WATCHDOG METHOD
-    """
     async def __watchdog_listener(self):
+        """
+        Asynchronous watchdog method
+        """
         if __name__ == "__main__":
             event_handler = MyHandler()
             observer = Observer()
@@ -132,54 +103,52 @@ class CommandModule:
                 observer.stop()
                 observer.join()
 
-
-    """
-    GET DATA FROM GIPO JSON FILE AND SAVE AS DICT
-    """
-
-
-    def __gipo_file_reader(self):
+    def __read_from_pogi_file(self):
+        """
+        Decodes JSON data from pogiFileDirectory JSON file and stores it in pogiData dictionary
+        """
         try:
-            with open(self.gipoDirectory) as gipoFile:
-                self.gipoData = json.load(gipoFile)
+            with self.pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
+                self.pogiData = json.load(pogiFile)
         except FileNotFoundError:
-            self.logger.error("The given GIPO json file directory: " + self.gipoDirectory + " does not exist. Exiting...")
+            self.logger.error("The given POGI json file directory: " + self.pogiFileDirectory + " does not exist. Exiting...")
             sys.exit(1)
         except json.decoder.JSONDecodeError:
-            self.logger.error("The given GPIO json file at: " + self.gipoDirectory + " has no data to read. Exiting...")
+            self.logger.error("The given GPIO json file at: " + self.pogiFileDirectory + " has no data to read. Exiting...")
             sys.exit(1)
 
-    """
-    TAKE IN PIGO DICT AND WRITE TO JSON FILE
-    """
     def __write_to_pigo_file(self):
-        if not os.path.isfile(self.pigoDirectory):
-            self.logger.warning("The given PIGO json file directory: " + self.pigoDirectory + 
+        """
+        Encodes pigoData dictionary as JSON and stores it in pigoFileDirectory JSON file
+        """
+        if not os.path.isfile(self.pigoFileDirectory):
+            self.logger.warning("The given PIGO json file directory: " + self.pigoFileDirectory + 
                              " does not exist. Creating a new json file to populate...")
         if not bool(self.pigoData):
-            self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoDirectory + " ...")
-        with open(self.pigoDirectory, "w") as pigoFile:
+            self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
+
+        with self.pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
             json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
 
-    """
-    NULL CHECKER
-    """
-    def __is_null(self, value):
+    def __is_null(self, value) -> bool:
+        """
+        Logs an error if value is None and returns boolean indicating if it is None
+
+        Parameters
+        ----------
+        value:
+            Value to evaluate
+
+        Returns
+        -------
+        bool:
+            True if None, else False
+        """
         if value is None:
             self.logger.error("Value that was passed is null.")
             return True
         else:
             return False
-
-
-    """
-    PUBLIC METHODS
-    """
-    
-    ### GIPO TELEMETRY ###
-    """
-    GETTERS FOR GIPO DATA
-    """
 
     def get_error_code(self) -> int:
         self.__gipo_file_reader()
@@ -225,53 +194,165 @@ class CommandModule:
 
 
 
-    ### PIGO TELEMETRY ###
-    """
-    SETTERS FOR PIGO DATA
-    """
-    def set_latitude_of_object(self, latitudeOfObject: float):
+    def set_gps_coordinates(self, gpsCoordinates: dict):
+        """
+        Write GPS coordinates to PIGO JSON file
 
-        if self.__is_null(latitudeOfObject):
+        Paramaters
+        ----------
+        gpsCoordinates: dict
+            Dictionary containing GPS coordinates to write
+        """
+        if self.__is_null(gpsCoordinates):
             sys.exit(1)
-        
-        self.pigoData.update({"latitudeOfObject" : latitudeOfObject})
+        if type(gpsCoordinates) is not dict:
+            self.logger.error("The given gps coordinates are " + str(type(gpsCoordinates)) + " and not a dictionary. Exiting...")
+            sys.exit(1)
+
+        self.pigoData.update({"gpsCoordinates" : gpsCoordinates})
         self.__write_to_pigo_file()
 
-    def set_longitude_of_object(self, longitudeOfObject):
-        pass
+    def set_ground_commands(self, groundCommands: dict):
+        """
+        Write ground commands to PIGO JSON file
 
-    def set_gimbal_commands(self, gimbalCommands):
-        pass
+        Paramaters
+        ----------
+        groundCommands: dict
+            Dictionary containing heading (float) and latestDistance (float) to write
+        """
+        if self.__is_null(groundCommands):
+            sys.exit(1)
+        if type(groundCommands) is not dict:
+            self.logger.error("The given ground commands are " + str(type(groundCommands)) + " and not a dictionary. Exiting...")
+            sys.exit(1)
+        if "heading" not in groundCommands.keys():
+            self.logger.error("The given ground command dictionary has no 'heading' key. Exiting...")            
+        if "latestDistance" not in groundCommands.keys():
+            self.logger.error("The given ground command dictionary has no 'latestDistance' key. Exiting...")
+            sys.exit(1)
+        if groundCommands["heading"] is not float:
+            self.logger.error("The heading in the ground command dictionary is not a float. Exiting...")
+            sys.exit(1)
+        if groundCommands["latestDistance"] is not float:
+            self.logger.error("The latestDistance in the ground command dictionary is not a float. Exiting...")
+            sys.exit(1)
 
-    def set_begin_landing(self, beginLanding):
-        pass
+        self.pigoData.update({"gimbalCommands" : gimbalCommands})
+        self.__write_to_pigo_file()
 
-    def set_begin_takeoff(self, beginTakeoff):
-        pass
+    def set_gimbal_commands(self, gimbalCommands: dict):
+        """
+        Write gimbal commands to PIGO JSON file
 
-    def set_disconnect_autopilot(self, disconnectAutoPilot):
-        pass
+        Paramaters
+        ----------
+        gimbalCommands: dict
+            Dictionary containing gimbal commands to write
+        """
+        if self.__is_null(gimbalCommands):
+            sys.exit(1)
+        if type(gimbalCommands) is not dict:
+            self.logger.error("The given gimbal commands is " + str(type(gimbalCommands)) + " and not a dictionary. Exiting...")
+            sys.exit(1)
 
-    ### FILE DIR METHODS ###
+        self.pigoData.update({"gimbalCommands" : gimbalCommands})
+        self.__write_to_pigo_file()
+
+    def set_begin_landing(self, beginLanding: bool):
+        """
+        Write begin landing command to PIGO JSON file
+
+        Paramaters
+        ----------
+        beginLanding: bool
+            Boolean containing whether or not to initiate landing sequence
+        """
+        if self.__is_null(beginLanding):
+            sys.exit(1)
+        if type(beginLanding) is not bool:
+            self.logger.error("The given begin landing is " + str(type(beginLanding)) + " and not a boolean. Exiting...")
+            sys.exit(1)
+
+        self.pigoData.update({"beginLanding" : beginLanding})
+        self.__write_to_pigo_file()
+
+    def set_begin_takeoff(self, beginTakeoff: bool):
+        """
+        Write begin takeoff command to PIGO JSON file
+
+        Paramaters
+        ----------
+        beginTakeoff: bool
+            Boolean containing whether or not to initiate takeoff sequence
+        """
+        if self.__is_null(beginTakeoff):
+            sys.exit(1)
+        if type(beginTakeoff) is not bool:
+            self.logger.error("The given begin takeoff is " + str(type(beginTakeoff)) + " and not a boolean. Exiting...")
+            sys.exit(1)
+
+        self.pigoData.update({"beginTakeoff" : beginTakeoff})
+        self.__write_to_pigo_file()
+
+    def set_disconnect_autopilot(self, disconnectAutoPilot: bool):
+        """
+        Write disconnect autopilot to PIGO JSON file
+
+        Paramaters
+        ----------
+        disconnectAutoPilot: bool
+            Boolean containing whether or not to disconnect auto pilot
+        """
+        if self.__is_null(disconnectAutoPilot):
+            sys.exit(1)
+        if type(disconnectAutoPilot) is not bool:
+            self.logger.error("The given disconnect auto pilot is " + str(type(disconnectAutoPilot)) + " and not a boolean. Exiting...")
+            sys.exit(1)
+
+        self.pigoData.update({"disconnectAutoPilot" : disconnectAutoPilot})
+        self.__write_to_pigo_file()
+
     def get_PIGO_directory(self):
-        return self.pigoDirectory
+        """
+        Return PIGO JSON file directory
 
-    def get_GIPO_directory(self):
-        return self.gipoDirectory
+        Returns
+        ----------
+        pigoFileDirectory: str
+            Contains directory to PIGO JSON file
+        """
+        return self.pigoFileDirectory
 
-    def set_PIGO_directory(self, pigoDirectory):
-        self.pigoDirectory = pigoDirectory
+    def get_POGI_directory(self):
+        """
+        Return POGI JSON file directory
 
-    def set_GIPO_directory(self, gipoDirectory):
-        self.gipoDirectory = gipoDirectory
+        Returns
+        ----------
+        pogiFileDirectory: str
+            Contains directory to POGI JSON file
+        """
+        return self.pogiFileDirectory
 
-    
-    # testing method used for anything
-    def testing():
-        pass
+    def set_PIGO_directory(self, pigoFileDirectory: str):
+        """
+        Sets PIGO JSON file directory
 
-if __name__ == "__main__":
+        Parameters
+        ----------
+        pigoFileDirectory: str
+            Contains directory to PIGO JSON file
+        """
+        self.pigoFileDirectory = pigoFileDirectory
 
-    logging.basicConfig(level=logging.INFO)
-    test = CommandModule("test.json", "test.json")
-    test.set_latitude_of_object("test")
+    def set_POGI_directory(self, pogiFileDirectory: str):
+        """
+        Sets POGI JSON file directory
+
+        Parameters
+        ----------
+        pogiFileDirectory: str
+            Contains directory to POGI JSON file
+        """
+        self.pogiFileDirectory = pogiFileDirectory
