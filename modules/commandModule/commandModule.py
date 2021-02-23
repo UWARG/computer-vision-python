@@ -12,7 +12,7 @@ from watchdog.events import FileSystemEventHandler
 
 class MyHandler(FileSystemEventHandler):
     def on_modified(self, event):
-        self.__gipo_file_reader()
+        self.__pogi_file_reader()
 
 class CommandModule:
     """
@@ -94,7 +94,7 @@ class CommandModule:
         if __name__ == "__main__":
             event_handler = MyHandler()
             observer = Observer()
-            observer.schedule(event_handler, self.gipoDirectory, recursive=False)
+            observer.schedule(event_handler, self.pogiDirectory, recursive=False)
             observer.start()
             try:
                 while True:
@@ -151,45 +151,45 @@ class CommandModule:
             return False
 
     def get_error_code(self) -> int:
-        self.__gipo_file_reader()
-        errorCode = self.gipoData.get("errorCode")
+        self.__pogi_file_reader()
+        errorCode = self.pogiData.get("errorCode")
         if type(errorCode) == int:
             return errorCode
         else:
             if errorCode == None:
-                self.logger.error("Error code not found in the GIPO json file. Exiting...")
+                self.logger.error("Error code not found in the pogi json file. Exiting...")
             elif type(errorCode) != int:
-                self.logger.error("Error code found in the GIPO json file is not an int. Exiting...")
+                self.logger.error("Error code found in the pogi json file is not an int. Exiting...")
             sys.exit(1)
 
     def get_current_altitude(self) -> int:
-        if self.__is_null(self.gipoData["altitude"]):
-            return self.gipoData["altitude"]
+        if self.__is_null(self.pogiData["altitude"]):
+            return self.pogiData["altitude"]
 
 
     def get_current_airspeed(self) -> int:
-        if self.__is_null(self.gipoData["airspeed"]):
-            return self.gipoData["airspeed"]
+        if self.__is_null(self.pogiData["airspeed"]):
+            return self.pogiData["airspeed"]
 
     def get_is_landed(self) -> bool:
 
-        if self.__is_null(self.gipoData["isLanded"]):
-            return self.gipoData["isLanded"]
+        if self.__is_null(self.pogiData["isLanded"]):
+            return self.pogiData["isLanded"]
 
     def get_euler_camera(self) -> tuple:
-        if self.__is_null(self.gipoData["euler_camera"]):
-            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
+        if self.__is_null(self.pogiData["euler_camera"]):
+            euler_tuple = (self.pogiData["alpha"], self.pogiData["beta"], self.pogiData["gamma"])
             return euler_tuple
 
     def get_euler_plane(self) -> tuple:
 
-        if self.__is_null(self.gipoData["euler_plane"]):
-            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
+        if self.__is_null(self.pogiData["euler_plane"]):
+            euler_tuple = (self.pogiData["alpha"], self.pogiData["beta"], self.pogiData["gamma"])
             return euler_tuple
 
     def get_gps_coordinate(self) -> tuple:
-        if self.__is_null(self.gipoData["euler_camera"]):
-            gps_coordinate = (self.gipoData["lat"], self.gipoData["lng"], self.gipoData["alt"])
+        if self.__is_null(self.pogiData["euler_camera"]):
+            gps_coordinate = (self.pogiData["lat"], self.pogiData["lng"], self.pogiData["alt"])
             return gps_coordinate
 
 
