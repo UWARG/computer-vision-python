@@ -24,7 +24,7 @@ if __name__ == "__main__":
     testSuite = unittest.TestLoader().discover(start_dir=testDir, pattern="test*.py", top_level_dir=topDir)
 
     # create log file
-    currentDateTime = datetime.today().strftime("%H:%M:%S_%Y_%m_%d")
+    currentDateTime = datetime.today().strftime("%H%M%S_%Y_%m_%d")
     logFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "{}".format(currentDateTime))
     f = open(logFile, "w") 
 
