@@ -1,29 +1,51 @@
 from ...commandModule import CommandModule
 import unittest
-import logging
-import json
+import os
 
-class TestCaseWritingNullValuesToPIGOFiles(unittest.TestCase):
-
+class TestCaseWritingNullToPIGOFile(unittest.TestCase):
+    """
+    Test Case: Null written to PIGO file results in sys.exit(1)
+    Methods to test:
+    - set_gps_coordintes
+	- set_ground_commands
+	- set_gimbal_commands
+	- set_begin_landing
+	- set_begin_takeoff
+	- set_disconnect_autopilot
+    """
     def setUp(self):
-        self.logger = logging.basicConfig(level=logging.DEBUG,)
-        self.pigoData = dict()
-        self.pigoFile = str(__file__).replace("testWriteNullToPigo.py", "") + "../testJSONs/test.json"
+        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "test.json")
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile)
 
     def tearDown(self):
-        self.pigoData = dict()
+        open(self.pigoFile, "w").close() # delete file contents before next unit test
 
     def test_system_exit_if_set_gps_coords_to_null(self):
         with self.assertRaises(SystemExit) as cm:
             self.commandModule.set_gps_coordinates(None)
-        self.assertEqual(cm.exception.code, 2)
+        self.assertEqual(cm.exception.code, 1)
     
-    def test_error_message_if_set_gps_coords_to_null(self):
-        with self.assertLogs(logger=self.logger, level="ERROR") as cm:
-            try:
-                self.commandModule.set_gps_coordinates(None)
-            except SystemExit:
-                pass
+    def test_system_exit_if_set_ground_commands_to_null(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.commandModule.set_ground_commands(None)
+        self.assertEqual(cm.exception.code, 1)
+    
+    def test_system_exit_if_set_gimbal_commands_to_null(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.commandModule.set_gimbal_commands(None)
+        self.assertEqual(cm.exception.code, 1)
+    
+    def test_system_exit_if_set_begin_landing_to_null(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.commandModule.set_begin_landing(None)
+        self.assertEqual(cm.exception.code, 1)
 
-        self.assertEqual(cm.output, ["ERFROR:root:Value that was passed is null."])
+    def test_system_exit_if_set_begin_takeoff_to_null(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.commandModule.set_begin_takeoff(None)
+        self.assertEqual(cm.exception.code, 1)
+
+    def test_system_exit_if_set_disconnect_autopilot_to_null(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.commandModule.set_disconnect_autopilot(None)
+        self.assertEqual(cm.exception.code, 1)

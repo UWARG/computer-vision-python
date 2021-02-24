@@ -1,6 +1,6 @@
 import os, unittest
 from datetime import datetime
-import importlib
+import logging
 
 if __name__ == "__main__":
     """
@@ -9,14 +9,23 @@ if __name__ == "__main__":
     note: needs to be run from the 'modules' folder
     """
 
+    # set up logging
+    loggerFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "debug.log")
+    open(loggerFile, "w").close()
+    logging.basicConfig(filename=loggerFile,
+                        filemode="a",
+                        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                        datefmt='%H:%M:%S',
+                        level=logging.DEBUG)
+
     # get full test suite using discovery method
-    testDir = str(__file__).replace("/TestRunner.py", "") + "/testCases"
-    topDir = str(__file__).replace("/commandModule/tests/TestRunner.py", "")
+    testDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testCases")
+    topDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..")
     testSuite = unittest.TestLoader().discover(start_dir=testDir, pattern="test*.py", top_level_dir=topDir)
 
     # create log file
     currentDateTime = datetime.today().strftime("%H:%M:%S_%Y_%m_%d")
-    logFile = str(__file__).replace("/TestRunner.py", "") + "/testLogs/{0}.log".format(currentDateTime)
+    logFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "{}".format(currentDateTime))
     f = open(logFile, "w") 
 
     # run test and output results to log file

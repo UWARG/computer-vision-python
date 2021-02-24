@@ -82,10 +82,10 @@ class CommandModule:
         self.pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory
         self.pigoFileDirectory = pigoFileDirectory
-        self.pogiLock = FileLock(pogiFileDirectory + ".lock")
-        self.pigoLock = FileLock(pigoFileDirectory + ".lock")
+        self.pogiLock = FileLock(self.pogiFileDirectory + ".lock")
+        self.pigoLock = FileLock(self.pigoFileDirectory + ".lock")
         self.logger = logging.getLogger()
-        #self.__watchdog_listener()     # temporarily disabled: producing errors
+        self.__watchdog_listener()     # temporarily disabled: producing errors
 
     async def __watchdog_listener(self):
         """
@@ -126,6 +126,15 @@ class CommandModule:
                              " does not exist. Creating a new json file to populate...")
         if not bool(self.pigoData):
             self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
+
+        with self.pigoLock, open(self.pigoFileDirectory, "r") as pigoFile:  # read the existing data in the json file to prevent overwriting
+            try:
+                existingData = json.load(pigoFile)
+                if type(existingData) is not None:
+                    existingData.update(self.pigoData)
+                    self.pigoData = existingData
+            except json.decoder.JSONDecodeError:    # ignore if json file is empty
+                pass
 
         with self.pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
             json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
@@ -231,14 +240,14 @@ class CommandModule:
         if "latestDistance" not in groundCommands.keys():
             self.logger.error("The given ground command dictionary has no 'latestDistance' key. Exiting...")
             sys.exit(1)
-        if groundCommands["heading"] is not float:
+        if type(groundCommands["heading"]) is not float:
             self.logger.error("The heading in the ground command dictionary is not a float. Exiting...")
             sys.exit(1)
-        if groundCommands["latestDistance"] is not float:
+        if type(groundCommands["latestDistance"]) is not float:
             self.logger.error("The latestDistance in the ground command dictionary is not a float. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"gimbalCommands" : gimbalCommands})
+        self.pigoData.update({"groundCommands" : groundCommands})
         self.__write_to_pigo_file()
 
     def set_gimbal_commands(self, gimbalCommands: dict):
