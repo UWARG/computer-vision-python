@@ -1,0 +1,43 @@
+......E...........
+======================================================================
+ERROR: test (commandModule.tests.testCases.testWriteMultiprocess.TestCaseWritingMultiprocessToPIGOFile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/testWriteMultiprocess.py", line 58, in test
+    multiprocessing.Process(target=self.commandModule.set_begin_landing, args=(self.ArgOne,)).start()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/context.py", line 283, in _Popen
+    return Popen(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/popen_spawn_posix.py", line 32, in __init__
+    super().__init__(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/popen_fork.py", line 19, in __init__
+    self._launch(process_obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/popen_spawn_posix.py", line 47, in _launch
+    reduction.dump(process_obj, fp)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/multiprocessing/reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+TypeError: cannot pickle '_thread.lock' object
+
+======================================================================
+FAIL: test_system_exit_if_set_gimbal_commands_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) (passed_data={'key1': 'test1', 'key2': 2.34})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/testWriteWrongTypeToPigo.py", line 57, in test_system_exit_if_set_gimbal_commands_to_wrong_type
+    self.commandModule.set_gimbal_commands(test)
+AssertionError: SystemExit not raised
+
+======================================================================
+FAIL: test_system_exit_if_set_gps_coords_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) (passed_data={'key1': 'test1', 'key2': 2.34})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/testWriteWrongTypeToPigo.py", line 43, in test_system_exit_if_set_gps_coords_to_wrong_type
+    self.commandModule.set_gps_coordinates(test)
+AssertionError: SystemExit not raised
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.125s
+
+FAILED (failures=2, errors=1)
