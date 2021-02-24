@@ -11,6 +11,10 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 class MyHandler(FileSystemEventHandler):
+    """
+    The event that triggers when the file that the watchdog listener is listening to is modified.
+
+    """
     def on_modified(self, event):
         self.__pogi_file_reader()
 
@@ -89,7 +93,7 @@ class CommandModule:
 
     def __watchdog_listener(self):
         """
-        Watchdog method
+        Watchdog listener that listens for changes to the pogi file.
         """
         if __name__ == "__main__":
             event_handler = MyHandler()
@@ -151,6 +155,9 @@ class CommandModule:
             return False
 
     def get_error_code(self) -> int:
+        """
+        Returns an error code from the POGI file
+        """
         self.__pogi_file_reader()
         errorCode = self.pogiData.get("errorCode")
         if type(errorCode) == int:
@@ -163,31 +170,48 @@ class CommandModule:
             sys.exit(1)
 
     def get_current_altitude(self) -> int:
+        """
+        Returns the altitude from the POGI file
+        """
         if self.__is_null(self.pogiData["altitude"]):
             return self.pogiData["altitude"]
 
 
     def get_current_airspeed(self) -> int:
+        """
+        Returns the airspeed from the POGI file
+        """
         if self.__is_null(self.pogiData["airspeed"]):
             return self.pogiData["airspeed"]
 
     def get_is_landed(self) -> bool:
+        """
+        Returns if the plane has landed from the POGI file
+        """
         if self.__is_null(self.pogiData["isLanded"]):
             return self.pogiData["isLanded"]
 
     def get_euler_camera(self) -> dict:
+        """
+        Returns the euler coordinates of the camera on the plane from the POGI file
+        """
         if self.__is_null(self.pogiData["euler_camera"]):
             euler_dict = {"alpha": self.pogiData["alpha"], "beta":  self.pogiData["beta"], "gamma": self.pogiData["gamma"]}
             return euler_dict
 
     def get_euler_plane(self) -> dict:
-
+        """
+        Returns the euler coordinates of the plane itself from the POGI file
+        """
         if self.__is_null(self.pogiData["euler_plane"]):
             euler_dict = {"alpha": self.pogiData["alpha"], "beta": self.pogiData["beta"],
                           "gamma": self.pogiData["gamma"]}
             return euler_dict
 
     def get_gps_coordinate(self) -> dict:
+        """
+        Returns the gps coordinates of the plane from the POGI file
+        """
         if self.__is_null(self.pogiData["euler_camera"]):
             gps_coordinate = {"lat": self.pogiData["lat"], "lng": self.pogiData["lng"],"alt": self.pogiData["alt"]}
             return gps_coordinate
