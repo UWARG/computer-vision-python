@@ -156,7 +156,12 @@ class CommandModule:
 
     def get_error_code(self) -> int:
         """
-        Returns an error code from the POGI file
+        Returns the error code from the POGI file
+
+        Returns
+        -------
+        int:
+            Error code
         """
         self.__pogi_file_reader()
         errorCode = self.pogiData.get("errorCode")
@@ -172,6 +177,11 @@ class CommandModule:
     def get_current_altitude(self) -> int:
         """
         Returns the altitude from the POGI file
+
+        Returns
+        -------
+        int:
+            Current altitude of the plane
         """
         if self.__is_null(self.pogiData["altitude"]):
             return self.pogiData["altitude"]
@@ -180,6 +190,11 @@ class CommandModule:
     def get_current_airspeed(self) -> int:
         """
         Returns the airspeed from the POGI file
+
+        Returns
+        -------
+        int:
+            Current airspeed of the plane
         """
         if self.__is_null(self.pogiData["airspeed"]):
             return self.pogiData["airspeed"]
@@ -187,6 +202,11 @@ class CommandModule:
     def get_is_landed(self) -> bool:
         """
         Returns if the plane has landed from the POGI file
+
+        Returns
+        -------
+        bool:
+            True if plane landed, else False
         """
         if self.__is_null(self.pogiData["isLanded"]):
             return self.pogiData["isLanded"]
@@ -194,6 +214,11 @@ class CommandModule:
     def get_euler_camera(self) -> dict:
         """
         Returns the euler coordinates of the camera on the plane from the POGI file
+
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
         if self.__is_null(self.pogiData["euler_camera"]):
             euler_dict = {"alpha": self.pogiData["alpha"], "beta":  self.pogiData["beta"], "gamma": self.pogiData["gamma"]}
@@ -202,6 +227,11 @@ class CommandModule:
     def get_euler_plane(self) -> dict:
         """
         Returns the euler coordinates of the plane itself from the POGI file
+
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
         if self.__is_null(self.pogiData["euler_plane"]):
             euler_dict = {"alpha": self.pogiData["alpha"], "beta": self.pogiData["beta"],
@@ -211,9 +241,14 @@ class CommandModule:
     def get_gps_coordinate(self) -> dict:
         """
         Returns the gps coordinates of the plane from the POGI file
+
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of two coordinates, latitude and longitude denotes with "lat" and "lng"
         """
         if self.__is_null(self.pogiData["euler_camera"]):
-            gps_coordinate = {"lat": self.pogiData["lat"], "lng": self.pogiData["lng"],"alt": self.pogiData["alt"]}
+            gps_coordinate = {"lat": self.pogiData["lat"], "lng": self.pogiData["lng"]}
             return gps_coordinate
 
 
