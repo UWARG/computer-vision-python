@@ -12,8 +12,7 @@ from watchdog.events import FileSystemEventHandler
 
 class MyHandler(FileSystemEventHandler):
     """
-    The event that triggers when the file that the watchdog listener is listening to is modified.
-
+    Triggers whenever the file that watchdog listens to changes, calls the file reader method
     """
     def on_modified(self, event):
         self.__pogi_file_reader()
