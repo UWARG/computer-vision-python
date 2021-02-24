@@ -87,9 +87,9 @@ class CommandModule:
         self.logger = logging.getLogger()
         self.__watchdog_listener()  # temporarily disabled: producing errors
 
-    async def __watchdog_listener(self):
+    def __watchdog_listener(self):
         """
-        Asynchronous watchdog method
+        Watchdog method
         """
         if __name__ == "__main__":
             event_handler = MyHandler()
@@ -172,24 +172,24 @@ class CommandModule:
             return self.pogiData["airspeed"]
 
     def get_is_landed(self) -> bool:
-
         if self.__is_null(self.pogiData["isLanded"]):
             return self.pogiData["isLanded"]
 
-    def get_euler_camera(self) -> tuple:
+    def get_euler_camera(self) -> dict:
         if self.__is_null(self.pogiData["euler_camera"]):
-            euler_tuple = (self.pogiData["alpha"], self.pogiData["beta"], self.pogiData["gamma"])
-            return euler_tuple
+            euler_dict = {"alpha": self.pogiData["alpha"], "beta":  self.pogiData["beta"], "gamma": self.pogiData["gamma"]}
+            return euler_dict
 
-    def get_euler_plane(self) -> tuple:
+    def get_euler_plane(self) -> dict:
 
         if self.__is_null(self.pogiData["euler_plane"]):
-            euler_tuple = (self.pogiData["alpha"], self.pogiData["beta"], self.pogiData["gamma"])
-            return euler_tuple
+            euler_dict = {"alpha": self.pogiData["alpha"], "beta": self.pogiData["beta"],
+                          "gamma": self.pogiData["gamma"]}
+            return euler_dict
 
-    def get_gps_coordinate(self) -> tuple:
+    def get_gps_coordinate(self) -> dict:
         if self.__is_null(self.pogiData["euler_camera"]):
-            gps_coordinate = (self.pogiData["lat"], self.pogiData["lng"], self.pogiData["alt"])
+            gps_coordinate = {"lat": self.pogiData["lat"], "lng": self.pogiData["lng"],"alt": self.pogiData["alt"]}
             return gps_coordinate
 
 
