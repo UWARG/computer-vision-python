@@ -207,7 +207,25 @@ class CommandModule:
         if self.__is_null(gpsCoordinates):
             sys.exit(1)
         if type(gpsCoordinates) is not dict:
-            self.logger.error("The given gps coordinates are " + str(type(gpsCoordinates)) + " and not a dictionary. Exiting...")
+            self.logger.error("The given GPS coordinates are " + str(type(gpsCoordinates)) + " and not a dictionary. Exiting...")
+            sys.exit(1)
+        if "latitude" not in gpsCoordinates.keys():
+            self.logger.error("The given GPS coordinates dictionary has no 'latitude' key. Exiting...")
+            sys.exit(1)
+        if "longitude" not in gpsCoordinates.keys():
+            self.logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
+            sys.exit(1)
+        if "altitude" not in gpsCoordinates.keys():
+            self.logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
+            sys.exit(1)
+        if type(gpsCoordinates["latitude"]) is not float:
+            self.logger.error("The latitude in the GPS coordinates dictionary is not a float. Exiting...")
+            sys.exit(1)
+        if type(gpsCoordinates["longitude"]) is not float:
+            self.logger.error("The latestDistance in the GPS coordinates dictionary is not a float. Exiting...")
+            sys.exit(1)
+        if type(gpsCoordinates["altitude"]) is not float:
+            self.logger.error("The altitude in the GPS coordinates dictionary is not a float. Exiting...")
             sys.exit(1)
 
         self.pigoData.update({"gpsCoordinates" : gpsCoordinates})
@@ -228,7 +246,8 @@ class CommandModule:
             self.logger.error("The given ground commands are " + str(type(groundCommands)) + " and not a dictionary. Exiting...")
             sys.exit(1)
         if "heading" not in groundCommands.keys():
-            self.logger.error("The given ground command dictionary has no 'heading' key. Exiting...")            
+            self.logger.error("The given ground command dictionary has no 'heading' key. Exiting...")      
+            sys.exit(1)      
         if "latestDistance" not in groundCommands.keys():
             self.logger.error("The given ground command dictionary has no 'latestDistance' key. Exiting...")
             sys.exit(1)
@@ -255,6 +274,18 @@ class CommandModule:
             sys.exit(1)
         if type(gimbalCommands) is not dict:
             self.logger.error("The given gimbal commands is " + str(type(gimbalCommands)) + " and not a dictionary. Exiting...")
+            sys.exit(1)
+        if "pitch" not in gimbalCommands.keys():
+            self.logger.error("The given gimbal command dictionary has no 'pitch' key. Exiting...")      
+            sys.exit(1)      
+        if "yaw" not in gimbalCommands.keys():
+            self.logger.error("The given gimbal command dictionary has no 'yaw' key. Exiting...")
+            sys.exit(1)
+        if type(gimbalCommands["pitch"]) is not float:
+            self.logger.error("The pitch in the gimbal command dictionary is not a float. Exiting...")
+            sys.exit(1)
+        if type(gimbalCommands["yaw"]) is not float:
+            self.logger.error("The yaw in the gimbal command dictionary is not a float. Exiting...")
             sys.exit(1)
 
         self.pigoData.update({"gimbalCommands" : gimbalCommands})
