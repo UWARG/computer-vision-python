@@ -4,7 +4,7 @@ import os
 
 class TestCaseWritingNonFileDirAsPIGOFileDir(unittest.TestCase):
     """
-    Test Case: Non-file directory written as PIGO file directory results in sys.exit(1)
+    Test Case: Non-file directory written as PIGO file directory results in FileNotFoundError
     Methods to test:
     - initializer
     """
@@ -13,12 +13,10 @@ class TestCaseWritingNonFileDirAsPIGOFileDir(unittest.TestCase):
         self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
         self.nonFileDir = os.path.dirname(os.path.realpath(__file__))
 
-    def test_system_exit_if_initialize_pogi_file_dir_as_non_file(self):
-        with self.assertRaises(SystemExit) as cm:
+    def test_file_not_found_error_if_initialize_pogi_file_dir_as_non_file(self):
+        with self.assertRaises(FileNotFoundError):
             testCommandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.nonFileDir)
-        self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_initialize_pigo_file_dir_as_non_file(self):
-        with self.assertRaises(SystemExit) as cm:
+    def test_file_not_found_error_if_initialize_pigo_file_dir_as_non_file(self):
+        with self.assertRaises(FileNotFoundError):
             testCommandModule = CommandModule(pigoFileDirectory=self.nonFileDir, pogiFileDirectory=self.pogiFile)
-        self.assertEqual(cm.exception.code, 1)

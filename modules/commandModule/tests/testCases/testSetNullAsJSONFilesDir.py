@@ -4,7 +4,7 @@ import os
 
 class TestCaseWritingNullAsPIGOFileDir(unittest.TestCase):
     """
-    Test Case: Null written as PIGO file directory results in sys.exit(1)
+    Test Case: Null written as PIGO file directory results in TypeError
     Methods to test:
     - initializer
     """
@@ -12,12 +12,10 @@ class TestCaseWritingNullAsPIGOFileDir(unittest.TestCase):
         self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
         self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
 
-    def test_system_exit_if_initialize_pogi_file_dir_to_none(self):
-        with self.assertRaises(SystemExit) as cm:
+    def test_type_error_if_initialize_pogi_file_dir_to_none(self):
+        with self.assertRaises(TypeError):
             testCommandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=None)
-        self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_initialize_pigo_file_dir_to_none(self):
-        with self.assertRaises(SystemExit) as cm:
+    def test_type_error_if_initialize_pigo_file_dir_to_none(self):
+        with self.assertRaises(TypeError):
             testCommandModule = CommandModule(pigoFileDirectory=None, pogiFileDirectory=self.pogiFile)
-        self.assertEqual(cm.exception.code, 1)

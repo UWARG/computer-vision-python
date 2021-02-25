@@ -4,7 +4,7 @@ import os
 
 class TestCaseWritingWrongTypeToJSONFileDirectories(unittest.TestCase):
     """
-    Test Case: Wrong data type used to set PIGO and POGI File Directories results in sys.exit(1)
+    Test Case: Wrong data type used to set PIGO and POGI File Directories results in TypeError
     Methods to test:
     - initializer
     """
@@ -29,16 +29,14 @@ class TestCaseWritingWrongTypeToJSONFileDirectories(unittest.TestCase):
     def tearDown(self):
         self.testData = []
 
-    def test_system_exit_if_initialize_pigo_file_dir_to_wrong_type(self):
+    def test_type_error_if_initialize_pigo_file_dir_to_wrong_type(self):
         for test in self.testData:
             with self.subTest(passed_data=test):
-                with self.assertRaises(SystemExit) as cm:
+                with self.assertRaises(TypeError): 
                     testCommandModule = CommandModule(pigoFileDirectory=test, pogiFileDirectory=self.pogiFile)
-                self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_initialize_pogi_file_dir_to_wrong_type(self):
+    def test_type_error_if_initialize_pogi_file_dir_to_wrong_type(self):
         for test in self.testData:
             with self.subTest(passed_data=test):
-                with self.assertRaises(SystemExit) as cm:
+                with self.assertRaises(TypeError):
                     testCommandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=test)
-                self.assertEqual(cm.exception.code, 1)

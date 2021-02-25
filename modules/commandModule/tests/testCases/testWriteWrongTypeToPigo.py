@@ -4,7 +4,7 @@ import os
 
 class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
     """
-    Test Case: Wrong data type written to PIGO file results in sys.exit(1)
+    Test Case: Wrong data type written to PIGO file results in TypeError
     Methods to test:
     - set_gps_coordintes
 	- set_ground_commands
@@ -37,47 +37,38 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
         self.testData = []
         open(self.pigoFile, "w").close() # delete file contents before next unit test
 
-    def test_system_exit_if_set_gps_coords_to_wrong_type(self):
+    def test_type_error_exception_if_set_gps_coords_to_wrong_type(self):
         for test in self.testData:
-            with self.subTest(passed_data=test):
-                with self.assertRaises(SystemExit) as cm:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
                     self.commandModule.set_gps_coordinates(test)
-                self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_set_ground_commands_to_wrong_type(self):
+    def test_type_error_exception_if_set_ground_commands_to_wrong_type(self):
         for test in self.testData:
-            with self.subTest(passed_data=test):
-                with self.assertRaises(SystemExit) as cm:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
                     self.commandModule.set_ground_commands(test)
-                self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_set_gimbal_commands_to_wrong_type(self):
+    def test_type_error_exception_if_set_gimbal_commands_to_wrong_type(self):
         for test in self.testData:
-            with self.subTest(passed_data=test):
-                with self.assertRaises(SystemExit) as cm:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
                     self.commandModule.set_gimbal_commands(test)
-                self.assertEqual(cm.exception.code, 1)
     
-    def test_system_exit_if_set_begin_landing_to_wrong_type(self):
+    def test_type_error_exception_if_set_begin_landing_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test):
-                    with self.assertRaises(SystemExit) as cm:
-                        self.commandModule.set_begin_landing(test)
-                    self.assertEqual(cm.exception.code, 1)
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                    self.commandModule.set_begin_landing(test)
 
-    def test_system_exit_if_set_begin_takeoff_to_wrong_type(self):
+    def test_type_error_exception_if_set_begin_takeoff_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test):
-                    with self.assertRaises(SystemExit) as cm:
-                        self.commandModule.set_begin_takeoff(test)
-                    self.assertEqual(cm.exception.code, 1)
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                    self.commandModule.set_begin_takeoff(test)
 
-    def test_system_exit_if_set_disconnect_autopilot_to_wrong_type(self):
+    def test_type_error_exception_if_set_disconnect_autopilot_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test):
-                    with self.assertRaises(SystemExit) as cm:
-                        self.commandModule.set_disconnect_autopilot(test)
-                    self.assertEqual(cm.exception.code, 1)
+                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                    self.commandModule.set_disconnect_autopilot(test)
