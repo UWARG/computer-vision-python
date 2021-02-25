@@ -13,6 +13,17 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
     def tearDown(self):
         self.pogiData = dict()
 
+        """
+        
+        return no error code if null
+        
+        
+        return no 
+        
+        
+        
+        """
+
     def test_system_exit_if_set_gps_coords_to_null(self):
         with self.assertRaises(SystemExit) as cm:
             self.commandModule.set_gps_coordinates(None)
@@ -24,3 +35,4 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
                 self.commandModule.set_gps_coordinates(None)
             except SystemExit:
                 pass
+    def test_

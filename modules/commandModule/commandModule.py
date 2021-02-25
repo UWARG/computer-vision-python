@@ -6,7 +6,7 @@ import json
 import logging
 import sys
 import os
-from datetime import time
+import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -16,6 +16,9 @@ class MyHandler(FileSystemEventHandler):
     """
     def on_modified(self, event):
         self.__pogi_file_reader()
+
+    def on_any_event(self, event):
+        print(event.event_type, event.src_path)
 
 class CommandModule:
     """
@@ -92,19 +95,23 @@ class CommandModule:
 
     def __watchdog_listener(self):
         """
-        Watchdog listener that listens for changes to the pogi file.
+        Asynchronous watchdog method
         """
-        if __name__ == "__main__":
-            event_handler = MyHandler()
-            observer = Observer()
-            observer.schedule(event_handler, self.pogiDirectory, recursive=False)
-            observer.start()
-            try:
-                while True:
-                    time.sleep(1)
-            finally:
-                observer.stop()
-                observer.join()
+
+        # if __name__ == "__main__":
+
+        event_handler = MyHandler()
+
+        observer = Observer()
+        print(self.pogiFileDirectory)
+        observer.schedule(event_handler, self.pogiFileDirectory, recursive=True)
+        observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        finally:
+            observer.stop()
+            observer.join()
 
     def __read_from_pogi_file(self):
         """
@@ -168,9 +175,9 @@ class CommandModule:
             return errorCode
         else:
             if errorCode == None:
-                self.logger.error("Error code not found in the pogi json file. Exiting...")
+                self.logger.error("Error code not found in the POGI json file. Exiting...")
             elif type(errorCode) != int:
-                self.logger.error("Error code found in the pogi json file is not an int. Exiting...")
+                self.logger.error("Error code found in the POGI json file is not an int. Exiting...")
             sys.exit(1)
 
     def get_current_altitude(self) -> int:
@@ -182,8 +189,20 @@ class CommandModule:
         int:
             Current altitude of the plane
         """
-        if self.__is_null(self.pogiData["altitude"]):
-            return self.pogiData["altitude"]
+        altitude = self.pogiData["altitude"]
+
+        if type(altitude) == int:
+            return altitude
+        else:
+            if self.__is_null(altitude):
+                self.logger.error("Altitude not found in the POGI json file. Exiting...")
+            elif type(altitude != int):
+                self.logger.error("Altitude in the POGI file was not an int. Exiting...")
+            sys.exit(1)
+
+
+
+
 
 
     def get_current_airspeed(self) -> int:
@@ -195,8 +214,16 @@ class CommandModule:
         int:
             Current airspeed of the plane
         """
-        if self.__is_null(self.pogiData["airspeed"]):
-            return self.pogiData["airspeed"]
+
+        airspeed = self.pogiData["airspeed"]
+        if type(airspeed) == int:
+            return airspeed
+        else:
+            if self.__is_null(airspeed):
+                self.logger.error("Airspeed not found in the POGI json file. Exiting...")
+            elif type(airspeed != int):
+                self.logger.error("Airspeed in the POGI file was not an int. Exiting...")
+            sys.exit(1)
 
     def get_is_landed(self) -> bool:
         """
@@ -207,8 +234,15 @@ class CommandModule:
         bool:
             True if plane landed, else False
         """
-        if self.__is_null(self.pogiData["isLanded"]):
-            return self.pogiData["isLanded"]
+        is_landed = self.pogiData["is_landed"]
+        if type(is_landed) == bool:
+            return is_landed
+        else:
+            if self.__is_null(is_landed):
+                self.logger.error("Is_landed not found in the POGI json file. Exiting...")
+            elif type(is_landed != bool):
+                self.logger.error("Is_landed in the POGI file was not an int. Exiting...")
+            sys.exit(1)
 
     def get_euler_camera(self) -> dict:
         """
@@ -219,9 +253,26 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
-        if self.__is_null(self.pogiData["euler_camera"]):
-            euler_dict = {"alpha": self.pogiData["alpha"], "beta":  self.pogiData["beta"], "gamma": self.pogiData["gamma"]}
-            return euler_dict
+        euler = self.pogiData["euler_camera"]
+        if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
+            return euler
+        else:
+            if self.__is_null(euler):
+                self.logger.error("Euler camera not found in the POGI json file. Exiting...")
+            elif self.__is_null(euler['alpha']):
+                self.logger.error("Alpha not found in euler camera json file. Exiting...")
+            elif self.__is_null(euler['beta']):
+                self.logger.error("Beta not found in euler camera json file. Exiting...")
+            elif self.__is_null(euler['gamma']):
+                self.logger.error("Gamma not found in euler camera json file. Exiting...")
+
+            elif type(euler['alpha']) != float:
+                self.logger.error("Alpha in the POGI file was not a float. Exiting...")
+            elif type(euler['beta']) != float:
+                self.logger.error("Beta in the POGI file was not a float. Exiting...")
+            elif type(euler['gamma']) != float:
+                self.logger.error("Gamma in the POGI file was not a float. Exiting...")
+            sys.exit(1)
 
     def get_euler_plane(self) -> dict:
         """
@@ -232,10 +283,26 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
-        if self.__is_null(self.pogiData["euler_plane"]):
-            euler_dict = {"alpha": self.pogiData["alpha"], "beta": self.pogiData["beta"],
-                          "gamma": self.pogiData["gamma"]}
-            return euler_dict
+        euler = self.pogiData["euler_plane"]
+        if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
+            return euler
+        else:
+            if self.__is_null(euler):
+                self.logger.error("Euler plane not found in the POGI json file. Exiting...")
+            elif self.__is_null(euler['alpha']):
+                self.logger.error("Alpha not found in euler plane json file. Exiting...")
+            elif self.__is_null(euler['beta']):
+                self.logger.error("Beta not found in euler plane json file. Exiting...")
+            elif self.__is_null(euler['gamma']):
+                self.logger.error("Gamma not found in euler plane json file. Exiting...")
+
+            elif type(euler['alpha']) != float:
+                self.logger.error("Alpha in the POGI file was not a float. Exiting...")
+            elif type(euler['beta']) != float:
+                self.logger.error("Beta in the POGI file was not a float. Exiting...")
+            elif type(euler['gamma']) != float:
+                self.logger.error("Gamma in the POGI file was not a float. Exiting...")
+            sys.exit(1)
 
     def get_gps_coordinate(self) -> dict:
         """
@@ -246,9 +313,24 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of two coordinates, latitude and longitude denotes with "lat" and "lng"
         """
-        if self.__is_null(self.pogiData["euler_camera"]):
-            gps_coordinate = {"lat": self.pogiData["lat"], "lng": self.pogiData["lng"]}
-            return gps_coordinate
+        gps = self.pogiData["gps"]
+        if type(gps) == dict & (gps['lat'] & gps['lng'] is not None):
+            return gps
+        else:
+            if self.__is_null(gps):
+                self.logger.error("Euler camera not found in the POGI json file. Exiting...")
+            elif self.__is_null(gps['lat']):
+                self.logger.error("Alpha not found in gps coordinates json file. Exiting...")
+            elif self.__is_null(gps['lng']):
+                self.logger.error("Beta not found in gps coordinates json file. Exiting...")
+
+
+            elif type(gps['lat']) != float:
+                self.logger.error("Alpha in the POGI file was not a float. Exiting...")
+            elif type(gps['lng']) != float:
+                self.logger.error("Beta in the POGI file was not a float. Exiting...")
+
+            sys.exit(1)
 
 
 
