@@ -42,7 +42,6 @@ class CommandModule:
 
     Methods
     -------
-    PRIVATE
     __init__(pogiFileDirectory="", pigoFileDirectory="")
     __read_from_pogi_file()
     __write_to_pigo_file()
@@ -61,13 +60,13 @@ class CommandModule:
     set_begin_takeoff(beginTakeoff: bool)
     set_disconnect_autopilot(disconnectAutoPilot: bool)
 
-    get_POGI_directory()
-    set_POGI_directory(pogiFileDirectory)
-    get_PIGO_directory()
-    set_PIGO_directory(pigoFileDirectory)
+    @property pogiDirectory()
+    @pogiDirectory.setter pogiDirectory(pogiFileDirectory: str)
+    @property pigoDirectory()
+    @pigoDirectory.setter pigoDirectory(pigoFileDirectory: str)
     """
 
-    def __init__(self, pogiFileDirectory="", pigoFileDirectory=""):
+    def __init__(self, pogiFileDirectory: str, pigoFileDirectory: str):
         """
         Initializes POGI & PIGO empty dictionaries, POGI & PIGO file directories, PIGO file lock, and logger
 
@@ -78,13 +77,13 @@ class CommandModule:
         pigoFileDirectory: str
             String of POGI file directory by default set to empty string
         """
+        self.logger = logging.getLogger()
         self.pogiData = dict()
         self.pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory
         self.pigoFileDirectory = pigoFileDirectory
         self.pogiLock = FileLock(self.pogiFileDirectory + ".lock")
         self.pigoLock = FileLock(self.pigoFileDirectory + ".lock")
-        self.logger = logging.getLogger()
         self.__watchdog_listener()     # temporarily disabled: producing errors
 
     async def __watchdog_listener(self):
@@ -110,9 +109,6 @@ class CommandModule:
         try:
             with self.pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
                 self.pogiData = json.load(pogiFile)
-        except FileNotFoundError:
-            self.logger.error("The given POGI json file directory: " + self.pogiFileDirectory + " does not exist. Exiting...")
-            sys.exit(1)
         except json.decoder.JSONDecodeError:
             self.logger.error("The given GPIO json file at: " + self.pogiFileDirectory + " has no data to read. Exiting...")
             sys.exit(1)
@@ -121,20 +117,8 @@ class CommandModule:
         """
         Encodes pigoData dictionary as JSON and stores it in pigoFileDirectory JSON file
         """
-        if not os.path.isfile(self.pigoFileDirectory):
-            self.logger.warning("The given PIGO json file directory: " + self.pigoFileDirectory + 
-                             " does not exist. Creating a new json file to populate...")
         if not bool(self.pigoData):
             self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
-
-        with self.pigoLock, open(self.pigoFileDirectory, "r") as pigoFile:  # read the existing data in the json file to prevent overwriting
-            try:
-                existingData = json.load(pigoFile)
-                if type(existingData) is not None:
-                    existingData.update(self.pigoData)
-                    self.pigoData = existingData
-            except json.decoder.JSONDecodeError:    # ignore if json file is empty
-                pass
 
         with self.pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
             json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
@@ -322,7 +306,8 @@ class CommandModule:
         self.pigoData.update({"disconnectAutoPilot" : disconnectAutoPilot})
         self.__write_to_pigo_file()
 
-    def get_PIGO_directory(self):
+    @property
+    def pigoFileDirectory(self):
         """
         Return PIGO JSON file directory
 
@@ -331,20 +316,10 @@ class CommandModule:
         pigoFileDirectory: str
             Contains directory to PIGO JSON file
         """
-        return self.pigoFileDirectory
+        return self._pigoFileDirectory
 
-    def get_POGI_directory(self):
-        """
-        Return POGI JSON file directory
-
-        Returns
-        ----------
-        pogiFileDirectory: str
-            Contains directory to POGI JSON file
-        """
-        return self.pogiFileDirectory
-
-    def set_PIGO_directory(self, pigoFileDirectory: str):
+    @pigoFileDirectory.setter
+    def pigoFileDirectory(self, pigoFileDirectory: str):
         """
         Sets PIGO JSON file directory
 
@@ -353,9 +328,33 @@ class CommandModule:
         pigoFileDirectory: str
             Contains directory to PIGO JSON file
         """
-        self.pigoFileDirectory = pigoFileDirectory
+        if self.__is_null(pigoFileDirectory):
+            sys.exit(1)
+        if type(pigoFileDirectory) is not str:
+            self.logger.error("The passed in PIGO file directory is not a string. Exiting...")
+            sys.exit(1)
+        if not os.path.isfile(pigoFileDirectory):
+            self.logger.error("The passed in PIGO file directory is not a file. Exiting...")
+            sys.exit(1)
+        if not pigoFileDirectory.endswith(".json"):
+            self.logger.error("The passed in PIGO file is not a JSON file. Exiting...")
+            sys.exit(1)
+        self._pigoFileDirectory = pigoFileDirectory
 
-    def set_POGI_directory(self, pogiFileDirectory: str):
+    @property
+    def pogiFileDirectory(self):
+        """
+        Return POGI JSON file directory
+
+        Returns
+        ----------
+        pogiFileDirectory: str
+            Contains directory to POGI JSON file
+        """
+        return self._pogiFileDirectory
+
+    @pogiFileDirectory.setter
+    def pogiFileDirectory(self, pogiFileDirectory: str):
         """
         Sets POGI JSON file directory
 
@@ -364,4 +363,15 @@ class CommandModule:
         pogiFileDirectory: str
             Contains directory to POGI JSON file
         """
-        self.pogiFileDirectory = pogiFileDirectory
+        if self.__is_null(pogiFileDirectory):
+            sys.exit(1)
+        if type(pogiFileDirectory) is not str:
+            self.logger.error("The passed in POGI file directory is not a string. Exiting...")
+            sys.exit(1)
+        if not os.path.isfile(pogiFileDirectory):
+            self.logger.error("The passed in POGI file directory is not a file. Exiting...")
+            sys.exit(1)
+        if not pogiFileDirectory.endswith(".json"):
+            self.logger.error("The passed in POGI file is not a JSON file. Exiting...")
+            sys.exit(1)
+        self._pogiFileDirectory = pogiFileDirectory

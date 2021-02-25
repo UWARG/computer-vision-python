@@ -14,8 +14,9 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
 	- set_disconnect_autopilot
     """
     def setUp(self):
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "test.json")
-        self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile)
+        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
+        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
         open(self.pigoFile, "w").close() # delete file contents before next unit test

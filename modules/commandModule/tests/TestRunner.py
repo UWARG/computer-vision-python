@@ -9,7 +9,7 @@ if __name__ == "__main__":
     note: needs to be run from the 'modules' folder
     """
 
-    # set up logging
+    # set up debug logger file
     loggerFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "debug.log")
     open(loggerFile, "w").close()
     logging.basicConfig(filename=loggerFile,
@@ -23,10 +23,10 @@ if __name__ == "__main__":
     topDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..")
     testSuite = unittest.TestLoader().discover(start_dir=testDir, pattern="test*.py", top_level_dir=topDir)
 
-    # create log file
-    currentDateTime = datetime.today().strftime("%H%M%S_%Y_%m_%d")
-    logFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "{}".format(currentDateTime))
-    f = open(logFile, "w") 
+    # create testing results log file
+    currentDateTime = datetime.today().strftime("%H.%M.%S_%Y_%m_%d")
+    testResultsFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "testLogs", "{}".format(currentDateTime))
+    f = open(testResultsFile, "w") 
 
     # run test and output results to log file
     runner = unittest.TextTestRunner(f)

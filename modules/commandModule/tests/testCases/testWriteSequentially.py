@@ -6,7 +6,6 @@ import os
 """
 NOTE
 This is supposed to be an integration test, but with no proper integration testing framework, I'm just doing it here for now
-Remember to remove this before pushing
 """
 
 class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
@@ -28,8 +27,9 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
                         "beginLanding": True,
                         "beginTakeoff": False,
                         "disconnectAutoPilot": False}
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "test.json")
-        self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile)
+        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
+        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def __read_json(self):
         # used to check file output
