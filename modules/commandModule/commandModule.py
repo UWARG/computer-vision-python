@@ -81,14 +81,14 @@ class CommandModule:
         pigoFileDirectory: str
             String of POGI file directory by default set to empty string
         """
-        self.logger = logging.getLogger()
-        self.pogiData = dict()
-        self.pigoData = dict()
+        self.__logger = logging.getLogger()
+        self.__pogiData = dict()
+        self.__pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory
         self.pigoFileDirectory = pigoFileDirectory
-        self.pogiLock = FileLock(self.pogiFileDirectory + ".lock")
-        self.pigoLock = FileLock(self.pigoFileDirectory + ".lock")
-        self.__watchdog_listener()     # temporarily disabled: producing errors
+        self.__pogiLock = FileLock(self.pogiFileDirectory + ".lock")
+        self.__pigoLock = FileLock(self.pigoFileDirectory + ".lock")
+        #self.__watchdog_listener()     # temporarily disabled: producing errors
 
     def __watchdog_listener(self):
         """
@@ -115,21 +115,21 @@ class CommandModule:
         Decodes JSON data from pogiFileDirectory JSON file and stores it in pogiData dictionary
         """
         try:
-            with self.pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
-                self.pogiData = json.load(pogiFile)
+            with self.__pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
+                self.__pogiData = json.load(pogiFile)
         except json.decoder.JSONDecodeError:
-            self.logger.error("The given GPIO json file at: " + self.pogiFileDirectory + " has no data to read. Exiting...")
+            self.__logger.error("The given GPIO json file at: " + self.pogiFileDirectory + " has no data to read. Exiting...")
             sys.exit(1)
 
     def __write_to_pigo_file(self):
         """
         Encodes pigoData dictionary as JSON and stores it in pigoFileDirectory JSON file
         """
-        if not bool(self.pigoData):
-            self.logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
+        if not bool(self.__pigoData):
+            self.__logger.warning("The current PIGO data is empty. Writing an empty json string to: " + self.pigoFileDirectory + " ...") 
 
-        with self.pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
-            json.dump(self.pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
+        with self.__pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
+            json.dump(self.__pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
 
     def __is_null(self, value) -> bool:
         """
@@ -146,7 +146,7 @@ class CommandModule:
             True if None, else False
         """
         if value is None:
-            self.logger.error("Value that was passed is null.")
+            self.__logger.error("Value that was passed is null.")
             return True
         else:
             return False
@@ -158,9 +158,9 @@ class CommandModule:
             return errorCode
         else:
             if errorCode == None:
-                self.logger.error("Error code not found in the GIPO json file. Exiting...")
+                self.__logger.error("Error code not found in the GIPO json file. Exiting...")
             elif type(errorCode) != int:
-                self.logger.error("Error code found in the GIPO json file is not an int. Exiting...")
+                self.__logger.error("Error code found in the GIPO json file is not an int. Exiting...")
             sys.exit(1)
 
     def get_current_altitude(self) -> int:
@@ -193,8 +193,6 @@ class CommandModule:
             gps_coordinate = (self.gipoData["lat"], self.gipoData["lng"], self.gipoData["alt"])
             return gps_coordinate
 
-
-
     def set_gps_coordinates(self, gpsCoordinates: dict):
         """
         Write GPS coordinates to PIGO JSON file
@@ -207,28 +205,28 @@ class CommandModule:
         if self.__is_null(gpsCoordinates):
             sys.exit(1)
         if type(gpsCoordinates) is not dict:
-            self.logger.error("The given GPS coordinates are " + str(type(gpsCoordinates)) + " and not a dictionary. Exiting...")
+            self.__logger.error("The given GPS coordinates are " + str(type(gpsCoordinates)) + " and not a dictionary. Exiting...")
             sys.exit(1)
         if "latitude" not in gpsCoordinates.keys():
-            self.logger.error("The given GPS coordinates dictionary has no 'latitude' key. Exiting...")
+            self.__logger.error("The given GPS coordinates dictionary has no 'latitude' key. Exiting...")
             sys.exit(1)
         if "longitude" not in gpsCoordinates.keys():
-            self.logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
+            self.__logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
             sys.exit(1)
         if "altitude" not in gpsCoordinates.keys():
-            self.logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
+            self.__logger.error("The given GPS coordinates dictionary has no 'longitude' key. Exiting...")
             sys.exit(1)
         if type(gpsCoordinates["latitude"]) is not float:
-            self.logger.error("The latitude in the GPS coordinates dictionary is not a float. Exiting...")
+            self.__logger.error("The latitude in the GPS coordinates dictionary is not a float. Exiting...")
             sys.exit(1)
         if type(gpsCoordinates["longitude"]) is not float:
-            self.logger.error("The latestDistance in the GPS coordinates dictionary is not a float. Exiting...")
+            self.__logger.error("The latestDistance in the GPS coordinates dictionary is not a float. Exiting...")
             sys.exit(1)
         if type(gpsCoordinates["altitude"]) is not float:
-            self.logger.error("The altitude in the GPS coordinates dictionary is not a float. Exiting...")
+            self.__logger.error("The altitude in the GPS coordinates dictionary is not a float. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"gpsCoordinates" : gpsCoordinates})
+        self.__pigoData.update({"gpsCoordinates" : gpsCoordinates})
         self.__write_to_pigo_file()
 
     def set_ground_commands(self, groundCommands: dict):
@@ -243,22 +241,22 @@ class CommandModule:
         if self.__is_null(groundCommands):
             sys.exit(1)
         if type(groundCommands) is not dict:
-            self.logger.error("The given ground commands are " + str(type(groundCommands)) + " and not a dictionary. Exiting...")
+            self.__logger.error("The given ground commands are " + str(type(groundCommands)) + " and not a dictionary. Exiting...")
             sys.exit(1)
         if "heading" not in groundCommands.keys():
-            self.logger.error("The given ground command dictionary has no 'heading' key. Exiting...")      
+            self.__logger.error("The given ground command dictionary has no 'heading' key. Exiting...")      
             sys.exit(1)      
         if "latestDistance" not in groundCommands.keys():
-            self.logger.error("The given ground command dictionary has no 'latestDistance' key. Exiting...")
+            self.__logger.error("The given ground command dictionary has no 'latestDistance' key. Exiting...")
             sys.exit(1)
         if type(groundCommands["heading"]) is not float:
-            self.logger.error("The heading in the ground command dictionary is not a float. Exiting...")
+            self.__logger.error("The heading in the ground command dictionary is not a float. Exiting...")
             sys.exit(1)
         if type(groundCommands["latestDistance"]) is not float:
-            self.logger.error("The latestDistance in the ground command dictionary is not a float. Exiting...")
+            self.__logger.error("The latestDistance in the ground command dictionary is not a float. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"groundCommands" : groundCommands})
+        self.__pigoData.update({"groundCommands" : groundCommands})
         self.__write_to_pigo_file()
 
     def set_gimbal_commands(self, gimbalCommands: dict):
@@ -273,22 +271,22 @@ class CommandModule:
         if self.__is_null(gimbalCommands):
             sys.exit(1)
         if type(gimbalCommands) is not dict:
-            self.logger.error("The given gimbal commands is " + str(type(gimbalCommands)) + " and not a dictionary. Exiting...")
+            self.__logger.error("The given gimbal commands is " + str(type(gimbalCommands)) + " and not a dictionary. Exiting...")
             sys.exit(1)
         if "pitch" not in gimbalCommands.keys():
-            self.logger.error("The given gimbal command dictionary has no 'pitch' key. Exiting...")      
+            self.__logger.error("The given gimbal command dictionary has no 'pitch' key. Exiting...")      
             sys.exit(1)      
         if "yaw" not in gimbalCommands.keys():
-            self.logger.error("The given gimbal command dictionary has no 'yaw' key. Exiting...")
+            self.__logger.error("The given gimbal command dictionary has no 'yaw' key. Exiting...")
             sys.exit(1)
         if type(gimbalCommands["pitch"]) is not float:
-            self.logger.error("The pitch in the gimbal command dictionary is not a float. Exiting...")
+            self.__logger.error("The pitch in the gimbal command dictionary is not a float. Exiting...")
             sys.exit(1)
         if type(gimbalCommands["yaw"]) is not float:
-            self.logger.error("The yaw in the gimbal command dictionary is not a float. Exiting...")
+            self.__logger.error("The yaw in the gimbal command dictionary is not a float. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"gimbalCommands" : gimbalCommands})
+        self.__pigoData.update({"gimbalCommands" : gimbalCommands})
         self.__write_to_pigo_file()
 
     def set_begin_landing(self, beginLanding: bool):
@@ -303,10 +301,10 @@ class CommandModule:
         if self.__is_null(beginLanding):
             sys.exit(1)
         if type(beginLanding) is not bool:
-            self.logger.error("The given begin landing is " + str(type(beginLanding)) + " and not a boolean. Exiting...")
+            self.__logger.error("The given begin landing is " + str(type(beginLanding)) + " and not a boolean. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"beginLanding" : beginLanding})
+        self.__pigoData.update({"beginLanding" : beginLanding})
         self.__write_to_pigo_file()
 
     def set_begin_takeoff(self, beginTakeoff: bool):
@@ -321,10 +319,10 @@ class CommandModule:
         if self.__is_null(beginTakeoff):
             sys.exit(1)
         if type(beginTakeoff) is not bool:
-            self.logger.error("The given begin takeoff is " + str(type(beginTakeoff)) + " and not a boolean. Exiting...")
+            self.__logger.error("The given begin takeoff is " + str(type(beginTakeoff)) + " and not a boolean. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"beginTakeoff" : beginTakeoff})
+        self.__pigoData.update({"beginTakeoff" : beginTakeoff})
         self.__write_to_pigo_file()
 
     def set_disconnect_autopilot(self, disconnectAutoPilot: bool):
@@ -339,10 +337,10 @@ class CommandModule:
         if self.__is_null(disconnectAutoPilot):
             sys.exit(1)
         if type(disconnectAutoPilot) is not bool:
-            self.logger.error("The given disconnect auto pilot is " + str(type(disconnectAutoPilot)) + " and not a boolean. Exiting...")
+            self.__logger.error("The given disconnect auto pilot is " + str(type(disconnectAutoPilot)) + " and not a boolean. Exiting...")
             sys.exit(1)
 
-        self.pigoData.update({"disconnectAutoPilot" : disconnectAutoPilot})
+        self.__pigoData.update({"disconnectAutoPilot" : disconnectAutoPilot})
         self.__write_to_pigo_file()
 
     @property
@@ -370,13 +368,13 @@ class CommandModule:
         if self.__is_null(pigoFileDirectory):
             sys.exit(1)
         if type(pigoFileDirectory) is not str:
-            self.logger.error("The passed in PIGO file directory is not a string. Exiting...")
+            self.__logger.error("The passed in PIGO file directory is not a string. Exiting...")
             sys.exit(1)
         if not os.path.isfile(pigoFileDirectory):
-            self.logger.error("The passed in PIGO file directory is not a file. Exiting...")
+            self.__logger.error("The passed in PIGO file directory is not a file. Exiting...")
             sys.exit(1)
         if not pigoFileDirectory.endswith(".json"):
-            self.logger.error("The passed in PIGO file is not a JSON file. Exiting...")
+            self.__logger.error("The passed in PIGO file is not a JSON file. Exiting...")
             sys.exit(1)
         self._pigoFileDirectory = pigoFileDirectory
 
@@ -405,12 +403,12 @@ class CommandModule:
         if self.__is_null(pogiFileDirectory):
             sys.exit(1)
         if type(pogiFileDirectory) is not str:
-            self.logger.error("The passed in POGI file directory is not a string. Exiting...")
+            self.__logger.error("The passed in POGI file directory is not a string. Exiting...")
             sys.exit(1)
         if not os.path.isfile(pogiFileDirectory):
-            self.logger.error("The passed in POGI file directory is not a file. Exiting...")
+            self.__logger.error("The passed in POGI file directory is not a file. Exiting...")
             sys.exit(1)
         if not pogiFileDirectory.endswith(".json"):
-            self.logger.error("The passed in POGI file is not a JSON file. Exiting...")
+            self.__logger.error("The passed in POGI file is not a JSON file. Exiting...")
             sys.exit(1)
         self._pogiFileDirectory = pogiFileDirectory

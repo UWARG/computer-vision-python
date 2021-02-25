@@ -21,9 +21,9 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
     """
 
     def setUp(self):
-        self.testData= {"gpsCoordinates": {"latitude": 2.34, "longitude": 1.34},
+        self.testData= {"gpsCoordinates": {"latitude": 2.34, "longitude": 1.34, "altitude": 1.278},
                         "groundCommands": {"heading": 1.23, "latestDistance": 2.34},
-                        "gimbalCommands": {"euler1": 1.34, "euler2": 34.2},
+                        "gimbalCommands": {"pitch": 1.34, "yaw": 34.2},
                         "beginLanding": True,
                         "beginTakeoff": False,
                         "disconnectAutoPilot": False}
