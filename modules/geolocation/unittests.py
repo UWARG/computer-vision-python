@@ -118,6 +118,84 @@ class TestGatherPointPairs(unittest.TestCase):
         np.testing.assert_equal(actual, expected)
 
 
-if __name__ == "__main__":
+class TestPointMatrixToGeoMapping(unittest.TestCase):
+    """
+    Tests Geolocation.calculate_pixel_to_geo_mapping()
+    """
 
+    def test_identity_mapping(self):
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__pixelToGeoPairs = np.array([[[1, 1], [1, 1]],
+                                                          [[-1, -1], [-1, -1]],
+                                                          [[1, -1], [1, -1]],
+                                                          [[-1, 1], [-1, 1]]])
+
+        expected = np.array(np.eye(3))
+
+        # Run
+        actual = locator.calculate_pixel_to_geo_mapping()
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+        
+    def test_rotation_90(self):
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__pixelToGeoPairs = np.array([[[1, 0], [0, 1]],
+                                                          [[0, 1], [-1, 0]],
+                                                          [[-1, 0], [0, -1]],
+                                                          [[0, -1], [1, 0]]])
+
+        expected = np.array([[0, -1, 0],
+                             [1, 0, 0],
+                             [0, 0, 1]])
+
+        # Run
+        actual = locator.calculate_pixel_to_geo_mapping()
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+     
+    
+    def test_point_set_1(self):
+
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__pixelToGeoPairs = np.array([[[0, 0], [6 - 3 * np.sqrt(2), 9 - 6 * np.sqrt(2)]],
+                                                            [[0, 10], [6 + 3 * np.sqrt(2), 9 + 6 * np.sqrt(2)]],
+                                                            [[10, 0], [-6 + 3 * np.sqrt(2), 9 - 6 * np.sqrt(2)]],
+                                                            [[10, 10], [-6 - 3 * np.sqrt(2), 9 + 6 * np.sqrt(2)]]])
+
+        expected = np.array([[((-3*np.sqrt(2))-6)/5, 0, (3*np.sqrt(2))+6],
+                            [0, ((3*np.sqrt(2))+3)/5, 3],
+                            [0, ((-1*np.sqrt(2))-1)/5, ((2*np.sqrt(2))+3)]])
+
+        # Run
+        actual = locator.calculate_pixel_to_geo_mapping()
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+        
+    def test_point_set_2(self):
+
+        # Setup
+        locator = geolocation.Geolocation()
+        locator._Geolocation__pixelToGeoPairs = np.array([[[0, 1500], [-4.0, 5.0]],
+                                                          [[0, 2000], [-2.0, 3.0]],
+                                                          [[1000, 1500], [4.0, 5.0]],
+                                                          [[1000, 2000], [2.0, 3.0]]])
+        expected = np.array([[1/250, 0, -2],
+                             [0, 1/1000, 1],
+                             [0, 1/1000, -1]])
+        # Run
+        actual = locator.calculate_pixel_to_geo_mapping()
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+        
+ 
+if __name__ == "__main__":
     unittest.main()

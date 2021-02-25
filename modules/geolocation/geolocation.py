@@ -4,6 +4,7 @@ Geolocation module to map pixel coordinates to geographical coordinates
 
 import numpy as np
 
+
 class Geolocation:
     """
     Locates the geographical position of a set of pixels
@@ -39,7 +40,6 @@ class Geolocation:
 
         return
 
-
     # TODO Placeholder, add functionality once we figure out how to convert raw plane data
     def convert_input(self):
         """
@@ -51,7 +51,6 @@ class Geolocation:
         """
 
         return
-
 
     def gather_point_pairs(self):
         """
@@ -97,3 +96,36 @@ class Geolocation:
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         return pixelGeoPairs
+
+    def calculate_pixel_to_geo_mapping(self):
+        """
+        Outputs transform matrix for mapping pixels to geographical points
+
+        Returns
+        -------
+        np.array(shape=(3,3))
+        """
+
+        # Declare 4 matrices
+        # Assign relevant values, shapes and data types
+        # Create a 3x3 matrix with the coordinates as vectors with 1 as the z component => np.array([[x1, x2, x3], [y1, y2, y3], [1, 1, 1]])
+        sourcePixelMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        sourcePixelVector = np.vstack((self.__pixelToGeoPairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
+        mappedGeoMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        mappedGeoVector = np.vstack((self.__pixelToGeoPairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
+
+        # Solve system of linear equations to get value of coefficients
+        solvedPixelVector = np.linalg.solve(sourcePixelMatrix, sourcePixelVector)
+        solvedGeoVector = np.linalg.solve(mappedGeoMatrix, mappedGeoVector)
+
+        # Multiply coefficients with corresponding columns in matrices sourcePixelMatrix and mappedGeoMatrix
+        for i in range(0, 3):
+            sourcePixelMatrix[:, i] *= solvedPixelVector[i][0]
+            mappedGeoMatrix[:, i] *= solvedGeoVector[i][0]
+
+        # Invert sourcePixelMatrix
+        # Using pinv() instead of inv() for handling ill-conditioned matrices
+        sourcePixelMatrixInverse = np.linalg.pinv(sourcePixelMatrix)
+
+        # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
+        return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
