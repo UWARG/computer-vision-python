@@ -6,13 +6,17 @@ import json
 import logging
 import sys
 import os
-from datetime import time
+import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 class MyHandler(FileSystemEventHandler):
     def on_modified(self, event):
-        self.__gipo_file_reader()
+        print("WORKS")
+        self.__pogi_file_reader()
+
+    def on_any_event(self, event):
+        print(event.event_type, event.src_path)
 
 class CommandModule:
     """
@@ -86,21 +90,25 @@ class CommandModule:
         self.pigoLock = FileLock(self.pigoFileDirectory + ".lock")
         self.__watchdog_listener()     # temporarily disabled: producing errors
 
-    async def __watchdog_listener(self):
+    def __watchdog_listener(self):
         """
         Asynchronous watchdog method
         """
-        if __name__ == "__main__":
-            event_handler = MyHandler()
-            observer = Observer()
-            observer.schedule(event_handler, self.gipoDirectory, recursive=False)
-            observer.start()
-            try:
-                while True:
-                    time.sleep(1)
-            finally:
-                observer.stop()
-                observer.join()
+
+        # if __name__ == "__main__":
+
+        event_handler = MyHandler()
+
+        observer = Observer()
+        print(self.pogiFileDirectory)
+        observer.schedule(event_handler, self.pogiFileDirectory, recursive=True)
+        observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        finally:
+            observer.stop()
+            observer.join()
 
     def __read_from_pogi_file(self):
         """
