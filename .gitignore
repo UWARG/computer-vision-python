@@ -61,3 +61,7 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+
+modules/taxi/boxDetection/weights/*
+modules/taxi/boxDetection/__pycache__/*
+modules/taxi/boxDetection/*/__pycache__/*
