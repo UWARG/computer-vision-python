@@ -35,35 +35,80 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_altitude_if_equals_none(self):
-        self.__value_instantiate("alt")
+        self.__value_instantiate("altitude", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_current_altitude()
     def test_airspeed_if_equals_none(self):
-        self.pogiData['airspeed'] = None
-        with self.assertRaises(SystemExit) as cm:
-
-        self.assertEqual
-
+        self.__value_instantiate("airspeed", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_current_airspeed()
 
     def test_if_landed_if_equals_none(self):
+        self.__value_instantiate("is_landed", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_is_landed()
 
     def test_euler_camera_if_equals_none(self):
+        self.__value_instantiate("euler_camera", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
 
     def test_euler_camera_alpha_if_equals_none(self):
+        euler_camera = {"alpha": None, "beta": 0, "gamma" : 0}
+        self.__value_instantiate("euler_camera", euler_camera)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
 
     def test_euler_camera_beta_if_equals_none(self):
+        euler_camera = {"alpha": 0, "beta": None, "gamma": 0}
+        self.__value_instantiate("euler_camera", euler_camera)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
 
     def test_euler_camera_gamma_if_equals_none(self):
+        euler_camera = {"alpha": 0, "beta": 0, "gamma": None}
+        self.__value_instantiate("euler_camera", euler_camera)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
 
     def test_euler_plane_if_equals_none(self):
+        self.__value_instantiate("euler_plane", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_plane()
 
     def test_euler_plane_alpha_if_equals_none(self):
+        euler_camera = {"alpha": None, "beta": 0, "gamma": 0}
+        self.__value_instantiate("euler_camera", euler_camera)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
+
 
     def test_euler_plane_beta_if_equals_none(self):
+        euler_camera = {"alpha": 0, "beta": None, "gamma": 0}
+        self.__value_instantiate("euler_camera", euler_camera)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_camera()
 
     def test_euler_plane_gamma_if_equals_none(self):
+        euler_plane= {"alpha": 0, "beta": 0, "gamma": None}
+        self.__value_instantiate("euler_plane", euler_plane)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_euler_plane()
 
     def test_gps_if_equals_none(self):
+        self.__value_instantiate("gps", None)
+        with self.assertRaises(ValueError):
+            self.commandModule.get_gps_coordinate()
 
-    def test_gps_lat_alpha_if_equals_none(self):
+    def test_gps_lat_if_equals_none(self):
+        gps = {"lat": None, "lng":0}
+        self.__value_instantiate()
+        with self.assertRaises(ValueError):
+            self.commandModule.get_gps_coordinate()
 
-    def test_gps_lng_beta_if_equals_none(self):
+    def test_gps_lng_if_equals_none(self):
+        gps = {"lat": 0, "lng": None}
+        self.__value_instantiate()
+        with self.assertRaises(ValueError):
+            self.commandModule.get_gps_coordinate()
 
