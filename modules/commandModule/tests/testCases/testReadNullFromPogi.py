@@ -1,3 +1,4 @@
+import json
 import logging
 import unittest
 from ...commandModule import CommandModule
@@ -23,6 +24,10 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         
         
         """
+    def __value_instantiate(self, key, value):
+        with open(self.pogiFile, "w") as file:
+            dict = {key: value}
+            json.dump(dict, file, ensure_ascii=False, indent=4, sort_keys=True)
 
     def test_error_code_if_equals_null(self):
         with self.assertRaises(SystemExit) as cm:
@@ -30,11 +35,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
     def test_altitude_if_equals_none(self):
-        with self.assertLogs(logger=self.logger, level="ERROR") as cm:
-            try:
-                self.commandModule.set_gps_coordinates(None)
-            except SystemExit:
-                pass
+        self.__value_instantiate("alt")
     def test_airspeed_if_equals_none(self):
         self.pogiData['airspeed'] = None
         with self.assertRaises(SystemExit) as cm:
