@@ -8,17 +8,9 @@ import sys
 import os
 import time
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 
-class MyHandler(FileSystemEventHandler):
-    """
-    Triggers whenever the file that watchdog listens to changes, calls the file reader method
-    """
-    def on_modified(self, event):
-        self.__pogi_file_reader()
 
-    def on_any_event(self, event):
-        print(event.event_type, event.src_path)
+
 
 class CommandModule:
     """
@@ -91,27 +83,7 @@ class CommandModule:
         self.pogiLock = FileLock(pogiFileDirectory + ".lock")
         self.pigoLock = FileLock(pigoFileDirectory + ".lock")
         self.logger = logging.getLogger()
-        self.__watchdog_listener()  # temporarily disabled: producing errors
 
-    def __watchdog_listener(self):
-        """
-        Asynchronous watchdog method
-        """
-
-        # if __name__ == "__main__":
-
-        event_handler = MyHandler()
-
-        observer = Observer()
-        print(self.pogiFileDirectory)
-        observer.schedule(event_handler, self.pogiFileDirectory, recursive=True)
-        observer.start()
-        try:
-            while True:
-                time.sleep(1)
-        finally:
-            observer.stop()
-            observer.join()
 
     def __read_from_pogi_file(self):
         """
@@ -189,6 +161,7 @@ class CommandModule:
         int:
             Current altitude of the plane
         """
+        self.__read_from_pogi_file()
         altitude = self.pogiData["altitude"]
 
         if type(altitude) == int:
@@ -209,7 +182,7 @@ class CommandModule:
         int:
             Current airspeed of the plane
         """
-
+        self.__read_from_pogi_file()
         airspeed = self.pogiData["airspeed"]
         if type(airspeed) == int:
             return airspeed
@@ -229,6 +202,7 @@ class CommandModule:
         bool:
             True if plane landed, else False
         """
+        self.__read_from_pogi_file()
         is_landed = self.pogiData["is_landed"]
         if type(is_landed) == bool:
             return is_landed
@@ -248,6 +222,7 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
+        self.__read_from_pogi_file()
         euler = self.pogiData["euler_camera"]
         if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
             return euler
@@ -278,6 +253,7 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
         """
+        self.__read_from_pogi_file()
         euler = self.pogiData["euler_plane"]
         if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
             return euler
@@ -308,6 +284,7 @@ class CommandModule:
         dict:
             Returns a dictionary that contains a set of two coordinates, latitude and longitude denotes with "lat" and "lng"
         """
+        self.__read_from_pogi_file()
         gps = self.pogiData["gps"]
         if type(gps) == dict & (gps['lat'] & gps['lng'] is not None):
             return gps
