@@ -16,16 +16,6 @@ from boxDetection.utils.general import check_img_size, check_requirements, non_m
 from boxDetection.utils.plots import plot_one_box
 from boxDetection.utils.torch_utils import select_device, load_classifier, time_synchronized
 
-class Namespace:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-
-opt = Namespace(agnostic_nms=False, augment=False, classes=[0], conf_thres=0.4, 
-                device='', exist_ok=False, img_size=416, iou_thres=0.45, 
-                name='exp', project='runs/detect', save_conf=False, save_txt=False, 
-                source='0', tfl_int8=False, update=False, view_img=False, 
-                weights=['.\\weights\\best.pb'])
-
 def detect(save_img=False, opt = opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
