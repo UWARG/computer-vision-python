@@ -9,15 +9,24 @@ import yaml
 from numpy import random
 import numpy as np
 
-from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import check_img_size, check_requirements, non_max_suppression, apply_classifier, scale_coords, \
+from boxDetection.models.experimental import attempt_load
+from boxDetection.utils.datasets import LoadStreams, LoadImages
+from boxDetection.utils.general import check_img_size, check_requirements, non_max_suppression, apply_classifier, scale_coords, \
     xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized
+from boxDetection.utils.plots import plot_one_box
+from boxDetection.utils.torch_utils import select_device, load_classifier, time_synchronized
 
+class Namespace:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
 
-def detect(save_img=False):
+opt = Namespace(agnostic_nms=False, augment=False, classes=[0], conf_thres=0.4, 
+                device='', exist_ok=False, img_size=416, iou_thres=0.45, 
+                name='exp', project='runs/detect', save_conf=False, save_txt=False, 
+                source='0', tfl_int8=False, update=False, view_img=False, 
+                weights=['.\\weights\\best.pb'])
+
+def detect(save_img=False, opt = opt):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         ('rtsp://', 'rtmp://', 'http://'))
@@ -45,7 +54,7 @@ def detect(save_img=False):
         import tensorflow as tf
         from tensorflow import keras
 
-        with open('data/data.yaml') as f:
+        with open('boxDetection/data/data.yaml') as f:
             names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
 
         if suffix == '.pb':
