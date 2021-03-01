@@ -127,7 +127,6 @@ class CommandModule:
             True if None, else False
         """
         if value is None:
-            self.logger.error("Value that was passed is null.")
             return True
         else:
             return False
@@ -224,9 +223,8 @@ class CommandModule:
         """
         self.__read_from_pogi_file()
         euler = self.pogiData["euler_camera"]
-        if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
-            return euler
-        else:
+        if (type(euler) != dict or (
+                type(euler['alpha']) != float or type(euler['beta']) != float or type(euler['gamma']) != float)):
             if self.__is_null(euler):
                 raise ValueError("Euler camera not found in the POGI json file. Exiting...")
             elif self.__is_null(euler['alpha']):
@@ -236,13 +234,15 @@ class CommandModule:
             elif self.__is_null(euler['gamma']):
                 raise ValueError("Gamma not found in euler camera json file. Exiting...")
 
+            elif type(euler) != dict:
+                raise TypeError("Euler Camera in the POGI file was not a float. Exiting...")
             elif type(euler['alpha']) != float:
                 raise TypeError("Alpha in the POGI file was not a float. Exiting...")
             elif type(euler['beta']) != float:
                 raise TypeError("Beta in the POGI file was not a float. Exiting...")
             elif type(euler['gamma']) != float:
                 raise TypeError("Gamma in the POGI file was not a float. Exiting...")
-
+        return euler
 
     def get_euler_plane(self) -> dict:
         """
@@ -255,9 +255,9 @@ class CommandModule:
         """
         self.__read_from_pogi_file()
         euler = self.pogiData["euler_plane"]
-        if type(euler) == dict & (euler['alpha'] & euler['beta'] & euler['gamma'] is not None):
-            return euler
-        else:
+
+        if (type(euler) != dict or (
+                type(euler['alpha']) != float or type(euler['beta']) != float or type(euler['gamma']) != float)):
             if self.__is_null(euler):
                 raise ValueError("Euler plane not found in the POGI json file. Exiting...")
             elif self.__is_null(euler['alpha']):
@@ -267,13 +267,17 @@ class CommandModule:
             elif self.__is_null(euler['gamma']):
                 raise ValueError("Gamma not found in euler plane json file. Exiting...")
 
+            elif type(euler) != dict:
+                raise TypeError("Euler Plane in the POGI file was not a float. Exiting...")
             elif type(euler['alpha']) != float:
                 raise TypeError("Alpha in the POGI file was not a float. Exiting...")
             elif type(euler['beta']) != float:
                 raise TypeError("Beta in the POGI file was not a float. Exiting...")
             elif type(euler['gamma']) != float:
                 raise TypeError("Gamma in the POGI file was not a float. Exiting...")
-            sys.exit(1)
+        return euler
+
+
 
     def get_gps_coordinate(self) -> dict:
         """
@@ -286,9 +290,9 @@ class CommandModule:
         """
         self.__read_from_pogi_file()
         gps = self.pogiData["gps"]
-        if type(gps) == dict & (gps['lat'] & gps['lng'] is not None):
-            return gps
-        else:
+
+        if (type(gps) != dict or (
+                type(gps['lat']) != float or type(gps['lng']) != float)):
             if self.__is_null(gps):
                 raise ValueError("GPS camera not found in the POGI json file. Exiting...")
             elif self.__is_null(gps['lat']):
@@ -296,13 +300,14 @@ class CommandModule:
             elif self.__is_null(gps['lng']):
                 raise ValueError("Lng not found in gps coordinates json file. Exiting...")
 
-
+            elif type(gps) != dict:
+                raise TypeError("GPS in the POGI file was not a dict. Exiting...")
             elif type(gps['lat']) != float:
                 raise TypeError("Lat in the POGI file was not a float. Exiting...")
             elif type(gps['lng']) != float:
                 raise TypeError("Lng in the POGI file was not a float. Exiting...")
+        return gps
 
-            sys.exit(1)
 
 
 
