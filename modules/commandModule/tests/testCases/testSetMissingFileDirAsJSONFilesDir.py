@@ -2,9 +2,9 @@ from ...commandModule import CommandModule
 import unittest
 import os
 
-class TestCaseWritingMissingFileDirAsPIGOFileDir(unittest.TestCase):
+class TestCaseWritingMissingFileDirAsJSONFileDir(unittest.TestCase):
     """
-    Test Case: Missing file directory written as PIGO file directory results in FileNotFoundError
+    Test Case: Missing file directory written as JSON file directory results in FileNotFoundError
     Methods to test:
     - initializer
     """

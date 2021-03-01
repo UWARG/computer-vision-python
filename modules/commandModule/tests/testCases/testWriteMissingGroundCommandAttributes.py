@@ -17,9 +17,11 @@ class TestCaseWritingMissingGroundCommandAttributes(unittest.TestCase):
         open(self.pigoFile, "w").close() # delete file contents before next unit test
 
     def test_key_error_if_set_ground_commands_missing_heading_attribute(self):
+        temp = {"latestDistance":1.234}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(dict(latestDistance=1.234))
+            self.commandModule.set_gimbal_commands(temp)
 
     def test_key_error_if_set_ground_commands_missing_latest_distance_attribute(self):
+        temp = {"heading":1.234}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(dict(heading=1.234))
+            self.commandModule.set_gimbal_commands(temp)

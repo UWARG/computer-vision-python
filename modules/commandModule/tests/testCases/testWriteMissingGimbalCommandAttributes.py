@@ -17,9 +17,11 @@ class TestCaseWritingMissingGimbalCommandAttributes(unittest.TestCase):
         open(self.pigoFile, "w").close() # delete file contents before next unit test
 
     def test_key_error_if_set_gimbal_commands_missing_yaw_attribute(self):
+        temp = {"y":1.231}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(dict(pitch=1.234))
+            self.commandModule.set_gimbal_commands(temp)
 
     def test_key_error_if_set_gimbal_commands_missing_pitch_attribute(self):
+        temp = {"z":1.213}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(dict(yaw=1.234))
+            self.commandModule.set_gimbal_commands(temp)

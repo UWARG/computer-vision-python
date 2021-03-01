@@ -17,13 +17,16 @@ class TestCaseWritingMissingGPSCoordinateAttributes(unittest.TestCase):
         open(self.pigoFile, "w").close() # delete file contents before next unit test
 
     def test_key_error_if_set_gps_coordinates_missing_latitude_attribute(self):
+        temp = {"longitude":1.234, "altitude":2.312}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gps_coordinates(dict(longitude=1.234, altitude=2.312))
+            self.commandModule.set_gps_coordinates(temp)
 
     def test_key_error_if_set_gps_coordinates_missing_longitude_attribute(self):
+        temp = {"latitude":1.234, "altitude":2.312}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gps_coordinates(dict(latitude=1.234, altitude=2.312))
+            self.commandModule.set_gps_coordinates(temp)
 
     def test_key_error_if_set_gps_coordinates_missing_altitude_attribute(self):
+        temp = {"longitude":1.234, "latitude":2.312}
         with self.assertRaises(KeyError):
-            self.commandModule.set_gps_coordinates(dict(latitude=1.234, longitude=2.312))
+            self.commandModule.set_gps_coordinates(temp)

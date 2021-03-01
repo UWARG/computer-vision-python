@@ -2,9 +2,9 @@ from ...commandModule import CommandModule
 import unittest
 import os
 
-class TestCaseWritingNonJSONFileDirAsPIGOFileDir(unittest.TestCase):
+class TestCaseWritingNonJSONFileDirAsJSONFileDir(unittest.TestCase):
     """
-    Test Case: Non-json file directory written as PIGO file directory results in ValueError
+    Test Case: Non-json file directory written as JSON file directory results in ValueError
     Methods to test:
     - initializer
     """

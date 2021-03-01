@@ -1,8 +1,7 @@
 {
-    "beginLanding": true,
-    "beginTakeoff": false,
-    "gimbalCommands": {
-        "brah": 2.345,
-        "test": 3.4
+    "gpsCoordinates": {
+        "altitude": "blah",
+        "latitude": 1.212,
+        "longitude": 12.31
     }
 }

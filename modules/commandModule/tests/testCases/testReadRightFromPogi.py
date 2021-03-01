@@ -1,66 +1,54 @@
 import json
 import logging
 import unittest
+import os
 from ...commandModule import CommandModule
 
 
-class TestReadingNullFromPOGIFiles(unittest.TestCase):
+class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.basicConfig(level=logging.DEBUG, )
         self.pogiData = dict()
-        self.pogiFile = str(__file__).replace("testCases\\testReadRightFromPogi.py", "testJSONs\\test.json")
-        self.commandModule = CommandModule(pogiFileDirectory=self.pogiFile)
+        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
+        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
         self.pogiData = dict()
 
-        """
-
-        return no error code if null
-
-
-        return no 
-
-
-
-        """
     def __value_instantiate(self, key, value):
         with open(self.pogiFile, "w") as file:
             temp = {key: value}
             json.dump(temp, file, ensure_ascii=False, indent=4, sort_keys=True)
 
-    def test_error_code_if_correct(self):
-        with self.assertRaises(SystemExit) as cm:
-            self.commandModule.set_gps_coordinates(None)
-        self.assertEqual(cm.exception.code, 1)
+    def test_pass_if_get_error_code_equals_correct(self):
+        self.__value_instantiate("errorCode", 0)
+        self.assertEqual(0, self.commandModule.get_error_code())
 
-    def test_altitude_if_correct(self):
-        self.__value_instantiate("altitude", 0)
+    def test_pass_if_get_altitude_equals_correct(self):
+        self.__value_instantiate("currentAltitude", 0)
         self.assertEqual(0, self.commandModule.get_current_altitude())
 
-    def test_airspeed_if_correct(self):
-        self.__value_instantiate("airspeed", 0)
+    def test_pass_if_get_airspeed_equals_correct(self):
+        self.__value_instantiate("currentAirspeed", 0)
         self.assertEqual(0, self.commandModule.get_current_airspeed())
 
-    def test_is_landed_if_correct(self):
-        self.__value_instantiate("is_landed", True)
+    def test_pass_if_get_is_landed_equals_correct(self):
+        self.__value_instantiate("isLanded", True)
         self.assertEqual(True, self.commandModule.get_is_landed())
 
-    def test_euler_camera_if_correct(self):
-        euler_camera = {"alpha": 0.0, "beta": 0.0, "gamma": 0.0}
-        self.__value_instantiate("euler_camera", euler_camera)
-        self.assertEqual(euler_camera, self.commandModule.get_euler_camera())
+    def test_pass_if_get_euler_camera_equals_correct(self):
+        euler_camera = {"x": 1.023, "y": 123.1, "z": 9.12}
+        self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
+        self.assertEqual(euler_camera, self.commandModule.get_euler_angles_of_camera())
 
+    def test_pass_if_get_euler_plane_equals_correct(self):
+        euler_plane = {"x": 1.023, "y": 123.1, "z": 9.12}
+        self.__value_instantiate("eulerAnglesOfPlane", euler_plane)
+        self.assertEqual(euler_plane, self.commandModule.get_euler_angles_of_plane())
 
-    def test_euler_plane_if_correct(self):
-        euler_plane = {"alpha": 0.0, "beta": 0.0, "gamma": 0.0}
-        self.__value_instantiate("euler_plane", euler_plane)
-        self.assertEqual(euler_plane, self.commandModule.get_euler_plane())
-
-    def test_gps_if_correct(self):
-        gps = {"lat": 0.0, "lng": 0.0}
-        self.__value_instantiate("gps", gps)
-        self.assertEquals(gps, self.commandModule.get_gps_coordinate())
-
-
+    def test_pass_if_get_gps_equals_correct(self):
+        gps = {"latitude": 1.212, "longitude": 2.134, "altitude": 1.234}
+        self.__value_instantiate("gpsCoordinates", gps)
+        self.assertEquals(gps, self.commandModule.get_gps_coordinates())

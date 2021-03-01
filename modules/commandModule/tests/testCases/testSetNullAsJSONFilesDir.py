@@ -2,9 +2,9 @@ from ...commandModule import CommandModule
 import unittest
 import os
 
-class TestCaseWritingNullAsPIGOFileDir(unittest.TestCase):
+class TestCaseWritingNullAsJSONFileDir(unittest.TestCase):
     """
-    Test Case: Null written as PIGO file directory results in ValueError
+    Test Case: Null written as JSON file directory results in ValueError
     Methods to test:
     - initializer
     """
