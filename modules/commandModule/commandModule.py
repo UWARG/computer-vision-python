@@ -7,16 +7,6 @@ import logging
 import sys
 import os
 import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
-class MyHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        print("WORKS")
-        self.__pogi_file_reader()
-
-    def on_any_event(self, event):
-        print(event.event_type, event.src_path)
 
 class CommandModule:
     """
@@ -84,31 +74,10 @@ class CommandModule:
         self.__logger = logging.getLogger()
         self.__pogiData = dict()
         self.__pigoData = dict()
-        self.pogiFileDirectory = pogiFileDirectory
-        self.pigoFileDirectory = pigoFileDirectory
-        self.__pogiLock = FileLock(self.pogiFileDirectory + ".lock")
-        self.__pigoLock = FileLock(self.pigoFileDirectory + ".lock")
-        #self.__watchdog_listener()     # temporarily disabled: producing errors
-
-    def __watchdog_listener(self):
-        """
-        Asynchronous watchdog method
-        """
-
-        # if __name__ == "__main__":
-
-        event_handler = MyHandler()
-
-        observer = Observer()
-        print(self.pogiFileDirectory)
-        observer.schedule(event_handler, self.pogiFileDirectory, recursive=True)
-        observer.start()
-        try:
-            while True:
-                time.sleep(1)
-        finally:
-            observer.stop()
-            observer.join()
+        self.__pogiFileDirectory = pogiFileDirectory
+        self.__pigoFileDirectory = pigoFileDirectory
+        self.__pogiLock = FileLock(pogiFileDirectory + ".lock")
+        self.__pigoLock = FileLock(pigoFileDirectory + ".lock")
 
     def __read_from_pogi_file(self):
         """
@@ -152,8 +121,16 @@ class CommandModule:
             return False
 
     def get_error_code(self) -> int:
-        self.__gipo_file_reader()
-        errorCode = self.gipoData.get("errorCode")
+        """
+        Returns the error code from the POGI file
+
+        Returns
+        -------
+        int:
+            Error code
+        """
+        self.__pogi_file_reader()
+        errorCode = self.pogiData.get("errorCode")
         if type(errorCode) == int:
             return errorCode
         else:
@@ -164,34 +141,162 @@ class CommandModule:
             sys.exit(1)
 
     def get_current_altitude(self) -> int:
-        if self.__is_null(self.gipoData["altitude"]):
-            return self.gipoData["altitude"]
+        """
+        Returns the altitude from the POGI file
+
+        Returns
+        -------
+        int:
+            Current altitude of the plane
+        """
+        self.__read_from_pogi_file()
+        altitude = self.pogiData["altitude"]
+
+        if type(altitude) == int:
+            return altitude
+        else:
+            if self.__is_null(altitude):
+                raise ValueError("Altitude not found in the POGI json file. Exiting...")
+            elif type(altitude != int):
+                raise TypeError("Altitude in the POGI file was not an int. Exiting...")
 
 
     def get_current_airspeed(self) -> int:
-        if self.__is_null(self.gipoData["airspeed"]):
-            return self.gipoData["airspeed"]
+        """
+        Returns the airspeed from the POGI file
+
+        Returns
+        -------
+        int:
+            Current airspeed of the plane
+        """
+        self.__read_from_pogi_file()
+        airspeed = self.pogiData["airspeed"]
+        if type(airspeed) == int:
+            return airspeed
+        else:
+            if self.__is_null(airspeed):
+                raise ValueError("Airspeed not found in the POGI json file. Exiting...")
+            elif type(airspeed != int):
+                raise TypeError("Airspeed in the POGI file was not an int. Exiting...")
+
 
     def get_is_landed(self) -> bool:
+        """
+        Returns if the plane has landed from the POGI file
 
-        if self.__is_null(self.gipoData["isLanded"]):
-            return self.gipoData["isLanded"]
+        Returns
+        -------
+        bool:
+            True if plane landed, else False
+        """
+        self.__read_from_pogi_file()
+        is_landed = self.pogiData["is_landed"]
+        if type(is_landed) == bool:
+            return is_landed
+        else:
+            if self.__is_null(is_landed):
+                raise ValueError("Is_landed not found in the POGI json file. Exiting...")
+            elif type(is_landed != bool):
+                raise TypeError("Is_landed in the POGI file was not an int. Exiting...")
 
-    def get_euler_camera(self) -> tuple:
-        if self.__is_null(self.gipoData["euler_camera"]):
-            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
-            return euler_tuple
 
-    def get_euler_plane(self) -> tuple:
+    def get_euler_camera(self) -> dict:
+        """
+        Returns the euler coordinates of the camera on the plane from the POGI file
 
-        if self.__is_null(self.gipoData["euler_plane"]):
-            euler_tuple = (self.gipoData["alpha"], self.gipoData["beta"], self.gipoData["gamma"])
-            return euler_tuple
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
+        """
+        self.__read_from_pogi_file()
+        euler = self.pogiData["euler_camera"]
+        if (type(euler) != dict or (
+                type(euler['alpha']) != float or type(euler['beta']) != float or type(euler['gamma']) != float)):
+            if self.__is_null(euler):
+                raise ValueError("Euler camera not found in the POGI json file. Exiting...")
+            elif self.__is_null(euler['alpha']):
+                raise ValueError("Alpha not found in euler camera json file. Exiting...")
+            elif self.__is_null(euler['beta']):
+                raise ValueError("Beta not found in euler camera json file. Exiting...")
+            elif self.__is_null(euler['gamma']):
+                raise ValueError("Gamma not found in euler camera json file. Exiting...")
 
-    def get_gps_coordinate(self) -> tuple:
-        if self.__is_null(self.gipoData["euler_camera"]):
-            gps_coordinate = (self.gipoData["lat"], self.gipoData["lng"], self.gipoData["alt"])
-            return gps_coordinate
+            elif type(euler) != dict:
+                raise TypeError("Euler Camera in the POGI file was not a float. Exiting...")
+            elif type(euler['alpha']) != float:
+                raise TypeError("Alpha in the POGI file was not a float. Exiting...")
+            elif type(euler['beta']) != float:
+                raise TypeError("Beta in the POGI file was not a float. Exiting...")
+            elif type(euler['gamma']) != float:
+                raise TypeError("Gamma in the POGI file was not a float. Exiting...")
+        return euler
+
+    def get_euler_plane(self) -> dict:
+        """
+        Returns the euler coordinates of the plane itself from the POGI file
+
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of three euler coordinates with names alpha, beta and gamma
+        """
+        self.__read_from_pogi_file()
+        euler = self.pogiData["euler_plane"]
+
+        if (type(euler) != dict or (
+                type(euler['alpha']) != float or type(euler['beta']) != float or type(euler['gamma']) != float)):
+            if self.__is_null(euler):
+                raise ValueError("Euler plane not found in the POGI json file. Exiting...")
+            elif self.__is_null(euler['alpha']):
+                raise ValueError("Alpha not found in euler plane json file. Exiting...")
+            elif self.__is_null(euler['beta']):
+                raise ValueError("Beta not found in euler plane json file. Exiting...")
+            elif self.__is_null(euler['gamma']):
+                raise ValueError("Gamma not found in euler plane json file. Exiting...")
+
+            elif type(euler) != dict:
+                raise TypeError("Euler Plane in the POGI file was not a float. Exiting...")
+            elif type(euler['alpha']) != float:
+                raise TypeError("Alpha in the POGI file was not a float. Exiting...")
+            elif type(euler['beta']) != float:
+                raise TypeError("Beta in the POGI file was not a float. Exiting...")
+            elif type(euler['gamma']) != float:
+                raise TypeError("Gamma in the POGI file was not a float. Exiting...")
+        return euler
+
+
+
+    def get_gps_coordinate(self) -> dict:
+        """
+        Returns the gps coordinates of the plane from the POGI file
+
+        Returns
+        -------
+        dict:
+            Returns a dictionary that contains a set of two coordinates, latitude and longitude denotes with "lat" and "lng"
+        """
+        self.__read_from_pogi_file()
+        gps = self.pogiData["gps"]
+
+        if (type(gps) != dict or (
+                type(gps['lat']) != float or type(gps['lng']) != float)):
+            if self.__is_null(gps):
+                raise ValueError("GPS camera not found in the POGI json file. Exiting...")
+            elif self.__is_null(gps['lat']):
+                raise ValueError("Lat not found in gps coordinates json file. Exiting...")
+            elif self.__is_null(gps['lng']):
+                raise ValueError("Lng not found in gps coordinates json file. Exiting...")
+
+            elif type(gps) != dict:
+                raise TypeError("GPS in the POGI file was not a dict. Exiting...")
+            elif type(gps['lat']) != float:
+                raise TypeError("Lat in the POGI file was not a float. Exiting...")
+            elif type(gps['lng']) != float:
+                raise TypeError("Lng in the POGI file was not a float. Exiting...")
+        return gps
+
 
     def set_gps_coordinates(self, gpsCoordinates: dict):
         """
