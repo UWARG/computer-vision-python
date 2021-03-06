@@ -60,6 +60,10 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     color = color or [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
+    print("top left x: " + str(int(x[0])))
+    print("top left y: " + str(int(x[1])))
+    print("bot right x: " + str(int(x[2])))
+    print("bot right y: " + str(int(x[3])))
     if label:
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
