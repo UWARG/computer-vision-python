@@ -190,8 +190,6 @@ def detect(save_img=False):
             if view_img:
                 cv2.imshow(str(p), im0)
                 
-            
-        
             # Save results (image with detections)
             if save_img:
                 if dataset.mode == 'image':
