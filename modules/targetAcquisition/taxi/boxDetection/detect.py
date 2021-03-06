@@ -67,16 +67,6 @@ def detect(save_img=False, opt = opt):
             graph_def.ParseFromString(open(weights, 'rb').read())
             frozen_func = wrap_frozen_graph(graph_def=graph_def, inputs="x:0", outputs="Identity:0")
 
-        elif suffix == '.tflite':
-            backend = 'tflite'
-            # Load TFLite model and allocate tensors
-            interpreter = tf.lite.Interpreter(model_path=weights)
-            interpreter.allocate_tensors()
-
-            # Get input and output tensors
-            input_details = interpreter.get_input_details()
-            output_details = interpreter.get_output_details()
-
         else:
             backend = 'saved_model'
             model = keras.models.load_model(weights)
@@ -120,19 +110,7 @@ def detect(save_img=False, opt = opt):
                 pred = model(img.permute(0, 2, 3, 1).cpu().numpy(), training=False).numpy()
             elif backend == 'graph_def':
                 pred = frozen_func(x=tf.constant(img.permute(0, 2, 3, 1).cpu().numpy())).numpy()
-            elif backend == 'tflite':
-                input_data = img.permute(0, 2, 3, 1).cpu().numpy()
-                if opt.tfl_int8:
-                    scale, zero_point = input_details[0]['quantization']
-                    input_data = input_data / scale + zero_point
-                    input_data = input_data.astype(np.uint8)
-                interpreter.set_tensor(input_details[0]['index'], input_data)
-                interpreter.invoke()
-                pred = interpreter.get_tensor(output_details[0]['index'])
-                if opt.tfl_int8:
-                    scale, zero_point = output_details[0]['quantization']
-                    pred = pred.astype(np.float32)
-                    pred = (pred - zero_point) * scale
+            
             # Denormalize xywh
             pred[..., :4] *= opt.img_size
             pred = torch.tensor(pred)
