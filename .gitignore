@@ -69,3 +69,6 @@ modules/taxi/boxDetection/*/__pycache__/*
 modules/targetAcquisition/taxi/boxDetection/weights/*
 modules/targetAcquisition/taxi/boxDetection/__pycache__/*
 modules/targetAcquisition/taxi/boxDetection/*/__pycache__/*
+modules/targetAcquisition/taxi/qrScan/__pycache__/*
+modules/targetAcquisition/taxi/qrScan/*/__pycache__/*
+modules/targetAcquisition/taxi/__pycache__/*
