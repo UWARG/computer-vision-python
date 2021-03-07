@@ -16,7 +16,7 @@ from boxDetection.utils.general import check_img_size, check_requirements, non_m
 from boxDetection.utils.plots import plot_one_box
 from boxDetection.utils.torch_utils import select_device, load_classifier, time_synchronized
 
-def detect(save_img=False):
+def detect(img):
     
     #important ones
     conf_thres=0.4
@@ -33,17 +33,20 @@ def detect(save_img=False):
     name='exp'
     project='boxDetection/runs/detect'
     save_conf=False
-    save_txt=False
+    '''save_txt=False'''
+    '''save_img=False'''
     tfl_int8=False
     update=False
-    view_img=False
+    '''view_img=False'''
     #other variables
     webcam = True
     imgsz = img_size
     
+    '''
     # Directories
     save_dir = Path(increment_path(Path(project) / name, exist_ok=exist_ok))  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    '''
 
     # Initialize
     set_logging()
@@ -53,6 +56,7 @@ def detect(save_img=False):
     # Load model
     weights = weights[0] if isinstance(weights, list) else weights
     suffix = Path(weights).suffix
+    '''
     if suffix == '.pt':
         backend = 'pytorch'
         model = attempt_load(weights, map_location=device)  # load FP32 model
@@ -60,51 +64,53 @@ def detect(save_img=False):
         names = model.module.names if hasattr(model, 'module') else model.names  # class names
         if half:
             model.half()  # to FP16
+    else:'''
+    import tensorflow as tf
+    from tensorflow import keras
+
+    with open('boxDetection/data/data.yaml') as f:
+        names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
+
+    '''if suffix == '.pb':'''
+    backend = 'graph_def'
+
+    # https://www.tensorflow.org/guide/migrate#a_graphpb_or_graphpbtxt
+    # https://github.com/leimao/Frozen_Graph_TensorFlow
+    def wrap_frozen_graph(graph_def, inputs, outputs):
+        def _imports_graph_def():
+            tf.compat.v1.import_graph_def(graph_def, name="")
+
+        wrapped_import = tf.compat.v1.wrap_function(_imports_graph_def, [])
+        import_graph = wrapped_import.graph
+        return wrapped_import.prune(
+            tf.nest.map_structure(import_graph.as_graph_element, inputs),
+            tf.nest.map_structure(import_graph.as_graph_element, outputs))
+
+    graph = tf.Graph()
+    graph_def = graph.as_graph_def()
+    graph_def.ParseFromString(open(weights, 'rb').read())
+    frozen_func = wrap_frozen_graph(graph_def=graph_def, inputs="x:0", outputs="Identity:0")
+
+    '''
     else:
-        import tensorflow as tf
-        from tensorflow import keras
-
-        with open('boxDetection/data/data.yaml') as f:
-            names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
-
-        if suffix == '.pb':
-            backend = 'graph_def'
-
-            # https://www.tensorflow.org/guide/migrate#a_graphpb_or_graphpbtxt
-            # https://github.com/leimao/Frozen_Graph_TensorFlow
-            def wrap_frozen_graph(graph_def, inputs, outputs):
-                def _imports_graph_def():
-                    tf.compat.v1.import_graph_def(graph_def, name="")
-
-                wrapped_import = tf.compat.v1.wrap_function(_imports_graph_def, [])
-                import_graph = wrapped_import.graph
-                return wrapped_import.prune(
-                    tf.nest.map_structure(import_graph.as_graph_element, inputs),
-                    tf.nest.map_structure(import_graph.as_graph_element, outputs))
-
-            graph = tf.Graph()
-            graph_def = graph.as_graph_def()
-            graph_def.ParseFromString(open(weights, 'rb').read())
-            frozen_func = wrap_frozen_graph(graph_def=graph_def, inputs="x:0", outputs="Identity:0")
-
-        else:
-            backend = 'saved_model'
-            model = keras.models.load_model(weights)
-
+        backend = 'saved_model'
+        model = keras.models.load_model(weights)
+    
     # Second-stage classifier
     classify = False
     if classify:
         modelc = load_classifier(name='resnet101', n=2)  # initialize
         modelc.load_state_dict(torch.load('boxDetection/weights/resnet101.pt', map_location=device)['model']).to(device).eval()
+    '''
 
     # Set Dataloader
     vid_path, vid_writer = None, None
     if webcam:
-        view_img = True
+        '''view_img = True'''
         cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=imgsz, auto=backend == 'pytorch')
     else:
-        save_img = True
+        '''save_img = True'''
         dataset = LoadImages(source, img_size=imgsz, auto=backend == 'pytorch')
 
     # Get names and colors
@@ -113,7 +119,7 @@ def detect(save_img=False):
     # Run inference
     t0 = time.time()
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
-    _ = model(img.half() if half else img) if (device.type != 'cpu' and backend == 'pytorch') else None  # run once
+    '''_ = model(img.half() if half else img) if (device.type != 'cpu' and backend == 'pytorch') else None  # run once'''
     for path, img, im0s, vid_cap in dataset:
         #variable for return bounding box coordinates
         bbox_cord = []
@@ -143,9 +149,11 @@ def detect(save_img=False):
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
         t2 = time_synchronized()
 
+        '''
         # Apply Classifier
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
+        '''
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
@@ -155,8 +163,10 @@ def detect(save_img=False):
                 p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
+            '''
             save_path = str(save_dir / p.name)  # img.jpg
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            '''
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
@@ -168,6 +178,7 @@ def detect(save_img=False):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f'{n} {names[int(c)]}s, '  # add to string
 
+                '''
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -179,6 +190,7 @@ def detect(save_img=False):
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
                         bbox_cord.append(plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3))
+                '''
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -186,6 +198,7 @@ def detect(save_img=False):
             if len(bbox_cord) == 5:
                 return bbox_cord
             
+            '''
             # Stream results
             if view_img:
                 cv2.imshow(str(p), im0)
@@ -206,10 +219,13 @@ def detect(save_img=False):
                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
                     vid_writer.write(im0)
+            '''
 
+    '''
     if save_txt or save_img:
         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         print(f"Results saved to {save_dir}{s}")
+    '''
 
     print(f'Done. ({time.time() - t0:.3f}s)')
     return bbox_cord

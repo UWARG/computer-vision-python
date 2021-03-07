@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
 
-def scan(image):
+def scan(img):
     gray_img = cv2.cvtColor(image, 0)
     barcode = decode(gray_img)
 
