@@ -1,4 +1,5 @@
 .idea
+.DS_Store
 
 modules/targetAcquisition/taxi/boxDetection/weights/*
 modules/targetAcquisition/taxi/boxDetection/__pycache__/*
