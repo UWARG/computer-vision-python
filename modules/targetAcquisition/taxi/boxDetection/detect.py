@@ -23,7 +23,7 @@ def detect(save_img=False):
     img_size=416
     iou_thres=0.45
     source='0'
-    weights=['./weights/best.pb']
+    weights=['./boxDetection/weights/best.pb']
     #less important ones
     agnostic_nms=False
     augment=False
@@ -31,7 +31,7 @@ def detect(save_img=False):
     device=''
     exist_ok=False
     name='exp'
-    project='runs/detect'
+    project='boxDetection/runs/detect'
     save_conf=False
     save_txt=False
     tfl_int8=False
@@ -64,7 +64,7 @@ def detect(save_img=False):
         import tensorflow as tf
         from tensorflow import keras
 
-        with open('data/data.yaml') as f:
+        with open('boxDetection/data/data.yaml') as f:
             names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
 
         if suffix == '.pb':
@@ -95,7 +95,7 @@ def detect(save_img=False):
     classify = False
     if classify:
         modelc = load_classifier(name='resnet101', n=2)  # initialize
-        modelc.load_state_dict(torch.load('weights/resnet101.pt', map_location=device)['model']).to(device).eval()
+        modelc.load_state_dict(torch.load('boxDetection/weights/resnet101.pt', map_location=device)['model']).to(device).eval()
 
     # Set Dataloader
     vid_path, vid_writer = None, None
