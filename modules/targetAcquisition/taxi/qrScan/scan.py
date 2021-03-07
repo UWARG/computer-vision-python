@@ -2,10 +2,11 @@ import cv2
 import numpy as np
 from pyzbar.pyzbar import decode
 
-def decoder(image):
+def scan(image):
     gray_img = cv2.cvtColor(image, 0)
     barcode = decode(gray_img)
 
+    # Assume there is only one object in each frame, so return the first decoded message
     for obj in barcode:
         points = obj.polygon
         (x,y,w,h) = obj.rect
@@ -15,7 +16,4 @@ def decoder(image):
 
         barcodeData = obj.data.decode("utf-8")
         barcodeType = obj.type
-        string = "Data: " + str(barcodeData) + " | Type: " + str(barcodeType)
-        
-        cv2.putText(frame, string, (x,y), cv2.FONT_HERSHEY_SIMPLEX,0.8,(0,0,255), 2)
-        print("Barcode: "+barcodeData +" | Type: "+barcodeType)
+        return f"Barcode: {barcodeData} | Type: {barcodeType}"

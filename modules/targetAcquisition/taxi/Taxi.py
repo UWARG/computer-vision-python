@@ -1,5 +1,7 @@
-from boxDetection.detect import detect
-from qrDetection.scan import decoder as qr_scan
+import cv2
+import numpy as np
+from boxDetection.detect import detect as detect_boxes
+from qrScan.scan import scan as scan_qr
 
 class Taxi:
     """
@@ -7,60 +9,69 @@ class Taxi:
 
     Attributes
     ----------
-    boundingBoxes : list<tuple<tuple, tuple>>
-        List of bounding boxes 
+    state : string
+        state of object recognition ("BOX", "QR", ...)
 
     Methods
     -------
     __init__()
         Initialize class variables
-    predict_boxes()
-        Get bounding box of cardboard boxes from YOLOv5
-    read_qr(image : np.ndarray)
-        Read message from QR code
+    set_state(state: string)
+        Prepare variables for box detection, qr decoding, etc.
+    main()
+        Main operations: getting camera input and passing the image to appropriate methods
     """
     
     def __init__(self):
         """
         Initializes variables
         """
-        self.boundingBoxes = []
+        self.state = None
 
-    def predict_boxes(self):
+    def set_state(self, state):
         """
-        Get bounding box of cardboard boxes from YOLOv5
-        """
-        # TODO: Get detect.py to return coordinates of each cardboard box after predicting from one video frame
-        # TODO: Decide on a return format:
-            # Formats: [((x0, y0), (x1, y1))] or [((x, y), (w, h))]
-        # TODO: reduce time between detect launch and image detection
-        self.boundingBoxes = detect()
-
-    def read_qr(self, image):
-        """
-        Read QR code from image
+        Prepare variables for box detection, qr decoding, etc.
 
         Parameters
         ----------
-        image : np.ndarray
-            Image containing a single readable QR code
+        state: string
+            state of object recognition ("BOX", "QR", ...)
         """
-        # TODO: Get qrDetection scan.py to return the QR message as string instead of displaying it
-        self.qrMessage = qr_scan(image)
+        if state == "BOX":
+            # TODO: set other variables here if necessary
+            self.state = "BOX"
 
+        elif state == "QR":
+            # TODO: set other variables here if necessary
+            self.state = "QR"
 
-# TODO: Set up video feed to feed image into __predict_boxes() and __read_qr()
-'''
-cap = cv2.VideoCapture(0)
-while True:
-    ret, frame = cap.read()
-    decoder(frame)
-    cv2.imshow('this shouldn't be showing up', frame)
-    code = cv2.waitKey(10)
-    if code == ord('q'):
-        break
-'''
+        else:
+            print("Error: invalid state selected")
 
+    def main(self):
+        """
+        Main operations: getting camera input and passing the image to appropriate methods
+        """
+        cap = cv2.VideoCapture(0)
+        while True:
+            ret, frame = cap.read()
+            cv2.imshow('Image', frame)
+
+            # TODO: wrap this step in a preprocessing function
+            if self.state == "BOX":
+                boundingBoxes = detect_boxes(frame)
+                print(boundingBoxes)
+
+            # TODO: wrap this step in a preprocessing function
+            if self.state == "QR":
+                message = scan_qr(frame)
+                print(message)
+
+            if cv2.waitKey(10) == ord('q'):
+                break
+
+# Instantiate the Taxi object and run operations
 if __name__ == '__main__':
     testTaxi = Taxi()
-    testTaxi.predict_boxes()
+    testTaxi.set_state(state = "QR")
+    testTaxi.main()
