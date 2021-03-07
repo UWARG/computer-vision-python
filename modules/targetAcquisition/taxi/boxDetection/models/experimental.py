@@ -4,8 +4,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from models.common import Conv, DWConv
-from utils.google_utils import attempt_download
+from boxDetection.models.common import Conv, DWConv
+from boxDetection.utils.google_utils import attempt_download
 
 
 class CrossConv(nn.Module):
