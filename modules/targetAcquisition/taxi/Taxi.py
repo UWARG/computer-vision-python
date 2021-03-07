@@ -59,12 +59,12 @@ class Taxi:
 
             # TODO: wrap this step in a preprocessing function
             if self.state == "BOX":
-                boundingBoxes = detect_boxes(frame)
+                boundingBoxes = detect_boxes(img = frame)
                 print(boundingBoxes)
 
             # TODO: wrap this step in a preprocessing function
             if self.state == "QR":
-                message = scan_qr(frame)
+                message = scan_qr(img = frame)
                 print(message)
 
             if cv2.waitKey(10) == ord('q'):
@@ -73,5 +73,5 @@ class Taxi:
 # Instantiate the Taxi object and run operations
 if __name__ == '__main__':
     testTaxi = Taxi()
-    testTaxi.set_state(state = "QR")
+    testTaxi.set_state(state = "BOX")
     testTaxi.main()
