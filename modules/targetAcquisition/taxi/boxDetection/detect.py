@@ -178,19 +178,11 @@ def detect(img):
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f'{n} {names[int(c)]}s, '  # add to string
 
-                '''
+                
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
-
-                    if save_img or view_img:  # Add bbox to image
-                        label = f'{names[int(cls)]} {conf:.2f}'
-                        bbox_cord.append(plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3))
-                '''
+                    bbox_cord.append(((int(xyxy[0]),int(xyxy[1])),(int(xyxy[2]),int(xyxy[3]))))
+                
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
