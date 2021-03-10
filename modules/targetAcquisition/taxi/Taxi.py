@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from boxDetection.detect import detect as detect_boxes
+from boxDetection.detect import Detection
 from qrScan.scan import scan as scan_qr
 
 class Taxi:
@@ -53,13 +53,14 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
         """
         cap = cv2.VideoCapture(0)
+        yolo = Detection()
         while True:
             ret, frame = cap.read()
             cv2.imshow('Image', frame)
 
             # TODO: wrap this step in a preprocessing function
             if self.state == "BOX":
-                boundingBoxes = detect_boxes(img = frame)
+                boundingBoxes = yolo.detect_boxes(img = frame)
                 print(boundingBoxes)
 
             # TODO: wrap this step in a preprocessing function
