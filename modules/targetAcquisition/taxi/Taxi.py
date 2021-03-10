@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 from boxDetection.detect import Detection
 from qrScan.scan import scan as scan_qr
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+config = ConfigProto()
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config=config)
 
 class Taxi:
     """
@@ -54,6 +60,7 @@ class Taxi:
         """
         cap = cv2.VideoCapture(0)
         yolo = Detection()
+        
         while True:
             ret, frame = cap.read()
             
