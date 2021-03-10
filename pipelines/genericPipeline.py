@@ -1,4 +1,5 @@
 import threading
+import queue
 from abc import ABC
 
 class GenericPipeline(ABC):
@@ -6,7 +7,7 @@ class GenericPipeline(ABC):
     Generic Pipeline Class
     """
     def __init__(self):
-        self.package = None
+        self.package = queue.Queue()
         self.consumerLock = threading.Lock()
         self.producerLock = threading.Lock()
         self.consumerLock.acquire()
@@ -20,7 +21,7 @@ class GenericPipeline(ABC):
         None
         """
         self.producerLock.acquire()
-        self.package.append(newPackage)
+        self.package.put(newPackage)
         self.consumerLock.release()
 
     def getNewPackage(self):
@@ -31,7 +32,7 @@ class GenericPipeline(ABC):
         package
         """
         self.consumerLock.acquire()
-        currentPackage = self.package
+        currentPackage = self.package.get()
         self.producerLock.release()
         return currentPackage
 

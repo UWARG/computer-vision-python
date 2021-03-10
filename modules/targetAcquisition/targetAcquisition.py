@@ -41,18 +41,20 @@ class TargetAcquisition:
 
         Parameters
         ----------
-        deckLinkFrame : np.ndarray, optional
-            Variable size array containing data about a video frame (as given by cv2.imread())
+        videoPipeline: Pipeline object for video data
+        coordinatePipeline: Pipeline object for coordinate data
         """
-        self.boxes = [] # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by
+        # percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        self.boxes = []
         self.tentCoordinates = dict()
         self.currentFrame = np.array()
         self.videoPipeline = videoPipeline
         self.coordinatePipeline = coordinatePipeline
-        main = threading.Thread(target=self._main_())
-        main.start()
+        mainThread = threading.Thread(target=self._mainThread_())
+        mainThread.start()
 
-    def _main_(self):
+    def _mainThread_(self):
         self.currentFrame = self.videoPipeline.getNewFrame()
         self.coordinatePipeline.addNewPackage(self.get_coordinates(self.currentFrame))
 
