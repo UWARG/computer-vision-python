@@ -10,7 +10,7 @@ from numpy import random
 import numpy as np
 
 from boxDetection.models.experimental import attempt_load
-from boxDetection.utils.datasets import LoadStreams, LoadImages
+from boxDetection.utils.datasets import letterbox
 from boxDetection.utils.general import check_img_size, check_requirements, non_max_suppression, apply_classifier, scale_coords, \
     xyxy2xywh, strip_optimizer, set_logging, increment_path
 from boxDetection.utils.plots import plot_one_box
@@ -33,21 +33,13 @@ def detect(img):
     name='exp'
     project='boxDetection/runs/detect'
     save_conf=False
-    '''save_txt=False'''
-    '''save_img=False'''
     tfl_int8=False
     update=False
-    '''view_img=False'''
     #other variables
     webcam = True
     imgsz = img_size
     
-    '''
-    # Directories
-    save_dir = Path(increment_path(Path(project) / name, exist_ok=exist_ok))  # increment run
-    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
-    '''
-
+    
     # Initialize
     set_logging()
     device =  torch.device('cpu')   # device = select_device(opt.device)
@@ -56,22 +48,13 @@ def detect(img):
     # Load model
     weights = weights[0] if isinstance(weights, list) else weights
     suffix = Path(weights).suffix
-    '''
-    if suffix == '.pt':
-        backend = 'pytorch'
-        model = attempt_load(weights, map_location=device)  # load FP32 model
-        imgsz = check_img_size(imgsz, s=model.stride.max())  # check img_size
-        names = model.module.names if hasattr(model, 'module') else model.names  # class names
-        if half:
-            model.half()  # to FP16
-    else:'''
+    
     import tensorflow as tf
     from tensorflow import keras
 
     with open('boxDetection/data/data.yaml') as f:
         names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
 
-    '''if suffix == '.pb':'''
     backend = 'graph_def'
 
     # https://www.tensorflow.org/guide/migrate#a_graphpb_or_graphpbtxt
@@ -91,134 +74,68 @@ def detect(img):
     graph_def.ParseFromString(open(weights, 'rb').read())
     frozen_func = wrap_frozen_graph(graph_def=graph_def, inputs="x:0", outputs="Identity:0")
 
-    '''
-    else:
-        backend = 'saved_model'
-        model = keras.models.load_model(weights)
-    
-    # Second-stage classifier
-    classify = False
-    if classify:
-        modelc = load_classifier(name='resnet101', n=2)  # initialize
-        modelc.load_state_dict(torch.load('boxDetection/weights/resnet101.pt', map_location=device)['model']).to(device).eval()
-    '''
-
     # Set Dataloader
     vid_path, vid_writer = None, None
-    if webcam:
-        '''view_img = True'''
-        cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz, auto=backend == 'pytorch')
-    else:
-        '''save_img = True'''
-        dataset = LoadImages(source, img_size=imgsz, auto=backend == 'pytorch')
-
+    
     # Get names and colors
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in names]
 
     # Run inference
     t0 = time.time()
-    img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
-    '''_ = model(img.half() if half else img) if (device.type != 'cpu' and backend == 'pytorch') else None  # run once'''
-    for path, img, im0s, vid_cap in dataset:
-        #variable for return bounding box coordinates
-        bbox_cord = []
+    img0 = img.copy()
+    # Padded resize
+    img = letterbox(img0, new_shape=img_size, auto=False)[0]
+
+    # Convert
+    img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
+    img = np.ascontiguousarray(img)
         
-        img = torch.from_numpy(img).to(device)
-        img = img.half() if half and backend == 'pytorch' else img.float()  # uint8 to fp16/32
-        img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
+    
+    #variable for return bounding box coordinates
+    bbox_cord = []
+    
+    img = torch.from_numpy(img).to(device)
+    img = img.float()  # uint8 to fp16/32
+    img /= 255.0  # 0 - 255 to 0.0 - 1.0
+    if img.ndimension() == 3:
+        img = img.unsqueeze(0)
 
-        # Inference
-        t1 = time_synchronized()
-        if backend == 'pytorch':
-            pred = model(img, augment=augment)[0]
-        else:
-            if backend == 'saved_model':
-                pred = model(img.permute(0, 2, 3, 1).cpu().numpy(), training=False).numpy()
-            elif backend == 'graph_def':
-                pred = frozen_func(x=tf.constant(img.permute(0, 2, 3, 1).cpu().numpy())).numpy()
-            
-            # Denormalize xywh
-            pred[..., :4] *= img_size
-            pred = torch.tensor(pred)
-            
+    # Inference
+    t1 = time_synchronized()
+    pred = frozen_func(x=tf.constant(img.permute(0, 2, 3, 1).cpu().numpy())).numpy()
+    
+    # Denormalize xywh
+    pred[..., :4] *= img_size
+    pred = torch.tensor(pred)
         
-        # Apply NMS
-        pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
-        t2 = time_synchronized()
+    
+    # Apply NMS
+    pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
+    t2 = time_synchronized()
 
-        '''
-        # Apply Classifier
-        if classify:
-            pred = apply_classifier(pred, modelc, img, im0s)
-        '''
+    # Process detections
+    for i, det in enumerate(pred):  # detections per image
+        s = ''
+        im0 = img0
+        s += '%gx%g ' % img.shape[2:]  # print string
+        gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+        if len(det):
+            # Rescale boxes from img_size to im0 size
+            det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
-        # Process detections
-        for i, det in enumerate(pred):  # detections per image
-            if webcam:  # batch_size >= 1
-                p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
-            else:
-                p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
+            # Print results
+            for c in det[:, -1].unique():
+                n = (det[:, -1] == c).sum()  # detections per class
+                s += f'{n} {names[int(c)]}s, '  # add to string
 
-            p = Path(p)  # to Path
-            '''
-            save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
-            '''
-            s += '%gx%g ' % img.shape[2:]  # print string
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
-            if len(det):
-                # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
-
-                # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += f'{n} {names[int(c)]}s, '  # add to string
-
-                
-                # Write results
-                for *xyxy, conf, cls in reversed(det):
-                    bbox_cord.append(((int(xyxy[0]),int(xyxy[1])),(int(xyxy[2]),int(xyxy[3]))))
-                
-
-            # Print time (inference + NMS)
-            print(f'{s}Done. ({t2 - t1:.3f}s)')
-            print(bbox_cord)
-            if len(bbox_cord) == 5:
-                return bbox_cord
             
-            '''
-            # Stream results
-            if view_img:
-                cv2.imshow(str(p), im0)
-                
-            # Save results (image with detections)
-            if save_img:
-                if dataset.mode == 'image':
-                    cv2.imwrite(save_path, im0)
-                else:  # 'video'
-                    if vid_path != save_path:  # new video
-                        vid_path = save_path
-                        if isinstance(vid_writer, cv2.VideoWriter):
-                            vid_writer.release()  # release previous video writer
+            # Write results
+            for *xyxy, conf, cls in reversed(det):
+                bbox_cord.append(((int(xyxy[0]),int(xyxy[1])),(int(xyxy[2]),int(xyxy[3]))))
+            
 
-                        fourcc = 'mp4v'  # output video codec
-                        fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                        w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                        h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-                    vid_writer.write(im0)
-            '''
-
-    '''
-    if save_txt or save_img:
-        s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        print(f"Results saved to {save_dir}{s}")
-    '''
-
+        # Print time (inference + NMS)
+        print(f'{s}Done. ({t2 - t1:.3f}s)')
     print(f'Done. ({time.time() - t0:.3f}s)')
     return bbox_cord
 
