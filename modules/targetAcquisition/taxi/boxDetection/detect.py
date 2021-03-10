@@ -17,9 +17,10 @@ from boxDetection.utils.plots import plot_one_box
 from boxDetection.utils.torch_utils import select_device, load_classifier, time_synchronized
 import tensorflow as tf
 from tensorflow import keras
+
+
 class Detection:
-    
-    
+        
     def __init__(self):
         self.weights=['./boxDetection/weights/best.pb']
         # Initialize
@@ -31,8 +32,6 @@ class Detection:
         self.weights = self.weights[0] if isinstance(self.weights, list) else self.weights
         suffix = Path(self.weights).suffix
         
-        
-
         with open('boxDetection/data/data.yaml') as f:
             self.names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
 
