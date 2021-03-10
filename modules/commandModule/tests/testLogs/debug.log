@@ -1,0 +1,204 @@
+20:22:22,351 filelock DEBUG Attempting to acquire lock 4575739424 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,352 filelock INFO Lock 4575739424 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,352 filelock DEBUG Attempting to release lock 4575739424 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,352 filelock INFO Lock 4575739424 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,353 filelock DEBUG Attempting to acquire lock 4575739568 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,353 filelock INFO Lock 4575739568 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,353 filelock DEBUG Attempting to release lock 4575739568 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,353 filelock INFO Lock 4575739568 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,354 filelock DEBUG Attempting to acquire lock 4575739472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,354 filelock INFO Lock 4575739472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,354 filelock DEBUG Attempting to release lock 4575739472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,354 filelock INFO Lock 4575739472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,355 filelock DEBUG Attempting to acquire lock 4575739328 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,355 filelock INFO Lock 4575739328 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,355 filelock DEBUG Attempting to release lock 4575739328 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,356 filelock INFO Lock 4575739328 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,356 filelock DEBUG Attempting to acquire lock 4575267520 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,356 filelock INFO Lock 4575267520 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,357 filelock DEBUG Attempting to release lock 4575267520 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,357 filelock INFO Lock 4575267520 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,357 filelock DEBUG Attempting to acquire lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,358 filelock INFO Lock 4575267616 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,358 filelock DEBUG Attempting to release lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,358 filelock INFO Lock 4575267616 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,359 filelock DEBUG Attempting to acquire lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,359 filelock INFO Lock 4575267472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,359 filelock DEBUG Attempting to release lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,359 filelock INFO Lock 4575267472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,360 filelock DEBUG Attempting to acquire lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,360 filelock INFO Lock 4575267664 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,361 filelock DEBUG Attempting to release lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,361 filelock INFO Lock 4575267664 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,361 filelock DEBUG Attempting to acquire lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,362 filelock INFO Lock 4575267664 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,362 filelock DEBUG Attempting to release lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,362 filelock INFO Lock 4575267664 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,363 filelock DEBUG Attempting to acquire lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,363 filelock INFO Lock 4575268144 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,363 filelock DEBUG Attempting to release lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,363 filelock INFO Lock 4575268144 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,364 filelock DEBUG Attempting to acquire lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,364 filelock INFO Lock 4575267472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,364 filelock DEBUG Attempting to release lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,364 filelock INFO Lock 4575267472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,365 filelock DEBUG Attempting to acquire lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,365 filelock INFO Lock 4575268144 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,366 filelock DEBUG Attempting to release lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,366 filelock INFO Lock 4575268144 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,367 filelock DEBUG Attempting to acquire lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,368 filelock INFO Lock 4575267616 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,368 filelock DEBUG Attempting to release lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,368 filelock INFO Lock 4575267616 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,370 filelock DEBUG Attempting to acquire lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,370 filelock INFO Lock 4575267616 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,371 filelock DEBUG Attempting to release lock 4575267616 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,371 filelock INFO Lock 4575267616 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,373 filelock DEBUG Attempting to acquire lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,373 filelock INFO Lock 4575267472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,373 filelock DEBUG Attempting to release lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,373 filelock INFO Lock 4575267472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,375 filelock DEBUG Attempting to acquire lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,375 filelock INFO Lock 4575268144 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,376 filelock DEBUG Attempting to release lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,376 filelock INFO Lock 4575268144 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,378 filelock DEBUG Attempting to acquire lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,378 filelock INFO Lock 4575266272 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,378 filelock DEBUG Attempting to release lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,378 filelock INFO Lock 4575266272 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,380 filelock DEBUG Attempting to acquire lock 4567666800 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,381 filelock INFO Lock 4567666800 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,381 filelock DEBUG Attempting to release lock 4567666800 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,381 filelock INFO Lock 4567666800 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,383 filelock DEBUG Attempting to acquire lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,384 filelock INFO Lock 4575266272 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,384 filelock DEBUG Attempting to release lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,384 filelock INFO Lock 4575266272 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,386 filelock DEBUG Attempting to acquire lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,386 filelock INFO Lock 4575267664 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,386 filelock DEBUG Attempting to release lock 4575267664 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,386 filelock INFO Lock 4575267664 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,388 filelock DEBUG Attempting to acquire lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,388 filelock INFO Lock 4575268144 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,389 filelock DEBUG Attempting to release lock 4575268144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,389 filelock INFO Lock 4575268144 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,391 filelock DEBUG Attempting to acquire lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,391 filelock INFO Lock 4575267472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,391 filelock DEBUG Attempting to release lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,391 filelock INFO Lock 4575267472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,393 filelock DEBUG Attempting to acquire lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,393 filelock INFO Lock 4575266272 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,394 filelock DEBUG Attempting to release lock 4575266272 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,394 filelock INFO Lock 4575266272 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,396 filelock DEBUG Attempting to acquire lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,396 filelock INFO Lock 4575267472 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,396 filelock DEBUG Attempting to release lock 4575267472 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,396 filelock INFO Lock 4575267472 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,398 filelock DEBUG Attempting to acquire lock 4574354544 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,398 filelock INFO Lock 4574354544 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,399 filelock DEBUG Attempting to release lock 4574354544 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,399 filelock INFO Lock 4574354544 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,400 filelock DEBUG Attempting to acquire lock 4574354544 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,400 filelock INFO Lock 4574354544 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,401 filelock DEBUG Attempting to release lock 4574354544 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,401 filelock INFO Lock 4574354544 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,402 filelock DEBUG Attempting to acquire lock 4574355216 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,403 filelock INFO Lock 4574355216 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,403 filelock DEBUG Attempting to release lock 4574355216 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,403 filelock INFO Lock 4574355216 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,404 filelock DEBUG Attempting to acquire lock 4575646144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,404 filelock INFO Lock 4575646144 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,404 filelock DEBUG Attempting to release lock 4575646144 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,404 filelock INFO Lock 4575646144 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,405 filelock DEBUG Attempting to acquire lock 4574355216 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,405 filelock INFO Lock 4574355216 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,406 filelock DEBUG Attempting to release lock 4574355216 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,406 filelock INFO Lock 4574355216 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,407 filelock DEBUG Attempting to acquire lock 4575646096 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,407 filelock INFO Lock 4575646096 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,407 filelock DEBUG Attempting to release lock 4575646096 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,407 filelock INFO Lock 4575646096 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,408 filelock DEBUG Attempting to acquire lock 4575646288 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,408 filelock INFO Lock 4575646288 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,408 filelock DEBUG Attempting to release lock 4575646288 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,408 filelock INFO Lock 4575646288 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,409 filelock DEBUG Attempting to acquire lock 4575646288 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,409 filelock INFO Lock 4575646288 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,409 filelock DEBUG Attempting to release lock 4575646288 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,410 filelock INFO Lock 4575646288 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,410 filelock DEBUG Attempting to acquire lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,411 filelock INFO Lock 4575646240 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,411 filelock DEBUG Attempting to release lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,411 filelock INFO Lock 4575646240 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,412 filelock DEBUG Attempting to acquire lock 4575646432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,412 filelock INFO Lock 4575646432 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,412 filelock DEBUG Attempting to release lock 4575646432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,412 filelock INFO Lock 4575646432 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,413 filelock DEBUG Attempting to acquire lock 4575646192 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,413 filelock INFO Lock 4575646192 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,414 filelock DEBUG Attempting to release lock 4575646192 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,414 filelock INFO Lock 4575646192 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,415 filelock DEBUG Attempting to acquire lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,415 filelock INFO Lock 4575646240 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,415 filelock DEBUG Attempting to release lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,415 filelock INFO Lock 4575646240 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,417 filelock DEBUG Attempting to acquire lock 4575646432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,417 filelock INFO Lock 4575646432 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,418 filelock DEBUG Attempting to release lock 4575646432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,418 filelock INFO Lock 4575646432 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,419 filelock DEBUG Attempting to acquire lock 4575646192 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,419 filelock INFO Lock 4575646192 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,420 filelock DEBUG Attempting to release lock 4575646192 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,420 filelock INFO Lock 4575646192 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,421 filelock DEBUG Attempting to acquire lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,422 filelock INFO Lock 4575646240 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,422 filelock DEBUG Attempting to release lock 4575646240 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,422 filelock INFO Lock 4575646240 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+20:22:22,432 filelock DEBUG Attempting to acquire lock 4575542432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,432 filelock INFO Lock 4575542432 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,433 filelock DEBUG Attempting to release lock 4575542432 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,433 filelock INFO Lock 4575542432 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,434 filelock DEBUG Attempting to acquire lock 4575678960 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,435 filelock INFO Lock 4575678960 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,435 filelock DEBUG Attempting to release lock 4575678960 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,435 filelock INFO Lock 4575678960 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,437 filelock DEBUG Attempting to acquire lock 4575542480 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,437 filelock INFO Lock 4575542480 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,438 filelock DEBUG Attempting to release lock 4575542480 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,438 filelock INFO Lock 4575542480 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,439 filelock DEBUG Attempting to acquire lock 4575649504 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,439 filelock INFO Lock 4575649504 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,440 filelock DEBUG Attempting to release lock 4575649504 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,440 filelock INFO Lock 4575649504 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,441 filelock DEBUG Attempting to acquire lock 4575649504 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,441 filelock INFO Lock 4575649504 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,442 filelock DEBUG Attempting to release lock 4575649504 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,442 filelock INFO Lock 4575649504 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,443 filelock DEBUG Attempting to acquire lock 4575679776 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,443 filelock INFO Lock 4575679776 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,444 filelock DEBUG Attempting to release lock 4575679776 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,444 filelock INFO Lock 4575679776 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,454 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,455 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,455 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,455 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,455 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,455 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,456 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,457 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,458 filelock DEBUG Attempting to acquire lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,458 filelock INFO Lock 4575681024 acquired on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,458 filelock DEBUG Attempting to release lock 4575681024 on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+20:22:22,458 filelock INFO Lock 4575681024 released on /Users/ksisjaya/Desktop/computer_vision_python/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
