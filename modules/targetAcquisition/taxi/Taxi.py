@@ -56,18 +56,21 @@ class Taxi:
         yolo = Detection()
         while True:
             ret, frame = cap.read()
-            cv2.imshow('Image', frame)
-
+            
             # TODO: wrap this step in a preprocessing function
             if self.state == "BOX":
                 boundingBoxes = yolo.detect_boxes(img = frame)
-                print(boundingBoxes)
+                
+                for (topLeft, botRight) in boundingBoxes:
+                    frame = cv2.rectangle(frame, topLeft, botRight, (0,0,255), 2)
 
             # TODO: wrap this step in a preprocessing function
             if self.state == "QR":
                 message = scan_qr(img = frame)
                 print(message)
-
+                
+            cv2.imshow('Image', frame)
+            
             if cv2.waitKey(10) == ord('q'):
                 break
 
