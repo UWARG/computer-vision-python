@@ -9,12 +9,9 @@ import yaml
 from numpy import random
 import numpy as np
 
-from boxDetection.models.experimental import attempt_load
 from boxDetection.utils.datasets import letterbox
-from boxDetection.utils.general import check_img_size, check_requirements, non_max_suppression, apply_classifier, scale_coords, \
-    xyxy2xywh, strip_optimizer, set_logging, increment_path
-from boxDetection.utils.plots import plot_one_box
-from boxDetection.utils.torch_utils import select_device, load_classifier, time_synchronized
+from boxDetection.utils.general import check_requirements, non_max_suppression, scale_coords, set_logging
+from boxDetection.utils.torch_utils import time_synchronized
 import tensorflow as tf
 from tensorflow import keras
 
