@@ -2,35 +2,77 @@ import cv2 as cv2
 import numpy as np
 
 class DeckLinkSRC:
+    """
+    Handles DeckLink video stream
+
+    ...
+
+    Attributes
+    ----------
+    capture : cv2.VideoCapture
+        VideoCapture class containing DeckLink stream
+    __currentFrame : np.ndarray
+        Numpy array storing information about current frame
+
+    Methods
+    -------
+    __init__()
+        Sets up video stream with gstreamer pipeline
+    stop()
+        Ends video stream
+    grab()
+        Debug function for showing current frame with cv2.imshow()
+    get_frame()
+        Returns current frame as numpy array
+    display()
+        Displays live video feed of DeckLink stream
+    """
 
     def __init__(self):
+        """
+        Initializes DeckLink video stream
+        """
         self.__currentFrame = None
         self.capture = cv2.VideoCapture('decklinkvideosrc mode=7 connection=0 ! videoconvert ! appsink') #Starts capture on initialization of object
-        #Because of this, we no longer need start stream code from Aryan
 
-    def stop(self): #Logic for stopping video feed by releasing capture and destroying any windows open.
+    def stop(self):
+        """
+        Logic for stopping video feed by releasing capture and destroying any windows open.
+        """
         self.capture.release()
         cv2.destroyAllWindows()
     
 
-    def grab(self, frame): #Logic for grabbing frame from deckLink
-        self.cv2.imshow('Grabbedframe', frame)
-    
-
-    def grab(self): #Logic for displaying single frame from deckLink
+    def grab(self, frame):
+        """
+        Logic for grabbing single frame from DeckLink
+        """
         cv2.imshow('Grabbedframe', self.__currentFrame)
     
-    def get_frame(self): #Logic for returning the current frame as a numpy array
+    def get_frame(self):
+        """
+        Logic for returning the current frame as a numpy array
+
+        Returns
+        -------
+        np.ndarray
+            Numpy array containing information about the current frame
+        """
         return self.__currentFrame
-    
 
-    def quitProgram(self):
-        self.capture.release()
-        cv2.destroyAllWindows()
-
-
-    # We need the file name, x dimensions, and y dimensions
     def recordVideo(self, filename, xdim, ydim):
+        """
+        Logic for 
+
+        Parameters
+        ----------
+        filename : str
+            Desired name to save file as
+        xdim : int
+            Width of video frame in pixels
+        ydim : int
+            Height of video frame in pixels
+        """
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim) )
 
@@ -46,6 +88,9 @@ class DeckLinkSRC:
 
 
     def display(self):
+        """
+        Logic for displaying video stream from DeckLink
+        """
         while(True):
             ret, frame = self.capture.read()
             self.__currentFrame = frame
