@@ -10,6 +10,28 @@ class Geolocation:
     Locates the geographical position of a set of pixels
     """
 
+    """
+    INPUT CONVERSION METHODS TO RETURN O, C and U/V vectors
+    """
+
+    """
+
+        Methods
+        ________
+
+        __get_o_vector(latitude: int, longitude: int, altitude: int) -> dict?
+
+        __get_c_vector(latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict) -> dict?
+
+        __get_u_vector(latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict) -> dict?
+
+        __get_v_vector(latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict) -> dict?
+        
+        convert_input()
+
+    """
+
+
     # TODO Class members
     def __init__(self):
         """
@@ -129,3 +151,59 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+
+
+    def __get_o_vector(self, latitude: int, longitude: int, altitude: int):
+        """
+        Returns a dictionary that contains the components of the o vector
+
+        Returns
+        -------
+        dict:
+            Components of the o vector
+
+        """
+
+    def __get_c_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+        """
+        Returns a dictionary that contains the components of the c vector
+
+        Returns
+        -------
+        dict:
+            Components of the c vector
+
+        """
+
+    def __get_u_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+        """
+        Returns a dictionary that contains the components of the u vector
+
+        Returns
+        -------
+        dict:
+            Components of the u vector
+
+        """
+
+    def __get_v_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+        """
+        Returns a dictionary that contains the components of the v vector
+
+        Returns
+        -------
+        dict:
+            Components of the v vector
+
+        """
+
+    def convert_input(self):
+        """
+        Uses the o, c, u and v private functions to convert input
+
+        Returns
+        -------
+        dict:
+            Each component is a numpy array
+
+        """
