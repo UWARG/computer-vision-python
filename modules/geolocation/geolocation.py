@@ -155,44 +155,44 @@ class Geolocation:
 
     def __get_o_vector(self, latitude: int, longitude: int, altitude: int):
         """
-        Returns a dictionary that contains the components of the o vector
+        Returns a numpy array that contains the components of the o vector
 
         Returns
         -------
-        dict:
+        numpyArray:
             Components of the o vector
 
         """
 
     def __get_c_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
         """
-        Returns a dictionary that contains the components of the c vector
+        Returns a numpy array that contains the components of the c vector
 
         Returns
         -------
-        dict:
+        numpyArray:
             Components of the c vector
 
         """
 
     def __get_u_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
         """
-        Returns a dictionary that contains the components of the u vector
+        Returns a numpy array that contains the components of the u vector
 
         Returns
         -------
-        dict:
+        numpyArray:
             Components of the u vector
 
         """
 
     def __get_v_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
         """
-        Returns a dictionary that contains the components of the v vector
+        Returns a numpy array that contains the components of the v vector
 
         Returns
         -------
-        dict:
+        numpyArray:
             Components of the v vector
 
         """
