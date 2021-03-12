@@ -1,9 +1,7 @@
-import tensorflow as tf
 import numpy as np
-import cv2
 import threading
-import os
-from yolov2_assets.predict import yolo_predict
+from .yolov2_assets.predict import yolo_predict
+
 
 class TargetAcquisition:
     """
@@ -35,7 +33,7 @@ class TargetAcquisition:
         Interprets BoundBox class values to populate self.tentCoordinates with centres of tents
     """
 
-    def __init__ (self, videoPipeline, coordinatePipeline):
+    def __init__(self, videoPipeline, coordinatePipeline):
         """
         Initializes boxes, tentCoordinates attributes, sets currentFrame attribute to given frame, zeros otherwise
 
@@ -55,9 +53,8 @@ class TargetAcquisition:
         mainThread.start()
 
     def _mainThread_(self):
-        self.currentFrame = self.videoPipeline.getNewFrame()
-        self.coordinatePipeline.addNewPackage(self.get_coordinates(self.currentFrame))
-
+        self.currentFrame = self.videoPipeline.get()
+        self.coordinatePipeline.put(self.get_coordinates(self.currentFrame))
 
     def set_curr_frame(self, newFrame):
         """
@@ -69,7 +66,6 @@ class TargetAcquisition:
             Variable size array containing data about a video frame (as given by cv2.imread())
         """
         self.currentFrame = newFrame
-
 
     def get_coordinates(self, newFrame=np.zeros((416, 416, 3))):
         """
@@ -91,14 +87,14 @@ class TargetAcquisition:
         # Run YOLOV2 model
         self.__predict()
         return self.tentCoordinates
-  
+
     def __predict(self):
         """
         PRIVATE: Runs YOLOV2 model on current frame and populates tentCoordinates and boxes attributes
         """
         # Run YOLOV2 model, put bounding boxes into list
         self.boxes = yolo_predict(self.currentFrame)
-        #Find centre coordinates for each bounding box
+        # Find centre coordinates for each bounding box
         self.__find_coordinates()
 
     def __find_coordinates(self):
@@ -108,12 +104,12 @@ class TargetAcquisition:
         image_h = self.currentFrame.shape[0]
         image_w = self.currentFrame.shape[1]
         for box in self.boxes:
-            xmin = int(box.xmin*image_w)
-            ymin = int(box.ymin*image_h)
-            xmax = int(box.xmax*image_w)
-            ymax = int(box.ymax*image_h)
+            xmin = int(box.xmin * image_w)
+            ymin = int(box.ymin * image_h)
+            xmax = int(box.xmax * image_w)
+            ymax = int(box.ymax * image_h)
 
-            self.tentCoordinates[box] = ((xmin+xmax)/2, (ymin+ymax)/2)
+            self.tentCoordinates[box] = ((xmin + xmax) / 2, (ymin + ymax) / 2)
 
 # Testing
 # tracker = TargetAcquisition(cv2.imread('yolov2_assets/single_test_images/raccoon-1.jpg'))

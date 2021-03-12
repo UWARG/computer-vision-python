@@ -1,14 +1,14 @@
 from ..targetAcquisition.targetAcquisition import TargetAcquisition
 from ..decklinksrc.decklinksrc import DeckLinkSRC
-from ...pipelines.genericPipeline import GenericPipeline
 import threading
+import queue
 
 
 class VideoMediator:
 
     def __init__(self):
-        self.videoPipeline = GenericPipeline()
-        self.coordinatePipeline = GenericPipeline()
+        self.videoPipeline = queue.Queue()
+        self.coordinatePipeline = queue.Queue()
         self.coordinates = []
         DeckLinkSRC(self.videoPipeline)
         TargetAcquisition(self.videoPipeline, self.coordinatePipeline)
@@ -16,4 +16,4 @@ class VideoMediator:
         mainThread.start()
 
     def _mainThread_(self):
-        self.coordinates.append(self.coordinatePipeline.getNewPackage())
+        self.coordinates.append(self.coordinatePipeline.get())

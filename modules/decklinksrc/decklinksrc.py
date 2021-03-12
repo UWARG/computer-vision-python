@@ -1,5 +1,4 @@
 import cv2 as cv2
-import numpy as np
 import threading
 
 
@@ -14,7 +13,7 @@ class DeckLinkSRC:
         mainThread.start()
 
     def _mainThread_(self):
-        self.videoPipeline.addNewPackage(self.grab())
+        self.videoPipeline.put(self.grab())
 
     def stop(self):  # Logic for stopping video feed by releasing capture and destroying any windows open.
         self.capture.release()
@@ -26,21 +25,6 @@ class DeckLinkSRC:
 
     def get_frame(self):  # Logic for returning the current frame as a numpy array
         return self.__currentFrame
-
-    # We need the file name, x dimensions, and y dimensions
-    def recordVideo(self, filename, xdim, ydim):
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim))
-
-        while (self.capture.isOpened()):
-            ret, frame = self.capture.read()
-            if ret == True:
-                out.write(frame)
-
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-            else:
-                break
 
     def display(self):
         while True:
