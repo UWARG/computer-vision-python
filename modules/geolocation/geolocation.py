@@ -153,7 +153,7 @@ class Geolocation:
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
 
-    def __get_o_vector(self, latitude: int, longitude: int, altitude: int):
+    def __get_o_vector(self, latitude: int, longitude: int, altitude: int, origin: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the o vector
 
@@ -163,6 +163,15 @@ class Geolocation:
             Components of the o vector
 
         """
+        arr = np.zeroes(3)
+        arr[0] = origin[0] + latitude;
+        arr[1] = origin[1] + altitude;
+        arr[2] = origin[2] + longitude;
+
+        return arr
+
+
+
 
     def __get_c_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
         """
