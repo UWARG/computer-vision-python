@@ -173,7 +173,7 @@ class Geolocation:
 
 
 
-    def __get_c_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+    def __get_c_vector(self, eulerCamera: dict, eulerPlane: dict, cVectorCameraSpace: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the c vector
 
@@ -183,6 +183,36 @@ class Geolocation:
             Components of the c vector
 
         """
+        c_cos_x = np.cos(eulerCamera.get("alpha"))
+        c_sin_x = np.sin(eulerCamera.get("alpha"))
+        c_cos_y = np.cos(eulerCamera.get("beta"))
+        c_sin_y = np.sin(eulerCamera.get("beta"))
+        c_cos_z = np.cos(eulerCamera.get("gamma"))
+        c_sin_z = np.sin(eulerCamera.get("gamma"))
+
+        p_cos_x = np.cos(eulerPlane.get("alpha"))
+        p_sin_x = np.sin(eulerPlane.get("alpha"))
+        p_cos_y = np.cos(eulerPlane.get("beta"))
+        p_sin_y = np.sin(eulerPlane.get("beta"))
+        p_cos_z = np.cos(eulerPlane.get("gamma"))
+        p_sin_z = np.sin(eulerPlane.get("gamma"))
+
+
+        camera_rotation_matrix = np.array([[(c_cos_y * c_cos_z), (c_cos_z * c_sin_x * c_sin_y - c_cos_x * c_sin_z), (c_cos_x * c_cos_z * c_sin_y + c_sin_x * c_sin_z)],
+                                           [(c_cos_y * c_sin_z), (c_cos_x * c_cos_z + c_sin_x * c_sin_y * c_sin_z), (c_cos_x * c_sin_y * c_sin_z - c_cos_z * c_sin_x)],
+                                           [(-1 * c_sin_y), (c_cos_y * c_sin_x), (c_cos_x * c_cos_y)]])
+
+        plane_rotation_matrix = np.array([[(p_cos_y * p_cos_z), (p_cos_z * p_sin_x * p_sin_y - p_cos_x * p_sin_z), (p_cos_x * p_cos_z * p_sin_y + p_sin_x * p_sin_z)],
+                                           [(p_cos_y * p_sin_z), (p_cos_x * p_cos_z + p_sin_x * p_sin_y * p_sin_z), (p_cos_x * p_sin_y * p_sin_z - p_cos_z * p_sin_x)],
+                                           [(-1 * p_sin_y), (p_cos_y * p_sin_x), (p_cos_x * p_cos_y)]])
+
+        arr_temp = camera_rotation_matrix.dot(cVectorCameraSpace)
+        cVectorWorldSpace = plane_rotation_matrix.dot(arr_temp)
+        return cVectorWorldSpace
+
+
+
+
 
     def __get_u_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
         """
