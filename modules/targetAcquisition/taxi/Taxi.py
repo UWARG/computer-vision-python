@@ -17,6 +17,14 @@ class Taxi:
     ----------
     state : string
         state of object recognition ("BOX", "QR", ...)
+    bbox : list<tuple<tuple, tuple>>
+        a list of ((x1, y1), (x2, y2)) coordinates for (top left, bottom right) of bounding boxes; one per box
+    frame : np.ndarray
+        the current video frame
+    yolo : Detection object
+        the YOLOv5 detector
+    tracker : TrackerKCF object
+        the cv2 KCF bounding box tracker
 
     Methods
     -------
@@ -32,7 +40,11 @@ class Taxi:
         """
         Initializes variables
         """
-        self.state = None
+        self.state = "BOX"                      # 
+        self.bbox = [((0, 0), (0, 0))]
+        self.frame = []
+        self.yolo = Detection()
+        self.tracker = cv2.TrackerKCF_create()
 
     def set_state(self, state):
         """
@@ -43,12 +55,16 @@ class Taxi:
         state: string
             state of object recognition ("BOX", "QR", ...)
         """
-        if state == "BOX":
-            # TODO: set other variables here if necessary
+        if state == "BOX" or state == 0:
             self.state = "BOX"
 
-        elif state == "QR":
-            # TODO: set other variables here if necessary
+        elif state == "TRACK" or state == 1:
+            self.state = "TRACK"
+            # Initialize tracker with first frame and bounding box
+            bboxReformat = (self.bbox[0][0][0], self.bbox[0][0][1], self.bbox[0][1][0], self.bbox[0][1][1])
+            self.tracker.init(self.frame, bboxReformat)
+
+        elif state == "QR" or state == 2:
             self.state = "QR"
 
         else:
@@ -59,30 +75,41 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
         """
         cap = cv2.VideoCapture(0)
-        yolo = Detection()
         
         while True:
-            ret, frame = cap.read()
+            ret, self.frame = cap.read()
             
-            # TODO: wrap this step in a preprocessing function
             if self.state == "BOX":
-                boundingBoxes = yolo.detect_boxes(img = frame)
-                
-                for (topLeft, botRight) in boundingBoxes:
-                    frame = cv2.rectangle(frame, topLeft, botRight, (0,0,255), 2)
+                self.bbox = self.yolo.detect_boxes(self.frame)
+                for (topLeft, botRight) in self.bbox:
+                    cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
 
-            # TODO: wrap this step in a preprocessing function
+            if self.state == "TRACK":
+                found, bbox = self.tracker.update(self.frame)
+                if found:
+                    p1 = (int(bbox[0]), int(bbox[1]))
+                    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+                    self.bbox = [(p1, p2)]
+
+                    cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
+                else:
+                    # TODO: hand off control to human controller when tracking fails
+                    print("Tracking failure")
+
             if self.state == "QR":
-                message = scan_qr(img = frame)
+                message = scan_qr(self.frame)
                 print(message)
                 
-            cv2.imshow('Image', frame)
+            cv2.imshow('Image', self.frame)
             
-            if cv2.waitKey(10) == ord('q'):
+            key = cv2.waitKey(10)
+            if key == ord('t') and self.state != "TRACK":
+                self.set_state("TRACK")
+                print("switch to tracking state")
+            if key == ord('q'):
                 break
 
 # Instantiate the Taxi object and run operations
 if __name__ == '__main__':
     testTaxi = Taxi()
-    testTaxi.set_state(state = "BOX")
     testTaxi.main()

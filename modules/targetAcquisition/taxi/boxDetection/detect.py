@@ -135,6 +135,7 @@ class Detection:
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
+            print(bbox_cord)
         print(f'Done. ({time.time() - t0:.3f}s)')
         return bbox_cord
 
