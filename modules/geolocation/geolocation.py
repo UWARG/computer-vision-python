@@ -175,30 +175,29 @@ class Geolocation:
 
         """
 
-    def __get_u_vector(self, eulerCamera, eulerPlane):
+    def __get_u_vector(self, cameraRotation, planeRotation):
         """
         Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
 
         Parameters
         ----------
-        eulerCamera : dict
-            dictionary containing yaw, pitch, and roll euler angles for the camera
-        eulerPlane : dict
-            dictionary containing yaw, pitch, and roll euler angles for the plane
+        cameraRotation: 
+        planeRotation:
 
         Returns
         -------
-        numpyArray:
+        uVector: numpy array
             array containing camera rotation vector
         """
 
-        # assume camera direction is in roll axis, so u vector (90˚ to roll) is pitch axis (y-axis)
+        # assume u vector is pitch axis (y-axis) given assumption that camera direction is in roll axis (x-axis)
         uVector = np.array([[1], [0], [0]])
 
         # apply plane rotation to camera direction
         uVector = np.dot(planeRotation, uVector)
 
         # apply camera rotation to camera direction
+        # note: this assumes that camera euler angles are w.r.t. plane space
         uVector = np.dot(cameraRotation, uVector)
 
         # normalize output since camera direction magnitude doesn't matter
