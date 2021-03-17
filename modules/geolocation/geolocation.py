@@ -175,27 +175,105 @@ class Geolocation:
 
         """
 
-    def __get_u_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+    def __get_u_vector(self, eulerCamera, eulerPlane):
         """
-        Returns a numpy array that contains the components of the u vector
+        Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
+
+        Parameters
+        ----------
+        eulerCamera : dict
+            dictionary containing yaw, pitch, and roll euler angles for the camera
+        eulerPlane : dict
+            dictionary containing yaw, pitch, and roll euler angles for the plane
 
         Returns
         -------
         numpyArray:
-            Components of the u vector
-
+            array containing camera rotation vector
         """
 
-    def __get_v_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+        # note: naming conventions specified in CV-Telemetry doc
+
+        # get plane euler angles
+        planeYawAngle = eulerPlane["z"]
+        planePitchAngle = eulerPlane["y"]
+        planeRollAngle = eulerCamera["x"]
+
+        # get plane yaw rotation matrix
+        planeYawRotation = np.array([[1, 0, 0],
+                                     [0, float(numpy.cos([planeYawAngle])), -1 * float(numpy.sin([planeYawAngle]))],
+                                     [0, float(numpy.sin([planeYawAngle])), float(numpy.cos([planeYawAngle]))]])
+        
+        # get plane pitch rotation matrix
+        planePitchRotation = np.array([[float(numpy.cos([planePitchAngle])), 0, float(numpy.sin([planePitchAngle]))],
+                                       [0, 1, 0],
+                                       [-1 * float(numpy.sin([planePitchAngle])), 0, float(numpy.cos([planePitchAngle]))]])
+        
+        # get plane roll rotation matrix
+        planeRollRotation = np.array([[float(numpy.cos([planeRollAngle])), -1 * float(numpy.sin([planeRollAngle])), 0],
+                                      [float(numpy.sin([planeRollAngle])), float(numpy.cos([planeRollAngle])), 0],
+                                      [0, 0, 1]])
+
+        # get total plane rotation matrix assuming ZYX euler angles (i.e. yaw -> pitch -> roll)
+        planeRotation = np.matmul(planeRollRotation, np.matmul(planePitchRotation, planeYawRotation))
+
+        # get camera euler angles
+        cameraYawAngle = eulerCamera["z"]
+        cameraPitchAngle = eulerCamera["y"]
+        cameraRollAngle = eulerCamera["x"]
+
+        # get camera yaw rotation matrix
+        cameraYawRotation = np.array([[1, 0, 0],
+                                     [0, float(numpy.cos([cameraYawAngle])), -1 * float(numpy.sin([cameraYawAngle]))],
+                                     [0, float(numpy.sin([cameraYawAngle])), float(numpy.cos([cameraYawAngle]))]])
+        
+        # get camera pitch rotation matrix
+        cameraPitchRotation = np.array([[float(numpy.cos([cameraPitchAngle])), 0, float(numpy.sin([cameraPitchAngle]))],
+                                       [0, 1, 0],
+                                       [-1 * float(numpy.sin([cameraPitchAngle])), 0, float(numpy.cos([cameraPitchAngle]))]])
+        
+        # get camera roll rotation matrix
+        cameraRollRotation = np.array([[float(numpy.cos([cameraRollAngle])), -1 * float(numpy.sin([cameraRollAngle])), 0],
+                                      [float(numpy.sin([cameraRollAngle])), float(numpy.cos([cameraRollAngle])), 0],
+                                      [0, 0, 1]])
+
+        # get total camera rotation matrix assuming ZYX euler angles (i.e. yaw -> pitch -> roll)
+        cameraRotation = np.matmul(cameraRollRotation, np.matmul(cameraPitchRotation, cameraYawRotation))
+
+        # assume camera direction is in roll axis, so u vector (90˚ to roll) is pitch axis (y-axis)
+        uVector = np.array([[1], [0], [0]])
+
+        # apply plane rotation to camera direction
+        uVector = np.dot(planeRotation, uVector)
+
+        # apply camera rotation to camera direction
+        uVector = np.dot(cameraRotation, uVector)
+
+        # normalize output since camera direction magnitude doesn't matter
+        norm = np.linalg.norm(uVector)
+        uVector = uVector / norm
+
+        return uVector
+
+    def __get_v_vector(self, c, u):
         """
-        Returns a numpy array that contains the components of the v vector
+        Returns a numpy array that contains the components of the v vector (remaining camera rotation vector)
+
+        Parameters
+        ----------
+        c : np.array
+            array containing camera direction vector
+        u : np.array
+            array containing one camera rotation vector
 
         Returns
         -------
         numpyArray:
-            Components of the v vector
-
+            array containing the remaining camera rotation vector
         """
+
+        # cross product c and u to get v
+        return np.cross(c, u)
 
     def convert_input(self):
         """
