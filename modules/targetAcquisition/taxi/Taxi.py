@@ -25,6 +25,10 @@ class Taxi:
         the YOLOv5 detector
     tracker : TrackerKCF object
         the cv2 KCF bounding box tracker
+    nextUncheckedID : int
+        the ID of the next box to scan
+    foundBox : bool
+        whether the box with the right QR code is found
 
     Methods
     -------
@@ -40,11 +44,13 @@ class Taxi:
         """
         Initializes variables
         """
-        self.state = "BOX"                      # 
+        self.state = "BOX"
         self.bbox = [((0, 0), (0, 0))]
         self.frame = []
         self.yolo = Detection()
         self.tracker = cv2.TrackerKCF_create()
+        self.nextUncheckedID = 0
+        self.foundBox = False
 
     def set_state(self, state):
         """
