@@ -226,13 +226,67 @@ class Geolocation:
         # cross product c and u to get v
         return np.cross(c, u)
 
-    def convert_input(self):
+    def __get_rotation_matrix(self, eulerAngles):
         """
-        Uses the o, c, u and v private functions to convert input
+        Calculate and return rotation matrix given euler angles
+
+        Parameters
+        ----------
+        eulerAngles: dict
+            dictionary containing euler angles with roll ('x'), pitch ('y') and yaw ('z') rotations in radians
 
         Returns
         -------
-        dict:
-            Each component is a numpy array
-
+        rotationMatrix: ndarray
+            rotation matrix calculated from the given euler angles
         """
+        # get euler angles
+        # note: naming conventions specified in CV-Telemetry docs and commandModule specs
+        yawAngle = eulerAngles["z"]
+        pitchAngle = eulerAngles["y"]
+        rollAngle = eulerAngles["x"]
+
+        # get plane yaw rotation matrix
+        yawRotation = np.array([[1, 0, 0],
+                                     [0, float(np.cos([yawAngle])), -1 * float(np.sin([yawAngle]))],
+                                     [0, float(np.sin([yawAngle])), float(np.cos([yawAngle]))]])
+        # get plane pitch rotation matrix
+        pitchRotation = np.array([[float(np.cos([pitchAngle])), 0, float(np.sin([pitchAngle]))],
+                                       [0, 1, 0],
+                                       [-1 * float(np.sin([pitchAngle])), 0, float(np.cos([pitchAngle]))]])
+        # get plane roll rotation matrix
+        rollRotation = np.array([[float(np.cos([rollAngle])), -1 * float(np.sin([rollAngle])), 0],
+                                      [float(np.sin([rollAngle])), float(np.cos([rollAngle])), 0],
+                                      [0, 0, 1]])
+
+        # get total plane rotation matrix based on euler rotation theorem 
+        # note: assume ZYX euler angles (i.e. R = RxRyRz); otherwise, change the mult. order
+        planeRotation = np.matmul(rollRotation, np.matmul(pitchRotation, yawRotation))
+
+        return rotationMatrix
+
+    def convert_input(self, eulerCamera, eulerPlane):
+        """
+        Converts telemtry data into workable data
+
+        Parameters
+        ----------
+        eulerCamera : dict
+            dictionary containing euler angles for the camera:
+                - roll, pitch and yaw rotations with the keys 'x', 'y' and 'z' respectively
+        eulerPlane : dict
+            dictionary containing euler angles for the plane:
+                - roll, pitch and yaw rotations with the keys 'x', 'y' and 'z' respectively
+        Returns
+        -------
+        list:
+            list of numpy arrays that represent the o, c, u and v vectors:
+                - o: position vector to the camera in world space
+                - c: direction vector of the camera
+                - u: rotation vector of the camera
+                - v: rotation vector of the camera
+        """
+
+        # get plane and camera rotation matrices
+        planeRotation = self.__get_rotation_matrix(eulerPlane)
+        cameraRotation = self.__get_rotation_matrix(eulerCamera)
