@@ -131,6 +131,7 @@ class Detection:
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     bbox_cord.append(((int(xyxy[0]),int(xyxy[1])),(int(xyxy[2]),int(xyxy[3]))))
+                    bbox_cord.sort(key=lambda tup: tup[0][0])
                 
 
             # Print time (inference + NMS)

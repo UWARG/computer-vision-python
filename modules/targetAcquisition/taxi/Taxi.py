@@ -67,7 +67,8 @@ class Taxi:
         elif state == "TRACK" or state == 1:
             self.state = "TRACK"
             # Initialize tracker with first frame and bounding box
-            bboxReformat = (self.bbox[0][0][0], self.bbox[0][0][1], self.bbox[0][1][0], self.bbox[0][1][1])
+            bboxReformat = (self.bbox[self.nextUncheckedID][0][0], self.bbox[self.nextUncheckedID][0][1], 
+                            self.bbox[self.nextUncheckedID][1][0], self.bbox[self.nextUncheckedID][1][1])
             self.tracker.init(self.frame, bboxReformat)
 
         elif state == "QR" or state == 2:
@@ -89,12 +90,16 @@ class Taxi:
                 self.bbox = self.yolo.detect_boxes(self.frame)
                 for (topLeft, botRight) in self.bbox:
                     cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
+                if len(self.bbox) == 5:
+                    import time
+                    time.sleep(5)
+                    self.set_state("TRACK")
 
             if self.state == "TRACK":
                 found, bbox = self.tracker.update(self.frame)
                 if found:
                     p1 = (int(bbox[0]), int(bbox[1]))
-                    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
+                    p2 = (int(bbox[2]), int(bbox[3]))
                     self.bbox = [(p1, p2)]
 
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
