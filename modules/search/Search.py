@@ -1,3 +1,5 @@
+import math
+
 class Search:
     """Performs search algorithm"""
 
@@ -31,7 +33,6 @@ class Search:
                     False if rotation should be clockwise
 
         """
-        import math
 
         
         '''
