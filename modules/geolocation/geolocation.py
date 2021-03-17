@@ -192,54 +192,6 @@ class Geolocation:
             array containing camera rotation vector
         """
 
-        # note: naming conventions specified in CV-Telemetry doc
-
-        # get plane euler angles
-        planeYawAngle = eulerPlane["z"]
-        planePitchAngle = eulerPlane["y"]
-        planeRollAngle = eulerCamera["x"]
-
-        # get plane yaw rotation matrix
-        planeYawRotation = np.array([[1, 0, 0],
-                                     [0, float(numpy.cos([planeYawAngle])), -1 * float(numpy.sin([planeYawAngle]))],
-                                     [0, float(numpy.sin([planeYawAngle])), float(numpy.cos([planeYawAngle]))]])
-        
-        # get plane pitch rotation matrix
-        planePitchRotation = np.array([[float(numpy.cos([planePitchAngle])), 0, float(numpy.sin([planePitchAngle]))],
-                                       [0, 1, 0],
-                                       [-1 * float(numpy.sin([planePitchAngle])), 0, float(numpy.cos([planePitchAngle]))]])
-        
-        # get plane roll rotation matrix
-        planeRollRotation = np.array([[float(numpy.cos([planeRollAngle])), -1 * float(numpy.sin([planeRollAngle])), 0],
-                                      [float(numpy.sin([planeRollAngle])), float(numpy.cos([planeRollAngle])), 0],
-                                      [0, 0, 1]])
-
-        # get total plane rotation matrix assuming ZYX euler angles (i.e. yaw -> pitch -> roll)
-        planeRotation = np.matmul(planeRollRotation, np.matmul(planePitchRotation, planeYawRotation))
-
-        # get camera euler angles
-        cameraYawAngle = eulerCamera["z"]
-        cameraPitchAngle = eulerCamera["y"]
-        cameraRollAngle = eulerCamera["x"]
-
-        # get camera yaw rotation matrix
-        cameraYawRotation = np.array([[1, 0, 0],
-                                     [0, float(numpy.cos([cameraYawAngle])), -1 * float(numpy.sin([cameraYawAngle]))],
-                                     [0, float(numpy.sin([cameraYawAngle])), float(numpy.cos([cameraYawAngle]))]])
-        
-        # get camera pitch rotation matrix
-        cameraPitchRotation = np.array([[float(numpy.cos([cameraPitchAngle])), 0, float(numpy.sin([cameraPitchAngle]))],
-                                       [0, 1, 0],
-                                       [-1 * float(numpy.sin([cameraPitchAngle])), 0, float(numpy.cos([cameraPitchAngle]))]])
-        
-        # get camera roll rotation matrix
-        cameraRollRotation = np.array([[float(numpy.cos([cameraRollAngle])), -1 * float(numpy.sin([cameraRollAngle])), 0],
-                                      [float(numpy.sin([cameraRollAngle])), float(numpy.cos([cameraRollAngle])), 0],
-                                      [0, 0, 1]])
-
-        # get total camera rotation matrix assuming ZYX euler angles (i.e. yaw -> pitch -> roll)
-        cameraRotation = np.matmul(cameraRollRotation, np.matmul(cameraPitchRotation, cameraYawRotation))
-
         # assume camera direction is in roll axis, so u vector (90˚ to roll) is pitch axis (y-axis)
         uVector = np.array([[1], [0], [0]])
 
