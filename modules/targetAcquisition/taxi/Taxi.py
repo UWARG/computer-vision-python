@@ -99,7 +99,7 @@ class Taxi:
                 found, bbox = self.tracker.update(self.frame)
                 if found:
                     p1 = (int(bbox[0]), int(bbox[1]))
-                    p2 = (int(bbox[2]), int(bbox[3]))
+                    p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                     self.bbox = [(p1, p2)]
 
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
