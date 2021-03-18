@@ -27,8 +27,10 @@ class Taxi:
         the cv2 KCF bounding box tracker
     nextUncheckedID : int
         the ID of the next box to scan
-    foundBox : bool
-        whether the box with the right QR code is found
+    expectedCount : int
+        the number of boxes it needs to detect to go into tracking state
+    expectedQR : string
+        QR code on the correct box
 
     Methods
     -------
@@ -40,17 +42,19 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
     """
     
-    def __init__(self):
+    def __init__(self, state = "BOX", bbox = [((0, 0), (0, 0))], frame = [], 
+                 nextUncheckedID = 0, expectedCount = 5, expectedQR = "abcde12345"):
         """
         Initializes variables
         """
-        self.state = "BOX"
-        self.bbox = [((0, 0), (0, 0))]
-        self.frame = []
+        self.state = state
+        self.bbox = bbox
+        self.frame = frame
         self.yolo = Detection()
         self.tracker = cv2.TrackerKCF_create()
-        self.nextUncheckedID = 0
-        self.foundBox = False
+        self.nextUncheckedID = nextUncheckedID
+        self.expectedCount = expectedCount
+        self.expectedQR = expectedQR
 
     def set_state(self, state):
         """
@@ -90,7 +94,7 @@ class Taxi:
                 self.bbox = self.yolo.detect_boxes(self.frame)
                 for (topLeft, botRight) in self.bbox:
                     cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
-                if len(self.bbox) == 5:
+                if len(self.bbox) == self.expectedCount:
                     import time
                     time.sleep(5)
                     self.set_state("TRACK")
@@ -105,11 +109,20 @@ class Taxi:
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
                 else:
                     # TODO: hand off control to human controller when tracking fails
-                    print("Tracking failure")
+                    # Without forgetting what was the last unchecked ID
+                    # Maybe set that as an __init__ parameter? 
+                    print("Tracking failure. Switch to human control")
 
             if self.state == "QR":
                 message = scan_qr(self.frame)
-                print(message)
+                # print(message)
+                if message != None:
+                    # TODO: return whether it matches instead of just printing it
+                    # hand off to human control to turn the plane around
+                    if message == self.expectedQR:
+                        print("QR matches")
+                    else:
+                        print("QR does not match")
                 
             cv2.imshow('Image', self.frame)
             
@@ -117,10 +130,13 @@ class Taxi:
             if key == ord('t') and self.state != "TRACK":
                 self.set_state("TRACK")
                 print("switch to tracking state")
+            if key == ord('r') and self.state != "QR":
+                self.set_state("QR")
+                print("switch to tracking state")
             if key == ord('q'):
                 break
 
 # Instantiate the Taxi object and run operations
 if __name__ == '__main__':
-    testTaxi = Taxi()
+    testTaxi = Taxi(expectedQR = "abcde12345")
     testTaxi.main()
