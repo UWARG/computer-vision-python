@@ -22,22 +22,11 @@ class Search:
 
         Returns
         -------
-        dict<"angle" : float, "counterclockwise" : bool>
-            Returns a dict with angle of rotation and whether rotation is clockwise or counterclockwise
-
-                "angle" : float
-                    Angle of rotation specified
-
-                "counterclockwise" : bool
-                    True if rotation should be counterclockwise
-                    False if rotation should be clockwise
-
+        float
+            Returns the bearing between the plane and tent
         """
 
         
-        '''
-            Calculating bearings between plane and tent
-        '''
         planeLat = planeGPS["lat"]*math.pi/180
         planeLon = planeGPS["lon"]
 
@@ -52,30 +41,4 @@ class Search:
         theta = math.atan2(y,x)
         bearing = (theta*180/math.pi + 360)%360
 
-
-        '''
-            Calculating Angle of Rotation required by plane
-        '''
-        cc = False
-        rotate = 0.0
-        
-        # Step 1: Calculate the difference in Bearings:
-        diffBearing = bearing - angle
-
-        # Step 2: Check for smallest rotation
-        if diffBearing > 0:
-            if diffBearing > 180:
-                diffBearing = 360 - diffBearing
-                cc = True
-            
-        
-        elif diffBearing < 0:
-            if diffBearing < -180:
-                diffBearing = 360 + diffBearing
-            else:
-                diffBearing *= -1
-                cc = True
-
-        rotate = diffBearing
-
-        return {"angle": rotate, "counterclockwise": cc}
+        return bearing
