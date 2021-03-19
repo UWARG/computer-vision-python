@@ -129,3 +129,38 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+
+    def map_location_from_pixel(self, pixels, coordinates):
+        """
+        Maps Geographical Location Coordinates in the destination image
+        
+        Parameters
+        -------
+            pixels : np.array(shape=(3,3,))
+            coordinates : np.array(shape=(X,2,))
+
+        Returns
+        -------
+            np.array(shape=(X,2,))
+        """
+        dehomogenized = np.array([])
+        
+        # Cycle through all 2D coordinates
+        for c in coordinates:
+            # Express the 2D coordinates as 3D coordinates with the z value = 1 
+            c = np.concatenate((c, np.array([1])))
+    
+            # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
+            homogeneousCoordinates = pixels.dot(c)
+
+            # Dehomogenizing the coordinate vector to compute the position in the destination image
+            dehomogenizedX = homogeneousCoordinates[0]/homogeneousCoordinates[1]
+            dehomogenizedY = homogeneousCoordinates[1]/homogeneousCoordinates[2]
+
+            
+            if dehomogenized.shape == (0,):
+                dehomogenized = np.array([dehomogenizedX,dehomogenizedY])
+            else:
+                dehomogenized = np.vstack((dehomogenized,np.array([dehomogenizedX,dehomogenizedY])))
+
+        return dehomogenized
