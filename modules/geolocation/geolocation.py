@@ -136,12 +136,12 @@ class Geolocation:
         
         Parameters
         -------
-            pixels : np.array(shape=(3,3,))
-            coordinates : np.array(shape=(X,2,))
+            pixels : np.array(shape=(3,3))
+            coordinates : np.array(shape=(5,2))
 
         Returns
         -------
-            np.array(shape=(X,2,))
+            np.array(shape=(5,2))
         """
         dehomogenized = np.array([])
         
