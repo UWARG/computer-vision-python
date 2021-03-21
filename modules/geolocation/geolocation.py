@@ -176,9 +176,6 @@ class Geolocation:
 
         return arr
 
-
-
-
     def __get_c_vector(self, eulerCamera: dict, eulerPlane: dict, cVectorCameraSpace: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the c vector
@@ -189,37 +186,59 @@ class Geolocation:
             Components of the c vector
 
         """
-
-
         arr_temp = self.__get_rotation_matrix(eulerCamera).dot(cVectorCameraSpace)
         cVectorWorldSpace = self.__get_rotation_matrix(eulerPlane).dot(arr_temp)
         return cVectorWorldSpace
 
-
-
-
-
-    def __get_u_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
+    def __get_u_vector(self, cameraRotation, planeRotation):
         """
-        Returns a numpy array that contains the components of the u vector
+        Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
+
+        Parameters
+        ----------
+        cameraRotation: 
+        planeRotation:
+
+        Returns
+        -------
+        uVector: numpy array
+            array containing camera rotation vector
+        """
+
+        # assume u vector is pitch axis (y-axis) given assumption that camera direction is in roll axis (x-axis)
+        uVector = np.array([[1], [0], [0]])
+
+        # apply plane rotation to camera direction
+        uVector = np.dot(planeRotation, uVector)
+
+        # apply camera rotation to camera direction
+        # note: this assumes that camera euler angles are w.r.t. plane space
+        uVector = np.dot(cameraRotation, uVector)
+
+        # normalize output since camera direction magnitude doesn't matter
+        norm = np.linalg.norm(uVector)
+        uVector = uVector / norm
+
+        return uVector
+
+    def __get_v_vector(self, c, u):
+        """
+        Returns a numpy array that contains the components of the v vector (remaining camera rotation vector)
+
+        Parameters
+        ----------
+        c : np.array
+            array containing camera direction vector
+        u : np.array
+            array containing one camera rotation vector
 
         Returns
         -------
         numpyArray:
-            Components of the u vector
-
+            array containing the remaining camera rotation vector
         """
-
-    def __get_v_vector(self, latitude: int, longitude: int, altitude: int, eulerCamera: dict, eulerPlane: dict):
-        """
-        Returns a numpy array that contains the components of the v vector
-
-        Returns
-        -------
-        numpyArray:
-            Components of the v vector
-
-        """
+        # cross product c and u to get v
+        return np.cross(c, u)
 
     def __get_rotation_matrix(self, eulerAngles) -> np.ndarray:
         """
@@ -260,13 +279,28 @@ class Geolocation:
 
         return rotationMatrix
 
-    def convert_input(self):
+    def convert_input(self, eulerCamera, eulerPlane):
         """
-        Uses the o, c, u and v private functions to convert input
+        Converts telemtry data into workable data
 
+        Parameters
+        ----------
+        eulerCamera : dict
+            dictionary containing euler angles for the camera:
+                - roll, pitch and yaw rotations with the keys 'x', 'y' and 'z' respectively
+        eulerPlane : dict
+            dictionary containing euler angles for the plane:
+                - roll, pitch and yaw rotations with the keys 'x', 'y' and 'z' respectively
         Returns
         -------
-        dict:
-            Each component is a numpy array
-
+        list:
+            list of numpy arrays that represent the o, c, u and v vectors:
+                - o: position vector to the camera in world space
+                - c: direction vector of the camera
+                - u: rotation vector of the camera
+                - v: rotation vector of the camera
         """
+
+        # get plane and camera rotation matrices
+        planeRotation = self.__get_rotation_matrix(eulerPlane)
+        cameraRotation = self.__get_rotation_matrix(eulerCamera)
