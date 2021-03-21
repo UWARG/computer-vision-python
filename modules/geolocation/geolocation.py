@@ -153,15 +153,31 @@ class Geolocation:
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
 
-    def __get_o_vector(self, latitude: int, longitude: int, altitude: int, offset:np.ndarray, eulerCamera: dict, eulerPlane: dict, origin: np.ndarray) -> np.ndarray:
+    def __get_o_vector(self, latitude: int, longitude: int, altitude: int, offset:np.ndarray, cameraRotation: np.ndarray, planeRotation: np.ndarray, origin: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the o vector
 
+        Parameters
+        ----------
+        latitude: int
+            The latitude of the plane
+        longitude: int
+            The longitude of the plane
+        altitude: int
+            The altitude of the plane
+        offset: numpy array
+            The offset of the plane in plane space
+        cameraRotation: numpy array
+            Array containing rotation matrix for camera rotation
+        planeRotation: numpy array
+            Array containing rotation matrix for plane rotation
+        origin:numpy array
+            Array containing the origin of the world space
+
         Returns
         -------
-        numpyArray:
-            Components of the o vector
-
+        oVector: numpy array
+            Array containing components of the o vector
         """
         arr = np.zeroes(3)
         arr[0] = origin[0] + latitude;
@@ -169,36 +185,45 @@ class Geolocation:
         arr[2] = origin[2] + longitude;
 
         #using (AB)^-1 = B^-1 A^-1
-        rotationMatrix = np.matmul(self.__get_rotation_matrix(eulerCamera), self.__get_rotation_matrix(eulerPlane))
+        rotationMatrix = np.matmul(cameraRotation, planeRotation)
         invertedMatrix = np.pinv(rotationMatrix)
         rotatedOffset = invertedMatrix.dot(offset)
-        arr = np.add(rotatedOffset, arr)
+        oVector = np.add(rotatedOffset, arr)
 
-        return arr
+        return oVector
 
-    def __get_c_vector(self, eulerCamera: dict, eulerPlane: dict, cVectorCameraSpace: np.ndarray) -> np.ndarray:
+    def __get_c_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, cVectorCameraSpace: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the c vector
 
+        Parameters
+        ----------
+        cameraRotation: numpy array
+            Array containing rotation matrix for camera rotation
+        planeRotation: numpy array
+            Array containing rotation matrix for plane rotation
+
+
         Returns
         -------
-        numpyArray:
-            Components of the c vector
-
+        cVector:
+            Array containing components of the c vector
         """
-        arr_temp = self.__get_rotation_matrix(eulerCamera).dot(cVectorCameraSpace)
-        cVectorWorldSpace = self.__get_rotation_matrix(eulerPlane).dot(arr_temp)
-        return cVectorWorldSpace
+        arr_temp = cameraRotation.dot(cVectorCameraSpace)
+        cVector = planeRotation.dot(arr_temp)
+        return cVector
 
-    def __get_u_vector(self, cameraRotation, planeRotation):
+    def __get_u_vector(self, cameraRotation, planeRotation) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
 
         Parameters
         ----------
-        cameraRotation: 
-        planeRotation:
-
+        cameraRotation: numpy array
+            Array containing rotation matrix for camera rotation
+        planeRotation: numpy array
+            Array containing rotation matrix for plane rotation
+            
         Returns
         -------
         uVector: numpy array
@@ -221,7 +246,7 @@ class Geolocation:
 
         return uVector
 
-    def __get_v_vector(self, c, u):
+    def __get_v_vector(self, c, u) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the v vector (remaining camera rotation vector)
 
