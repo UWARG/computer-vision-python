@@ -154,8 +154,8 @@ class Geolocation:
             homogeneousCoordinates = pixels.dot(c)
 
             # Dehomogenizing the coordinate vector to compute the position in the destination image
-            dehomogenizedX = homogeneousCoordinates[0]/homogeneousCoordinates[1]
-            dehomogenizedY = homogeneousCoordinates[1]/homogeneousCoordinates[2]
+            dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[1]
+            dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
 
             
             if dehomogenized.shape == (0,):
