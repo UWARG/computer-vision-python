@@ -143,7 +143,7 @@ class Geolocation:
         -------
             np.array(shape=(5,2))
         """
-        dehomogenized = np.array([])
+        dehomogenized = np.empty(shape=(0, 2))
         
         # Cycle through all 2D coordinates
         for c in coordinates:
@@ -156,11 +156,7 @@ class Geolocation:
             # Dehomogenizing the coordinate vector to compute the position in the destination image
             dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[1]
             dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
-
-            
-            if dehomogenized.shape == (0,):
-                dehomogenized = np.array([dehomogenizedX,dehomogenizedY])
-            else:
-                dehomogenized = np.vstack((dehomogenized,np.array([dehomogenizedX,dehomogenizedY])))
+   
+            dehomogenized = np.vstack((dehomogenized,np.array([dehomogenizedX,dehomogenizedY])))
 
         return dehomogenized
