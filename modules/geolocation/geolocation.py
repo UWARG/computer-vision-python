@@ -130,33 +130,34 @@ class Geolocation:
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
-    def map_location_from_pixel(self, pixels, coordinates):
+    def map_location_from_pixel(self, transformation_matrix, pixels):
         """
         Maps Geographical Location Coordinates in the destination image
         
         Parameters
         -------
-            pixels : np.array(shape=(3,3))
-            coordinates : np.array(shape=(5,2))
+            transformation_matrix : np.array(shape=(3,3))
+            pixels : np.array(shape=(5,2))
 
         Returns
         -------
             np.array(shape=(5,2))
         """
-        dehomogenized = np.empty(shape=(0, 2))
+
+        # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
+        pixels = np.insert(pixels, 2, 1, axis = 1)
+
+        geoCoordinates = np.empty(shape=(0, 2))
         
-        # Cycle through all 2D coordinates
-        for c in coordinates:
-            # Express the 2D coordinates as 3D coordinates with the z value = 1 
-            c = np.concatenate((c, np.array([1])))
-    
+        # Cycle through all 2D coordinates of pixels
+        for p in pixels:    
             # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-            homogeneousCoordinates = pixels.dot(c)
+            homogeneousCoordinates = transformation_matrix.dot(p)
 
             # Dehomogenizing the coordinate vector to compute the position in the destination image
             dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[1]
             dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
    
-            dehomogenized = np.vstack((dehomogenized,np.array([dehomogenizedX,dehomogenizedY])))
+            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
 
-        return dehomogenized
+        return geoCoordinates
