@@ -196,6 +196,80 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
         
- 
+class TestOutputAnalysis(unittest.TestCase):
+    """
+    Tests Geolocation.outputanalysis(inputLocationTupleList)
+
+    """
+    def test_all_ones(self):
+        outputAnalysis = geolocation.OutputAnalysis()
+
+    # Setup
+        outputList = np.array([[[1, 1], [1], [1]]])
+
+        expectedCoordPair= (np.array([[ 1, 1]]))
+        expectedError= (np.array([[1]]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_equal(actual[0], expectedCoordPair)
+        np.testing.assert_equal(actual[1], expectedError)
+
+    def test_all_zeros(self):
+
+    # Setup
+        outputAnalysis = geolocation.OutputAnalysis()
+
+        outputList = np.array([[[0, 0], [0], [0]]])
+
+        expectedCoordPair= (np.array([[ 0, 0]]))
+        expectedError= (np.array([[0]]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_equal(actual[0], expectedCoordPair)
+        np.testing.assert_equal(actual[1], expectedError)
+
+    def test_normal_input(self):
+
+    # Setup
+        outputAnalysis = geolocation.OutputAnalysis()
+
+        outputList = np.array([
+        [[10.4, 20.5], [2.4], [0.78]],
+        [[11.2, 19.9], [2.8], [0.69]],
+        [[10.1, 20.3], [1.9], [0.94]]])
+
+        expectedCoordPair = (np.array([ 10.25,  20.4 ]))
+        expectedError = (np.array([ 2.36666667]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_almost_equal(actual[0], expectedCoordPair)
+        np.testing.assert_almost_equal(actual[1], expectedError)
+
+    def test_input_with_outlier(self):
+
+    # Setup
+
+        outputAnalysis = geolocation.OutputAnalysis()
+        outputList = np.array([
+        [[10.4, 20.5], [2.4], [0.78]],
+        [[11.2, 19.9], [2.8], [0.69]],
+        [[100.1, 200.3], [1.9], [0.94]]])
+
+        expectedCoordPair = (np.array([ 10.8,  20.2]))
+        expectedError = (np.array([ 2.36666667]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_almost_equal(actual[0], expectedCoordPair)
+        np.testing.assert_almost_equal(actual[1], expectedError)
+
+
 if __name__ == "__main__":
     unittest.main()
