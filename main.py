@@ -2,24 +2,22 @@ import argparse
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 import os
-from modules.videoMediator.videoMediator import VideoMediator
-
 
 def callTrain():
-    main_directory = os.getcwd()
-
-    # stores current working directory prior to change
+    main_directory=os.getcwd()
+"""
+stores current working directory prior to change
+"""
     if os.path.exists("targetAcquisition/yolov2_assets"):
         os.chdir("targetAcquisition/yolov2_assets")
-
-        # Changing directory to yolov2_assets to get config.json
-        from modules.targetAcquisition.yolov2_assets.train import _main_
-        _main_({'conf': './config.json'})
+"""
+Changing directory to yolov2_assets to get config.json
+"""
+        from yolov2_assets import train
+        train(config.json)
         os.chdir(main_directory)
-
-    else:
-        print("YOLOV2_ASSETS Directory not found. Specify path")
-
+    else :
+        print ("YOLOV2_ASSETS Directory not found. Specify path")
 
 def flightProgram():
     """
@@ -30,10 +28,7 @@ def flightProgram():
         Send coordinates to command module
     Parameters: None
     """
-    videoFeed = VideoMediator()
-    # To get frame:
-    frame = videoFeed.coordinates.pop(0)
-    return frame
+    return
 
 
 def searchProgram():
@@ -64,3 +59,4 @@ if __name__ == '__main__':
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
     # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
     locals()[parser.parse_args() + 'Program']() if parser.parse_args() in locals() else None
+
