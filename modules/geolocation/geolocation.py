@@ -129,3 +129,90 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+   
+class OutputAnalysis:
+
+
+        # The main function for calculating the best approximate location. This function trims outliers from the array
+        # by using the median and absolute distance from the median to output the final array
+        # The value '2' is a threshold value that determines the cutoff for what distance is acceptable, it is generally 2-3.5
+
+    def trimmed_mean_calculation(self,inputArray):
+        differenceMedian = np.abs(inputArray- np.median(inputArray))
+        minDeviation = np.median(differenceMedian)
+
+
+        if minDeviation:
+            distance = differenceMedian/minDeviation
+        else :
+            distance = 0
+
+        inputArray = inputArray[distance<2.]
+        print(inputArray)
+
+
+    def get_best_location(self,inputLocationTupleList):
+
+        # Splits the 3D numpy arrray into three separate arrays
+
+        try:
+            coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+            confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
+
+       # Splits coordinate pair into x-coord and y-coord to remove outliers
+            xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
+            yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
+
+            differenceMedianX = np.abs(xCoord- np.median(xCoord))
+            minDeviationX = np.median(differenceMedianX)
+
+
+            if minDeviationX:
+                distanceX = differenceMedianX/minDeviationX
+            else :
+                distanceX = 0
+
+            xCoord = xCoord[distanceX<2.]
+
+            differenceMedianY = np.abs(yCoord- np.median(yCoord))
+            minDeviationY = np.median(differenceMedianY)
+
+
+            if minDeviationY:
+                distanceY = differenceMedianY/minDeviationY
+            else :
+                distanceY = 0
+
+            yCoord = yCoord[distanceY<2.]
+
+            differenceMedianError= np.abs(errorArray- np.median(errorArray))
+            minDeviationError = np.median(differenceMedianError)
+
+
+            if minDeviationError:
+                distanceError = differenceMedianError/minDeviationError
+            else :
+                distanceError = 0
+
+            errorArray= errorArray[distanceError<2.]
+
+       # Finds the average of the trimmed arrays using built-in np.average()
+
+            averageX = np.average(xCoord, axis=0)
+            averageY = np.average(yCoord, axis=0)
+            averageError = np.average(errorArray,axis=0)
+
+
+            averagePair = [averageX,averageY]
+
+            return (averagePair,averageError)
+
+       # For the error case of a single row matrix being passed to the function
+        except IndexError:
+          coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+          errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+
+
+          return (coordPair,errorArray)
+
