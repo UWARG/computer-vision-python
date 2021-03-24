@@ -31,6 +31,8 @@ class Taxi:
         the number of boxes it needs to detect to go into tracking state
     expectedQR : string
         QR code on the correct box
+    numStableFrames : int
+        number of frames it needs to count when the number of bounding boxes is stable (5)
 
     Methods
     -------
@@ -43,7 +45,7 @@ class Taxi:
     """
     
     def __init__(self, state = "BOX", bbox = [((0, 0), (0, 0))], frame = [], 
-                 nextUncheckedID = 0, expectedCount = 5, expectedQR = "abcde12345"):
+                 nextUncheckedID = 0, expectedCount = 5, expectedQR = "abcde12345", stableFrames = 20):
         """
         Initializes variables
         """
@@ -55,6 +57,7 @@ class Taxi:
         self.nextUncheckedID = nextUncheckedID
         self.expectedCount = expectedCount
         self.expectedQR = expectedQR
+        self.numStableFrames = stableFrames
 
     def set_state(self, state):
         """
@@ -86,7 +89,8 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
         """
         cap = cv2.VideoCapture(0)
-        
+        #Counts number of stable frames (which we get 5 bounding boxes in the image)
+        frameCount = 0
         while True:
             ret, self.frame = cap.read()
             
@@ -95,9 +99,10 @@ class Taxi:
                 for (topLeft, botRight) in self.bbox:
                     cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
                 if len(self.bbox) == self.expectedCount:
-                    import time
-                    time.sleep(5)
+                    frameCount = frameCount + 1
+                if frameCount == self.numStableFrames:
                     self.set_state("TRACK")
+                    frameCount = 0
 
             if self.state == "TRACK":
                 found, bbox = self.tracker.update(self.frame)
