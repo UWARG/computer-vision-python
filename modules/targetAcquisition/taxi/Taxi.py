@@ -72,7 +72,7 @@ class Taxi:
             self.state = "TRACK"
             # Initialize tracker with first frame and bounding box
             bboxReformat = (self.bbox[self.nextUncheckedID][0][0], self.bbox[self.nextUncheckedID][0][1], 
-                            self.bbox[self.nextUncheckedID][1][0], self.bbox[self.nextUncheckedID][1][1])
+                            self.bbox[self.nextUncheckedID][1][0] - self.bbox[self.nextUncheckedID][0][0], self.bbox[self.nextUncheckedID][1][1] - self.bbox[self.nextUncheckedID][0][1])
             self.tracker.init(self.frame, bboxReformat)
 
         elif state == "QR" or state == 2:
