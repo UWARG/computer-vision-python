@@ -195,6 +195,37 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
+class TestConvertInput(unittest.TestCase):
+    def test_all_zeroes(self):
+
+        expected_o = np.zeroes(3)
+        expected_c = np.zeroes(3)
+        expected_u = np.zeroes(3)
+        expected_v = np.zeroes(3)
+
+        latitude = 0
+        longitude = 0
+        altitude = 0
+        worldOrigin = np.array([0, 0, 0])
+        gpsOffset = np.array([0, 0, 0])
+        cameraOffset = np.array([0, 0, 0])
+        eulerCamera = {"x": 0, "y": 0, "z": 0}
+        eulerPlane = {"x": 0, "y": 0, "z": 0}
+
+
+        geoLocationClass = geolocation.Geolocation()
+        actual = geoLocationClass.convert_input(latitude=latitude,
+                                                longitude=longitude,
+                                                altitude=altitude,
+                                                worldOrigin=worldOrigin,
+                                                gpsOffset=gpsOffset,
+                                                cameraOffset=cameraOffset,
+                                                eulerCamera=eulerCamera,
+                                                eulerPlane=eulerPlane)
+
+        expected = (expected_o, expected_c, expected_u, expected_v)
+
+        np.testing.assert_almost_equal(actual, expected)
         
  
 if __name__ == "__main__":

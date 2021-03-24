@@ -220,7 +220,7 @@ class Geolocation:
         # rotation matrix using (AB)^-1 = B^-1 A^-1
         rotationMatrix = np.matmul(cameraRotation, planeRotation)
         invertedMatrix = np.pinv(rotationMatrix)
-        rotatedOffset = invertedMatrix.dot(offset)
+        rotatedOffset = invertedMatrix.dot(gpsCameraOffset)
 
         # get camera coordinates in world space
         oVector = np.add(rotatedOffset, gpsModule)
@@ -254,7 +254,9 @@ class Geolocation:
 
         # normalize since magnitude doesn't matter
         norm = np.linalg.norm(cVector)
-        cVector = cVector / norm
+        if(norm != 0) :
+            cVector = cVector / norm
+
 
         return cVector
 
@@ -286,7 +288,8 @@ class Geolocation:
 
         # normalize output since camera direction magnitude doesn't matter
         norm = np.linalg.norm(uVector)
-        uVector = uVector / norm
+        if (norm != 0) :
+            uVector = uVector / norm
 
         return uVector
 
