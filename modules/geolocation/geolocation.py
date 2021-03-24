@@ -152,10 +152,10 @@ class Geolocation:
         # Cycle through all 2D coordinates of pixels
         for p in pixels:    
             # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-            homogeneousCoordinates = transformation_matrix.dot(p)
+            homogeneousCoordinates = transformation_matrix @ p
 
             # Dehomogenizing the coordinate vector to compute the position in the destination image
-            dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[1]
+            dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[2]
             dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
    
             geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
