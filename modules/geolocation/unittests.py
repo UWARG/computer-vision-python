@@ -194,6 +194,33 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         actual = locator.calculate_pixel_to_geo_mapping()
         # Test
         np.testing.assert_almost_equal(actual, expected)
+    
+    class TestMapLocationFromPixel(unittest.TestCase):
+        """
+        Tests Geolocation.map_location_from_pixel()
+        """
+        def __init__(self):
+            # Initialized a single instance of the Geolocation class
+            self.location_mapper = geolocation.Geolocation()
+
+            # When specifically testing changes in transformation matrix these set of pixel coordinates are used
+            self.random_pixel_coordinates = np.array([[2,3],[12,99],[623,126],[1604,12],[0,4]])
+
+            # When specifically testing changes in pixel coordinates this transformation matrix is used
+            self.random_transformation_matrix = np.array([4,6,152],[120,5,99],[3,5,2])
+        
+        def test_identity_transformation_matrix(self):
+            # Setup
+            identity_t_matrix = np.ones(shape=(3,3))
+
+            expected = np.array(np.ones(shape=(5,2)))
+
+            # Run
+            actual = self.location_mapper.map_location_from_pixel(identity_t_matrix,self.random_pixel_coordinates)
+            
+            # Test
+            np.testing.assert_almost_equal(actual, expected)
+        
 
         
  
