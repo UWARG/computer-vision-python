@@ -154,6 +154,11 @@ class Geolocation:
             # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
             homogeneousCoordinates = transformation_matrix @ p
 
+            # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
+            if homogeneousCoordinates[2] == 0:
+                geoCoordinates = np.vstack((geoCoordinates, np.empty(shape = (2))))
+                continue
+
             # Dehomogenizing the coordinate vector to compute the position in the destination image
             dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[2]
             dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
