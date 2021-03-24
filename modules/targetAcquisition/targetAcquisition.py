@@ -1,6 +1,7 @@
 import numpy as np
-import threading
+import multiprocessing as mp
 from .yolov2_assets.predict import yolo_predict
+from time import sleep
 
 
 class TargetAcquisition:
@@ -46,15 +47,21 @@ class TargetAcquisition:
         # percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
         self.boxes = []
         self.tentCoordinates = dict()
-        self.currentFrame = np.array()
+        self.currentFrame = np.zeros(2)
         self.videoPipeline = videoPipeline
         self.coordinatePipeline = coordinatePipeline
-        mainThread = threading.Thread(target=self._mainThread_())
-        mainThread.start()
+        mainProcess = mp.Process(target=self._mainProcess_,daemon=True)
+        mainProcess.start()
 
-    def _mainThread_(self):
-        self.currentFrame = self.videoPipeline.get()
-        self.coordinatePipeline.put(self.get_coordinates(self.currentFrame))
+    def _mainProcess_(self):
+        print("target acquisition started")
+        coordinateResult = self.get_coordinates(self.videoPipeline.get())
+        while True:
+            if self.coordinatePipeline.empty() or coordinateResult != self.coordinatePipeline.get():
+                self.coordinatePipeline.put(coordinateResult)
+
+            sleep(0.1)
+
 
     def set_curr_frame(self, newFrame):
         """
@@ -84,6 +91,8 @@ class TargetAcquisition:
         # If new frame has been specified (is non-empty, set the current frame to the given frame)
         if np.count_nonzero(newFrame) != 0:
             self.set_curr_frame(newFrame)
+        else:
+            return False
         # Run YOLOV2 model
         self.__predict()
         return self.tentCoordinates

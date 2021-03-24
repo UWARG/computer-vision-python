@@ -1,5 +1,7 @@
 import cv2 as cv2
-import threading
+import multiprocessing as mp
+import numpy as np
+from time import sleep
 
 
 class DeckLinkSRC:
@@ -29,20 +31,24 @@ class DeckLinkSRC:
         Displays live video feed of DeckLink stream
     """
 
-
     def __init__(self, videoPipeline):
-       """
+        """
         Initializes DeckLink video stream
         """
         self.__currentFrame = None
         self.capture = cv2.VideoCapture(
             'decklinkvideosrc mode=7 connection=0 ! videoconvert ! appsink')  # Starts capture on initialization of object
         self.videoPipeline = videoPipeline
-        mainThread = threading.Thread(target=self._mainThread_())
-        mainThread.start()
+        mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
+        mainProcess.start()
 
-    def _mainThread_ (self):
-        self.videoPipeline.put(self.grab())
+    def _mainProcess_(self):
+        print("decklink started")
+        while True:
+            newFrame = self.grab()
+            if self.videoPipeline.empty() or newFrame != self.videoPipeline.get():
+                self.videoPipeline.put(newFrame)
+            sleep(0.1)
 
     def stop(self):  # Logic for stopping video feed by releasing capture and destroying any windows open.
         """
@@ -50,7 +56,6 @@ class DeckLinkSRC:
         """
         self.capture.release()
         cv2.destroyAllWindows()
-
 
     def grab(self):  # Logic for capturing single frame from deckLink
         """
@@ -60,7 +65,7 @@ class DeckLinkSRC:
         return self.get_frame()
 
     def get_frame(self):  # Logic for returning the current frame as a numpy array
-      """
+        """
         Logic for returning the current frame as a numpy array
 
         Returns

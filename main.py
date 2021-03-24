@@ -30,9 +30,11 @@ def flightProgram():
         Send coordinates to command module
     Parameters: None
     """
+    print("start flight program")
     videoFeed = VideoMediator()
     # To get frame:
-    frame = videoFeed.coordinates.pop(0)
+    frame = videoFeed.coordinates.pop(0) if len(videoFeed.coordinates) != 0 else None
+
     return frame
 
 
@@ -63,4 +65,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
     # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
-    locals()[parser.parse_args() + 'Program']() if parser.parse_args() in locals() else None
+    program = parser.parse_args().program
+
+    assert program + 'Program' in locals()
+
+    locals()[program + 'Program']()
