@@ -216,7 +216,7 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
             expected = np.array(np.ones(shape=(5,2)))
 
             # Run
-            actual = self.location_mapper.map_location_from_pixel(identity_t_matrix,self.random_pixel_coordinates)
+            actual = self.location_mapper.map_location_from_pixel(identity_t_matrix, self.random_pixel_coordinates)
             
             # Test
             np.testing.assert_almost_equal(actual, expected)
