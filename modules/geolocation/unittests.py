@@ -198,10 +198,11 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
 class TestConvertInput(unittest.TestCase):
     def test_all_zeroes(self):
 
-        expected_o = np.zeroes(3)
-        expected_c = np.zeroes(3)
-        expected_u = np.zeroes(3)
-        expected_v = np.zeroes(3)
+        expected_o = np.array([[0], [0], [0]])
+        expected_c = np.array([[0], [0], [0]])
+        expected_u = np.array([[0], [0], [0]])
+        expected_v = np.array([[0], [0], [0]])
+
 
         latitude = 0
         longitude = 0
@@ -224,9 +225,41 @@ class TestConvertInput(unittest.TestCase):
                                                 eulerPlane=eulerPlane)
 
         expected = (expected_o, expected_c, expected_u, expected_v)
-
+        #assert
         np.testing.assert_almost_equal(actual, expected)
         
- 
+    def test_90_degree_rotation(self):
+
+        expected_o = np.array([[0], [0], [0]])
+        expected_c = np.array([[-1], [0], [0]])
+        expected_u = np.array([0], [1], [0])
+        expected_v = np.array([[0], [0], [-1]])
+
+        latitude = 0
+        longitude = 0
+        altitude = 0
+        worldOrigin = np.array([0, 0, 0])
+        gpsOffset = np.array([0, 0, 0])
+        cameraOffset = np.array([0, 0, 0])
+        eulerPlane = {"x": 90, "y": 90, "z": 90}
+        eulerCamera = {"x": 90, "y": 90, "z": 90}
+
+        geoLocationClass = geolocation.Geolocation()
+        actual = geoLocationClass.convert_input(latitude=latitude,
+                                                longitude=longitude,
+                                                altitude=altitude,
+                                                worldOrigin=worldOrigin,
+                                                gpsOffset=gpsOffset,
+                                                cameraOffset=cameraOffset,
+                                                eulerCamera=eulerCamera,
+                                                eulerPlane=eulerPlane)
+
+
+        expected = (expected_o, expected_c, expected_u, expected_v)
+        # assert
+        np.testing.assert_almost_equal(actual, expected)
+
+
+
 if __name__ == "__main__":
     unittest.main()

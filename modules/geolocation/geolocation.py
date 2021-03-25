@@ -219,8 +219,8 @@ class Geolocation:
         # transform gps-to-camera offset from plane space to world space by applying inverse
         # rotation matrix using (AB)^-1 = B^-1 A^-1
         rotationMatrix = np.matmul(cameraRotation, planeRotation)
-        invertedMatrix = np.pinv(rotationMatrix)
-        rotatedOffset = invertedMatrix.dot(gpsCameraOffset)
+        transposedMatrix = np.transpose(rotationMatrix)
+        rotatedOffset = transposedMatrix.dot(gpsCameraOffset)
 
         # get camera coordinates in world space
         oVector = np.add(rotatedOffset, gpsModule)
@@ -261,7 +261,7 @@ class Geolocation:
         return cVector
 
 
-    def __calculate_u_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, uVectorCameraSpace=np.array([[1], [0], [0]])) -> np.ndarray:
+    def __calculate_u_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, uVectorCameraSpace=np.array([[0], [1], [0]])) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
 
@@ -280,7 +280,8 @@ class Geolocation:
             Array containing camera rotation vector
         """
         # apply plane rotation to camera direction
-        uVector = planeRotation.dot(uVector)
+
+        uVector = planeRotation.dot(uVectorCameraSpace)
 
         # apply camera rotation to camera direction
         # note: this assumes that camera euler angles are w.r.t. plane space
