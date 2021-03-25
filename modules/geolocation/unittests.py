@@ -13,10 +13,14 @@ class TestGatherPointPairs(unittest.TestCase):
     """
 
     def setUp(self):
+
         self.locator = geolocation.Geolocation()
+
         return
 
+
     def test_camera_offset_from_origin_pointing_down(self):
+
         # Setup
         self.locator._Geolocation__cameraOrigin3o = np.array([2.0, 4.0, 2.0])
         self.locator._Geolocation__cameraDirection3c = np.array([0.0, 0.0, -1.0])
@@ -121,11 +125,16 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
     """
     Tests Geolocation.calculate_pixel_to_geo_mapping()
     """
+
     def setUp(self):
+        
         self.locator = geolocation.Geolocation()
+
         return
 
+
     def test_identity_mapping(self):
+
         # Setup
         self.locator._Geolocation__pixelToGeoPairs = np.array([[[1, 1], [1, 1]],
                                                           [[-1, -1], [-1, -1]],
@@ -142,6 +151,7 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
 
         
     def test_rotation_90(self):
+
         # Setup
         self.locator._Geolocation__pixelToGeoPairs = np.array([[[1, 0], [0, 1]],
                                                           [[0, 1], [-1, 0]],
