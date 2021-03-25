@@ -1,22 +1,18 @@
 import argparse
-# Main process called by command line
-# Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 import os
 from modules.videoMediator.videoMediator import VideoMediator
+# Main process called by command line
+# Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 
 
 def callTrain():
     main_directory = os.getcwd()
-
-    # stores current working directory prior to change
+    """
+    stores current working directory prior to change
+    """
     if os.path.exists("targetAcquisition/yolov2_assets"):
-        os.chdir("targetAcquisition/yolov2_assets")
-
-        # Changing directory to yolov2_assets to get config.json
-        from modules.targetAcquisition.yolov2_assets.train import _main_
-        _main_({'conf': './config.json'})
-        os.chdir(main_directory)
-
+        # Importing file runs the process inside
+        import modules.targetAcquisition.yolov2_assets.train
     else:
         print("YOLOV2_ASSETS Directory not found. Specify path")
 

@@ -13,7 +13,7 @@ class VideoMediator:
         self.coordinates = mp.Manager().list()
         DeckLinkSRC(self.videoPipeline)
         TargetAcquisition(self.videoPipeline, self.coordinatePipeline)
-        mainProcess = mp.Process(target=self._mainProcess_, daemon=True, args=(testMode, ))
+        mainProcess = mp.Process(target=self._mainProcess_, daemon=True, args=(testMode,))
         mainProcess.start()
         mainProcess.join()
 
@@ -31,4 +31,3 @@ class VideoMediator:
                     break
 
             sleep(0.1)
-

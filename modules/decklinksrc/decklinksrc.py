@@ -50,7 +50,7 @@ class DeckLinkSRC:
                 self.videoPipeline.put(newFrame)
             sleep(0.1)
 
-    def stop(self):  # Logic for stopping video feed by releasing capture and destroying any windows open.
+    def stop(self):
         """
         Logic for stopping video feed by releasing capture and destroying any windows open.
         """
@@ -74,6 +74,32 @@ class DeckLinkSRC:
             Numpy array containing information about the current frame
         """
         return self.__currentFrame
+
+    def recordVideo(self, filename, xdim, ydim):
+        """
+        Logic for 
+
+        Parameters
+        ----------
+        filename : str
+            Desired name to save file as
+        xdim : int
+            Width of video frame in pixels
+        ydim : int
+            Height of video frame in pixels
+        """
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim))
+
+        while self.capture.isOpened():
+            ret, frame = self.capture.read()
+            if ret:
+                out.write(frame)
+
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+            else:
+                break
 
     def display(self):
         """

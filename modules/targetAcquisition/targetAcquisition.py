@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 import multiprocessing as mp
 from .yolov2_assets.predict import yolo_predict
@@ -40,17 +41,15 @@ class TargetAcquisition:
 
         Parameters
         ----------
-        videoPipeline: Pipeline object for video data
-        coordinatePipeline: Pipeline object for coordinate data
+        deckLinkFrame : np.ndarray, optional
+            Variable size array containing data about a video frame (as given by cv2.imread())
         """
-        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by
-        # percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
-        self.boxes = []
+        self.boxes = []  # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
         self.tentCoordinates = dict()
         self.currentFrame = np.zeros(2)
         self.videoPipeline = videoPipeline
         self.coordinatePipeline = coordinatePipeline
-        mainProcess = mp.Process(target=self._mainProcess_,daemon=True)
+        mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
         mainProcess.start()
 
     def _mainProcess_(self):
@@ -61,7 +60,6 @@ class TargetAcquisition:
                 self.coordinatePipeline.put(coordinateResult)
 
             sleep(0.1)
-
 
     def set_curr_frame(self, newFrame):
         """
