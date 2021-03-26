@@ -3,6 +3,7 @@ Geolocation module to map pixel coordinates to geographical coordinates
 """
 
 import numpy as np
+import math
 
 
 class Geolocation:
@@ -129,3 +130,71 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+    
+class OutputAnalysis:
+
+    def get_best_location(self,inputLocationTupleList):
+
+    # Splits the 3D numpy arrray into three separate arrays
+
+        try:
+            coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+            confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
+
+    # Splits coordinate pair into x-coord and y-coord to remove outliers
+            xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
+            yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
+            xCoordTrimmed=[]
+            yCoordTrimmed=[]
+            errorTrimmed=[]
+
+
+            xCoordMedian = np.median(xCoord)
+            yCoordMedian = np.median(yCoord)
+            errorMedian = np.median(errorArray)
+
+    # A mmodified version of the trimmed mean calculation. Here the distance measuremnt is
+    # distance between every x,y point from the median coordinate pair, x median and y median.
+
+            for (x,y) in zip(xCoord,yCoord):
+                distance = math.sqrt((pow((x-xCoordMedian),2)+(pow((y-yCoordMedian),2))))
+
+                if distance<3.5:
+                    xCoordTrimmed.append(x)
+                    yCoordTrimmed.append(y)
+
+    # To handle the case where 2 points are too far apart from each other. Defaults to zero for both x and y
+
+                elif (distance>=3.5) and np.size(coordPair,0)==2:
+                    print ("Warning, only 2 data points and they are too far apart")
+                    xCoordTrimmed.append(0)
+                    yCoordTrimmed.append(0)
+                    break
+
+            for e in errorArray:
+                distance = math.sqrt((pow((e-errorMedian),2)))
+
+                if distance<3.5:
+                    errorTrimmed.append(e)
+
+
+    # Finds the average of the trimmed arrays using built-in np.average()
+
+            averageX = np.average(xCoordTrimmed, axis=0)
+            averageY = np.average(yCoordTrimmed, axis=0)
+            averageError = np.average(errorTrimmed, axis=0)
+
+
+            averagePair = (averageX,averageY)
+
+            return (averagePair,averageError)
+
+    # For the error case of a single row matrix being passed to the function
+        except IndexError:
+          coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+          errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+
+
+          return (coordPair,errorArray)
+ 
