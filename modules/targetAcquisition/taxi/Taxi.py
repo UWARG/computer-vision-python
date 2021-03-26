@@ -93,8 +93,12 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
         """
         cap = cv2.VideoCapture(0)
-        #Counts number of stable frames (which we get 5 bounding boxes in the image)
+        
+        # The number of consecutive frames where all <expectedCount> boxes are in view
         frameCount = 0
+        
+        # Wait for a certain number of detections before issuing the next movement command
+        moveWaitCount = 0
         while True:
             ret, self.frame = cap.read()
             
@@ -103,8 +107,11 @@ class Taxi:
                 for (topLeft, botRight) in self.bbox:
                     cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
                 
+                # If lose track of 1+ boxes, reset stable frame count
                 if len(self.bbox) == self.expectedCount:
                     frameCount += 1
+                else:
+                    frameCount = 0
                 
                 if frameCount == self.numStableFrames:
                     self.set_state("TRACK")
@@ -116,8 +123,28 @@ class Taxi:
                     p1 = (int(bbox[0]), int(bbox[1]))
                     p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                     self.bbox = [(p1, p2)]
-
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
+
+                    if moveWaitCount < 10:
+                        moveWaitCount += 1
+                    else:
+                        # Don't need to turn if the bbox midpoint is within the center margin
+                        # If center to left past margin, turn right by 1 degree
+                        # If center to right past margin, turn left by 1 degree
+                        margin = 50
+                        turn = 0
+                        forward = 0
+                        if (p1[0] + p2[0])/2 < self.frame.shape[0]/2 - margin:
+                            turn = 1
+                        elif (p1[0] + p2[0])/2 > self.frame.shape[0]/2 + margin:
+                            turn = -1
+                        else:
+                            forward = 5
+                        print(f"Turn {turn} degree(s) and move forward by {forward}")
+                        moveWaitCount = 0
+
+                        # TODO: fix self.frame.shape not matching cv.imshow video shape
+                        cv2.rectangle(self.frame, (240,0), (240,640), (255, 0, 255), 2, 1)
                 
                 else:
                     # TODO: hand off control to human controller when tracking fails
@@ -129,12 +156,10 @@ class Taxi:
                 message = scan_qr(self.frame)
                 # print(message)
                 if message != None:
-                    # TODO: return whether it matches instead of just printing it
-                    # hand off to human control to turn the plane around
                     if message == self.expectedQR:
-                        print("QR matches")
+                        print("QR matches. Pick up the box")
                     else:
-                        print("QR does not match")
+                        print("QR does not match. Turn around and try again")
                 
             cv2.imshow('Image', self.frame)
             
