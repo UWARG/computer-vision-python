@@ -32,7 +32,7 @@ class Taxi:
     expectedQR : string
         QR code on the correct box
     numStableFrames : int
-        number of frames it needs to count when the number of bounding boxes is stable (5)
+        number of consecutive frames with all <expectedCount> number of boxes in view before switching to TRACK
 
     Methods
     -------
@@ -53,7 +53,7 @@ class Taxi:
         self.bbox = bbox
         self.frame = frame
         self.yolo = Detection()
-        self.tracker = cv2.TrackerKCF_create()
+        self.tracker = None
         self.nextUncheckedID = nextUncheckedID
         self.expectedCount = expectedCount
         self.expectedQR = expectedQR
@@ -74,8 +74,12 @@ class Taxi:
         elif state == "TRACK" or state == 1:
             self.state = "TRACK"
             # Initialize tracker with first frame and bounding box
-            bboxReformat = (self.bbox[self.nextUncheckedID][0][0], self.bbox[self.nextUncheckedID][0][1], 
-                            self.bbox[self.nextUncheckedID][1][0] - self.bbox[self.nextUncheckedID][0][0], self.bbox[self.nextUncheckedID][1][1] - self.bbox[self.nextUncheckedID][0][1])
+            bbox = self.bbox[self.nextUncheckedID]
+            bboxReformat = (bbox[0][0], bbox[0][1], 
+                            bbox[1][0] - bbox[0][0], bbox[1][1] - bbox[0][1])
+            
+            # Note: must create the tracker here instead of __init__, else can't switch freely between track & box 
+            self.tracker = cv2.TrackerKCF_create()
             self.tracker.init(self.frame, bboxReformat)
 
         elif state == "QR" or state == 2:
@@ -98,8 +102,10 @@ class Taxi:
                 self.bbox = self.yolo.detect_boxes(self.frame)
                 for (topLeft, botRight) in self.bbox:
                     cv2.rectangle(self.frame, topLeft, botRight, (0,0,255), 2)
+                
                 if len(self.bbox) == self.expectedCount:
-                    frameCount = frameCount + 1
+                    frameCount += 1
+                
                 if frameCount == self.numStableFrames:
                     self.set_state("TRACK")
                     frameCount = 0
@@ -112,6 +118,7 @@ class Taxi:
                     self.bbox = [(p1, p2)]
 
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
+                
                 else:
                     # TODO: hand off control to human controller when tracking fails
                     # Without forgetting what was the last unchecked ID
@@ -131,13 +138,22 @@ class Taxi:
                 
             cv2.imshow('Image', self.frame)
             
+            # Temporary manual box selection
             key = cv2.waitKey(10)
+            if key == ord('b') and self.state != "BOX":
+                self.set_state("BOX")
+                print("switch to box state")
+
+            # Temporary manual tracking selection
             if key == ord('t') and self.state != "TRACK":
                 self.set_state("TRACK")
                 print("switch to tracking state")
+            
+            # Temporary manual QR code selection
             if key == ord('r') and self.state != "QR":
                 self.set_state("QR")
-                print("switch to tracking state")
+                print("switch to QR state")
+            
             if key == ord('q'):
                 break
 
