@@ -202,6 +202,100 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         actual = self.locator.calculate_pixel_to_geo_mapping()
         # Test
         np.testing.assert_almost_equal(actual, expected)
+        
+        
+class TestOutputAnalysis(unittest.TestCase):
+    """
+    Tests Geolocation.outputanalysis(inputLocationTupleList)
+
+    """
+    def test_all_ones(self):
+        outputAnalysis = geolocation.OutputAnalysis()
+
+    # Setup
+        outputList = np.array([[[1, 1], [1], [1]]])
+
+        expectedCoordPair= (np.array([[1],  [1]]))
+        expectedError= (np.array([1]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_equal(actual[0], expectedCoordPair)
+        np.testing.assert_equal(actual[1], expectedError)
+
+    def test_all_zeros(self):
+
+    # Setup
+        outputAnalysis = geolocation.OutputAnalysis()
+
+        outputList = np.array([[[0, 0], [0], [0]]])
+
+        expectedCoordPair= (np.array([[ 0],  [0]]))
+        expectedError= (np.array([0]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_equal(actual[0], expectedCoordPair)
+        np.testing.assert_equal(actual[1], expectedError)
+
+    def test_normal_input(self):
+
+    # Setup
+        outputAnalysis = geolocation.OutputAnalysis()
+
+        outputList = np.array([
+        [[10, 20], [2.3], [0.5]],
+        [[11, 19], [2.2], [0.7]],
+        [[12, 21], [2.1], [0.9]]])
+
+        expectedCoordPair = (np.array([ [11],  [20]]))
+        expectedError = (np.array([ 2.2]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_almost_equal(actual[0], expectedCoordPair)
+        np.testing.assert_almost_equal(actual[1], expectedError)
+
+    def test_input_with_outlier(self):
+
+    # Setup
+
+        outputAnalysis = geolocation.OutputAnalysis()
+        outputList = np.array([
+        [[10, 20], [2.3], [0.5]],
+        [[11, 19], [2.2], [0.7]],
+        [[120, 180], [2.1], [0.9]]])
+
+        expectedCoordPair = (np.array([[ 10.5],  [19.5]]))
+        expectedError = (np.array([ 2.2]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_almost_equal(actual[0], expectedCoordPair)
+        np.testing.assert_almost_equal(actual[1], expectedError)
+
+    def test_input_with_two_inputs_one_is_outlier(self):
+
+    # Setup
+
+        outputAnalysis = geolocation.OutputAnalysis()
+        outputList = np.array([
+        [[10.4, 20.5], [2.4], [0.78]],
+        [[100.1, 200.3], [1.9], [0.94]]])
+
+        expectedCoordPair = (np.array([0,0]))
+        expectedError = (np.array([2.15]))
+
+        # Run
+        actual = outputAnalysis.get_best_location(outputList)
+
+        np.testing.assert_almost_equal(actual[0], expectedCoordPair)
+        np.testing.assert_almost_equal(actual[1], expectedError)
+
 
         
  
