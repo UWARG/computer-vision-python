@@ -33,7 +33,7 @@ class DeckLinkSRC:
         Initializes DeckLink video stream
         """
         self.__currentFrame = None
-        self.capture = cv2.VideoCapture('decklinkvideosrc mode=7 connection=0 ! videoconvert ! appsink') #Starts capture on initialization of object
+        self.capture = cv2.VideoCapture(0) #Starts capture on initialization of object
 
     def stop(self):
         """
@@ -41,14 +41,14 @@ class DeckLinkSRC:
         """
         self.capture.release()
         cv2.destroyAllWindows()
-    
+
 
     def grab(self, frame):
         """
         Logic for grabbing single frame from DeckLink
         """
         cv2.imshow('Grabbedframe', self.__currentFrame)
-    
+
     def get_frame(self):
         """
         Logic for returning the current frame as a numpy array
