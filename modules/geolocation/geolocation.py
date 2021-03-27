@@ -2,7 +2,6 @@
 Geolocation module to map pixel coordinates to geographical coordinates
 """
 
-import itertools
 import numpy as np
 
 class Geolocation:
@@ -112,20 +111,22 @@ class Geolocation:
             Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
             or an empty list if none were found in the input array
         """
-        collinearPoints = np.empty(shape=(4, 2))
-        combos = itertools.combinations(coordinatesArray, 4)
+        collinearPoints = np.zeros(shape=(4, 2))
 
-        for combo in combos:
-            x1, y1 = combo[0]
-            x2, y2 = combo[1]
-            x3, y3 = combo[2]
-            x4, y4 = combo[3]
+        if len(coordinatesArray) < 4:
+            return collinearPoints
+
+        for i in range(0, len(coordinatesArray)-3):
+            x1, y1 = coordinatesArray[i]
+            x2, y2 = coordinatesArray[i+1]
+            x3, y3 = coordinatesArray[i+2]
+            x4, y4 = coordinatesArray[i+3]
 
             if (0.5*(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2)) != 0 and
                 0.5*(x2*(y3-y4)+x3*(y4-y2)+x4*(y2-y3)) != 0 and
                 0.5*(x3*(y4-y1)+x4*(y1-y3)+x1*(y3-y4)) != 0 and
                 0.5*(x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1)) != 0):
-                print("True")
+                
                 collinearPoints = np.array([[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
                 break
 
