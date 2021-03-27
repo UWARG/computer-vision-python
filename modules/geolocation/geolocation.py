@@ -112,7 +112,7 @@ class Geolocation:
             Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
             or an empty list if none were found in the input array
         """
-        collinearPoints = np.empty(shape=(3, 4))
+        collinearPoints = np.empty(shape=(4, 2))
         combos = itertools.combinations(coordinatesArray, 4)
 
         for combo in combos:
@@ -163,7 +163,3 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
-
-module = Geolocation()
-array = np.array([[0, 0], [1, 1], [-1, -1], [2, 2], [3, 2], [1, 5], [-3, 7], [22, 19], [0, 1], [1, 1], [0, 0]])
-print(module.get_non_collinear_points(array))
