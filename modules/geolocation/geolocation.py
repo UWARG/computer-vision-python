@@ -2,8 +2,8 @@
 Geolocation module to map pixel coordinates to geographical coordinates
 """
 
+import itertools
 import numpy as np
-
 
 class Geolocation:
     """
@@ -96,7 +96,27 @@ class Geolocation:
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         return pixelGeoPairs
+    
+    def get_collinear_points(self, coordinatesArray):
+        collinearPoints = np.empty(shape=(3, 4))
+        combos = itertools.combinations(coordinatesArray, 4)
 
+        for combo in combos:
+            x1, y1 = combo[0]
+            x2, y2 = combo[1]
+            x3, y3 = combo[2]
+            x4, y4 = combo[3]
+
+            if (0.5*(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2)) != 0 and
+                0.5*(x2*(y3-y4)+x3*(y4-y2)+x4*(y2-y3)) != 0 and
+                0.5*(x3*(y4-y1)+x4*(y1-y3)+x1*(y3-y4)) != 0 and
+                0.5*(x4*(y1-y2)+x1*(y2-y4)+x2*(y4-y1)) != 0):
+                print("True")
+                collinearPoints = np.array([[x1, y1], [x2, y2], [x3, y3], [x4, y4]])
+                break
+
+        return collinearPoints
+               
     def calculate_pixel_to_geo_mapping(self):
         """
         Outputs transform matrix for mapping pixels to geographical points
@@ -129,3 +149,7 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+
+module = Geolocation()
+array = np.array([[0, 0], [1, 1], [-1, -1], [2, 2], [3, 2], [1, 5], [-3, 7], [22, 19], [0, 1], [1, 1], [0, 0]])
+print(module.get_collinear_points(array))
