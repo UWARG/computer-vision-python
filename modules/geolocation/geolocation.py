@@ -97,7 +97,21 @@ class Geolocation:
 
         return pixelGeoPairs
     
-    def get_collinear_points(self, coordinatesArray):
+    def get_non_collinear_points(self, coordinatesArray):
+        """
+        Returns a list of four coordinates from an input array that are not collinear to one another.
+
+        Parameters
+        ----------
+        coordinatesArray : np.ndarray
+            Array with dimensions ( , 2), containing a list of coordinates
+
+        Returns
+        -------
+        np.ndarray
+            Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
+            or an empty list if none were found in the input array
+        """
         collinearPoints = np.empty(shape=(3, 4))
         combos = itertools.combinations(coordinatesArray, 4)
 
@@ -116,7 +130,7 @@ class Geolocation:
                 break
 
         return collinearPoints
-               
+
     def calculate_pixel_to_geo_mapping(self):
         """
         Outputs transform matrix for mapping pixels to geographical points
@@ -152,4 +166,4 @@ class Geolocation:
 
 module = Geolocation()
 array = np.array([[0, 0], [1, 1], [-1, -1], [2, 2], [3, 2], [1, 5], [-3, 7], [22, 19], [0, 1], [1, 1], [0, 0]])
-print(module.get_collinear_points(array))
+print(module.get_non_collinear_points(array))
