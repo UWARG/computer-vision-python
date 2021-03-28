@@ -130,13 +130,13 @@ class Geolocation:
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
-    def map_location_from_pixel(self, transformation_matrix, pixels):
+    def map_location_from_pixel(self, transformationMatrix, pixels):
         """
         Maps Geographical Location Coordinates in the destination image
         
         Parameters
         -------
-            transformation_matrix : np.array(shape=(3,3))
+            transformationMatrix : np.array(shape=(3,3))
             pixels : np.array(shape=(5,2))
 
         Returns
@@ -152,7 +152,7 @@ class Geolocation:
         # Cycle through all 2D coordinates of pixels
         for p in pixels:    
             # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-            homogeneousCoordinates = transformation_matrix @ p
+            homogeneousCoordinates = np.matmul(transformationMatrix,p)
 
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
             if homogeneousCoordinates[2] == 0:
