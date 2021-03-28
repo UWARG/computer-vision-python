@@ -41,14 +41,18 @@ class TargetAcquisition:
 
         Parameters
         ----------
-        deckLinkFrame : np.ndarray, optional
-            Variable size array containing data about a video frame (as given by cv2.imread())
+        videoPipeline : multiprocessing.Queue object
+        coordinatePipeline: multiprocessing.Queue object
         """
-        self.boxes = []  # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
+
+        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
+        # of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        self.boxes = []
         self.tentCoordinates = dict()
-        self.currentFrame = np.zeros(2)
+        self.currentFrame = np.empty(0)
         self.videoPipeline = videoPipeline
         self.coordinatePipeline = coordinatePipeline
+
         mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
         mainProcess.start()
 

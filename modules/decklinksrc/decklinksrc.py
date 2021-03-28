@@ -57,22 +57,11 @@ class DeckLinkSRC:
         self.capture.release()
         cv2.destroyAllWindows()
 
-    def grab(self):  # Logic for capturing single frame from deckLink
+    def grab(self):
         """
         Logic for grabbing single frame from DeckLink
         """
         self.__currentFrame = self.capture.read()
-        return self.get_frame()
-
-    def get_frame(self):  # Logic for returning the current frame as a numpy array
-        """
-        Logic for returning the current frame as a numpy array
-
-        Returns
-        -------
-        np.ndarray
-            Numpy array containing information about the current frame
-        """
         return self.__currentFrame
 
     def recordVideo(self, filename, xdim, ydim):
