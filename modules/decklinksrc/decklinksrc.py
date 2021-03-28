@@ -36,8 +36,7 @@ class DeckLinkSRC:
         Initializes DeckLink video stream
         """
         self.__currentFrame = None
-        self.capture = cv2.VideoCapture(
-            'decklinkvideosrc mode=7 connection=0 ! videoconvert ! appsink')  # Starts capture on initialization of object
+        self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
         self.videoPipeline = videoPipeline
         mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
         mainProcess.start()
