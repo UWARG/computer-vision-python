@@ -147,21 +147,21 @@ class Geolocation:
         # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
         pixels = np.insert(pixels, 2, 1, axis = 1)
 
+        # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
+        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+
         geoCoordinates = np.empty(shape=(0, 2))
         
         # Cycle through all 2D coordinates of pixels
-        for p in pixels:    
-            # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-            homogeneousCoordinates = np.matmul(transformationMatrix,p)
-
+        for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
-            if homogeneousCoordinates[2] == 0:
+            if h[2] == 0:
                 geoCoordinates = np.vstack((geoCoordinates, np.empty(shape = (2))))
                 continue
 
             # Dehomogenizing the coordinate vector to compute the position in the destination image
-            dehomogenizedX = homogeneousCoordinates[0] / homogeneousCoordinates[2]
-            dehomogenizedY = homogeneousCoordinates[1] / homogeneousCoordinates[2]
+            dehomogenizedX = h[0] / h[2]
+            dehomogenizedY = h[1] / h[2]
    
             geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
 
