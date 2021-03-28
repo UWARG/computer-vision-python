@@ -206,6 +206,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         return
     
     def test_identity_transformation_matrix(self):
+
         # Setup
         identityTransformationMatrix = np.ones(shape=(3,3))
         pixelCoordinates = np.array([[2,3],[12,99],[623,126],[1604,12],[0,4]])
@@ -219,6 +220,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
     
     def test_transformation_matrix_1(self):
+
         # Setup
         transformationMatrix = np.array([[4,6,152],[120,5,99],[3,5,2]])
         pixelCoordinates = np.array([[2,3],[12,99],[623,126],[1604,12],[0,4]])
@@ -236,6 +238,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
     
     def test_small_values_transformation_matrix(self):
+
         # Setup
         transformationMatrix = np.array([[0.2231,0.1222,0.0345],[0.0512,0.0041,0.0062],[0.3315,0.8720,0.1261]])
         pixelCoordinates = np.array([[2,3],[12,99],[623,126],[1604,12],[0,4]])
@@ -252,10 +255,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
     
-    
-        
-
-        
+ 
  
 if __name__ == "__main__":
     unittest.main()
