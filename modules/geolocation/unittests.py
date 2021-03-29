@@ -259,6 +259,67 @@ class TestConvertInput(unittest.TestCase):
         # assert
         np.testing.assert_almost_equal(actual, expected)
 
+    def test_point_set_1(self):
+
+
+        latitude = 100
+        longitude = 100
+        altitude = 100
+        worldOrigin = np.array([-50, 50, 50])
+        gpsOffset = np.array([0.5, 0, 0])
+        cameraOffset = np.array([0.5, 0, 0])
+        eulerPlane = {"x": 45, "y": 180, "z": 90}
+        eulerCamera = {"x": 90, "y": 45, "z": 135}
+
+        expected_o = np.array([[49.14], [150.14], [149.5]])
+        expected_c = np.array([[-0.85], [0.5], [0.146]])
+        expected_u = np.array([0.146], [0.5], [-0.85])
+        expected_v = np.array([[-0.5], [-0.707], [-0.5]])
+
+        geoLocationClass = geolocation.Geolocation()
+        actual = geoLocationClass.convert_input(latitude=latitude,
+                                                longitude=longitude,
+                                                altitude=altitude,
+                                                worldOrigin=worldOrigin,
+                                                gpsOffset=gpsOffset,
+                                                cameraOffset=cameraOffset,
+                                                eulerCamera=eulerCamera,
+                                                eulerPlane=eulerPlane)
+
+        expected = (expected_o, expected_c, expected_u, expected_v)
+        # assert
+        np.testing.assert_almost_equal(actual, expected)
+
+
+    def test_point_set_2(self):
+
+        latitude = -50
+        longitude = 75
+        altitude = 115
+        worldOrigin = np.array([-50, -25, 50])
+        gpsOffset = np.array([1, 1, 0])
+        cameraOffset = np.array([5, 0, 2])
+        eulerPlane = {"x": 45, "y": 0, "z": 270}
+        eulerCamera = {"x": 180, "y": 45, "z": 315}
+
+        expected_o = np.array([[-103.975], [47.91], [164]])
+        expected_c = np.array([[0.85], [-0.146], [-0.5]])
+        expected_u = np.array([-0.5], [-0.5], [0.707])
+        expected_v = np.array([[0.146], [-0.85], [-0.5]])
+
+        geoLocationClass = geolocation.Geolocation()
+        actual = geoLocationClass.convert_input(latitude=latitude,
+                                                longitude=longitude,
+                                                altitude=altitude,
+                                                worldOrigin=worldOrigin,
+                                                gpsOffset=gpsOffset,
+                                                cameraOffset=cameraOffset,
+                                                eulerCamera=eulerCamera,
+                                                eulerPlane=eulerPlane)
+
+        expected = (expected_o, expected_c, expected_u, expected_v)
+        # assert
+        np.testing.assert_almost_equal(actual, expected)
 
 
 if __name__ == "__main__":
