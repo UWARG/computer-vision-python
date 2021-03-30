@@ -176,13 +176,17 @@ class Geolocation:
         planeRotation = self.__calculate_rotation_matrix(eulerPlane)
         cameraRotation = self.__calculate_rotation_matrix(eulerCamera)
 
+        # get plane and camera compound rotation matrix
+        # note: assume apply plane -> camera rotations in that order
+        compoundRotationMatrix = planeRotation.dot(cameraRotation)
+
         # calculate gps module to camera offset
         gpsCameraOffset = np.add(gpsOffset, cameraOffset)
 
         # calculate o, c, u, v vectors
         o = self.__calculate_o_vector(latitude, longitude, altitude, gpsCameraOffset, cameraRotation, planeRotation, worldOrigin)
-        c = self.__calculate_c_vector(cameraRotation, planeRotation)
-        u = self.__calculate_u_vector(cameraRotation, planeRotation)
+        c = self.__calculate_c_vector(compoundRotationMatrix)   # use default camera direction
+        u = self.__calculate_u_vector(compoundRotationMatrix)   # use default u vector direction
         v = self.__calculate_v_vector(c, u)
 
         return (o, c, u, v)
@@ -219,8 +223,6 @@ class Geolocation:
         gpsModule[1] = origin[1] + longitude
         gpsModule[2] = origin[2] + altitude
 
-
-
         # transform gps-to-camera offset from plane space to world space by applying inverse
         # rotation matrix using (AB)^-1 = B^-1 A^-1
         rotationMatrix = np.matmul(planeRotation, cameraRotation)
@@ -232,16 +234,14 @@ class Geolocation:
 
         return oVector
 
-    def __calculate_c_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, cVectorCameraSpace=np.array([1, 0, 0])) -> np.ndarray:
+    def __calculate_c_vector(self, compoundRotationMatrix: np.ndarray, cVectorCameraSpace=np.array([1, 0, 0])) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the c vector
 
         Parameters
         ----------
-        cameraRotation: numpy array
-            Array containing rotation matrix for camera rotation
-        planeRotation: numpy array
-            Array containing rotation matrix for plane rotation
+        compoundRotationMatrix: numpy array
+            Array containing rotation matrix for camera and plane rotations
         cVectorCameraSpace: numpy array
             Array containing cVector in camera space (default value assumes cVector points along the roll axis)
 
@@ -250,11 +250,7 @@ class Geolocation:
         cVector:
             Array containing components of the c vector
         """
-        # apply plane rotation to camera direction
-        compoundRotationMatrix = planeRotation.dot(cameraRotation)
-
-
-        # apply camera rotation to camera direction
+        # apply rotation matrix to camera direction
         # note: this assumes that camera euler angles are w.r.t. plane space
         cVector = compoundRotationMatrix.dot(cVectorCameraSpace)
 
@@ -266,17 +262,14 @@ class Geolocation:
         cVector = np.squeeze(cVector)
         return cVector
 
-
-    def __calculate_u_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, uVectorCameraSpace=np.array([0, 1, 0])) -> np.ndarray:
+    def __calculate_u_vector(self, compoundRotationMatrix: np.ndarray, uVectorCameraSpace=np.array([0, 1, 0])) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
 
         Parameters
         ----------
-        cameraRotation: numpy array
-            Array containing rotation matrix for camera rotation
-        planeRotation: numpy array
-            Array containing rotation matrix for plane rotation
+        compoundRotationMatrix: numpy array
+            Array containing rotation matrix for camera and plane rotations
         uVectorCameraSpace: numpy array
             Array containing uVector in camera space (default value assumes uVector points along the pitch axis)
             
@@ -285,10 +278,6 @@ class Geolocation:
         uVector: numpy array
             Array containing camera rotation vector
         """
-        # apply plane rotation to camera direction
-
-        compoundRotationMatrix = planeRotation.dot(cameraRotation)
-
         # apply camera rotation to camera direction
         # note: this assumes that camera euler angles are w.r.t. plane space
         uVector = compoundRotationMatrix.dot(uVectorCameraSpace)
