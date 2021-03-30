@@ -198,11 +198,10 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
 class TestConvertInput(unittest.TestCase):
     def test_all_zeroes(self):
 
-        expected_o = np.array([[0], [0], [0]])
-        expected_c = np.array([[0], [0], [0]])
-        expected_u = np.array([[0], [0], [0]])
-        expected_v = np.array([[0], [0], [0]])
-
+        expected_o = np.zeros(3)
+        expected_c = np.array([1, 0 ,0])
+        expected_u = np.array([0, 1 ,0])
+        expected_v = np.array([0, 0 ,1])
 
         latitude = 0
         longitude = 0
@@ -230,10 +229,10 @@ class TestConvertInput(unittest.TestCase):
         
     def test_90_degree_rotation(self):
 
-        expected_o = np.array([[0], [0], [0]])
-        expected_c = np.array([[-1], [0], [0]])
-        expected_u = np.array([0], [1], [0])
-        expected_v = np.array([[0], [0], [-1]])
+        expected_o = np.zeros(3)
+        expected_c = np.array([-1, 0, 0])
+        expected_u = np.array([0, 1, 0])
+        expected_v = np.array([0, 0, -1])
 
         latitude = 0
         longitude = 0
@@ -271,10 +270,10 @@ class TestConvertInput(unittest.TestCase):
         eulerPlane = {"x": 45, "y": 180, "z": 90}
         eulerCamera = {"x": 90, "y": 45, "z": 135}
 
-        expected_o = np.array([[49.14], [150.14], [149.5]])
-        expected_c = np.array([[-0.85], [0.5], [0.146]])
-        expected_u = np.array([0.146], [0.5], [-0.85])
-        expected_v = np.array([[-0.5], [-0.707], [-0.5]])
+        expected_o = np.array([49.5 - np.sqrt(2) / 4, 150.5 - np.sqrt(2) / 4, 149.5])
+        expected_c = np.array([(-np.sqrt(2) - 2) / 4, 0.5, (-np.sqrt(2) + 2) / 4])
+        expected_u = np.array([(-np.sqrt(2) + 2) / 4, 0.5, (-np.sqrt(2) - 2) / 4])
+        expected_v = np.array([-0.5, -np.sqrt(2) / 2, -0.5])
 
         geoLocationClass = geolocation.Geolocation()
         actual = geoLocationClass.convert_input(latitude=latitude,
@@ -302,10 +301,10 @@ class TestConvertInput(unittest.TestCase):
         eulerPlane = {"x": 45, "y": 0, "z": 270}
         eulerCamera = {"x": 180, "y": 45, "z": 315}
 
-        expected_o = np.array([[-103.975], [47.91], [164]])
-        expected_c = np.array([[0.85], [-0.146], [-0.5]])
-        expected_u = np.array([-0.5], [-0.5], [0.707])
-        expected_v = np.array([[0.146], [-0.85], [-0.5]])
+        expected_o = np.array([-98.5 - (np.sqrt(2) * 2), 46 + np.sqrt(2) / 2, 167.5 + 2 * np.sqrt(2)])
+        expected_c = np.array([(-np.sqrt(2) + 2) / 4, -.5, (-np.sqrt(2) - 2) / 4])
+        expected_u = np.array([-0.5, (np.sqrt(2)) / 2, -.5])
+        expected_v = np.array([(np.sqrt(2) + 2) / 4, .5, (np.sqrt(2) - 2) / 4])
 
         geoLocationClass = geolocation.Geolocation()
         actual = geoLocationClass.convert_input(latitude=latitude,
