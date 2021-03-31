@@ -45,7 +45,7 @@ class Taxi:
     """
     
     def __init__(self, state = "BOX", bbox = [((0, 0), (0, 0))], frame = [], 
-                 nextUncheckedID = 0, expectedCount = 5, expectedQR = "abcde12345", stableFrames = 20):
+                 nextUncheckedID = 0, expectedCount = 5, expectedQR = "abcde12345", stableFrames = 20, distances = []):
         """
         Initializes variables
         """
@@ -58,6 +58,7 @@ class Taxi:
         self.expectedCount = expectedCount
         self.expectedQR = expectedQR
         self.numStableFrames = stableFrames
+        self.distancesFromBoxes = distances
 
     def set_state(self, state):
         """
@@ -87,6 +88,42 @@ class Taxi:
 
         else:
             print("Error: invalid state selected")
+
+    def calculate_distance(self, state):
+        """
+        Calculate approximate distance between box and drone
+        """
+
+        # For temporary storage of distances
+        tempDistancesList = []
+
+        # (Known) focal length of the camera in mm
+        focalLength = 1
+
+        # (Known) real Height of the box in mm
+        realHeight = 101.6
+
+        # (Known) height of the image in pixels
+        imageHeight = 1
+
+        # (Known) height of the sensor in mm
+        sensorHeight = 1
+
+        # To calculate distance of each box
+        for pts in self.bbox:
+
+            # Calculating object height in pixels by extracting y coordinates from each tuple 'pts'
+            objectHeight = pts[0][1] - pts[1][1] if (pts[0][1] > pts[1][1]) else pts[1][1] - pts[0][1]
+
+            # Calculate distance
+            distance = (focalLength * realHeight * imageHeight)/(objectHeight * sensorHeight)
+
+            # Pushing into array
+            tempDistancesList.append(distance)
+
+        self.distancesFromBoxes = tempDistancesList
+
+
 
     def main(self):
         """
