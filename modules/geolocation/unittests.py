@@ -205,19 +205,19 @@ class TestMapLocationFromPixel(unittest.TestCase):
 
         return
     
-    def test_identity_transformation_matrix(self):
+    def test_ones_transformation_matrix(self):
 
         # Setup
-        identityTransformationMatrix = np.ones(shape=(3,3))
+        onesTransformationMatrix = np.ones(shape=(3,3))
         pixelCoordinates = np.array([[2,3],[12,99],[623,126],[1604,12],[0,4]])
 
         expected = np.array(np.ones(shape=(5,2)))
 
         # Run
-        actual = self.locator.map_location_from_pixel(identityTransformationMatrix, pixelCoordinates)
+        actual = self.locator.map_location_from_pixel(onesTransformationMatrix, pixelCoordinates)
         
         # Test
-        np.testing.assert_almost_equal(actual, expected)
+        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
     
     def test_set_1_int(self):
 
@@ -235,7 +235,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_almost_equal(actual, expected)
+        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
     
     def test_set_2_float(self):
 
@@ -253,7 +253,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_almost_equal(actual, expected)
+        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
     
     def test_small_values_transformation_matrix(self):
 
@@ -271,7 +271,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_almost_equal(actual, expected)
+        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
 
     def test_homogenized_z_equals_0_case(self):
 
@@ -279,13 +279,13 @@ class TestMapLocationFromPixel(unittest.TestCase):
         transformationMatrix = np.array([[5,1,5],[9,1,2],[0,0,0]])
         pixelCoordinates = np.array([[5,9],[2,5],[3,3],[11,3],[7,1]])
 
-        expected = np.zeros(shape = (5,2))
+        expected = np.full((5,2), np.inf)
 
         # Run
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_almost_equal(actual, expected)
+        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
     
  
  
