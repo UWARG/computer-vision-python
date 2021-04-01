@@ -11,7 +11,7 @@ class Geolocation:
     """
 
     # TODO Class members
-    def __init__(self, gpsCoordinates: dict, eulerCamera: dict, eulerPlane: dict):
+    def __init__(self, gpsCoordinates={"latitude": 0, "longitude": 0, "altitude": 0}, eulerCamera={}, eulerPlane={}):
         """
         Initial setup of class members
 
@@ -191,8 +191,8 @@ class Geolocation:
         """
         # get GPS module coordinates
         gpsModule = np.empty(3)
-        gpsModule[0] = self.__latitude - self.__WORLD_ORIGIN[0]
-        gpsModule[1] = self.__longitude - self.__WORLD_ORIGIN[1]
+        gpsModule[0] = self.__longitude - self.__WORLD_ORIGIN[0]
+        gpsModule[1] = self.__latitude - self.__WORLD_ORIGIN[1]
         gpsModule[2] = self.__altitude - self.__WORLD_ORIGIN[2]
 
         # transform gps-to-camera offset from plane space to world space by applying inverse rotation matrix
