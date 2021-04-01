@@ -156,7 +156,7 @@ class Geolocation:
         for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
             if h[2] == 0:
-                geoCoordinates = np.vstack((geoCoordinates, np.empty(shape = (2))))
+                geoCoordinates = np.vstack((geoCoordinates, np.full((2), np.inf)))
                 continue
 
             # Dehomogenizing the coordinate vector to compute the position in the destination image
