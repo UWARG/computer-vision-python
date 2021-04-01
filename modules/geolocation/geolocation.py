@@ -59,6 +59,21 @@ class Geolocation:
                                            [[2, 2], [2, 2]],
                                            [[3, 3], [3, 3]]])
 
+        self.__latitude = 0.0
+        self.__longitude = 0.0
+        self.__altitude = 0.0
+        self.__worldOrigin = np.zeros(3)
+        self.__gpsOffset = np.zeros(3)
+        self.__cameraOffset = np.zeros(3)
+        self.__gpsOffset = np.zeros(3)
+        self.__eulerCamera = {"x": 0, "y": 0, "z": 0}
+        self.__eulerPlane = {"x": 0, "y": 0, "z": 0}
+
+
+        self.__fovFactor = 1
+        self.__cVectorCameraSpace = [1, 0, 0]
+        self.__uVectorCameraSpace = [0, 1, 0]
+
         return
 
 
@@ -142,7 +157,7 @@ class Geolocation:
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
 
-    def convert_input(self, latitude: int, longitude: int, altitude: int, worldOrigin: np.ndarray, gpsOffset: np.ndarray, cameraOffset: np.ndarray, eulerCamera: dict, eulerPlane: dict):
+    def convert_input(self):
         """
         Converts telemtry data into workable data
 
@@ -173,21 +188,22 @@ class Geolocation:
         """
 
         # get plane and camera rotation matrices
-        planeRotation = self.__calculate_rotation_matrix(eulerPlane)
-        cameraRotation = self.__calculate_rotation_matrix(eulerCamera)
+        planeRotation = self.__calculate_rotation_matrix(self.__eulerPlane)
+        cameraRotation = self.__calculate_rotation_matrix(self.__eulerCamera)
 
         # calculate gps module to camera offset
-        gpsCameraOffset = np.add(gpsOffset, cameraOffset)
+        gpsCameraOffset = np.subtract(self.__gpsOffset, self.__cameraOffset)
 
         # calculate o, c, u, v vectors
-        o = self.__calculate_o_vector(latitude, longitude, altitude, gpsCameraOffset, cameraRotation, planeRotation, worldOrigin)
-        c = self.__calculate_c_vector(cameraRotation, planeRotation)
-        u = self.__calculate_u_vector(cameraRotation, planeRotation)
+
+        o = self.__calculate_o_vector(planeRotation, cameraRotation, gpsCameraOffset)
+        c = self.__calculate_c_vector(planeRotation, cameraRotation)
+        u = self.__calculate_u_vector(planeRotation, cameraRotation)
         v = self.__calculate_v_vector(c, u)
 
         return (o, c, u, v)
 
-    def __calculate_o_vector(self, latitude: int, longitude: int, altitude: int, gpsCameraOffset:np.ndarray, cameraRotation: np.ndarray, planeRotation: np.ndarray, origin: np.ndarray) -> np.ndarray:
+    def __calculate_o_vector(self, planeRotation: np.ndarray, cameraRotation:np.ndarray, gpsCameraOffset: np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the o vector
 
@@ -215,24 +231,27 @@ class Geolocation:
         """
         # get GPS module coordinates
         gpsModule = np.zeros(3)
-        gpsModule[0] = origin[0] + latitude
-        gpsModule[1] = origin[1] + longitude
-        gpsModule[2] = origin[2] + altitude
+        gpsModule[0] = self.__worldOrigin[0] - self.__latitude
+        gpsModule[1] = self.__worldOrigin[1] - self.__longitude
+        gpsModule[2] = self.__worldOrigin[2] - self.__altitude
 
 
 
         # transform gps-to-camera offset from plane space to world space by applying inverse
         # rotation matrix using (AB)^-1 = B^-1 A^-1
+
+
         rotationMatrix = np.matmul(planeRotation, cameraRotation)
+
         transposedMatrix = np.transpose(rotationMatrix)
         rotatedOffset = transposedMatrix.dot(gpsCameraOffset)
 
         # get camera coordinates in world space
-        oVector = np.add(rotatedOffset, gpsModule)
+        oVector = np.subtract(rotatedOffset, gpsModule)
 
         return oVector
 
-    def __calculate_c_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, cVectorCameraSpace=np.array([1, 0, 0])) -> np.ndarray:
+    def __calculate_c_vector(self, planeRotation: np.ndarray, cameraRotation:np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the c vector
 
@@ -251,12 +270,14 @@ class Geolocation:
             Array containing components of the c vector
         """
         # apply plane rotation to camera direction
-        compoundRotationMatrix = planeRotation.dot(cameraRotation)
 
+        print(planeRotation)
+        compoundRotationMatrix = np.matmul(planeRotation, cameraRotation)
 
+        print(compoundRotationMatrix)
         # apply camera rotation to camera direction
         # note: this assumes that camera euler angles are w.r.t. plane space
-        cVector = compoundRotationMatrix.dot(cVectorCameraSpace)
+        cVector = compoundRotationMatrix.dot(self.__cVectorCameraSpace)
 
         # normalize since magnitude doesn't matter
         norm = np.linalg.norm(cVector)
@@ -264,10 +285,11 @@ class Geolocation:
             cVector = cVector / norm
 
         cVector = np.squeeze(cVector)
+        cVector = cVector * self.__fovFactor
         return cVector
 
 
-    def __calculate_u_vector(self, cameraRotation: np.ndarray, planeRotation: np.ndarray, uVectorCameraSpace=np.array([0, 1, 0])) -> np.ndarray:
+    def __calculate_u_vector(self, planeRotation: np.ndarray, cameraRotation:np.ndarray) -> np.ndarray:
         """
         Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
 
@@ -287,11 +309,11 @@ class Geolocation:
         """
         # apply plane rotation to camera direction
 
-        compoundRotationMatrix = planeRotation.dot(cameraRotation)
+        compoundRotationMatrix = np.matmul(planeRotation, cameraRotation)
 
         # apply camera rotation to camera direction
         # note: this assumes that camera euler angles are w.r.t. plane space
-        uVector = compoundRotationMatrix.dot(uVectorCameraSpace)
+        uVector = compoundRotationMatrix.dot(self.__uVectorCameraSpace)
 
         # normalize output since camera direction magnitude doesn't matter
         norm = np.linalg.norm(uVector)
@@ -299,6 +321,7 @@ class Geolocation:
             uVector = uVector / norm
 
         uVector = np.squeeze(uVector)
+        uVector = uVector * self.__fovFactor
         return uVector
 
     def __calculate_v_vector(self, c: np.ndarray, u: np.ndarray) -> np.ndarray:
@@ -318,9 +341,11 @@ class Geolocation:
             array containing the remaining camera rotation vector
         """
         # cross product c and u to get v
-        return np.cross(c, u)
+        v_vector = np.cross(c, u)
+        v_vector = v_vector * self.__fovFactor
+        return v_vector
 
-    def __calculate_rotation_matrix(self, eulerAngles: dict) -> np.ndarray:
+    def __calculate_rotation_matrix(self, eulerAngles: np.ndarray ) -> np.ndarray:
         """
         Calculate and return rotation matrix given euler angles
 
@@ -336,25 +361,29 @@ class Geolocation:
         """
         # get euler angles
         # note: naming conventions specified in CV-Telemetry docs and commandModule specs
-        yawAngle = eulerAngles["z"]
-        pitchAngle = eulerAngles["y"]
-        rollAngle = eulerAngles["x"]
+        yawAngle = np.deg2rad(eulerAngles["z"])
+        pitchAngle = np.deg2rad(eulerAngles["y"])
+        rollAngle = np.deg2rad(eulerAngles["x"])
+
+
+        # get plane roll rotation matrix
+        yawRotation = np.array([[float(np.cos([yawAngle])), -1 * float(np.sin([yawAngle])), 0],
+                                 [float(np.sin([yawAngle])), float(np.cos([yawAngle])), 0],
+                                 [0, 0, 1]])
+
+        # get plane pitch rotation matrix
+        pitchRotation = np.array([[float(np.cos([pitchAngle])), 0, float(np.sin([pitchAngle]))],
+                                  [0, 1, 0],
+                                  [-1 * float(np.sin([pitchAngle])), 0,
+                                   float(np.cos([pitchAngle]))]])
 
         # get plane yaw rotation matrix
         rollRotation = np.array([[1, 0, 0],
-                                [0, float(np.cos(np.deg2rad([rollAngle]))), -1 * float(np.sin(np.deg2rad([rollAngle])))],
-                                [0, float(np.sin(np.deg2rad([rollAngle]))), float(np.cos(np.deg2rad([rollAngle])))]])
-        # get plane pitch rotation matrix
-        pitchRotation = np.array([[float(np.cos(np.deg2rad([pitchAngle]))), 0, float(np.sin(np.deg2rad([pitchAngle])))],
-                                  [0, 1, 0],
-                                  [-1 * float(np.sin(np.deg2rad([pitchAngle]))), 0, float(np.cos(np.deg2rad([pitchAngle])))]])
-        # get plane roll rotation matrix
-        yawRotation = np.array([[float(np.cos(np.deg2rad([yawAngle]))), -1 * float(np.sin(np.deg2rad([yawAngle]))), 0],
-                                 [float(np.sin(np.deg2rad([yawAngle]))), float(np.cos(np.deg2rad([yawAngle]))), 0],
-                                 [0, 0, 1]])
+                                 [0, float(np.cos([rollAngle])), -1 * float(np.sin([rollAngle]))],
+                                 [0, float(np.sin([rollAngle])), float(np.cos([rollAngle]))]])
 
         # get total plane rotation matrix based on euler rotation theorem
-        # note: assume ZYX euler angles (i.e. R = RxRyRz); otherwise, change the multiplication order
+        # note: assume ZYX euler angles (i.e. R = RzRyRx); otherwise, change the multiplication order
         rotationMatrix = np.matmul(np.matmul(yawRotation, pitchRotation), rollRotation)
 
         return rotationMatrix

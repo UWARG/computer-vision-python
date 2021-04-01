@@ -123,6 +123,10 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
     Tests Geolocation.calculate_pixel_to_geo_mapping()
     """
 
+
+
+
+
     def test_identity_mapping(self):
         # Setup
         locator = geolocation.Geolocation()
@@ -196,6 +200,11 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
 class TestConvertInput(unittest.TestCase):
+
+    def setUp(self):
+        self.locator = geolocation.Geolocation()
+        return
+
     def test_all_zeroes(self):
 
         expected_o = np.zeros(3)
@@ -203,25 +212,18 @@ class TestConvertInput(unittest.TestCase):
         expected_u = np.array([0, 1 ,0])
         expected_v = np.array([0, 0 ,1])
 
-        latitude = 0
-        longitude = 0
-        altitude = 0
-        worldOrigin = np.array([0, 0, 0])
-        gpsOffset = np.array([0, 0, 0])
-        cameraOffset = np.array([0, 0, 0])
-        eulerCamera = {"x": 0, "y": 0, "z": 0}
-        eulerPlane = {"x": 0, "y": 0, "z": 0}
+        self.locator._Geolocation__latitude = 0
+        self.locator._Geolocation__longitude = 0
+        self.locator._Geolocation__altitude = 0
+        self.locator._Geolocation__worldOrigin = np.array([0, 0, 0])
+        self.locator._Geolocation__gpsOffset = np.array([0, 0, 0])
+        self.locator._Geolocation__cameraOffset = np.array([0, 0, 0])
+        self.locator._Geolocation__eulerCamera = {"x": 0, "y": 0, "z": 0}
+        self.locator._Geolocation__eulerPlane = {"x": 0, "y": 0, "z": 0}
 
 
-        geoLocationClass = geolocation.Geolocation()
-        actual = geoLocationClass.convert_input(latitude=latitude,
-                                                longitude=longitude,
-                                                altitude=altitude,
-                                                worldOrigin=worldOrigin,
-                                                gpsOffset=gpsOffset,
-                                                cameraOffset=cameraOffset,
-                                                eulerCamera=eulerCamera,
-                                                eulerPlane=eulerPlane)
+
+        actual = self.locator.convert_input()
 
         expected = (expected_o, expected_c, expected_u, expected_v)
         #assert
@@ -234,24 +236,18 @@ class TestConvertInput(unittest.TestCase):
         expected_u = np.array([0, 1, 0])
         expected_v = np.array([0, 0, -1])
 
-        latitude = 0
-        longitude = 0
-        altitude = 0
-        worldOrigin = np.array([0, 0, 0])
-        gpsOffset = np.array([0, 0, 0])
-        cameraOffset = np.array([0, 0, 0])
-        eulerPlane = {"x": 90, "y": 90, "z": 90}
-        eulerCamera = {"x": 90, "y": 90, "z": 90}
+        self.locator._Geolocation__fovFactor = 1
+        self.locator._Geolocation__latitude = 0
+        self.locator._Geolocation__longitude = 0
+        self.locator._Geolocation__altitude = 0
+        self.locator._Geolocation__worldOrigin = np.array([0, 0, 0])
+        self.locator._Geolocation__gpsOffset = np.array([0, 0, 0])
+        self.locator._Geolocation__cameraOffset = np.array([0, 0, 0])
+        self.locator._Geolocation__eulerPlane = {"x": 90, "y": 90, "z": 90}
+        self.locator._Geolocation__eulerCamera = {"x": 90, "y": 90, "z": 90}
 
-        geoLocationClass = geolocation.Geolocation()
-        actual = geoLocationClass.convert_input(latitude=latitude,
-                                                longitude=longitude,
-                                                altitude=altitude,
-                                                worldOrigin=worldOrigin,
-                                                gpsOffset=gpsOffset,
-                                                cameraOffset=cameraOffset,
-                                                eulerCamera=eulerCamera,
-                                                eulerPlane=eulerPlane)
+
+        actual = self.locator.convert_input()
 
 
         expected = (expected_o, expected_c, expected_u, expected_v)
@@ -261,29 +257,22 @@ class TestConvertInput(unittest.TestCase):
     def test_point_set_1(self):
 
 
-        latitude = 100
-        longitude = 100
-        altitude = 100
-        worldOrigin = np.array([-50, 50, 50])
-        gpsOffset = np.array([0.5, 0, 0])
-        cameraOffset = np.array([0.5, 0, 0])
-        eulerPlane = {"x": 45, "y": 180, "z": 90}
-        eulerCamera = {"x": 90, "y": 45, "z": 135}
+        self.locator._Geolocation__latitude = -100
+        self.locator._Geolocation__longitude = -100
+        self.locator._Geolocation__altitude = -100
+        self.locator._Geolocation__worldOrigin = np.array([-50, 50, 50])
+        self.locator._Geolocation__gpsOffset = np.array([0.5, 0, 0])
+        self.locator._Geolocation__cameraOffset = np.array([-0.5, 0, 0])
+        self.locator._Geolocation__eulerPlane = {"x": 45, "y": 180, "z": 90}
+        self.locator._Geolocation__eulerCamera = {"x": 90, "y": 45, "z": 135}
 
-        expected_o = np.array([49.5 - np.sqrt(2) / 4, 150.5 - np.sqrt(2) / 4, 149.5])
+        expected_o = np.array([-(50.5 + np.sqrt(2) / 4), -(149.5 + np.sqrt(2) / 4), -150.5])
         expected_c = np.array([(-np.sqrt(2) - 2) / 4, 0.5, (-np.sqrt(2) + 2) / 4])
         expected_u = np.array([(-np.sqrt(2) + 2) / 4, 0.5, (-np.sqrt(2) - 2) / 4])
         expected_v = np.array([-0.5, -np.sqrt(2) / 2, -0.5])
 
-        geoLocationClass = geolocation.Geolocation()
-        actual = geoLocationClass.convert_input(latitude=latitude,
-                                                longitude=longitude,
-                                                altitude=altitude,
-                                                worldOrigin=worldOrigin,
-                                                gpsOffset=gpsOffset,
-                                                cameraOffset=cameraOffset,
-                                                eulerCamera=eulerCamera,
-                                                eulerPlane=eulerPlane)
+
+        actual = self.locator.convert_input()
 
         expected = (expected_o, expected_c, expected_u, expected_v)
         # assert
@@ -292,29 +281,22 @@ class TestConvertInput(unittest.TestCase):
 
     def test_point_set_2(self):
 
-        latitude = -50
-        longitude = 75
-        altitude = 115
-        worldOrigin = np.array([-50, -25, 50])
-        gpsOffset = np.array([1, 1, 0])
-        cameraOffset = np.array([5, 0, 2])
-        eulerPlane = {"x": 45, "y": 0, "z": 270}
-        eulerCamera = {"x": 180, "y": 45, "z": 315}
+        self.locator._Geolocation__latitude = 50
+        self.locator._Geolocation__longitude = -75
+        self.locator._Geolocation__altitude = -115
+        self.locator._Geolocation__worldOrigin = np.array([-50, -25, 50])
+        self.locator._Geolocation__gpsOffset = np.array([-1, -1, 0])
+        self.locator._Geolocation__cameraOffset = np.array([5, 0, 2])
+        self.locator._Geolocation__eulerPlane = {"x": 45, "y": 0, "z": 270}
+        self.locator._Geolocation__eulerCamera = {"x": 180, "y": 45, "z": 315}
 
-        expected_o = np.array([-98.5 - (np.sqrt(2) * 2), 46 + np.sqrt(2) / 2, 167.5 + 2 * np.sqrt(2)])
+        expected_o = np.array([-(-98.5 - (np.sqrt(2) * 2)), -(46 + np.sqrt(2) / 2), -(167.5 + 2 * np.sqrt(2))])
         expected_c = np.array([(-np.sqrt(2) + 2) / 4, -.5, (-np.sqrt(2) - 2) / 4])
         expected_u = np.array([-0.5, (np.sqrt(2)) / 2, -.5])
         expected_v = np.array([(np.sqrt(2) + 2) / 4, .5, (np.sqrt(2) - 2) / 4])
 
-        geoLocationClass = geolocation.Geolocation()
-        actual = geoLocationClass.convert_input(latitude=latitude,
-                                                longitude=longitude,
-                                                altitude=altitude,
-                                                worldOrigin=worldOrigin,
-                                                gpsOffset=gpsOffset,
-                                                cameraOffset=cameraOffset,
-                                                eulerCamera=eulerCamera,
-                                                eulerPlane=eulerPlane)
+
+        actual = self.locator.convert_input()
 
         expected = (expected_o, expected_c, expected_u, expected_v)
         # assert
