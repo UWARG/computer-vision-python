@@ -152,7 +152,7 @@ class Geolocation:
 
         geoCoordinates = np.empty(shape=(0, 2))
         
-        # Cycle through all 2D coordinates of pixels
+        # Cycle through all homogenized coordinates of pixels
         for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
             if h[2] == 0:
