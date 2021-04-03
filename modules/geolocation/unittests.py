@@ -222,7 +222,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(onesTransformationMatrix, pixelCoordinates)
         
         # Test
-        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
+        np.testing.assert_almost_equal(actual, expected)
     
     def test_set_1_int(self):
 
@@ -247,7 +247,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
+        np.testing.assert_almost_equal(actual, expected)
     
     def test_set_2_float(self):
 
@@ -272,7 +272,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
+        np.testing.assert_almost_equal(actual, expected)
     
     def test_small_values_transformation_matrix(self):
 
@@ -297,7 +297,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
+        np.testing.assert_almost_equal(actual, expected)
 
     def test_homogenized_z_equals_0_case(self):
 
@@ -318,7 +318,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         actual = self.locator.map_location_from_pixel(transformationMatrix, pixelCoordinates)
 
         # Test
-        np.testing.assert_allclose(actual, expected, rtol = 1e-6)
+        np.testing.assert_almost_equal(actual, expected)
     
  
  
