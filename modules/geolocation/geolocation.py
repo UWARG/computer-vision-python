@@ -155,7 +155,7 @@ class Geolocation:
         # Cycle through all homogenized coordinates of pixels
         for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
-            if h[2] == 0:
+            if np.allclose(h[2], 0):
                 geoCoordinates = np.vstack((geoCoordinates, np.full((2), np.inf)))
                 continue
 
