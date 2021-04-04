@@ -1,6 +1,7 @@
 from ...commandModule import CommandModule
 import unittest
 import os
+import logging
 
 class TestCaseWritingMissingGimbalCommandAttributes(unittest.TestCase):
     """
@@ -18,10 +19,14 @@ class TestCaseWritingMissingGimbalCommandAttributes(unittest.TestCase):
 
     def test_key_error_if_set_gimbal_commands_missing_yaw_attribute(self):
         temp = {"y":1.231}
-        with self.assertRaises(KeyError):
+        with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gimbal_commands(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must contain z key.", ])
+        logging.info(cm.output)
 
     def test_key_error_if_set_gimbal_commands_missing_pitch_attribute(self):
         temp = {"z":1.213}
-        with self.assertRaises(KeyError):
+        with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gimbal_commands(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must contain y key.", ])
+        logging.info(cm.output)

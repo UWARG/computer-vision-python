@@ -1,6 +1,7 @@
 from ...commandModule import CommandModule
 import unittest
 import os
+import logging
 
 class TestCaseWritingMissingGroundCommandAttributes(unittest.TestCase):
     """
@@ -18,10 +19,14 @@ class TestCaseWritingMissingGroundCommandAttributes(unittest.TestCase):
 
     def test_key_error_if_set_ground_commands_missing_heading_attribute(self):
         temp = {"latestDistance":1.234}
-        with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(temp)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_ground_commands(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must contain heading key.", ])
+        logging.info(cm.output)
 
     def test_key_error_if_set_ground_commands_missing_latest_distance_attribute(self):
         temp = {"heading":1.234}
-        with self.assertRaises(KeyError):
-            self.commandModule.set_gimbal_commands(temp)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_ground_commands(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.", ])
+        logging.info(cm.output)

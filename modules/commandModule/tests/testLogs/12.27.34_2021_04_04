@@ -75,6 +75,6 @@ test_type_error_if_set_gps_coords_to_wrong_type (commandModule.tests.testCases.t
 test_type_error_if_set_ground_commands_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 
 ----------------------------------------------------------------------
-Ran 75 tests in 0.114s
+Ran 75 tests in 0.159s
 
 OK
