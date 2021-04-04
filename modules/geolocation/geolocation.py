@@ -130,6 +130,7 @@ class Geolocation:
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
+
 # Private function that checks if the trimmed array is empty ie all values were too far apart from the median
 # Returns median if array is empty, otherwise finds the average of the trimmed array
     def __get_average_otherwise_median(self,trimmedArray,median):
@@ -186,3 +187,41 @@ class Geolocation:
 
         return (averagePair,averageError)
     
+
+    def map_location_from_pixel(self, transformationMatrix, pixels):
+        """
+        Maps Geographical Location Coordinates in the destination image
+        
+        Parameters
+        -------
+            transformationMatrix : np.array(shape=(3,3))
+            pixels : np.array(shape=(5,2))
+
+        Returns
+        -------
+            np.array(shape=(5,2))
+        """
+
+        # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
+        pixels = np.insert(pixels, 2, 1, axis = 1)
+
+        # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
+        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+
+        geoCoordinates = np.empty(shape=(0, 2))
+        
+        # Cycle through all homogenized coordinates of pixels
+        for h in homogeneousCoordinates:
+            # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
+            if np.allclose(h[2], 0):
+                geoCoordinates = np.vstack((geoCoordinates, np.full((2), np.inf)))
+                continue
+
+            # Dehomogenizing the coordinate vector to compute the position in the destination image
+            dehomogenizedX = h[0] / h[2]
+            dehomogenizedY = h[1] / h[2]
+   
+            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
+
+        return geoCoordinates
+
