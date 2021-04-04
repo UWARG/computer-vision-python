@@ -58,7 +58,8 @@ class Geolocation:
         self.__WORLD_ORIGIN = np.empty(3)
         self.__GPS_OFFSET = np.empty(3)
         self.__CAMERA_OFFSET = np.empty(3)
-        self.__FOV_FACTOR = 1
+        self.__FOV_FACTOR_H = 1
+        self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
 
@@ -221,7 +222,7 @@ class Geolocation:
         # apply compound rotation matrix to cVectorCameraSpace
         cVector = np.matmul(compoundRotationMatrix, self.__C_VECTOR_CAMERA_SPACE)
 
-        # normalize since magnitude doesn't matter
+        # normalize so that ||cVector|| = 1
         norm = np.linalg.norm(cVector)
         if (norm != 0):
             cVector = cVector / norm
@@ -247,14 +248,14 @@ class Geolocation:
         # apply compound rotation matrix to uVectorCameraSpace
         uVector = np.matmul(compoundRotationMatrix, self.__U_VECTOR_CAMERA_SPACE)
 
-        # normalize output since camera direction magnitude doesn't matter
+        # normalize uVector so ||uVector|| = 1
         norm = np.linalg.norm(uVector)
         if (norm != 0):
             uVector = uVector / norm
 
         # reshape vector and apply field of view factor
         uVector = np.squeeze(uVector)
-        return uVector * self.__FOV_FACTOR
+        return uVector * self.__FOV_FACTOR_H
 
     def __calculate_v_vector(self, c: np.ndarray, u: np.ndarray) -> np.ndarray:
         """
@@ -273,10 +274,16 @@ class Geolocation:
             array containing the remaining camera rotation vector
         """
         # cross product c and u to get v
-        v_vector = np.cross(c, u)
-        
+        vVector = np.cross(c, u)
+
+        # normalize vVector so ||vVector|| = 1
+        norm = np.linalg.norm(vVector)
+        if (norm != 0):
+            vVector = vVector / norm
+
         # apply field of view factor
-        return v_vector * self.__FOV_FACTOR
+        vVector = np.squeeze(vVector)
+        return vVector * self.__FOV_FACTOR_V
 
     def __calculate_rotation_matrix(self, eulerAngles: np.ndarray) -> np.ndarray:
         """
