@@ -231,10 +231,11 @@ class TestConvertInput(unittest.TestCase):
 
         expected_o = np.zeros(3)
         expected_c = np.array([-1, 0, 0])
-        expected_u = np.array([0, 1, 0])
-        expected_v = np.array([0, 0, -1])
+        expected_u = np.array([0, 2, 0])
+        expected_v = np.array([0, 0, -2])
 
-        self.locator._Geolocation__FOV_FACTOR = 1
+        self.locator._Geolocation__FOV_FACTOR_H = 2
+        self.locator._Geolocation__FOV_FACTOR_V = 2
         self.locator._Geolocation__latitude = 0
         self.locator._Geolocation__longitude = 0
         self.locator._Geolocation__altitude = 0
@@ -258,15 +259,15 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__longitude = -100
         self.locator._Geolocation__altitude = 100
         self.locator._Geolocation__WORLD_ORIGIN = np.array([-50, 50, 50])
-        self.locator._Geolocation__GPS_OFFSET = np.array([-0.5, 0, 0.5])
-        self.locator._Geolocation__CAMERA_OFFSET = np.array([0.5, 0, -0.5])
+        self.locator._Geolocation__GPS_OFFSET = np.array([-0.5, 0, -0.5])
+        self.locator._Geolocation__CAMERA_OFFSET = np.array([0.5, 0, 0.5])
         self.locator._Geolocation__eulerPlane = {"x": np.deg2rad(45), "y": np.deg2rad(180), "z": np.deg2rad(90)}
         self.locator._Geolocation__eulerCamera = {"x": np.deg2rad(90), "y": np.deg2rad(45), "z": np.deg2rad(135)}
 
-        expected_o = np.array([-49.5 + 1/np.sqrt(2), -150.5 + (np.sqrt(2) - 2)/4, 50.5 - (np.sqrt(2) + 2)/4])
-        expected_c = np.array([0.5, -0.5, -1/np.sqrt(2)])
-        expected_u = np.array([(np.sqrt(2) - 2)/4, -(np.sqrt(2) + 2) / 4, 0.5])
-        expected_v = np.array([-0.25 - (np.sqrt(2) + 2) / (4 * np.sqrt(2)), (2 - np.sqrt(2)) / (4 * np.sqrt(2)) - 0.25, -0.5])
+        expected_o = np.array([-(50 + np.sqrt(2) /2), -(150 + np.sqrt(2) /2), 49])
+        expected_c = np.array([(-np.sqrt(2) - 2) / 4, 0.5, (-np.sqrt(2) + 2) / 4])
+        expected_u = np.array([(-np.sqrt(2) + 2) / 4, 0.5, (-np.sqrt(2) - 2) / 4])
+        expected_v = np.array([-0.5, -np.sqrt(2) / 2, -0.5])
 
         actual = self.locator.convert_input()
 
@@ -277,19 +278,19 @@ class TestConvertInput(unittest.TestCase):
 
     def test_point_set_2(self):
 
-        self.locator._Geolocation__latitude = 50
-        self.locator._Geolocation__longitude = -75
-        self.locator._Geolocation__altitude = -115
-        self.locator._Geolocation__WORLD_ORIGIN = np.array([-50, -25, 50])
+        self.locator._Geolocation__longitude = -50
+        self.locator._Geolocation__latitude = 75
+        self.locator._Geolocation__altitude = 115
+        self.locator._Geolocation__WORLD_ORIGIN = np.array([50, 25, -50])
         self.locator._Geolocation__GPS_OFFSET = np.array([-1, -1, 0])
         self.locator._Geolocation__CAMERA_OFFSET = np.array([5, 0, 2])
         self.locator._Geolocation__eulerPlane = {"x": np.deg2rad(45), "y": 0, "z": np.deg2rad(270)}
         self.locator._Geolocation__eulerCamera = {"x": np.deg2rad(180), "y": np.deg2rad(45), "z": np.deg2rad(315)}
 
-        expected_o = np.array([-25 + 7/np.sqrt(2), 75 - 2, -165 - 5/np.sqrt(2)])
-        expected_c = np.array([np.sqrt(2)/2, np.sqrt(2)/2, 0])
-        expected_u = np.array([0, 0, -1])
-        expected_v = np.array([-np.sqrt(2)/2, np.sqrt(2)/2, 0])
+        expected_o = np.array([(-98.5 - (np.sqrt(2) * 2)), (46 + np.sqrt(2) / 2), (167.5 + 2 * np.sqrt(2))])
+        expected_c = np.array([(-np.sqrt(2) + 2) / 4, -.5, (-np.sqrt(2) - 2) / 4])
+        expected_u = np.array([-0.5, (np.sqrt(2)) / 2, -.5])
+        expected_v = np.array([(np.sqrt(2) + 2) / 4, .5, (np.sqrt(2) - 2) / 4])
 
         actual = self.locator.convert_input()
 

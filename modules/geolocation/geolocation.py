@@ -160,8 +160,8 @@ class Geolocation:
         cameraRotation = self.__calculate_rotation_matrix(self.__eulerCamera)
 
         # get plane and camera compound rotation matrix
-        # note: assume apply plane -> camera rotations in that order
-        compoundRotationMatrix = np.matmul(cameraRotation, planeRotation)
+        # note: apply camera rotation and then plane rotation in that order
+        compoundRotationMatrix = np.matmul(planeRotation, cameraRotation)
 
         # calculate gps module to camera offset
         gpsCameraOffset = np.subtract(self.__CAMERA_OFFSET, self.__GPS_OFFSET)
@@ -228,6 +228,7 @@ class Geolocation:
             cVector = cVector / norm
 
         # reshape vector
+        # in order to get an fov, fix the c vector and scale u and v with fov factors to get an fov
         return np.squeeze(cVector)
 
     def __calculate_u_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
@@ -283,6 +284,7 @@ class Geolocation:
 
         # apply field of view factor
         vVector = np.squeeze(vVector)
+
         return vVector * self.__FOV_FACTOR_V
 
     def __calculate_rotation_matrix(self, eulerAngles: np.ndarray) -> np.ndarray:
