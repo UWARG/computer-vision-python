@@ -146,6 +146,7 @@ class Geolocation:
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
 
+
     def convert_input(self):
         """
         Converts telemtry data into workable data
@@ -327,3 +328,98 @@ class Geolocation:
         rotationMatrix = np.matmul(yawRotation, np.matmul(pitchRotation, rollRotation))
 
         return rotationMatrix
+
+# Private function that checks if the trimmed array is empty ie all values were too far apart from the median
+# Returns median if array is empty, otherwise finds the average of the trimmed array
+    def __get_average_otherwise_median(self,trimmedArray,median):
+        if np.size(trimmedArray,0)==0:
+             return median
+        else:
+            return np.average(trimmedArray,axis=0)
+
+
+    def get_best_location(self,inputLocationTupleList):
+
+        # For the  case of a single row matrix being passed to the function
+        if np.size(inputLocationTupleList,0)==1:
+
+            averagePair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            averageError = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+
+
+        else:
+
+            # Splits the 3D numpy arrray into three separate arrays
+            coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+            confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
+
+            # Splits coordinate pair into x-coord and y-coord to remove outliers
+            xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
+            yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
+            xCoordTrimmed=[]
+            yCoordTrimmed=[]
+
+            xCoordMedian = np.median(xCoord)
+            yCoordMedian = np.median(yCoord)
+            errorMedian = np.median(errorArray)
+
+            # A modified version of the trimmed mean calculation. Here the distance measurement is distance between every x,y point from the median coordinate pair, x median and y median.
+            # 7 is the distance for how far a given point can be from the median
+            # TODO: Z-scores could be used instead
+            for (x,y) in zip(xCoord,yCoord):
+                distance = math.hypot(xCoordMedian-x,yCoordMedian-y)
+
+                if distance < 7:
+                    xCoordTrimmed.append(x)
+                    yCoordTrimmed.append(y)
+
+            # In the case of the values in the error array, the distance here is 3.5.
+            errorArray = errorArray[(errorArray - errorMedian > -3.5) & (errorArray - errorMedian < 3.5)]
+
+            averageX = self.__get_average_otherwise_median(xCoordTrimmed,xCoordMedian)
+            averageY = self.__get_average_otherwise_median(yCoordTrimmed,yCoordMedian)
+            averageError =self.__get_average_otherwise_median(errorArray,errorMedian)
+
+            averagePair = (averageX,averageY)
+
+        return (averagePair,averageError)
+    
+
+    def map_location_from_pixel(self, transformationMatrix, pixels):
+        """
+        Maps Geographical Location Coordinates in the destination image
+        
+        Parameters
+        -------
+            transformationMatrix : np.array(shape=(3,3))
+            pixels : np.array(shape=(5,2))
+
+        Returns
+        -------
+            np.array(shape=(5,2))
+        """
+
+        # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
+        pixels = np.insert(pixels, 2, 1, axis = 1)
+
+        # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
+        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+
+        geoCoordinates = np.empty(shape=(0, 2))
+        
+        # Cycle through all homogenized coordinates of pixels
+        for h in homogeneousCoordinates:
+            # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
+            if np.allclose(h[2], 0):
+                geoCoordinates = np.vstack((geoCoordinates, np.full((2), np.inf)))
+                continue
+
+            # Dehomogenizing the coordinate vector to compute the position in the destination image
+            dehomogenizedX = h[0] / h[2]
+            dehomogenizedY = h[1] / h[2]
+   
+            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
+
+        return geoCoordinates
+
