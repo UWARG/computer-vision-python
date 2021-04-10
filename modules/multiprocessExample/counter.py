@@ -1,4 +1,3 @@
-import multiprocessing as mp
 import time
 
 """
@@ -29,10 +28,7 @@ class Counter:
     def countUp(self):
 
         # Pretending we are hard at work
-        time.sleep(0.1)
-
-        # Validate input
-        # If this was a consumer then incoming data MUST be checked
+        time.sleep(0.15)
 
         # Increment counter
         if (self.currentCount > self.maxCount + self.numberToAdd):
@@ -40,4 +36,7 @@ class Counter:
         else:
             self.currentCount += 1
 
+        # Outgoing data MUST be in this form
+        # so that bad data isn't going in the queue
+        # Data must be packed into one variable before going out to the wrapper function!
         return True, self.currentCount
