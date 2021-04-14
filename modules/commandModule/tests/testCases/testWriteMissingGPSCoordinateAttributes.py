@@ -1,6 +1,7 @@
 from ...commandModule import CommandModule
 import unittest
 import os
+import logging
 
 class TestCaseWritingMissingGPSCoordinateAttributes(unittest.TestCase):
     """
@@ -18,15 +19,21 @@ class TestCaseWritingMissingGPSCoordinateAttributes(unittest.TestCase):
 
     def test_key_error_if_set_gps_coordinates_missing_latitude_attribute(self):
         temp = {"longitude":1.234, "altitude":2.312}
-        with self.assertRaises(KeyError):
+        with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gps_coordinates(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates must contain latitude key.", ])
+        logging.info(cm.output)
 
     def test_key_error_if_set_gps_coordinates_missing_longitude_attribute(self):
         temp = {"latitude":1.234, "altitude":2.312}
-        with self.assertRaises(KeyError):
+        with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gps_coordinates(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates must contain longitude key.", ])
+        logging.info(cm.output)
 
     def test_key_error_if_set_gps_coordinates_missing_altitude_attribute(self):
         temp = {"longitude":1.234, "latitude":2.312}
-        with self.assertRaises(KeyError):
+        with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gps_coordinates(temp)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates must contain altitude key.", ])
+        logging.info(cm.output)

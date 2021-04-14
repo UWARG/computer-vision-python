@@ -11,9 +11,18 @@ class Geolocation:
     """
 
     # TODO Class members
-    def __init__(self):
+    def __init__(self, gpsCoordinates={"latitude": 0, "longitude": 0, "altitude": 0}, eulerCamera={}, eulerPlane={}):
         """
         Initial setup of class members
+
+        Parameters
+        ----------
+        gpsCoordinates: dict
+            Dictionary that contains GPS coordinate data with key names latitude, longitude, and altitude
+        eulerCamera: dict
+            Dictionary that contains a set of three euler angles for the camera with key names z, y, x
+        eulerPlane: dict
+            Dictionary that contains a set of three euler angles for the plane with key names z, y, x
 
         Returns
         -------
@@ -38,19 +47,25 @@ class Geolocation:
                                            [[2, 2], [2, 2]],
                                            [[3, 3], [3, 3]]])
 
+        # Inputs to input_conversion
+        self.__latitude = gpsCoordinates["latitude"]
+        self.__longitude = gpsCoordinates["longitude"]
+        self.__altitude = gpsCoordinates["altitude"]
+        self.__eulerCamera = eulerCamera
+        self.__eulerPlane = eulerPlane
+
+        # Constants for input_conversion
+        self.__WORLD_ORIGIN = np.empty(3)
+        self.__GPS_OFFSET = np.empty(3)
+        self.__CAMERA_OFFSET = np.empty(3)
+        self.__FOV_FACTOR_H = 1
+        self.__FOV_FACTOR_V = 1
+        self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
+        self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
+
         return
 
-    # TODO Placeholder, add functionality once we figure out how to convert raw plane data
-    def convert_input(self):
-        """
-        Converts plane data into data usable by Geolocation
 
-        Returns
-        -------
-
-        """
-
-        return
 
     def gather_point_pairs(self):
         """
@@ -129,3 +144,282 @@ class Geolocation:
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+
+
+
+    def convert_input(self):
+        """
+        Converts telemtry data into workable data
+
+        Returns
+        -------
+        list:
+            list of numpy arrays that represent the o, c, u and v vectors
+        """
+        # get plane and camera rotation matrices
+        planeRotation = self.__calculate_rotation_matrix(self.__eulerPlane)
+        cameraRotation = self.__calculate_rotation_matrix(self.__eulerCamera)
+
+        # get plane and camera compound rotation matrix
+        # note: apply camera rotation and then plane rotation in that order
+        compoundRotationMatrix = np.matmul(planeRotation, cameraRotation)
+
+        # calculate gps module to camera offset
+        gpsCameraOffset = np.subtract(self.__CAMERA_OFFSET, self.__GPS_OFFSET)
+
+        # calculate o, c, u, v vectors
+        o = self.__calculate_o_vector(compoundRotationMatrix, gpsCameraOffset)
+        c = self.__calculate_c_vector(compoundRotationMatrix)
+        u = self.__calculate_u_vector(compoundRotationMatrix)
+        v = self.__calculate_v_vector(c, u)
+
+        return (o, c, u, v)
+
+    def __calculate_o_vector(self, compoundRotationMatrix: np.ndarray, gpsCameraOffset: np.ndarray) -> np.ndarray:
+        """
+        Returns a numpy array that contains the components of the o vector
+
+        Parameters
+        ----------
+        compoundRotationMatrix: numpy array
+            Array containing rotation matrix for camera and plane rotations
+        gpsCameraOffset: numpy array
+            The offset of the GPS to the camera on the plane in plane space
+
+        Returns
+        -------
+        oVector: numpy array
+            Array containing components of the o vector
+        """
+        # get GPS module coordinates
+        gpsModule = np.empty(3)
+        gpsModule[0] = self.__longitude - self.__WORLD_ORIGIN[0]
+        gpsModule[1] = self.__latitude - self.__WORLD_ORIGIN[1]
+        gpsModule[2] = self.__altitude - self.__WORLD_ORIGIN[2]
+
+        # transform gps-to-camera offset from plane space to world space by applying inverse rotation matrix
+        # note: for rotation matrices, transpose is equivalent to inverse
+        transposedMatrix = np.transpose(compoundRotationMatrix)
+        rotatedOffset = np.matmul(transposedMatrix, gpsCameraOffset)
+
+        # get camera coordinates in world space
+        return np.add(gpsModule, rotatedOffset)
+
+    def __calculate_c_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
+
+        """
+        Returns a numpy array that contains the components of the c vector
+
+        Parameters
+        ----------
+        compoundRotationMatrix: numpy array
+            Array containing rotation matrix for camera and plane rotations
+
+        Returns
+        -------
+        cVector:
+            Array containing components of the c vector
+        """
+        # apply compound rotation matrix to cVectorCameraSpace
+        cVector = np.matmul(compoundRotationMatrix, self.__C_VECTOR_CAMERA_SPACE)
+
+        # normalize so that ||cVector|| = 1
+        norm = np.linalg.norm(cVector)
+        if (norm != 0):
+            cVector = cVector / norm
+
+        # reshape vector
+        # in order to get an fov, fix the c vector and scale u and v with fov factors to get an fov
+        return np.squeeze(cVector)
+
+    def __calculate_u_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
+
+        """
+        Returns a numpy array that contains the components of the u vector (one of the camera rotation vectors)
+
+        Parameters
+        ----------
+        compoundRotationMatrix: numpy array
+            Array containing rotation matrix for camera and plane rotations
+            
+        Returns
+        -------
+        uVector: numpy array
+            Array containing camera rotation vector
+        """
+        # apply compound rotation matrix to uVectorCameraSpace
+        uVector = np.matmul(compoundRotationMatrix, self.__U_VECTOR_CAMERA_SPACE)
+
+        # normalize uVector so ||uVector|| = 1
+        norm = np.linalg.norm(uVector)
+        if (norm != 0):
+            uVector = uVector / norm
+
+        # reshape vector and apply field of view factor
+        uVector = np.squeeze(uVector)
+        return uVector * self.__FOV_FACTOR_H
+
+    def __calculate_v_vector(self, c: np.ndarray, u: np.ndarray) -> np.ndarray:
+        """
+        Returns a numpy array that contains the components of the v vector (remaining camera rotation vector)
+
+        Parameters
+        ----------
+        c: numpy array
+            Array containing camera direction vector
+        u: numpy array
+            Array containing one camera rotation vector
+
+        Returns
+        -------
+        numpyArray:
+            array containing the remaining camera rotation vector
+        """
+        # cross product c and u to get v
+        vVector = np.cross(c, u)
+
+        # normalize vVector so ||vVector|| = 1
+        norm = np.linalg.norm(vVector)
+        if (norm != 0):
+            vVector = vVector / norm
+
+        # apply field of view factor
+        vVector = np.squeeze(vVector)
+
+        return vVector * self.__FOV_FACTOR_V
+
+    def __calculate_rotation_matrix(self, eulerAngles: np.ndarray) -> np.ndarray:
+        """
+        Calculate and return rotation matrix given euler angles
+
+        Parameters
+        ----------
+        eulerAngles: dict
+            Dictionary containing euler angles with roll ('x'), pitch ('y') and yaw ('z') rotations in radians
+
+        Returns
+        -------
+        rotationMatrix: numpy array
+            Rotation matrix calculated from the given euler angles
+        """
+        # get euler angles
+        # note: naming conventions specified in CV-Telemetry docs and commandModule specs
+        yawAngle = eulerAngles["z"]
+        pitchAngle = eulerAngles["y"]
+        rollAngle = eulerAngles["x"]
+
+        # get plane yaw rotation matrix
+        yawRotation = np.array([[float(np.cos([yawAngle])), -1 * float(np.sin([yawAngle])), 0],
+                                [float(np.sin([yawAngle])), float(np.cos([yawAngle])), 0],
+                                [0, 0, 1]])
+
+        # get plane pitch rotation matrix
+        pitchRotation = np.array([[float(np.cos([pitchAngle])), 0, float(np.sin([pitchAngle]))],
+                                  [0, 1, 0],
+                                  [-1 * float(np.sin([pitchAngle])), 0, float(np.cos([pitchAngle]))]])
+
+        # get plane roll rotation matrix
+        rollRotation = np.array([[1, 0, 0],
+                                 [0, float(np.cos([rollAngle])), -1 * float(np.sin([rollAngle]))],
+                                 [0, float(np.sin([rollAngle])), float(np.cos([rollAngle]))]])
+
+        # get total plane rotation matrix based on euler rotation theorem
+        # note: assume ZYX euler angles (i.e. R = RzRyRx); otherwise, change the multiplication order
+        rotationMatrix = np.matmul(yawRotation, np.matmul(pitchRotation, rollRotation))
+
+        return rotationMatrix
+
+# Private function that checks if the trimmed array is empty ie all values were too far apart from the median
+# Returns median if array is empty, otherwise finds the average of the trimmed array
+    def __get_average_otherwise_median(self,trimmedArray,median):
+        if np.size(trimmedArray,0)==0:
+             return median
+        else:
+            return np.average(trimmedArray,axis=0)
+
+
+    def get_best_location(self,inputLocationTupleList):
+
+        # For the  case of a single row matrix being passed to the function
+        if np.size(inputLocationTupleList,0)==1:
+
+            averagePair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            averageError = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+
+
+        else:
+
+            # Splits the 3D numpy arrray into three separate arrays
+            coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
+            errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
+            confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
+
+            # Splits coordinate pair into x-coord and y-coord to remove outliers
+            xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
+            yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
+            xCoordTrimmed=[]
+            yCoordTrimmed=[]
+
+            xCoordMedian = np.median(xCoord)
+            yCoordMedian = np.median(yCoord)
+            errorMedian = np.median(errorArray)
+
+            # A modified version of the trimmed mean calculation. Here the distance measurement is distance between every x,y point from the median coordinate pair, x median and y median.
+            # 7 is the distance for how far a given point can be from the median
+            # TODO: Z-scores could be used instead
+            for (x,y) in zip(xCoord,yCoord):
+                distance = math.hypot(xCoordMedian-x,yCoordMedian-y)
+
+                if distance < 7:
+                    xCoordTrimmed.append(x)
+                    yCoordTrimmed.append(y)
+
+            # In the case of the values in the error array, the distance here is 3.5.
+            errorArray = errorArray[(errorArray - errorMedian > -3.5) & (errorArray - errorMedian < 3.5)]
+
+            averageX = self.__get_average_otherwise_median(xCoordTrimmed,xCoordMedian)
+            averageY = self.__get_average_otherwise_median(yCoordTrimmed,yCoordMedian)
+            averageError =self.__get_average_otherwise_median(errorArray,errorMedian)
+
+            averagePair = (averageX,averageY)
+
+        return (averagePair,averageError)
+    
+
+    def map_location_from_pixel(self, transformationMatrix, pixels):
+        """
+        Maps Geographical Location Coordinates in the destination image
+        
+        Parameters
+        -------
+            transformationMatrix : np.array(shape=(3,3))
+            pixels : np.array(shape=(5,2))
+
+        Returns
+        -------
+            np.array(shape=(5,2))
+        """
+
+        # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
+        pixels = np.insert(pixels, 2, 1, axis = 1)
+
+        # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
+        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+
+        geoCoordinates = np.empty(shape=(0, 2))
+        
+        # Cycle through all homogenized coordinates of pixels
+        for h in homogeneousCoordinates:
+            # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
+            if np.allclose(h[2], 0):
+                geoCoordinates = np.vstack((geoCoordinates, np.full((2), np.inf)))
+                continue
+
+            # Dehomogenizing the coordinate vector to compute the position in the destination image
+            dehomogenizedX = h[0] / h[2]
+            dehomogenizedY = h[1] / h[2]
+   
+            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
+
+        return geoCoordinates
+

@@ -1,6 +1,7 @@
 from ...commandModule import CommandModule
 import unittest
 import os
+import logging
 
 class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
     """
@@ -40,35 +41,47 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
     def test_type_error_if_set_gps_coords_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not dict:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_gps_coordinates(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
     
     def test_type_error_if_set_ground_commands_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not dict:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_ground_commands(test)
-    
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+
     def test_type_error_if_set_gimbal_commands_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not dict:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_gimbal_commands(test)
-    
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+
     def test_type_error_if_set_begin_landing_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_begin_landing(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:beginLanding must be a bool and not {}.".format(type(test)), ])
+                logging.info(cm.output)
 
     def test_type_error_if_set_begin_takeoff_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_begin_takeoff(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not {}.".format(type(test)), ])
+                logging.info(cm.output)
 
     def test_type_error_if_set_disconnect_autopilot_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not bool:
-                with self.subTest(passed_data=test), self.assertRaises(TypeError):
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_disconnect_autopilot(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not {}.".format(type(test)), ])
+                logging.info(cm.output)

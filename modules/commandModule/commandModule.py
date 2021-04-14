@@ -73,7 +73,7 @@ class CommandModule:
         pigoFileDirectory: str
             String of POGI file directory
         """
-        self.__logger = logging.getLogger()
+        self.__logger = logging.getLogger(__name__)
         self.__pogiData = dict()
         self.__pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory
@@ -89,14 +89,16 @@ class CommandModule:
             with self.__pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
                 self.__pogiData = json.load(pogiFile)
         except json.decoder.JSONDecodeError:
-            raise json.decoder.JSONDecodeError("The given POGI file has no data to read")
+            self.__logger.error("The given POGI file has no data to read")
+            return None
 
     def __write_to_pigo_file(self):
         """
         Encodes pigoData dictionary as JSON and stores it in pigoFileDirectory JSON file
         """
         if not bool(self.__pigoData):
-            raise ValueError("The current PIGO data dictionary is empty")
+            self.__logger.error("The current PIGO data dictionary is empty")
+            return None
         with self.__pigoLock, open(self.pigoFileDirectory, "w") as pigoFile:
             json.dump(self.__pigoData, pigoFile, ensure_ascii=False, indent=4, sort_keys=True)
 
@@ -113,9 +115,11 @@ class CommandModule:
         errorCode = self.__pogiData["errorCode"]
 
         if errorCode is None:
-            raise ValueError("errorCode not found in the POGI json file")
+            self.__logger.error("errorCode not found in the POGI json file.")
+            return None
         if type(errorCode) is not int:
-            raise TypeError("errorCode found in POGI file is not an int")
+            self.__logger.error("errorCode found in POGI file is not an int.")
+            return None
         
         return errorCode
 
@@ -132,9 +136,11 @@ class CommandModule:
         currentAltitude = self.__pogiData["currentAltitude"]
 
         if currentAltitude is None:
-            raise ValueError("currentAltitude not found in the POGI json file. Exiting...")
+            self.__logger.error("currentAltitude not found in the POGI json file.")
+            return None
         if type(currentAltitude) is not int:
-            raise TypeError("currentAltitude in the POGI file was not an int. Exiting...")
+            self.__logger.error("currentAltitude in the POGI file is not an int.")
+            return None
 
         return currentAltitude
 
@@ -151,9 +157,11 @@ class CommandModule:
         currentAirspeed = self.__pogiData["currentAirspeed"]
 
         if currentAirspeed is None:
-            raise ValueError("currentAirspeed not found in the POGI json file. Exiting...")
+            self.__logger.error("currentAirspeed not found in the POGI json file.")
+            return None
         if type(currentAirspeed) is not int:
-            raise TypeError("currentAirspeed in the POGI file was not an int. Exiting...")
+            self.__logger.error("currentAirspeed in the POGI file is not an int.")
+            return None
 
         return currentAirspeed
 
@@ -170,9 +178,11 @@ class CommandModule:
         isLanded = self.__pogiData["isLanded"]
 
         if isLanded is None:
-            raise ValueError("isLanded not found in the POGI json file. Exiting...")
+            self.__logger.error("isLanded not found in the POGI json file.")
+            return None
         if type(isLanded) is not bool:
-            raise TypeError("isLanded in the POGI file was not an int. Exiting...")
+            self.__logger.error("isLanded in the POGI file is not an int.")
+            return None
 
         return isLanded
 
@@ -189,18 +199,23 @@ class CommandModule:
         eulerAnglesOfCamera = self.__pogiData["eulerAnglesOfCamera"]
 
         if eulerAnglesOfCamera is None:
-            raise ValueError("eulerAnglesOfCamera not found in the POGI json file. Exiting...")
+            self.__logger.error("eulerAnglesOfCamera not found in the POGI json file.")
+            return None
         if type(eulerAnglesOfCamera) is not dict:
-            raise TypeError("eulerAnglesOfCamera in the POGI file was not a float. Exiting...")
+            self.__logger.error("eulerAnglesOfCamera in the POGI file is not a dictionary.")
+            return None
         for key in ("z", "y", "x"):
             if key not in eulerAnglesOfCamera.keys():
-                raise KeyError("{} key not found in eulerAnglesOfCamera".format(key))
+                self.__logger.error("{} key not found in eulerAnglesOfCamera.".format(key))
+                return None
         for key in ("z", "y", "x"):
             if eulerAnglesOfCamera[key] is None:
-                raise ValueError("{} in eulerAnglesOfCamera is null".format(key))
+                self.__logger.error("{} in eulerAnglesOfCamera is null.".format(key))
+                return None
         for key in ("z", "y", "x"):
             if type(eulerAnglesOfCamera[key]) is not float:
-                raise TypeError("{} in eulerAnglesOfCamera must be a float".format(key))
+                self.__logger.error("{} in eulerAnglesOfCamera is not a float.".format(key))
+                return None
 
         return eulerAnglesOfCamera
 
@@ -217,18 +232,23 @@ class CommandModule:
         eulerAnglesOfPlane = self.__pogiData["eulerAnglesOfPlane"]
 
         if eulerAnglesOfPlane is None:
-            raise ValueError("eulerAnglesOfPlane not found in the POGI json file. Exiting...")
+            self.__logger.error("eulerAnglesOfPlane not found in the POGI json file.")
+            return None
         if type(eulerAnglesOfPlane) is not dict:
-            raise TypeError("eulerAnglesOfPlane in the POGI file was not a float. Exiting...")
+            self.__logger.error("eulerAnglesOfPlane in the POGI file is not a dictionary.")
+            return None
         for key in ("z", "y", "x"):
             if key not in eulerAnglesOfPlane.keys():
-                raise KeyError("{} key not found in eulerAnglesOfPlane".format(key))
+                self.__logger.error("{} key not found in eulerAnglesOfPlane.".format(key))
+                return None
         for key in ("z", "y", "x"):
             if eulerAnglesOfPlane[key] is None:
-                raise ValueError("{} in eulerAnglesOfPlane is null".format(key))
+                self.__logger.error("{} in eulerAnglesOfPlane is null.".format(key))
+                return None
         for key in ("z", "y", "x"):
             if type(eulerAnglesOfPlane[key]) is not float:
-                raise TypeError("{} in eulerAnglesOfPlane must be a float".format(key))
+                self.__logger.error("{} in eulerAnglesOfPlane is not a float.".format(key))
+                return None
 
         return eulerAnglesOfPlane
 
@@ -245,18 +265,23 @@ class CommandModule:
         gpsCoordinates = self.__pogiData["gpsCoordinates"]
 
         if gpsCoordinates is None:
-            raise ValueError("gpsCoordinates not found in the POGI json file. Exiting...")
+            self.__logger.error("gpsCoordinates not found in the POGI json file.")
+            return None
         if type(gpsCoordinates) is not dict:
-            raise TypeError("gpsCoordinates in the POGI file was not a float. Exiting...")
+            self.__logger.error("gpsCoordinates in the POGI file is not a dictionary.")
+            return None
         for key in ("latitude", "longitude", "altitude"):
             if key not in gpsCoordinates.keys():
-                raise KeyError("{} key not found in gpsCoordinates".format(key))
+                self.__logger.error("{} key not found in gpsCoordinates.".format(key))
+                return None
         for key in ("latitude", "longitude", "altitude"):
             if gpsCoordinates[key] is None:
-                raise ValueError("{} in gpsCoordinates is null".format(key))
+                self.__logger.error("{} in gpsCoordinates is null.".format(key))
+                return None
         for key in ("latitude", "longitude", "altitude"):
             if type(gpsCoordinates[key]) is not float:
-                raise TypeError("{} in gpsCoordinates must be a float".format(key))
+                self.__logger.error("{} in gpsCoordinates is not a float.".format(key))
+                return None
 
         return gpsCoordinates
 
@@ -270,15 +295,19 @@ class CommandModule:
             Dictionary that contains GPS coordinate data with latitude, longitude, and altitude
         """
         if gpsCoordinates is None:
-            raise ValueError("gpsCoordinates must be a dict and not None.")
+            self.__logger.error("gpsCoordinates must be a dict and not None.")
+            return None
         if type(gpsCoordinates) is not dict:
-            raise TypeError("gpsCoordinates must be a dict and not {}".format(type(gpsCoordinates)))
+            self.__logger.error("gpsCoordinates must be a dict and not {}.".format(type(gpsCoordinates)))
+            return None
         for attribute in ("latitude", "longitude", "altitude"):
             if attribute not in gpsCoordinates.keys():
-                raise KeyError("gpsCoordinates must contain {} key".format(attribute))
+                self.__logger.error("gpsCoordinates must contain {} key.".format(attribute))
+                return None
         for key in gpsCoordinates.keys():
             if type(gpsCoordinates[key]) is not float:
-                raise TypeError("gpsCoordinates {} key must be a float".format(key))
+                self.__logger.error("gpsCoordinates {} key must be a float.".format(key))
+                return None
 
         self.__pigoData.update({"gpsCoordinates" : gpsCoordinates})
         self.__write_to_pigo_file()
@@ -293,15 +322,19 @@ class CommandModule:
             Dictionary that contains ground commands with heading and latestDistance
         """
         if groundCommands is None:
-            raise ValueError("groundCommands must be a dict and not None.")
+            self.__logger.error("groundCommands must be a dict and not None.")
+            return None
         if type(groundCommands) is not dict:
-            raise TypeError("groundCommands must be a dict and not {}".format(type(groundCommands)))
+            self.__logger.error("groundCommands must be a dict and not {}.".format(type(groundCommands)))
+            return None
         for key in ("heading", "latestDistance"):
             if key not in groundCommands.keys():
-                raise KeyError("groundCommands must contain {} key".format(key))
+                self.__logger.error("groundCommands must contain {} key.".format(key))
+                return None
         for key in ("heading", "latestDistance"):
             if type(groundCommands[key]) is not float:
-                raise TypeError("groundCommands {} key must be a float".format(key))
+                self.__logger.error("groundCommands {} key must be a float.".format(key))
+                return None
 
         self.__pigoData.update({"groundCommands" : groundCommands})
         self.__write_to_pigo_file()
@@ -316,15 +349,19 @@ class CommandModule:
             Dictionary that contains gimbal commands with pitch and yaw angles named y and z respectively
         """
         if gimbalCommands is None:
-            raise ValueError("gimbalCommands must be a dict and not None.")
+            self.__logger.error("gimbalCommands must be a dict and not None.")
+            return None
         if type(gimbalCommands) is not dict:
-            raise TypeError("gimbalCommands must be a dict and not {}".format(type(gimbalCommands)))
+            self.__logger.error("gimbalCommands must be a dict and not {}.".format(type(gimbalCommands)))
+            return None
         for key in ("z", "y"):
             if key not in gimbalCommands.keys():
-                raise KeyError("gimbalCommands must contain {} key".format(key))
+                self.__logger.error("gimbalCommands must contain {} key.".format(key))
+                return None
         for key in ("z", "y"):
             if type(gimbalCommands[key]) is not float:
-                raise TypeError("gimbalCommands {} key must be a float".format(key))
+                self.__logger.error("gimbalCommands {} key must be a float.".format(key))
+                return None
 
         self.__pigoData.update({"gimbalCommands" : gimbalCommands})
         self.__write_to_pigo_file()
@@ -339,9 +376,11 @@ class CommandModule:
             Boolean containing whether or not to initiate landing sequence
         """
         if beginLanding is None:
-            raise ValueError("beginLanding must be a bool and not None.")
+            self.__logger.error("beginLanding must be a bool and not None.")
+            return None
         if type(beginLanding) is not bool:
-            raise TypeError("beginLanding must be a bool and not {}".format(type(beginLanding)))
+            self.__logger.error("beginLanding must be a bool and not {}.".format(type(beginLanding)))
+            return None
 
         self.__pigoData.update({"beginLanding" : beginLanding})
         self.__write_to_pigo_file()
@@ -356,9 +395,11 @@ class CommandModule:
             Boolean containing whether or not to initiate takeoff sequence
         """
         if beginTakeoff is None:
-            raise ValueError("beginTakeoff must be a bool and not None.")
+            self.__logger.error("beginTakeoff must be a bool and not None.")
+            return None
         if type(beginTakeoff) is not bool:
-            raise TypeError("beginTakeoff must be a bool and not {}".format(type(beginTakeoff)))
+            self.__logger.error("beginTakeoff must be a bool and not {}.".format(type(beginTakeoff)))
+            return None
 
         self.__pigoData.update({"beginTakeoff" : beginTakeoff})
         self.__write_to_pigo_file()
@@ -373,9 +414,11 @@ class CommandModule:
             Boolean containing whether or not to disconnect auto pilot
         """
         if disconnectAutoPilot is None:
-            raise ValueError("disconnectAutopilot must be a bool and not None.")
+            self.__logger.error("disconnectAutopilot must be a bool and not None.")
+            return None
         if type(disconnectAutoPilot) is not bool:
-            raise TypeError("disconnectAutopilot must be a bool and not {}".format(type(disconnectAutoPilot)))
+            self.__logger.error("disconnectAutopilot must be a bool and not {}.".format(type(disconnectAutoPilot)))
+            return None
 
         self.__pigoData.update({"disconnectAutoPilot" : disconnectAutoPilot})
         self.__write_to_pigo_file()
