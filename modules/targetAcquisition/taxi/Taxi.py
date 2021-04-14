@@ -57,7 +57,7 @@ class Taxi:
 
     def __init__(self, state="BOX", bbox=[((0, 0), (0, 0))], frame=[], nextUncheckedID=0, 
                  expectedCount=5, expectedQR="abcde12345", numStableFrames=20, distanceFromBox=0, 
-                 minDistanceFromBox=30, moveWaitTarget=10, recalibrate=False, lastBbox=[]):
+                 minDistanceFromBox=0, moveWaitTarget=0, recalibrate=False, lastBbox=[]):
         """
         Initializes variables
         """
@@ -69,24 +69,48 @@ class Taxi:
         self.nextUncheckedID = nextUncheckedID
         self.expectedCount = expectedCount
         self.expectedQR = expectedQR
-        self.numStableFrames = stableFrames
-        self.distanceFromBox = distance
+        self.numStableFrames = numStableFrames
+        self.distanceFromBox = distanceFromBox
         self.minDistanceFromBox = minDistanceFromBox
         self.moveWaitTarget = moveWaitTarget
         self.recalibrate = recalibrate
-        self.lastBbox = self.lastBbox
+        self.lastBbox = lastBbox
 
     def find_overlapped_bbox(self):
         """
-        Find which new YOLO bbox overlaps the previously tracked bbox
+        Given the last known bbox and a list of new ones, return the new bbox which overlaps the old box the most.
+        Helps recalibrate the tracked bbox to fit the cardboard box better, so distance calculation is more accurate.
         """
-        # TODO: given self.lastBbox and self.bbox, return the one bbox from self.bbox which overlaps/covers self.lastBbox by a significant amount
-        # The new bbox must belong to the same box as the last one
-        # This function helps recalibrate the bounding box to fit the actual box better, so distance calculation is more accurate
-        # If self.bbox is empty or no new bbox overlaps the old one by a significant amount, return None
-        return bbox
+        # If the new scan found zero bounding boxes, return no bbox
+        if len(self.bbox) < 1:
+            return None
+            
+        # Area of the tracked bbox
+        last = self.lastBbox
+        originalArea = (last[1][1] - last[0][1]) * (last[1][0] - last[0][0])
 
-    def calculate_distance(pts):
+        bbox = self.bbox[0]
+        maxOverlap = 0
+        for box in self.bbox:
+            x0 = max(last[0][0], box[0][0])
+            x1 = min(last[1][0], box[1][0])
+            y0 = max(last[0][1], box[0][1])
+            y1 = min(last[1][1], box[1][1])
+            newArea = (y1 - y0) * (x1 - x0)
+            overlap = newArea / originalArea
+
+            if overlap > maxOverlap:
+                maxOverlap = overlap
+                bbox = box
+
+        # If even the best match is not good enough, return no bboxes
+        if maxOverlap < 0.75:
+            return None
+
+        # Return the bbox with max overlap
+        return bbox, maxOverlap
+
+    def calculate_distance(self, pts):
         """
         Calculate approximate distance between box and drone
         """
@@ -134,24 +158,32 @@ class Taxi:
             # If switching to track from box for the first time, use the box ID
             if not self.recalibrate:
                 bbox = self.bbox[self.nextUncheckedID]
+                print(f"Switching to track and NOT recalibrating. bbox: {bbox}")
             # Else update distance with recalibrated bbox
             else:
-                bbox = find_overlapped_bbox()
+                print("Switching to track and recalibrating")
+                bbox, _ = find_overlapped_bbox()
 
             # If recalibration failed to find the new box, attempt QR read
             if bbox == None:
+                print("Failed to find a bbox, attempt QR read")
                 self.set_state("QR")
                 
             # If recalibration found the new box, recalculate distance and carry on moving
             else:
+                print("At least one bbox is found")
                 bboxReformat = (bbox[0][0], bbox[0][1],
                                 bbox[1][0] - bbox[0][0], bbox[1][1] - bbox[0][1])
                 # Note: must create the tracker here instead of __init__, else can't switch freely between track & box
                 self.tracker = cv2.TrackerKCF_create()
                 # Initialize tracker with first frame and bounding box
                 self.tracker.init(self.frame, bboxReformat)
+                print("Tracker created and initialized")
                 # Calculate distance from tracked bbox
                 self.distanceFromBox = self.calculate_distance(bbox)
+                print(f"Calculated distance: {self.distanceFromBox}")
+                self.state = "TRACK"
+                print("Set variable self.state to TRACK")
 
         elif state == "QR" or state == 2:
             self.state = "QR"
@@ -203,19 +235,25 @@ class Taxi:
 
             # Switch to track when all 5 boxes are in view
             if self.state == "TRACK":
+                # print("In tracking mode")
                 found, bbox = self.tracker.update(self.frame)
 
                 # Tracking succeeds and plane isn't already close enough
+                # print(f"Found: {found}, distance from box: {self.distanceFromBox}, min distance from box: {self.minDistanceFromBox}")
                 if found and self.distanceFromBox > self.minDistanceFromBox:
+                    # print("Tracking succeeds and plane isn't already close enough")
                     p1 = (int(bbox[0]), int(bbox[1]))
                     p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                     self.bbox = [(p1, p2)]
                     cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
 
                     # While not at half the distance from the box, keep moving forward
-                    if distanceCount < self.distanceFromBox // 2:
+                    # if distanceCount < self.distanceFromBox // 2:
+                    if distanceCount < 50:
+                        # print("While not at half the distance from the box, keep moving forward")
                         # Issue the next movement command every couple of frames
                         if moveWaitCount < self.moveWaitTarget:
+                            print("Waiting to move")
                             moveWaitCount += 1
                         else:
                             # Don't need to turn if the bbox midpoint is within the center margin
@@ -243,6 +281,8 @@ class Taxi:
                     # At the halfway point, do YOLO again to reset the size of the bounding box
                     # KCF and most other tracking algos have constant bbox size even when getting closer, which is a problem for distance calculation
                     else:
+                        print("Distance limit reached, time to recalibrate")
+                        distanceCount = 0
                         self.recalibrate = True
                         self.lastBbox = self.bbox
                         self.set_state("BOX")
@@ -253,6 +293,7 @@ class Taxi:
                     # In the latter case, try scanning the QR code
                     # If scanned, great!
                     # Else, switch to human control to drive the plane to the right spot
+                    print("Tracking fails or plane is already close enough")
                     self.set_state("QR")
 
             if self.state == "QR":
@@ -271,20 +312,21 @@ class Taxi:
             # Temporary manual box selection
             key = cv2.waitKey(10)
             if key == ord('b') and self.state != "BOX":
+                print("manual switch to box state")
                 self.set_state("BOX")
-                print("switch to box state")
 
             # Temporary manual tracking selection
             if key == ord('t') and self.state != "TRACK":
+                print("manual switch to tracking state")
                 self.set_state("TRACK")
-                print("switch to tracking state")
 
             # Temporary manual QR code selection
             if key == ord('r') and self.state != "QR":
+                print("manual switch to QR state")
                 self.set_state("QR")
-                print("switch to QR state")
 
             if key == ord('q'):
+                print("manual exit")
                 break
 
 
