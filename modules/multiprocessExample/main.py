@@ -11,14 +11,14 @@ def exitRequested(requestQueue):
     return not requestQueue.empty()
 
 
-def counterWorker(counterClass, pause, exitRequest, pipelineOut):
+def counterWorker(thousands, pause, exitRequest, pipelineOut):
     """
     This function is used for multiprocessing.
     The controller of the process(es) will be referred to as the manager (just to make it easier).
 
     Parameters
     ----------
-    counterClass: The class object
+    thousands: Data for class constructor
     pause: A mutex lock used to pause/resume this process
     exitRequest: Queue used for indicating that this process should exit
     pipelineOut: Queue used for producer data output
@@ -29,6 +29,10 @@ def counterWorker(counterClass, pause, exitRequest, pipelineOut):
 
     """
     print("Counter start!")
+
+    # Instantiate a class object for this process
+    counterClass = counter.Counter(thousands)
+
     while (True):
 
         # If the manager acquires the lock instead,
@@ -86,24 +90,28 @@ def counterWorker(counterClass, pause, exitRequest, pipelineOut):
     return
 
 
-def printerWorker(printerClass, pause, exitRequest, pipelineIn, pipelineOut):
+def printerWorker(prefix, pause, exitRequest, pipelineIn, pipelineOut):
     """
     This function is used for multiprocessing.
     The controller of the process(es) will be referred to as the manager (just to make it easier).
 
     Parameters
     ----------
-    printerClass: The class object
+    prefix: Data for class constructor
     pause: A mutex lock used to pause/resume this process
     exitRequest: Queue used for indicating that this process should exit
-    pipelineIn: Queue used for producer data input
-        If this was also a producer we would have an output queue
+    pipelineIn: Queue used for consumer data input
+    pipelineOut: Queue used for producer data output
 
     Returns
     -------
 
     """
     print("Printer start!")
+
+    # Instantiate a class object for this process
+    printerClass = printer.Printer(prefix)
+
     while (True):
 
         # Pause turnstile
@@ -149,18 +157,14 @@ if __name__ == "__main__":
     printerMainPipeline = mp.Queue()
     counterPrinterStop = mp.Queue(1)  # Queue of size 1
 
-    counters = [
-        counter.Counter(1),
-        counter.Counter(3),
-        counter.Counter(4),
-        counter.Counter(2)
-    ]
+    # For class constructor in each process
+    counters = [1, 3, 4, 2]
+
     numCounterProcesses = 3  # 3 for balanced, 2 for printer waiting for items, 4 for counter waiting to place items
 
-    printers = [
-        printer.Printer("Y "),
-        printer.Printer("k "),
-    ]
+    # For class constructor in each process
+    printers = ["Y ", "k "]
+
     numPrinterProcesses = len(printers)
 
 

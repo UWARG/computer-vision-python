@@ -34,7 +34,7 @@ class Printer:
         # It should be more sophisticated than this,
         # probably something like class method for checking and unpacking
         if (inData == None):
-            return  # False, None
+            return False, None
         suffix = str(inData)
 
         # Print string
