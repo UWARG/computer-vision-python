@@ -1,6 +1,9 @@
 import argparse
 import os
-from modules.videoMediator.videoMediator import VideoMediator
+import multiprocessing as mp
+from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
+from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
+
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 
@@ -27,11 +30,20 @@ def flightProgram():
     Parameters: None
     """
     print("start flight program")
-    videoFeed = VideoMediator()
-    # To get frame:
-    frame = videoFeed.coordinates.pop(0) if len(videoFeed.coordinates) != 0 else None
+    videoPipeline = mp.Queue()
+    coordinatePipeline = mp.Queue()
+    pause = mp.Lock()
+    quit = mp.Queue()
 
-    return frame
+    processes = [
+        mp.Process(target=decklinkSrcWorker, args=(pause, quit, videoPipeline)),
+        mp.Process(target=targetAcquisitionWorker, args=(pause, quit, videoPipeline, coordinatePipeline))
+    ]
+
+    for p in processes:
+        p.start()
+
+
 
 
 def searchProgram():

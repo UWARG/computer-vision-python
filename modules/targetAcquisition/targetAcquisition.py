@@ -35,14 +35,9 @@ class TargetAcquisition:
         Interprets BoundBox class values to populate self.tentCoordinates with centres of tents
     """
 
-    def __init__(self, videoPipeline, coordinatePipeline):
+    def __init__(self):
         """
         Initializes boxes, tentCoordinates attributes, sets currentFrame attribute to given frame, zeros otherwise
-
-        Parameters
-        ----------
-        videoPipeline : multiprocessing.Queue object
-        coordinatePipeline: multiprocessing.Queue object
         """
 
         # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
@@ -50,20 +45,6 @@ class TargetAcquisition:
         self.boxes = []
         self.tentCoordinates = dict()
         self.currentFrame = np.empty(0)
-        self.videoPipeline = videoPipeline
-        self.coordinatePipeline = coordinatePipeline
-
-        mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
-        mainProcess.start()
-
-    def _mainProcess_(self):
-        print("target acquisition started")
-        coordinateResult = self.get_coordinates(self.videoPipeline.get())
-        while True:
-            if self.coordinatePipeline.empty() or coordinateResult != self.coordinatePipeline.get():
-                self.coordinatePipeline.put(coordinateResult)
-
-            sleep(0.1)
 
     def set_curr_frame(self, newFrame):
         """
@@ -94,7 +75,7 @@ class TargetAcquisition:
         if np.count_nonzero(newFrame) != 0:
             self.set_curr_frame(newFrame)
         else:
-            return False
+            return
         # Run YOLOV2 model
         self.__predict()
         return self.tentCoordinates

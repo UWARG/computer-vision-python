@@ -31,23 +31,12 @@ class DeckLinkSRC:
         Displays live video feed of DeckLink stream
     """
 
-    def __init__(self, videoPipeline):
+    def __init__(self):
         """
         Initializes DeckLink video stream
         """
         self.__currentFrame = None
         self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
-        self.videoPipeline = videoPipeline
-        mainProcess = mp.Process(target=self._mainProcess_, daemon=True)
-        mainProcess.start()
-
-    def _mainProcess_(self):
-        print("decklink started")
-        while True:
-            newFrame = self.grab()
-            if self.videoPipeline.empty() or newFrame != self.videoPipeline.get():
-                self.videoPipeline.put(newFrame)
-            sleep(0.1)
 
     def stop(self):
         """
