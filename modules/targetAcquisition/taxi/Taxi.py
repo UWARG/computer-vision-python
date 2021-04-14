@@ -95,16 +95,16 @@ class Taxi:
         tempDistancesList = []
 
         # (Known) focal length of the camera in mm
-        focalLength = 1
+        focalLength = 24
 
         # (Known) real Height of the box in mm
         realHeight = 101.6
 
         # (Known) height of the image in pixels
-        imageHeight = 1
+        imageHeight = 1080
 
         # (Known) height of the sensor in mm
-        sensorHeight = 1
+        sensorHeight = 4.63
 
         # Calculating object height in pixels by extracting y coordinates from each tuple 'pts'
         objectHeight = pts[0][1] - \
