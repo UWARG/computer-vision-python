@@ -132,10 +132,11 @@ class TestGetNonCollinearPoints(unittest.TestCase):
     def test_empty_input_array(self):
         # Setup
         coordinatesArray = np.array([])
-        expected = np.zeros(shape=(4, 2))
+        expected = 0
         
         # Run
-        actual = self.locator.get_non_collinear_points(coordinatesArray)
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
 
         # Test
         np.testing.assert_almost_equal(actual, expected)
@@ -143,7 +144,7 @@ class TestGetNonCollinearPoints(unittest.TestCase):
     def less_than_four_points_collinear(self):
         # Setup
         coordinatesArray = np.array([[0, 0], [1, 1], [-1, -1]])
-        expected = np.empty(shape=(4, 2))
+        expected = np.empty(shape=(0, 2))
 
         # Run
         actual = self.locator.get_non_collinear_points(coordinatesArray)
@@ -151,20 +152,10 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-    def less_than_four_points_non_collinear(self):
-        # Setup
-        coordinatesArray = np.array([[0, 0], [-1, 1], [12, 7]])
-        expected = np.empty(shape=(4, 2))
-
-        # Run
-        actual = self.locator.get_non_collinear_points(coordinatesArray)
-
-        # Test
-        np.testing.assert_almost_equal(actual, expected)
 
     def test_four_points_collinear(self):
         coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10]])
-        expected = np.empty(shape=(4, 2))
+        expected = np.empty(shape=(0, 2))
 
         # Run
         actual = self.locator.get_non_collinear_points(coordinatesArray)
@@ -194,11 +185,12 @@ class TestGetNonCollinearPoints(unittest.TestCase):
 
     
     def test_more_than_four_points_no_correct_cases(self):
-        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10], [15, 15], [0, 0]])
-        expected = np.zeros(shape=(4, 2))
+        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10], [15, 15], [3, 7]])
+        expected = 0
 
         # Run
-        actual = self.locator.get_non_collinear_points(coordinatesArray)
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
 
         # Test
         np.testing.assert_almost_equal(actual, expected)

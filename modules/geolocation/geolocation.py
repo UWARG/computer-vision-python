@@ -117,9 +117,11 @@ class Geolocation:
         """
         x = 0
         y = 1
-        return 0.5*(p1[x]*(p2[y]-p3[y]) +
-                    p2[x]*(p3[y]-p1[y]) +
-                    p3[x]*(p1[y]-p2[y])) == 0
+        # Calculates the area of a triangle and checks if this value is 0
+        # Actually calculates 2 times the area, since it skips the unnecessary step of multiplication by 0.5
+        return (p1[x]*(p2[y]-p3[y]) +
+                p2[x]*(p3[y]-p1[y]) +
+                p3[x]*(p1[y]-p2[y])) == 0
 
 
     def get_non_collinear_points(self, coordinatesArray):
@@ -137,33 +139,35 @@ class Geolocation:
             Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
             or an empty list if none were found in the input array
         """
+        NUM_POINTS_NEEDED = 4
         # Empty array in case no set of four non-collinear points are found
-        collinearPoints = np.zeros(shape=(4, 2))
+        collinearPoints = np.empty(shape=(0, 2))
 
         # If there aren't four points, return the empty array
-        if len(coordinatesArray) < 4:
+        if len(coordinatesArray) < NUM_POINTS_NEEDED:
             return collinearPoints
 
         # Look at all sequential pairs of four points
         for i in range(0, len(coordinatesArray)):
             # Array for storing the four points currently being considered
-            points = np.zeros(shape=(4, 2))
+            points = np.empty(shape=(NUM_POINTS_NEEDED, 2))
 
             # Append four sequential points to the array, loop around to index 0 if needed
-            for j in range(0, 4):
+            # For efficiency, this algorithm will check through sequential sets of points only, rather than
+            # testing every single combination.
+            for j in range(0, NUM_POINTS_NEEDED):
                 points[j] = coordinatesArray[(i+j) % len(coordinatesArray)]
 
             # Check collinearity of all possible combinations
-            areFourCollinear = True
-            for i in range(0, 4):
-                areFourCollinear &= self.__are_three_points_collinear(points[i], 
-                                                                      points[(i+1) % 4],
-                                                                      points[(i+2) % 4])
+            areNotFourCollinear = True
+            for i in range(0, NUM_POINTS_NEEDED):
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[i], 
+                                                                             points[(i+1) % NUM_POINTS_NEEDED],
+                                                                             points[(i+2) % NUM_POINTS_NEEDED])
             
             # If all four points are non-collinear, return this combination of points
-            if not areFourCollinear:
-                collinearPoints = points
-                break
+            if areNotFourCollinear:
+                return points
 
         return collinearPoints
 
