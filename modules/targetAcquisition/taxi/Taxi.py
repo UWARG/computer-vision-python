@@ -82,11 +82,12 @@ class Taxi:
         Helps recalibrate the tracked bbox to fit the cardboard box better, so distance calculation is more accurate.
         """
         # If the new scan found zero bounding boxes, return no bbox
-        if len(self.bbox) < 1:
-            return None
+        if len(self.bbox) < 1 or len(self.lastBbox) < 1:
+            print("ERROR: box list too short. Aborting")
+            return None, 0
             
         # Area of the tracked bbox
-        last = self.lastBbox
+        last = self.lastBbox[0]
         originalArea = (last[1][1] - last[0][1]) * (last[1][0] - last[0][0])
 
         bbox = self.bbox[0]
@@ -105,9 +106,10 @@ class Taxi:
 
         # If even the best match is not good enough, return no bboxes
         if maxOverlap < 0.75:
-            return None
+            return None, maxOverlap
 
         # Return the bbox with max overlap
+        print(f"Matched bbox: {bbox}, max overlap: {maxOverlap}")
         return bbox, maxOverlap
 
     def calculate_distance(self, pts):
@@ -162,7 +164,8 @@ class Taxi:
             # Else update distance with recalibrated bbox
             else:
                 print("Switching to track and recalibrating")
-                bbox, _ = find_overlapped_bbox()
+                bbox, _ = self.find_overlapped_bbox()
+                print(f"New bbox after recalibration: {bbox}")
 
             # If recalibration failed to find the new box, attempt QR read
             if bbox == None:
@@ -199,6 +202,7 @@ class Taxi:
 
         # The number of consecutive frames where all <expectedCount> boxes are in view
         frameCount = 0
+        totalWait = 0
 
         # Wait for a certain number of detections before issuing the next movement command
         moveWaitCount = 0
@@ -221,17 +225,24 @@ class Taxi:
                 if not self.recalibrate:
                     expCount = self.expectedCount
                 else:
+                    print("Recalibrating in BOX mode. Expecting 1 box")
                     expCount = 1
 
                 # YOLO can't move on until all 5 boxes stay in frame consistently/continuously for more than frameCount frames
-                if len(self.bbox) == expCount:
+                if len(self.bbox) >= expCount:
                     frameCount += 1
                 else:
                     frameCount = 0
 
                 if frameCount == self.numStableFrames:
+                    print("Got the required number of stable frames")
                     self.set_state("TRACK")
                     frameCount = 0
+
+                totalWait += 1
+                if totalWait > 250:
+                    print(f"Waited {totalWait} frames without finding the expected number of bbox. Switching to human control.")
+                    self.set_state("QR")
 
             # Switch to track when all 5 boxes are in view
             if self.state == "TRACK":
@@ -249,7 +260,7 @@ class Taxi:
 
                     # While not at half the distance from the box, keep moving forward
                     # if distanceCount < self.distanceFromBox // 2:
-                    if distanceCount < 50:
+                    if distanceCount < 500:
                         # print("While not at half the distance from the box, keep moving forward")
                         # Issue the next movement command every couple of frames
                         if moveWaitCount < self.moveWaitTarget:
@@ -293,7 +304,7 @@ class Taxi:
                     # In the latter case, try scanning the QR code
                     # If scanned, great!
                     # Else, switch to human control to drive the plane to the right spot
-                    print("Tracking fails or plane is already close enough")
+                    print(f"Found: {found}\nDistance: {self.distanceFromBox > self.minDistanceFromBox}")
                     self.set_state("QR")
 
             if self.state == "QR":
