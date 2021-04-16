@@ -141,11 +141,10 @@ class Geolocation:
         """
         NUM_POINTS_NEEDED = 4
         # Empty array in case no set of four non-collinear points are found
-        collinearPoints = np.empty(shape=(0, 2))
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
-            return collinearPoints
+            return np.empty(shape=(0, 2))
 
         # Look at all sequential pairs of four points
         for i in range(0, len(coordinatesArray)):
@@ -169,7 +168,7 @@ class Geolocation:
             if areNotFourCollinear:
                 return points
 
-        return collinearPoints
+        return np.empty(shape=(0, 2))
 
     def calculate_pixel_to_geo_mapping(self):
         """
