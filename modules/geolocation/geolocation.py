@@ -4,7 +4,6 @@ Geolocation module to map pixel coordinates to geographical coordinates
 
 import numpy as np
 
-
 class Geolocation:
     """
     Locates the geographical position of a set of pixels
@@ -111,6 +110,80 @@ class Geolocation:
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         return pixelGeoPairs
+    
+    def __are_three_points_collinear(self, p1, p2, p3):
+        """
+        PRIVATE
+        Evaluates whether the three given points are collinear
+
+        Parameters
+        ----------
+        p1 : tuple/np.ndarray/list
+            Point 1, in form (x, y)
+        p2 : tuple/np.ndarray/list
+            Point 2, in form (x, y)
+        p3 : tuple/np.ndarray/list
+            Point 3, in form (x, y)
+
+        Returns
+        -------
+        bool
+            True if the three points are collinear, otherwise false
+        """
+        x = 0
+        y = 1
+        # Calculates the area of a triangle and checks if this value is 0
+        # Actually calculates 2 times the area, since it skips the unnecessary step of multiplication by 0.5
+        return (p1[x]*(p2[y]-p3[y]) +
+                p2[x]*(p3[y]-p1[y]) +
+                p3[x]*(p1[y]-p2[y])) == 0
+
+
+    def get_non_collinear_points(self, coordinatesArray):
+        """
+        Returns a list of four coordinates from an input array that are not collinear to one another.
+
+        Parameters
+        ----------
+        coordinatesArray : np.ndarray
+            Array with dimensions ( , 2), containing a list of coordinates
+
+        Returns
+        -------
+        np.ndarray
+            Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
+            or an empty list if none were found in the input array
+        """
+        NUM_POINTS_NEEDED = 4
+        # Empty array in case no set of four non-collinear points are found
+
+        # If there aren't four points, return the empty array
+        if len(coordinatesArray) < NUM_POINTS_NEEDED:
+            return np.empty(shape=(0, 2))
+
+        # Look at all sequential pairs of four points
+        for i in range(0, len(coordinatesArray)):
+            # Array for storing the four points currently being considered
+            points = np.empty(shape=(NUM_POINTS_NEEDED, 2))
+
+            # Append four sequential points to the array, loop around to index 0 if needed
+            # For efficiency, this algorithm will check through sequential sets of points only, rather than
+            # testing every single combination.
+            for j in range(0, NUM_POINTS_NEEDED):
+                points[j] = coordinatesArray[(i+j) % len(coordinatesArray)]
+
+            # Check collinearity of all possible combinations
+            areNotFourCollinear = True
+            for i in range(0, NUM_POINTS_NEEDED):
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[i], 
+                                                                             points[(i+1) % NUM_POINTS_NEEDED],
+                                                                             points[(i+2) % NUM_POINTS_NEEDED])
+            
+            # If all four points are non-collinear, return this combination of points
+            if areNotFourCollinear:
+                return points
+
+        return np.empty(shape=(0, 2))
 
     def calculate_pixel_to_geo_mapping(self):
         """
