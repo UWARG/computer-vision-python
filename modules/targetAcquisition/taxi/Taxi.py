@@ -55,8 +55,8 @@ class Taxi:
         Main operations: getting camera input and passing the image to appropriate methods
     """
 
-    def __init__(self, state="BOX", bbox=[((0, 0), (0, 0))], frame=[], nextUncheckedID=0, 
-                 expectedCount=5, expectedQR="abcde12345", numStableFrames=20, distanceFromBox=0, 
+    def __init__(self, state="BOX", bbox=[((0, 0), (0, 0))], frame=[], nextUncheckedID=0,
+                 expectedCount=5, expectedQR="abcde12345", numStableFrames=20, distanceFromBox=0,
                  minDistanceFromBox=0, moveWaitTarget=0, recalibrate=False, lastBbox=[]):
         """
         Initializes variables
@@ -85,7 +85,7 @@ class Taxi:
         if len(self.bbox) < 1 or len(self.lastBbox) < 1:
             print("ERROR: box list too short. Aborting")
             return None, 0
-            
+
         # Area of the tracked bbox
         last = self.lastBbox[0]
         originalArea = (last[1][1] - last[0][1]) * (last[1][0] - last[0][0])
@@ -171,7 +171,7 @@ class Taxi:
             if bbox == None:
                 print("Failed to find a bbox, attempt QR read")
                 self.set_state("QR")
-                
+
             # If recalibration found the new box, recalculate distance and carry on moving
             else:
                 print("At least one bbox is found")
