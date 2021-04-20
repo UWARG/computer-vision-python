@@ -193,7 +193,7 @@ class CommandModule:
         Returns
         -------
         dict:
-            Returns a dictionary that contains a set of three euler coordinates with names z, y, x
+            Returns a dictionary that contains a set of three euler coordinates with names yaw, pitch, roll
         """
         self.__read_from_pogi_file()
         eulerAnglesOfCamera = self.__pogiData["eulerAnglesOfCamera"]
@@ -204,15 +204,15 @@ class CommandModule:
         if type(eulerAnglesOfCamera) is not dict:
             self.__logger.error("eulerAnglesOfCamera in the POGI file is not a dictionary.")
             return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if key not in eulerAnglesOfCamera.keys():
                 self.__logger.error("{} key not found in eulerAnglesOfCamera.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if eulerAnglesOfCamera[key] is None:
                 self.__logger.error("{} in eulerAnglesOfCamera is null.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if type(eulerAnglesOfCamera[key]) is not float:
                 self.__logger.error("{} in eulerAnglesOfCamera is not a float.".format(key))
                 return None
@@ -226,7 +226,7 @@ class CommandModule:
         Returns
         -------
         dict:
-            Returns a dictionary that contains a set of three euler coordinates with names z, y, x
+            Returns a dictionary that contains a set of three euler coordinates with names yaw, pitch, roll
         """
         self.__read_from_pogi_file()
         eulerAnglesOfPlane = self.__pogiData["eulerAnglesOfPlane"]
@@ -237,15 +237,15 @@ class CommandModule:
         if type(eulerAnglesOfPlane) is not dict:
             self.__logger.error("eulerAnglesOfPlane in the POGI file is not a dictionary.")
             return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if key not in eulerAnglesOfPlane.keys():
                 self.__logger.error("{} key not found in eulerAnglesOfPlane.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if eulerAnglesOfPlane[key] is None:
                 self.__logger.error("{} in eulerAnglesOfPlane is null.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if type(eulerAnglesOfPlane[key]) is not float:
                 self.__logger.error("{} in eulerAnglesOfPlane is not a float.".format(key))
                 return None
@@ -284,6 +284,18 @@ class CommandModule:
                 return None
 
         return gpsCoordinates
+
+
+
+
+
+
+
+
+
+
+
+
 
     def set_gps_coordinates(self, gpsCoordinates: dict):
         """
@@ -346,7 +358,7 @@ class CommandModule:
         Paramaters
         ----------
         gimbalCommands: dict
-            Dictionary that contains gimbal commands with pitch and yaw angles named y and z respectively
+            Dictionary that contains gimbal commands with pitch and yaw angles
         """
         if gimbalCommands is None:
             self.__logger.error("gimbalCommands must be a dict and not None.")
@@ -354,11 +366,11 @@ class CommandModule:
         if type(gimbalCommands) is not dict:
             self.__logger.error("gimbalCommands must be a dict and not {}.".format(type(gimbalCommands)))
             return None
-        for key in ("z", "y"):
+        for key in ("yaw", "pitch"):
             if key not in gimbalCommands.keys():
                 self.__logger.error("gimbalCommands must contain {} key.".format(key))
                 return None
-        for key in ("z", "y"):
+        for key in ("yaw", "pitch"):
             if type(gimbalCommands[key]) is not float:
                 self.__logger.error("gimbalCommands {} key must be a float.".format(key))
                 return None
