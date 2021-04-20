@@ -40,7 +40,18 @@ class Taxi:
         the minimum distance the plane can be from the box until it's considered too close
     moveWaitTarget : int
         the number of frames to wait before issuing another move or turn command
-
+        
+    Constants
+    ----------
+    FOCAL_LENGTH : int
+        focal length of the camera (in mm)
+    REAL_HEIGHT : int
+        real height of the box (in mm)
+    IMAGE_HEIGHT : int
+        height of the image (in pixels)
+    SENSOR_HEIGHT : int
+        height of the sensor (in mm)
+   
     Methods
     -------
     __init__()
@@ -54,7 +65,14 @@ class Taxi:
     main()
         Main operations: getting camera input and passing the image to appropriate methods
     """
-
+    
+    # Constant declaration
+    
+    FOCAL_LENGTH = 24
+    REAL_HEIGHT = 101.6
+    IMAGE_HEIGHT = 1080
+    SENSOR_HEIGHT = 4.63
+    
     def __init__(self, state="BOX", bbox=[((0, 0), (0, 0))], frame=[], nextUncheckedID=0,
                  expectedCount=5, expectedQR="abcde12345", numStableFrames=20, distanceFromBox=0,
                  minDistanceFromBox=0, moveWaitTarget=0, recalibrate=False, lastBbox=[]):
@@ -116,21 +134,6 @@ class Taxi:
         """
         Calculate approximate distance between box and drone
         """
-
-        # For temporary storage of distances
-        tempDistancesList = []
-
-        # (Known) focal length of the camera in mm
-        FOCAL_LENGTH = 24
-
-        # (Known) real height of the box in mm
-        REAL_HEIGHT = 101.6
-
-        # (Known) height of the image in pixels
-        IMAGE_HEIGHT = 1080
-
-        # (Known) height of the sensor in mm
-        SENSOR_HEIGHT = 4.63
 
         # Calculating object height in pixels by extracting y coordinates from each tuple 'pts'
         objectHeight = pts[0][1] - \
