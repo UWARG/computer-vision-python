@@ -292,7 +292,7 @@ class CommandModule:
             self.__logger.error("editingFlightPathErrorCode must be an int and not None.")
             return None
         if type(error_code is not int):
-            self.__logger.error("{} in editingFlightPathErrorCode is not an int.".format(type(error_code)))
+            self.__logger.error("editingFlightPathErrorCode is not an int.")
             return None
 
         return error_code
@@ -304,7 +304,7 @@ class CommandModule:
             self.__logger.error("flightPathFollowingErrorCode must be an int and not None.")
             return None
         if type(error_code is not int):
-            self.__logger.error("{} in flightPathFollowingErrorCode is not an int.".format(type(error_code)))
+            self.__logger.error("flightPathFollowingErrorCode is not an int.")
             return None
 
         return error_code
@@ -315,8 +315,8 @@ class CommandModule:
         if(waypoint_id is None):
             self.__logger.error("currentWaypointId must be an int and not None.")
             return None
-        if type(waypoint_id is not int):
-            self.__logger.error("{} in currentWaypointId is not an int.".format(type(waypoint_id)))
+        if type(waypoint_id) is not int:
+            self.__logger.error("currentWaypointId is not an int.")
             return None
 
         return waypoint_id
@@ -327,8 +327,8 @@ class CommandModule:
         if(waypoint_index is None):
             self.__logger.error("currentWaypointIndex must be an int and not None.")
             return None
-        if type(waypoint_index is not int):
-            self.__logger.error("{} in currentWaypointIndex is not an int.".format(type(waypoint_index)))
+        if type(waypoint_index) is not int:
+            self.__logger.error("currentWaypointIndex is not an int.")
             return None
 
         return waypoint_index
@@ -340,18 +340,13 @@ class CommandModule:
         self.__read_from_pogi_file()
         initialized = self.__pogiData["homeBaseInitialized"]
         if(initialized is None):
-            self.__logger.error("homeBaseInitialized must be a boolean and not None.")
+            self.__logger.error("homeBaseInitialized must be a bool and not None.")
             return None
-        if type(initialized is not bool):
-            self.__logger.error("{} in homeBaseInitialized is not a boolean.".format(type(initialized)))
+        if type(initialized) is not bool:
+            self.__logger.error("homeBaseInitialized is not a bool.")
             return None
 
         return initialized
-
-
-
-
-
 
 
 

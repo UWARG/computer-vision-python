@@ -56,27 +56,27 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_x_equals_none(self):
-        euler_camera = {"x": None, "y": 0.0, "z": 0.0}
+        euler_camera = {"roll": None, "pitch": 0.0, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:x in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_y_equals_none(self):
-        euler_camera = {"x": 0.0, "y": None, "z": 0.0}
+        euler_camera = {"roll": 0.0, "pitch": None, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:y in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_z_equals_none(self):
-        euler_camera = {"x": 0.0, "y": 0.0, "z": None}
+        euler_camera = {"roll": 0.0, "pitch": 0.0, "yaw": None}
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:z in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_equals_none(self):
@@ -87,27 +87,27 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_x_equals_none(self):
-        euler_camera = {"x": None, "y": 0.0, "z": 0.0}
+        euler_camera = {"roll": None, "pitch": 0.0, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfPlane", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:x in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_y_equals_none(self):
-        euler_camera = {"x": 0.0, "y": None, "z": 0.0}
+        euler_camera = {"roll": 0.0, "pitch": None, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfPlane", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:y in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_z_equals_none(self):
-        euler_plane= {"x": 0.0, "y": 0.0, "z": None}
+        euler_plane= {"roll": 0.0, "pitch": 0.0, "yaw": None}
         self.__value_instantiate("eulerAnglesOfPlane", euler_plane)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:z in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_gps_equals_none(self):
@@ -140,3 +140,33 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
             self.commandModule.get_gps_coordinates()
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.", ])
         logging.info(cm.output)
+
+    # def test_value_error_if_get_editing_flight_path_error_code_equals_none(self):
+    #     error_code
+
+    #ignore both error codes for now
+
+    def test_if_get_current_way_point_id_equals_none(self):
+        waypointId = None
+        self.__value_instantiate("currentWaypointId", waypointId)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_current_waypoint_id()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointId must be an int and not None.", ])
+        logging.info(cm.output)
+
+    def test_if_get_current_way_point_index_equals_none(self):
+        waypointIndex = None
+        self.__value_instantiate("currentWaypointIndex", waypointIndex)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_current_waypoint_index()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointIndex must be an int and not None.", ])
+        logging.info(cm.output)
+
+    def test_if_get_home_base_initialized_equals_none(self):
+        homeBaseInitialized = None
+        self.__value_instantiate("homeBaseInitialized", homeBaseInitialized)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_home_base_intialized()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homeBaseInitialized must be a bool and not None.", ])
+        logging.info(cm.output)
+

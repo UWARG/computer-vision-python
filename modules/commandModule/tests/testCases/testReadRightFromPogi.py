@@ -26,10 +26,6 @@ class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("errorCode", 0)
         self.assertEqual(0, self.commandModule.get_error_code())
 
-    def test_pass_if_get_altitude_equals_correct(self):
-        self.__value_instantiate("currentAltitude", 0)
-        self.assertEqual(0, self.commandModule.get_current_altitude())
-
     def test_pass_if_get_airspeed_equals_correct(self):
         self.__value_instantiate("currentAirspeed", 0)
         self.assertEqual(0, self.commandModule.get_current_airspeed())
@@ -39,12 +35,12 @@ class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
         self.assertEqual(True, self.commandModule.get_is_landed())
 
     def test_pass_if_get_euler_camera_equals_correct(self):
-        euler_camera = {"x": 1.023, "y": 123.1, "z": 9.12}
+        euler_camera = {"roll": 1.023, "pitch": 123.1, "yaw": 9.12}
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         self.assertEqual(euler_camera, self.commandModule.get_euler_angles_of_camera())
 
     def test_pass_if_get_euler_plane_equals_correct(self):
-        euler_plane = {"x": 1.023, "y": 123.1, "z": 9.12}
+        euler_plane = {"roll": 1.023, "pitch": 123.1, "yaw": 9.12}
         self.__value_instantiate("eulerAnglesOfPlane", euler_plane)
         self.assertEqual(euler_plane, self.commandModule.get_euler_angles_of_plane())
 
@@ -52,3 +48,19 @@ class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
         gps = {"latitude": 1.212, "longitude": 2.134, "altitude": 1.234}
         self.__value_instantiate("gpsCoordinates", gps)
         self.assertEquals(gps, self.commandModule.get_gps_coordinates())
+
+    def test_if_get_current_way_point_id_equals_correct(self):
+        waypointId = 0
+
+        self.__value_instantiate("currentWaypointId", waypointId)
+        self.assertEqual(0, self.commandModule.get_current_waypoint_id())
+
+    def test_if_get_current_way_point_index_equals_correct(self):
+        waypointIndex = 0
+        self.__value_instantiate("currentWaypointIndex", waypointIndex)
+        self.assertEqual(0, self.commandModule.get_current_waypoint_index())
+
+    def test_if_get_home_base_initialized_equals_correct(self):
+        homeBaseInitialized = False
+        self.__value_instantiate("homeBaseInitialized", homeBaseInitialized)
+        self.assertEqual(False, self.commandModule.get_home_base_intialized())

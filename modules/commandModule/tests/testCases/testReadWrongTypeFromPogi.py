@@ -57,27 +57,27 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_camera_x_equals_wrong_type(self):
-        eulerAnglesOfCamera = {"x": "0", "y": 0.0, "z": 0.0}
+        eulerAnglesOfCamera = {"roll": "0", "pitch": 0.0, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfCamera", eulerAnglesOfCamera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:x in eulerAnglesOfCamera is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_camera_y_equals_wrong_type(self):
-        eulerAnglesOfCamera = {"x": 0.0, "y": "0", "z": 0.0}
+        eulerAnglesOfCamera = {"roll": 0.0, "pitch": "0", "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfCamera", eulerAnglesOfCamera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:y in eulerAnglesOfCamera is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_camera_z_equals_wrong_type(self):
-        eulerAnglesOfCamera = {"x": 0.0, "y": 0.0, "z": "0"}
+        eulerAnglesOfCamera = {"roll": 0.0, "pitch": 0.0, "yaw": "0"}
         self.__value_instantiate("eulerAnglesOfCamera", eulerAnglesOfCamera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:z in eulerAnglesOfCamera is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_plane_equals_wrong_type(self):
@@ -88,27 +88,27 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_plane_x_equals_wrong_type(self):
-        eulerAnglesOfCamera = {"x": "0", "y": 0.0, "z": 0.0}
+        eulerAnglesOfCamera = {"roll": "0", "pitch": 0.0, "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfPlane", eulerAnglesOfCamera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:x in eulerAnglesOfPlane is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_plane_y_equals_wrong_type(self):
-        eulerAnglesOfCamera = {"x": 0.0, "y": "0", "z": 0.0}
+        eulerAnglesOfCamera = {"roll": 0.0, "pitch": "0", "yaw": 0.0}
         self.__value_instantiate("eulerAnglesOfPlane", eulerAnglesOfCamera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:y in eulerAnglesOfPlane is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_euler_angles_of_plane_z_equals_wrong_type(self):
-        eulerAnglesOfPlane = {"x": 0.0, "y": 0.0, "z": "0"}
+        eulerAnglesOfPlane = {"roll": 0.0, "pitch": 0.0, "yaw": "0"}
         self.__value_instantiate("eulerAnglesOfPlane", eulerAnglesOfPlane)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:z in eulerAnglesOfPlane is not a float.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_gps_equals_wrong_type(self):
@@ -140,4 +140,28 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.", ])
+        logging.info(cm.output)
+
+    def test_if_get_current_way_point_id_equals_wrong_type(self):
+        waypointId = "0"
+        self.__value_instantiate("currentWaypointId", waypointId)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_current_waypoint_id()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointId is not an int.", ])
+        logging.info(cm.output)
+
+    def test_if_get_current_way_point_index_equals_wrong_type(self):
+        waypointIndex = "0"
+        self.__value_instantiate("currentWaypointIndex", waypointIndex)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_current_waypoint_index()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointIndex is not an int.", ])
+        logging.info(cm.output)
+
+    def test_if_get_home_base_initialized_equals_wrong_type(self):
+        homeBaseInitialized = "0"
+        self.__value_instantiate("homeBaseInitialized", homeBaseInitialized)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_home_base_intialized()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homeBaseInitialized is not a bool.", ])
         logging.info(cm.output)

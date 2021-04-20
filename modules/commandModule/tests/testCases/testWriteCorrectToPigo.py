@@ -40,7 +40,7 @@ class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
         self.assertEqual(self.__read_json("groundCommands"), example)
 
     def test_pass_if_write_correct_gimbal_commands(self):
-        example = {"y": 2.34, "z": 1.28}    # correct value is a dict containing pitch and yaw floats
+        example = {"pitch": 2.34, "yaw": 1.28}    # correct value is a dict containing pitch and yaw floats
         self.commandModule.set_gimbal_commands(example)
         self.assertEqual(self.__read_json("gimbalCommands"), example)
     
