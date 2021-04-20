@@ -121,6 +121,83 @@ class TestGatherPointPairs(unittest.TestCase):
         np.testing.assert_equal(actual, expected)
 
 
+class TestGetNonCollinearPoints(unittest.TestCase):
+    """
+    Tests get_non_collinear_points()
+    """
+    def setUp(self):
+        self.locator = geolocation.Geolocation()
+        return
+    
+    def test_empty_input_array(self):
+        # Setup
+        coordinatesArray = np.array([])
+        expected = 0
+        
+        # Run
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+    def less_than_four_points_collinear(self):
+        # Setup
+        coordinatesArray = np.array([[0, 0], [1, 1], [-1, -1]])
+        expected = 0
+
+        # Run
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+
+    def test_four_points_collinear(self):
+        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10]])
+        expected = 0
+
+        # Run
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+    def test_four_points_non_collinear(self):
+        coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+        expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+
+        # Run
+        actual = self.locator.get_non_collinear_points(coordinatesArray)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+    def test_more_than_four_points_one_correct_case(self):
+        coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0], [4, 4]])
+        expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+
+        # Run
+        actual = self.locator.get_non_collinear_points(coordinatesArray)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+    
+    def test_more_than_four_points_no_correct_cases(self):
+        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10], [15, 15], [3, 7]])
+        expected = 0
+
+        # Run
+        points = self.locator.get_non_collinear_points(coordinatesArray)
+        actual = np.size(points)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+
 class TestPointMatrixToGeoMapping(unittest.TestCase):
     """
     Tests Geolocation.calculate_pixel_to_geo_mapping()
