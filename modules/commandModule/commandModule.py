@@ -285,10 +285,68 @@ class CommandModule:
 
         return gpsCoordinates
 
+    def get_editing_flight_path_error_code(self) -> int:
+        self.__read_from_pogi_file()
+        error_code = self.__pogiData["editingFlightPathErrorCode"]
+        if(error_code is None):
+            self.__logger.error("editingFlightPathErrorCode must be an int and not None.")
+            return None
+        if type(error_code is not int):
+            self.__logger.error("{} in editingFlightPathErrorCode is not an int.".format(type(error_code)))
+            return None
+
+        return error_code
+
+    def get_flight_path_following_error_code(self) -> int:
+        self.__read_from_pogi_file()
+        error_code = self.__pogiData["flightPathFollowingErrorCode"]
+        if(error_code is None):
+            self.__logger.error("flightPathFollowingErrorCode must be an int and not None.")
+            return None
+        if type(error_code is not int):
+            self.__logger.error("{} in flightPathFollowingErrorCode is not an int.".format(type(error_code)))
+            return None
+
+        return error_code
+
+    def get_current_waypoint_id(self) -> int:
+        self.__read_from_pogi_file()
+        waypoint_id = self.__pogiData["currentWaypointId"]
+        if(waypoint_id is None):
+            self.__logger.error("currentWaypointId must be an int and not None.")
+            return None
+        if type(waypoint_id is not int):
+            self.__logger.error("{} in currentWaypointId is not an int.".format(type(waypoint_id)))
+            return None
+
+        return waypoint_id
+
+    def get_current_waypoint_index(self) -> int:
+        self.__read_from_pogi_file()
+        waypoint_index = self.__pogiData["currentWaypointIndex"]
+        if(waypoint_index is None):
+            self.__logger.error("currentWaypointIndex must be an int and not None.")
+            return None
+        if type(waypoint_index is not int):
+            self.__logger.error("{} in currentWaypointIndex is not an int.".format(type(waypoint_index)))
+            return None
+
+        return waypoint_index
 
 
 
 
+    def get_home_base_intialized(self) -> bool:
+        self.__read_from_pogi_file()
+        initialized = self.__pogiData["homeBaseInitialized"]
+        if(initialized is None):
+            self.__logger.error("homeBaseInitialized must be a boolean and not None.")
+            return None
+        if type(initialized is not bool):
+            self.__logger.error("{} in homeBaseInitialized is not a boolean.".format(type(initialized)))
+            return None
+
+        return initialized
 
 
 
