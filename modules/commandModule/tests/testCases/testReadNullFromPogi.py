@@ -141,10 +141,21 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.", ])
         logging.info(cm.output)
 
-    # def test_value_error_if_get_editing_flight_path_error_code_equals_none(self):
-    #     error_code
+    def test_value_error_if_get_editing_flight_path_error_code_equals_none(self):
+        error_code = None
+        self.__value_instantiate("editingFlightPathErrorCode", error_code)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_editing_flight_path_error_code()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:editingFlightPathErrorCode must be an int and not None.", ])
+        logging.info(cm.output)
 
-    #ignore both error codes for now
+    def test_value_error_if_get_flight_path_following_error_code_equals_none(self):
+        error_code = None
+        self.__value_instantiate("flightPathFollowingErrorCode", error_code)
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.get_flight_path_following_error_code()
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathFollowingErrorCode must be an int and not None.", ])
+        logging.info(cm.output)
 
     def test_if_get_current_way_point_id_equals_none(self):
         waypointId = None

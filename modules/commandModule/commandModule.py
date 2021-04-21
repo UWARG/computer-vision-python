@@ -292,7 +292,7 @@ class CommandModule:
         if(error_code is None):
             self.__logger.error("editingFlightPathErrorCode must be an int and not None.")
             return None
-        if type(error_code is not int):
+        if type(error_code) is not int:
             self.__logger.error("editingFlightPathErrorCode is not an int.")
             return None
 
@@ -304,7 +304,7 @@ class CommandModule:
         if(error_code is None):
             self.__logger.error("flightPathFollowingErrorCode must be an int and not None.")
             return None
-        if type(error_code is not int):
+        if type(error_code) is not int:
             self.__logger.error("flightPathFollowingErrorCode is not an int.")
             return None
 

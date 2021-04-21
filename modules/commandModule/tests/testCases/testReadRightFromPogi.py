@@ -49,6 +49,16 @@ class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("gpsCoordinates", gps)
         self.assertEquals(gps, self.commandModule.get_gps_coordinates())
 
+    def test_value_error_if_get_editing_flight_path_error_code_equals_correct(self):
+        error_code = 0
+        self.__value_instantiate("editingFlightPathErrorCode", error_code)
+        self.assertEqual(0, self.commandModule.get_editing_flight_path_error_code())
+
+    def test_value_error_if_get_flight_path_following_error_code_equals_correct(self):
+        error_code = 0
+        self.__value_instantiate("flightPathFollowingErrorCode", error_code)
+        self.assertEqual(0, self.commandModule.get_flight_path_following_error_code())
+
     def test_if_get_current_way_point_id_equals_correct(self):
         waypointId = 0
 
