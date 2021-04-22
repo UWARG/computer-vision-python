@@ -106,6 +106,12 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not None.", ])
         logging.info(cm.output)
     
+    def test_value_error_if_set_waypoints_to_null(self):
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_waypoints(None)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:waypoints must be a dict and not None.", ])
+        logging.info(cm.output)
+    
     def test_value_error_if_set_holding_altitude_to_null(self):
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_holding_altitude(None)

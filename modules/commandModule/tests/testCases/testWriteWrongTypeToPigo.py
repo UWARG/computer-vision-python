@@ -150,6 +150,14 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                 self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not {}.".format(type(test)), ])
                 logging.info(cm.output)
     
+    def test_type_error_if_set_waypoints_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_waypoints(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:waypoints must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
     def test_type_error_if_set_holding_altitude(self):
         for test in self.testData:
             if type(test) is not int:

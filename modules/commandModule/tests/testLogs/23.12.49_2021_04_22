@@ -77,6 +77,7 @@ test_pass_if_write_correct_homebase (commandModule.tests.testCases.testWriteCorr
 test_pass_if_write_correct_num_waypoints (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_waypoint_modify_flight_path_command (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_waypoint_next_directions_command (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
+test_pass_if_write_correct_waypoints (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_key_error_if_set_gps_coordinates_missing_altitude_attribute (commandModule.tests.testCases.testWriteMissingGPSCoordinateAttributes.TestCaseWritingMissingGPSCoordinateAttributes) ... ok
 test_key_error_if_set_gps_coordinates_missing_latitude_attribute (commandModule.tests.testCases.testWriteMissingGPSCoordinateAttributes.TestCaseWritingMissingGPSCoordinateAttributes) ... ok
 test_key_error_if_set_gps_coordinates_missing_longitude_attribute (commandModule.tests.testCases.testWriteMissingGPSCoordinateAttributes.TestCaseWritingMissingGPSCoordinateAttributes) ... ok
@@ -101,6 +102,7 @@ test_value_error_if_set_initializing_home_base_to_null (commandModule.tests.test
 test_value_error_if_set_num_waypoints_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_waypoint_modify_flight_path_command_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_waypoint_next_directions_command_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
+test_value_error_if_set_waypoints_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_correct_data_storage_if_write_data_sequentially (commandModule.tests.testCases.testWriteSequentially.TestCaseWritingSequentialValuesToPIGOFile) ... ok
 test_type_error_if_set_begin_landing_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_begin_takeoff_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
@@ -119,8 +121,9 @@ test_type_error_if_set_initializing_home_base_to_wrong_type (commandModule.tests
 test_type_error_if_set_num_waypoints_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_waypoint_modify_flight_path_command_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_waypoint_next_directions_command_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
+test_type_error_if_set_waypoints_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 
 ----------------------------------------------------------------------
-Ran 121 tests in 0.327s
+Ran 124 tests in 0.432s
 
 OK

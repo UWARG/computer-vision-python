@@ -35,6 +35,7 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
                         "flightPathModifyId": 1,
                         "initializingHomeBase": True,
                         "homebase": {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5},
+                        "waypoints": {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5},
                         "holdingTurnDirection": 1,
                         "holdingTurnRadius": 1,
                         "holdingAltitude": 1}
@@ -66,5 +67,6 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
         self.commandModule.set_holding_turn_direction(self.testData["holdingTurnDirection"])
         self.commandModule.set_holding_turn_radius(self.testData["holdingTurnRadius"])
         self.commandModule.set_holding_altitude(self.testData["holdingAltitude"])
+        self.commandModule.set_waypoints(self.testData["waypoints"])
 
         self.assertEqual(self.__read_json(), self.testData)

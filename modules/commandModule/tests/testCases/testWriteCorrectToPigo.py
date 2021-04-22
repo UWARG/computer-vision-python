@@ -113,3 +113,8 @@ class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
         example = {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5}  # correct value is an int
         self.commandModule.set_homebase(example)
         self.assertEqual(self.__read_json("homebase"), example)
+
+    def test_pass_if_write_correct_waypoints(self):
+        example = {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5}  # correct value is an int
+        self.commandModule.set_waypoints(example)
+        self.assertEqual(self.__read_json("waypoints"), example)

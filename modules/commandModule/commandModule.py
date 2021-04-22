@@ -673,6 +673,39 @@ class CommandModule:
         self.__pigoData.update({"waypoints": waypoints})
         self.__write_to_pigo_file()
 
+    def set_waypoints(self, waypoints: dict):
+        """
+        Write waypoints to PIGO JSON file
+
+        Paramaters
+        ----------
+        waypoints: dict
+            Dictionary that contains latitude (float), longitude (float), altitude (int), turnRadius (float), and waypointType (int) for waypoints
+        """
+
+        if waypoints is None:
+            self.__logger.error("waypoints must be a dict and not None.")
+            return None
+        if type(waypoints) is not dict:
+            self.__logger.error("waypoints must be a dict and not {}.".format(type(waypoints)))
+            return None
+
+        for key in ("latitude", "longitude", "altitude", "turnRadius", "waypointType"):
+            if key not in waypoints.keys():
+                self.__logger.error("waypoints must contain {} key.".format(key))
+                return None
+        for key in ("latitude", "longitude", "turnRadius"):
+            if type(waypoints[key]) is not float:
+                self.__logger.error("waypoints {} key must be a float.".format(key))
+                return None
+        for key in ("altitude", "waypointType"):
+            if type(waypoints[key]) is not int:
+                self.__logger.error("waypoints {} key must be an int.".format(key))
+                return None
+
+        self.__pigoData.update({"waypoints": waypoints})
+        self.__write_to_pigo_file()
+
     def set_homebase(self, homebase: dict):
         """
         Write homebase to PIGO JSON file
