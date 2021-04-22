@@ -1,375 +1,397 @@
-17:22:53,488 root INFO ['ERROR:commandModule.commandModule:currentWaypointId must be an int and not None.']
-17:22:53,498 root INFO ['ERROR:commandModule.commandModule:currentWaypointIndex must be an int and not None.']
-17:22:53,500 root INFO ['ERROR:commandModule.commandModule:homeBaseInitialized must be a bool and not None.']
-17:22:53,501 root INFO ['ERROR:commandModule.commandModule:currentAirspeed not found in the POGI json file.']
-17:22:53,503 root INFO ['ERROR:commandModule.commandModule:editingFlightPathErrorCode must be an int and not None.']
-17:22:53,505 root INFO ['ERROR:commandModule.commandModule:errorCode not found in the POGI json file.']
-17:22:53,507 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera not found in the POGI json file.']
-17:22:53,509 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is null.']
-17:22:53,511 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is null.']
-17:22:53,513 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is null.']
-17:22:53,514 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane not found in the POGI json file.']
-17:22:53,516 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is null.']
-17:22:53,519 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is null.']
-17:22:53,521 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is null.']
-17:22:53,523 root INFO ['ERROR:commandModule.commandModule:flightPathFollowingErrorCode must be an int and not None.']
-17:22:53,525 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.']
-17:22:53,527 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates not found in the POGI json file.']
-17:22:53,530 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is null.']
-17:22:53,532 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is null.']
-17:22:53,533 root INFO ['ERROR:commandModule.commandModule:isLanded not found in the POGI json file.']
-17:22:53,535 root INFO ['ERROR:commandModule.commandModule:currentAltitude not found in the POGI json file.']
-17:22:53,536 filelock DEBUG Attempting to acquire lock 4338572832 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,536 filelock INFO Lock 4338572832 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,536 filelock DEBUG Attempting to release lock 4338572832 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,536 filelock INFO Lock 4338572832 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,537 filelock DEBUG Attempting to acquire lock 4338573072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,538 filelock INFO Lock 4338573072 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,538 filelock DEBUG Attempting to release lock 4338573072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,538 filelock INFO Lock 4338573072 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,539 filelock DEBUG Attempting to acquire lock 4338572976 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,539 filelock INFO Lock 4338572976 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,540 filelock DEBUG Attempting to release lock 4338572976 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,540 filelock INFO Lock 4338572976 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,541 filelock DEBUG Attempting to acquire lock 4337425520 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,542 filelock INFO Lock 4337425520 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,542 filelock DEBUG Attempting to release lock 4337425520 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,542 filelock INFO Lock 4337425520 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,544 filelock DEBUG Attempting to acquire lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,544 filelock INFO Lock 4452261072 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,545 filelock DEBUG Attempting to release lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,545 filelock INFO Lock 4452261072 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,546 filelock DEBUG Attempting to acquire lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,546 filelock INFO Lock 4452261072 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,547 filelock DEBUG Attempting to release lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,547 filelock INFO Lock 4452261072 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,548 filelock DEBUG Attempting to acquire lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,549 filelock INFO Lock 4452261072 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,549 filelock DEBUG Attempting to release lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,549 filelock INFO Lock 4452261072 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,550 filelock DEBUG Attempting to acquire lock 4452261168 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,551 filelock INFO Lock 4452261168 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,551 filelock DEBUG Attempting to release lock 4452261168 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,551 filelock INFO Lock 4452261168 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,552 filelock DEBUG Attempting to acquire lock 4452261120 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,553 filelock INFO Lock 4452261120 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,554 filelock DEBUG Attempting to release lock 4452261120 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,554 filelock INFO Lock 4452261120 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,555 filelock DEBUG Attempting to acquire lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,556 filelock INFO Lock 4452261072 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,556 filelock DEBUG Attempting to release lock 4452261072 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,556 filelock INFO Lock 4452261072 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,558 filelock DEBUG Attempting to acquire lock 4452261120 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,558 filelock INFO Lock 4452261120 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,558 filelock DEBUG Attempting to release lock 4452261120 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,559 filelock INFO Lock 4452261120 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-17:22:53,561 root INFO ['ERROR:commandModule.commandModule:currentWaypointId is not an int.']
-17:22:53,564 root INFO ['ERROR:commandModule.commandModule:currentWaypointIndex is not an int.']
-17:22:53,566 root INFO ['ERROR:commandModule.commandModule:homeBaseInitialized is not a bool.']
-17:22:53,568 root INFO ['ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not an int.']
-17:22:53,570 root INFO ['ERROR:commandModule.commandModule:currentAltitude in the POGI file is not an int.']
-17:22:53,571 root INFO ['ERROR:commandModule.commandModule:errorCode found in POGI file is not an int.']
-17:22:53,573 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera in the POGI file is not a dictionary.']
-17:22:53,575 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is not a float.']
-17:22:53,578 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is not a float.']
-17:22:53,580 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is not a float.']
-17:22:53,584 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane in the POGI file is not a dictionary.']
-17:22:53,586 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is not a float.']
-17:22:53,591 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is not a float.']
-17:22:53,597 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is not a float.']
-17:22:53,602 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates in the POGI file is not a dictionary.']
-17:22:53,614 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is not a float.']
-17:22:53,617 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is not a float.']
-17:22:53,619 root INFO ['ERROR:commandModule.commandModule:isLanded in the POGI file is not an int.']
-17:22:53,621 root INFO ['ERROR:commandModule.commandModule:editingFlightPathErrorCode is not an int.']
-17:22:53,623 root INFO ['ERROR:commandModule.commandModule:flightPathFollowingErrorCode is not an int.']
-17:22:53,625 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.']
-17:22:53,637 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,637 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,637 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,638 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,639 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,639 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,640 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,640 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,641 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,641 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,641 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,642 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,642 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,643 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,643 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,643 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,644 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,644 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,644 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,644 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,645 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,645 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,646 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,646 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,648 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,649 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,649 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,650 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,651 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,651 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,651 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,651 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,652 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,652 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,653 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,653 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,653 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,654 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,654 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,654 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,655 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,656 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,656 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,656 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,657 filelock DEBUG Attempting to acquire lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,657 filelock INFO Lock 4452413792 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,657 filelock DEBUG Attempting to release lock 4452413792 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,657 filelock INFO Lock 4452413792 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,659 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain altitude key.']
-17:22:53,659 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain latitude key.']
-17:22:53,660 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain longitude key.']
-17:22:53,661 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain pitch key.']
-17:22:53,662 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain yaw key.']
-17:22:53,663 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain heading key.']
-17:22:53,664 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.']
-17:22:53,666 root INFO ['ERROR:commandModule.commandModule:beginLanding must be a bool and not None.']
-17:22:53,667 root INFO ['ERROR:commandModule.commandModule:beginTakeoff must be a bool and not None.']
-17:22:53,668 root INFO ['ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not None.']
-17:22:53,669 root INFO ['ERROR:commandModule.commandModule:flightPathModifyId must be an int and not None.']
-17:22:53,671 root INFO ['ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not None.']
-17:22:53,672 root INFO ['ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not None.']
-17:22:53,673 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must be a dict and not None.']
-17:22:53,674 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not None.']
-17:22:53,676 root INFO ['ERROR:commandModule.commandModule:groundCommands must be a dict and not None.']
-17:22:53,677 root INFO ['ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not None.']
-17:22:53,678 root INFO ['ERROR:commandModule.commandModule:numWaypoints must be an int and not None.']
-17:22:53,679 root INFO ['ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not None.']
-17:22:53,680 root INFO ['ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not None.']
-17:22:53,680 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,681 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,681 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,681 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,681 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,682 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,682 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,683 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,683 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,683 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,683 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,683 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,684 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,684 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,684 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,685 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,685 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,685 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,685 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,686 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,686 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,686 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,686 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,686 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,687 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,688 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,688 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,688 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,688 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,688 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,689 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,690 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,690 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,690 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,690 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,690 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,691 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,691 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,691 filelock DEBUG Attempting to acquire lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,691 filelock INFO Lock 4486026000 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,692 filelock DEBUG Attempting to release lock 4486026000 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,692 filelock INFO Lock 4486026000 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-17:22:53,693 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'str'>."]
-17:22:53,693 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'int'>."]
-17:22:53,693 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'float'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'complex'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'list'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'tuple'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'range'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'dict'>."]
-17:22:53,694 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'set'>."]
-17:22:53,695 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'frozenset'>."]
-17:22:53,695 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytes'>."]
-17:22:53,695 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytearray'>."]
-17:22:53,695 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'memoryview'>."]
-17:22:53,696 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'str'>."]
-17:22:53,696 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'int'>."]
-17:22:53,696 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'float'>."]
-17:22:53,696 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'complex'>."]
-17:22:53,696 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'list'>."]
-17:22:53,697 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'tuple'>."]
-17:22:53,697 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'range'>."]
-17:22:53,697 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'dict'>."]
-17:22:53,697 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'set'>."]
-17:22:53,698 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'frozenset'>."]
-17:22:53,698 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytes'>."]
-17:22:53,698 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytearray'>."]
-17:22:53,698 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'memoryview'>."]
-17:22:53,699 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'str'>."]
-17:22:53,699 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'int'>."]
-17:22:53,699 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'float'>."]
-17:22:53,699 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'complex'>."]
-17:22:53,699 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'list'>."]
-17:22:53,700 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'tuple'>."]
-17:22:53,700 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'range'>."]
-17:22:53,700 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'dict'>."]
-17:22:53,700 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'set'>."]
-17:22:53,701 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'frozenset'>."]
-17:22:53,701 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytes'>."]
-17:22:53,701 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytearray'>."]
-17:22:53,701 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'memoryview'>."]
-17:22:53,703 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'str'>."]
-17:22:53,703 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'float'>."]
-17:22:53,703 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'complex'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'list'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'tuple'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'range'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'dict'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'set'>."]
-17:22:53,704 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'frozenset'>."]
-17:22:53,705 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bool'>."]
-17:22:53,705 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bytes'>."]
-17:22:53,705 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bytearray'>."]
-17:22:53,705 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'memoryview'>."]
-17:22:53,706 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'str'>."]
-17:22:53,706 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'float'>."]
-17:22:53,706 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'complex'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'list'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'tuple'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'range'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'dict'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'set'>."]
-17:22:53,707 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'frozenset'>."]
-17:22:53,708 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bool'>."]
-17:22:53,708 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bytes'>."]
-17:22:53,708 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bytearray'>."]
-17:22:53,708 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'memoryview'>."]
-17:22:53,709 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'str'>."]
-17:22:53,709 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'float'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'complex'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'list'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'tuple'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'range'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'dict'>."]
-17:22:53,710 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'set'>."]
-17:22:53,711 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'frozenset'>."]
-17:22:53,711 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bool'>."]
-17:22:53,711 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bytes'>."]
-17:22:53,711 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bytearray'>."]
-17:22:53,711 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'memoryview'>."]
-17:22:53,712 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'str'>."]
-17:22:53,712 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'int'>."]
-17:22:53,713 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'float'>."]
-17:22:53,713 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'complex'>."]
-17:22:53,713 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'list'>."]
-17:22:53,714 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'tuple'>."]
-17:22:53,714 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'range'>."]
-17:22:53,714 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'set'>."]
-17:22:53,715 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'frozenset'>."]
-17:22:53,715 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bool'>."]
-17:22:53,715 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytes'>."]
-17:22:53,716 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytearray'>."]
-17:22:53,716 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'memoryview'>."]
-17:22:53,717 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'str'>."]
-17:22:53,718 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'int'>."]
-17:22:53,718 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'float'>."]
-17:22:53,718 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'complex'>."]
-17:22:53,718 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'list'>."]
-17:22:53,719 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'tuple'>."]
-17:22:53,719 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'range'>."]
-17:22:53,719 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'set'>."]
-17:22:53,720 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'frozenset'>."]
-17:22:53,720 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bool'>."]
-17:22:53,720 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytes'>."]
-17:22:53,720 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytearray'>."]
-17:22:53,721 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'memoryview'>."]
-17:22:53,722 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'str'>."]
-17:22:53,722 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'int'>."]
-17:22:53,723 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'float'>."]
-17:22:53,723 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'complex'>."]
-17:22:53,723 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'list'>."]
-17:22:53,723 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'tuple'>."]
-17:22:53,724 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'range'>."]
-17:22:53,724 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'set'>."]
-17:22:53,725 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'frozenset'>."]
-17:22:53,725 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bool'>."]
-17:22:53,725 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytes'>."]
-17:22:53,726 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytearray'>."]
-17:22:53,726 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'memoryview'>."]
-17:22:53,727 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'str'>."]
-17:22:53,727 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'int'>."]
-17:22:53,728 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'float'>."]
-17:22:53,728 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'complex'>."]
-17:22:53,728 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'list'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'tuple'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'range'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'dict'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'set'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'frozenset'>."]
-17:22:53,729 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'bytes'>."]
-17:22:53,730 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'bytearray'>."]
-17:22:53,730 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'memoryview'>."]
-17:22:53,731 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'str'>."]
-17:22:53,732 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'float'>."]
-17:22:53,732 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'complex'>."]
-17:22:53,732 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'list'>."]
-17:22:53,732 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'tuple'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'range'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'dict'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'set'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'frozenset'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bool'>."]
-17:22:53,733 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bytes'>."]
-17:22:53,734 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bytearray'>."]
-17:22:53,734 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'memoryview'>."]
-17:22:53,735 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'str'>."]
-17:22:53,735 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'float'>."]
-17:22:53,735 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'complex'>."]
-17:22:53,735 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'list'>."]
-17:22:53,736 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'tuple'>."]
-17:22:53,736 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'range'>."]
-17:22:53,736 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'dict'>."]
-17:22:53,736 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'set'>."]
-17:22:53,736 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'frozenset'>."]
-17:22:53,737 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bool'>."]
-17:22:53,737 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bytes'>."]
-17:22:53,737 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bytearray'>."]
-17:22:53,737 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'memoryview'>."]
-17:22:53,738 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'str'>."]
-17:22:53,738 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'float'>."]
-17:22:53,738 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'complex'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'list'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'tuple'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'range'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'dict'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'set'>."]
-17:22:53,739 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'frozenset'>."]
-17:22:53,740 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bool'>."]
-17:22:53,740 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bytes'>."]
-17:22:53,740 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bytearray'>."]
-17:22:53,740 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'memoryview'>."]
+17:41:03,325 root INFO ['ERROR:commandModule.commandModule:currentWaypointId must be an int and not None.']
+17:41:03,327 root INFO ['ERROR:commandModule.commandModule:currentWaypointIndex must be an int and not None.']
+17:41:03,328 root INFO ['ERROR:commandModule.commandModule:homeBaseInitialized must be a bool and not None.']
+17:41:03,330 root INFO ['ERROR:commandModule.commandModule:currentAirspeed not found in the POGI json file.']
+17:41:03,332 root INFO ['ERROR:commandModule.commandModule:editingFlightPathErrorCode must be an int and not None.']
+17:41:03,334 root INFO ['ERROR:commandModule.commandModule:errorCode not found in the POGI json file.']
+17:41:03,335 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera not found in the POGI json file.']
+17:41:03,336 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is null.']
+17:41:03,338 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is null.']
+17:41:03,339 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is null.']
+17:41:03,340 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane not found in the POGI json file.']
+17:41:03,342 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is null.']
+17:41:03,343 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is null.']
+17:41:03,345 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is null.']
+17:41:03,348 root INFO ['ERROR:commandModule.commandModule:flightPathFollowingErrorCode must be an int and not None.']
+17:41:03,350 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.']
+17:41:03,352 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates not found in the POGI json file.']
+17:41:03,355 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is null.']
+17:41:03,357 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is null.']
+17:41:03,360 root INFO ['ERROR:commandModule.commandModule:isLanded not found in the POGI json file.']
+17:41:03,362 root INFO ['ERROR:commandModule.commandModule:currentAltitude not found in the POGI json file.']
+17:41:03,363 filelock DEBUG Attempting to acquire lock 4652999680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,363 filelock INFO Lock 4652999680 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,364 filelock DEBUG Attempting to release lock 4652999680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,364 filelock INFO Lock 4652999680 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,365 filelock DEBUG Attempting to acquire lock 4539694192 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,365 filelock INFO Lock 4539694192 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,365 filelock DEBUG Attempting to release lock 4539694192 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,365 filelock INFO Lock 4539694192 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,366 filelock DEBUG Attempting to acquire lock 4655598704 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,367 filelock INFO Lock 4655598704 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,367 filelock DEBUG Attempting to release lock 4655598704 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,367 filelock INFO Lock 4655598704 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,368 filelock DEBUG Attempting to acquire lock 4540605920 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,368 filelock INFO Lock 4540605920 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,368 filelock DEBUG Attempting to release lock 4540605920 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,368 filelock INFO Lock 4540605920 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,369 filelock DEBUG Attempting to acquire lock 4652999680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,369 filelock INFO Lock 4652999680 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,369 filelock DEBUG Attempting to release lock 4652999680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,370 filelock INFO Lock 4652999680 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,371 filelock DEBUG Attempting to acquire lock 4655598800 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,371 filelock INFO Lock 4655598800 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,371 filelock DEBUG Attempting to release lock 4655598800 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,372 filelock INFO Lock 4655598800 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,373 filelock DEBUG Attempting to acquire lock 4655598896 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,374 filelock INFO Lock 4655598896 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,374 filelock DEBUG Attempting to release lock 4655598896 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,374 filelock INFO Lock 4655598896 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,376 filelock DEBUG Attempting to acquire lock 4655598752 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,377 filelock INFO Lock 4655598752 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,377 filelock DEBUG Attempting to release lock 4655598752 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,377 filelock INFO Lock 4655598752 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,380 filelock DEBUG Attempting to acquire lock 4655598944 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,380 filelock INFO Lock 4655598944 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,380 filelock DEBUG Attempting to release lock 4655598944 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,380 filelock INFO Lock 4655598944 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,382 filelock DEBUG Attempting to acquire lock 4655599040 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,382 filelock INFO Lock 4655599040 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,382 filelock DEBUG Attempting to release lock 4655599040 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,383 filelock INFO Lock 4655599040 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,385 filelock DEBUG Attempting to acquire lock 4655599088 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,385 filelock INFO Lock 4655599088 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,386 filelock DEBUG Attempting to release lock 4655599088 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,386 filelock INFO Lock 4655599088 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
+17:41:03,387 root INFO ['ERROR:commandModule.commandModule:currentWaypointId is not an int.']
+17:41:03,389 root INFO ['ERROR:commandModule.commandModule:currentWaypointIndex is not an int.']
+17:41:03,392 root INFO ['ERROR:commandModule.commandModule:homeBaseInitialized is not a bool.']
+17:41:03,393 root INFO ['ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not an int.']
+17:41:03,395 root INFO ['ERROR:commandModule.commandModule:currentAltitude in the POGI file is not an int.']
+17:41:03,396 root INFO ['ERROR:commandModule.commandModule:errorCode found in POGI file is not an int.']
+17:41:03,398 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera in the POGI file is not a dictionary.']
+17:41:03,401 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is not a float.']
+17:41:03,404 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is not a float.']
+17:41:03,405 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is not a float.']
+17:41:03,411 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane in the POGI file is not a dictionary.']
+17:41:03,417 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is not a float.']
+17:41:03,420 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is not a float.']
+17:41:03,422 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is not a float.']
+17:41:03,424 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates in the POGI file is not a dictionary.']
+17:41:03,426 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is not a float.']
+17:41:03,427 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is not a float.']
+17:41:03,429 root INFO ['ERROR:commandModule.commandModule:isLanded in the POGI file is not an int.']
+17:41:03,431 root INFO ['ERROR:commandModule.commandModule:editingFlightPathErrorCode is not an int.']
+17:41:03,433 root INFO ['ERROR:commandModule.commandModule:flightPathFollowingErrorCode is not an int.']
+17:41:03,435 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.']
+17:41:03,443 filelock DEBUG Attempting to acquire lock 4655709056 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,443 filelock INFO Lock 4655709056 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,444 filelock DEBUG Attempting to release lock 4655709056 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,444 filelock INFO Lock 4655709056 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,445 filelock DEBUG Attempting to acquire lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,445 filelock INFO Lock 4655709584 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,445 filelock DEBUG Attempting to release lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,445 filelock INFO Lock 4655709584 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,447 filelock DEBUG Attempting to acquire lock 4655709536 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,448 filelock INFO Lock 4655709536 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,448 filelock DEBUG Attempting to release lock 4655709536 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,449 filelock INFO Lock 4655709536 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,450 filelock DEBUG Attempting to acquire lock 4655709632 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,450 filelock INFO Lock 4655709632 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,451 filelock DEBUG Attempting to release lock 4655709632 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,451 filelock INFO Lock 4655709632 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,453 filelock DEBUG Attempting to acquire lock 4655708960 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,453 filelock INFO Lock 4655708960 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,454 filelock DEBUG Attempting to release lock 4655708960 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,454 filelock INFO Lock 4655708960 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,457 filelock DEBUG Attempting to acquire lock 4655710064 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,457 filelock INFO Lock 4655710064 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,458 filelock DEBUG Attempting to release lock 4655710064 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,458 filelock INFO Lock 4655710064 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,459 filelock DEBUG Attempting to acquire lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,459 filelock INFO Lock 4655709584 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,460 filelock DEBUG Attempting to release lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,460 filelock INFO Lock 4655709584 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,461 filelock DEBUG Attempting to acquire lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,462 filelock INFO Lock 4655709584 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,462 filelock DEBUG Attempting to release lock 4655709584 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,462 filelock INFO Lock 4655709584 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,463 filelock DEBUG Attempting to acquire lock 4655753536 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,463 filelock INFO Lock 4655753536 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,464 filelock DEBUG Attempting to release lock 4655753536 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,464 filelock INFO Lock 4655753536 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,465 filelock DEBUG Attempting to acquire lock 4655753776 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,465 filelock INFO Lock 4655753776 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,466 filelock DEBUG Attempting to release lock 4655753776 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,466 filelock INFO Lock 4655753776 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,467 filelock DEBUG Attempting to acquire lock 4655753728 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,467 filelock INFO Lock 4655753728 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,468 filelock DEBUG Attempting to release lock 4655753728 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,468 filelock INFO Lock 4655753728 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,470 filelock DEBUG Attempting to acquire lock 4655753680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,471 filelock INFO Lock 4655753680 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,472 filelock DEBUG Attempting to release lock 4655753680 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,472 filelock INFO Lock 4655753680 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,473 filelock DEBUG Attempting to acquire lock 4655753488 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,473 filelock INFO Lock 4655753488 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,474 filelock DEBUG Attempting to release lock 4655753488 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,474 filelock INFO Lock 4655753488 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,475 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain altitude key.']
+17:41:03,476 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain latitude key.']
+17:41:03,476 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain longitude key.']
+17:41:03,477 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain pitch key.']
+17:41:03,478 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain yaw key.']
+17:41:03,479 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain heading key.']
+17:41:03,480 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.']
+17:41:03,481 root INFO ['ERROR:commandModule.commandModule:beginLanding must be a bool and not None.']
+17:41:03,482 root INFO ['ERROR:commandModule.commandModule:beginTakeoff must be a bool and not None.']
+17:41:03,483 root INFO ['ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not None.']
+17:41:03,484 root INFO ['ERROR:commandModule.commandModule:flightPathModifyId must be an int and not None.']
+17:41:03,485 root INFO ['ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not None.']
+17:41:03,487 root INFO ['ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not None.']
+17:41:03,489 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must be a dict and not None.']
+17:41:03,491 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not None.']
+17:41:03,492 root INFO ['ERROR:commandModule.commandModule:groundCommands must be a dict and not None.']
+17:41:03,494 root INFO ['ERROR:commandModule.commandModule:homebase must be a dict and not None.']
+17:41:03,496 root INFO ['ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not None.']
+17:41:03,498 root INFO ['ERROR:commandModule.commandModule:numWaypoints must be an int and not None.']
+17:41:03,499 root INFO ['ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not None.']
+17:41:03,500 root INFO ['ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not None.']
+17:41:03,501 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,501 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,505 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,505 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,505 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,505 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,506 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,506 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,506 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,507 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,508 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,508 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,508 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,509 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,510 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,510 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,510 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,510 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,512 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,513 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,513 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,513 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,514 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,514 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,514 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,515 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,515 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,516 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,516 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,516 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,517 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,517 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,517 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,518 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,519 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,519 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,520 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,520 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,521 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,522 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,522 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,522 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,523 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,523 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,523 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,524 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,524 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,524 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,524 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,524 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,525 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,525 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,525 filelock DEBUG Attempting to acquire lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,525 filelock INFO Lock 4689361216 acquired on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,526 filelock DEBUG Attempting to release lock 4689361216 on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,526 filelock INFO Lock 4689361216 released on /Users/ksisjaya/Desktop/andrew_cv/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
+17:41:03,527 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'str'>."]
+17:41:03,527 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'int'>."]
+17:41:03,528 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'float'>."]
+17:41:03,528 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'complex'>."]
+17:41:03,528 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'list'>."]
+17:41:03,528 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'tuple'>."]
+17:41:03,528 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'range'>."]
+17:41:03,529 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'dict'>."]
+17:41:03,529 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'set'>."]
+17:41:03,529 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'frozenset'>."]
+17:41:03,529 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytes'>."]
+17:41:03,529 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytearray'>."]
+17:41:03,530 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'memoryview'>."]
+17:41:03,530 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'str'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'int'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'float'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'complex'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'list'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'tuple'>."]
+17:41:03,531 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'range'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'dict'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'set'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'frozenset'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytes'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytearray'>."]
+17:41:03,532 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'memoryview'>."]
+17:41:03,533 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'str'>."]
+17:41:03,533 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'int'>."]
+17:41:03,533 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'float'>."]
+17:41:03,534 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'complex'>."]
+17:41:03,534 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'list'>."]
+17:41:03,534 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'tuple'>."]
+17:41:03,534 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'range'>."]
+17:41:03,534 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'dict'>."]
+17:41:03,535 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'set'>."]
+17:41:03,536 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'frozenset'>."]
+17:41:03,536 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytes'>."]
+17:41:03,536 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytearray'>."]
+17:41:03,537 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'memoryview'>."]
+17:41:03,538 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'str'>."]
+17:41:03,539 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'float'>."]
+17:41:03,539 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'complex'>."]
+17:41:03,539 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'list'>."]
+17:41:03,539 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'tuple'>."]
+17:41:03,540 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'range'>."]
+17:41:03,540 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'dict'>."]
+17:41:03,541 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'set'>."]
+17:41:03,541 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'frozenset'>."]
+17:41:03,542 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bool'>."]
+17:41:03,542 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bytes'>."]
+17:41:03,543 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'bytearray'>."]
+17:41:03,543 root INFO ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not <class 'memoryview'>."]
+17:41:03,545 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'str'>."]
+17:41:03,545 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'float'>."]
+17:41:03,545 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'complex'>."]
+17:41:03,546 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'list'>."]
+17:41:03,546 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'tuple'>."]
+17:41:03,547 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'range'>."]
+17:41:03,547 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'dict'>."]
+17:41:03,548 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'set'>."]
+17:41:03,548 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'frozenset'>."]
+17:41:03,548 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bool'>."]
+17:41:03,549 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bytes'>."]
+17:41:03,549 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'bytearray'>."]
+17:41:03,550 root INFO ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not <class 'memoryview'>."]
+17:41:03,551 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'str'>."]
+17:41:03,552 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'float'>."]
+17:41:03,552 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'complex'>."]
+17:41:03,553 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'list'>."]
+17:41:03,553 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'tuple'>."]
+17:41:03,554 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'range'>."]
+17:41:03,554 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'dict'>."]
+17:41:03,554 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'set'>."]
+17:41:03,555 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'frozenset'>."]
+17:41:03,555 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bool'>."]
+17:41:03,555 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bytes'>."]
+17:41:03,556 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'bytearray'>."]
+17:41:03,556 root INFO ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not <class 'memoryview'>."]
+17:41:03,558 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'str'>."]
+17:41:03,558 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'int'>."]
+17:41:03,558 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'float'>."]
+17:41:03,559 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'complex'>."]
+17:41:03,559 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'list'>."]
+17:41:03,559 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'tuple'>."]
+17:41:03,560 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'range'>."]
+17:41:03,560 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'set'>."]
+17:41:03,561 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'frozenset'>."]
+17:41:03,561 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bool'>."]
+17:41:03,561 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytes'>."]
+17:41:03,561 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytearray'>."]
+17:41:03,562 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'memoryview'>."]
+17:41:03,562 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'str'>."]
+17:41:03,563 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'int'>."]
+17:41:03,563 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'float'>."]
+17:41:03,563 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'complex'>."]
+17:41:03,563 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'list'>."]
+17:41:03,563 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'tuple'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'range'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'set'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'frozenset'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bool'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytes'>."]
+17:41:03,564 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytearray'>."]
+17:41:03,565 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'memoryview'>."]
+17:41:03,565 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'str'>."]
+17:41:03,565 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'int'>."]
+17:41:03,566 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'float'>."]
+17:41:03,566 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'complex'>."]
+17:41:03,566 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'list'>."]
+17:41:03,566 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'tuple'>."]
+17:41:03,566 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'range'>."]
+17:41:03,567 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'set'>."]
+17:41:03,567 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'frozenset'>."]
+17:41:03,567 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bool'>."]
+17:41:03,568 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytes'>."]
+17:41:03,568 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytearray'>."]
+17:41:03,568 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'memoryview'>."]
+17:41:03,569 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'str'>."]
+17:41:03,569 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'int'>."]
+17:41:03,569 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'float'>."]
+17:41:03,570 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'complex'>."]
+17:41:03,570 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'list'>."]
+17:41:03,570 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'tuple'>."]
+17:41:03,570 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'range'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'set'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'frozenset'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'bool'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'bytes'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'bytearray'>."]
+17:41:03,571 root INFO ["ERROR:commandModule.commandModule:homebase must be a dict and not <class 'memoryview'>."]
+17:41:03,572 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'str'>."]
+17:41:03,572 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'int'>."]
+17:41:03,572 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'float'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'complex'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'list'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'tuple'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'range'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'dict'>."]
+17:41:03,573 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'set'>."]
+17:41:03,574 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'frozenset'>."]
+17:41:03,574 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'bytes'>."]
+17:41:03,574 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'bytearray'>."]
+17:41:03,574 root INFO ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not <class 'memoryview'>."]
+17:41:03,575 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'str'>."]
+17:41:03,575 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'float'>."]
+17:41:03,575 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'complex'>."]
+17:41:03,576 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'list'>."]
+17:41:03,576 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'tuple'>."]
+17:41:03,576 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'range'>."]
+17:41:03,576 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'dict'>."]
+17:41:03,576 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'set'>."]
+17:41:03,577 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'frozenset'>."]
+17:41:03,577 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bool'>."]
+17:41:03,577 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bytes'>."]
+17:41:03,577 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'bytearray'>."]
+17:41:03,577 root INFO ["ERROR:commandModule.commandModule:numWaypoints must be an int and not <class 'memoryview'>."]
+17:41:03,578 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'str'>."]
+17:41:03,578 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'float'>."]
+17:41:03,578 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'complex'>."]
+17:41:03,579 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'list'>."]
+17:41:03,579 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'tuple'>."]
+17:41:03,579 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'range'>."]
+17:41:03,579 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'dict'>."]
+17:41:03,580 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'set'>."]
+17:41:03,580 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'frozenset'>."]
+17:41:03,580 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bool'>."]
+17:41:03,580 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bytes'>."]
+17:41:03,580 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'bytearray'>."]
+17:41:03,581 root INFO ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not <class 'memoryview'>."]
+17:41:03,582 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'str'>."]
+17:41:03,582 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'float'>."]
+17:41:03,582 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'complex'>."]
+17:41:03,582 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'list'>."]
+17:41:03,582 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'tuple'>."]
+17:41:03,583 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'range'>."]
+17:41:03,583 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'dict'>."]
+17:41:03,583 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'set'>."]
+17:41:03,583 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'frozenset'>."]
+17:41:03,584 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bool'>."]
+17:41:03,584 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bytes'>."]
+17:41:03,584 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'bytearray'>."]
+17:41:03,584 root INFO ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not <class 'memoryview'>."]

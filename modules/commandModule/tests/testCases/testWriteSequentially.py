@@ -33,7 +33,8 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
                         "flightPathModifyNextId": 1,
                         "flightPathModifyPrevId": 1,
                         "flightPathModifyId": 1,
-                        "initializingHomeBase": True}
+                        "initializingHomeBase": True,
+                        "homebase": {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5}}
         self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
         self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
@@ -58,5 +59,6 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
         self.commandModule.set_flight_path_modify_prev_id(self.testData["flightPathModifyPrevId"])
         self.commandModule.set_flight_path_modify_id(self.testData["flightPathModifyId"])
         self.commandModule.set_initializing_home_base(self.testData["initializingHomeBase"])
+        self.commandModule.set_homebase(self.testData["homebase"])
 
         self.assertEqual(self.__read_json(), self.testData)

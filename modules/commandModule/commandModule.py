@@ -620,27 +620,35 @@ class CommandModule:
         self.__write_to_pigo_file()
 
     def set_homebase(self, homebase: dict):
-        
+        """
+        Write homebase to PIGO JSON file
+
+        Paramaters
+        ----------
+        homebase: dict
+            Dictionary that contains latitude (float), longitude (float), altitude (int), turnRadius (float), and waypointType (int) for homebase
+        """
+
         if homebase is None:
-            self.__logger.error("homebased must be an int and not None.")
+            self.__logger.error("homebase must be a dict and not None.")
             return None
-        if type(homebase) is not np.ndarray:
-            self.__logger.error("homebase must be an int and not {}.".format(
-                type(homebase)))
+        if type(homebase) is not dict:
+            self.__logger.error("homebase must be a dict and not {}.".format(type(homebase)))
             return None
 
-        for key in ("latitude", "longitude", "altitude", "turnRadius", "homebaseType"):
-            if (homebase[key] is None):
-                self.__logger.error("{} is None".format(key))
+        for key in ("latitude", "longitude", "altitude", "turnRadius", "waypointType"):
+            if key not in homebase.keys():
+                self.__logger.error("homebase must contain {} key.".format(key))
                 return None
-        for key in ("latitude", "longitude"):
-            if (type(homebase[key]) is not float):
-                self.__logger.error("{} is {} and not a float".format(key, type(homebase[key])))
+        for key in ("latitude", "longitude", "turnRadius"):
+            if type(homebase[key]) is not float:
+                self.__logger.error("homebase {} key must be a float.".format(key))
                 return None
-        for key in ("altitude", "turnRadius", "homebaseType"):
-            if (type(homebase[key]) is not int):
-                self.__logger.error("{} is {} and not an int".format(key, type(homebase[key])))
+        for key in ("altitude", "waypointType"):
+            if type(homebase[key]) is not int:
+                self.__logger.error("homebase {} key must be an int.".format(key))
                 return None
+
         self.__pigoData.update({"homebase": homebase})
         self.__write_to_pigo_file()
 

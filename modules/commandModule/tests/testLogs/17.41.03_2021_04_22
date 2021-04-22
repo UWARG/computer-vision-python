@@ -70,6 +70,7 @@ test_pass_if_write_correct_flight_path_modify_prev_id (commandModule.tests.testC
 test_pass_if_write_correct_gimbal_commands (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_gps_coords (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_ground_commands (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
+test_pass_if_write_correct_homebase (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_num_waypoints (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_waypoint_modify_flight_path_command (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
 test_pass_if_write_correct_waypoint_next_directions_command (commandModule.tests.testCases.testWriteCorrectToPigo.TestCaseWritingCorrectValuesToPIGOFile) ... ok
@@ -89,6 +90,7 @@ test_value_error_if_set_flight_path_modify_prev_id_to_null (commandModule.tests.
 test_value_error_if_set_gimbal_commands_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_gps_coords_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_ground_commands_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
+test_value_error_if_set_homebase_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_initializing_home_base_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_num_waypoints_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
 test_value_error_if_set_waypoint_modify_flight_path_command_to_null (commandModule.tests.testCases.testWriteNullToPigo.TestCaseWritingNullToPIGOFile) ... ok
@@ -103,12 +105,13 @@ test_type_error_if_set_flight_path_modify_prev_id_to_wrong_type (commandModule.t
 test_type_error_if_set_gimbal_commands_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_gps_coords_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_ground_commands_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
+test_type_error_if_set_homebase_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_initializing_home_base_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_num_waypoints_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_waypoint_modify_flight_path_command_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 test_type_error_if_set_waypoint_next_directions_command_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 
 ----------------------------------------------------------------------
-Ran 109 tests in 0.272s
+Ran 112 tests in 0.262s
 
 OK

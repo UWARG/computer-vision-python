@@ -99,3 +99,9 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
             self.commandModule.set_flight_path_modify_id(None)
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not None.", ])
         logging.info(cm.output)
+
+    def test_value_error_if_set_homebase_to_null(self):
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_homebase(None)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not None.", ])
+        logging.info(cm.output)
