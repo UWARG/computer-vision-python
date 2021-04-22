@@ -149,3 +149,27 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                     self.commandModule.set_homebase(test)
                 self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not {}.".format(type(test)), ])
                 logging.info(cm.output)
+    
+    def test_type_error_if_set_holding_altitude(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_altitude(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingAltitude must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_holding_turn_direction(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_turn_direction(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnDirection must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+
+    def test_type_error_if_set_holding_turn_radius(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_turn_radius(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnRadius must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)

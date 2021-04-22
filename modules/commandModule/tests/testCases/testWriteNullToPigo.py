@@ -105,3 +105,21 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
             self.commandModule.set_homebase(None)
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not None.", ])
         logging.info(cm.output)
+    
+    def test_value_error_if_set_holding_altitude_to_null(self):
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_holding_altitude(None)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingAltitude must be an int and not None.", ])
+        logging.info(cm.output)
+    
+    def test_value_error_if_set_holding_turn_direction_to_null(self):
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_holding_turn_direction(None)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnDirection must be an int and not None.", ])
+        logging.info(cm.output)
+    
+    def test_value_error_if_set_holding_turn_radius_to_null(self):
+        with self.assertLogs(level="ERROR") as cm:
+            self.commandModule.set_holding_turn_radius(None)
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnRadius must be an int and not None.", ])
+        logging.info(cm.output)

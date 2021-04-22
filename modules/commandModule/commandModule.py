@@ -586,6 +586,60 @@ class CommandModule:
             return None
         self.__pigoData.update({"flightPathModifyId": flightPathModifyId})
         self.__write_to_pigo_file()
+    
+    def set_holding_altitude(self, holdingAltitude: int):
+        """
+
+        Parameters
+        ----------
+        holdingAltitude: int
+
+        """
+        if holdingAltitude is None:
+            self.__logger.error("holdingAltitude must be an int and not None.")
+            return None
+        if type(holdingAltitude) is not int:
+            self.__logger.error("holdingAltitude must be an int and not {}.".format(
+                type(holdingAltitude)))
+            return None
+        self.__pigoData.update({"holdingAltitude": holdingAltitude})
+        self.__write_to_pigo_file()
+    
+    def set_holding_turn_radius(self, holdingTurnRadius: int):
+        """
+
+        Parameters
+        ----------
+        holdingTurnRadius: int
+
+        """
+        if holdingTurnRadius is None:
+            self.__logger.error("holdingTurnRadius must be an int and not None.")
+            return None
+        if type(holdingTurnRadius) is not int:
+            self.__logger.error("holdingTurnRadius must be an int and not {}.".format(
+                type(holdingTurnRadius)))
+            return None
+        self.__pigoData.update({"holdingTurnRadius": holdingTurnRadius})
+        self.__write_to_pigo_file()
+    
+    def set_holding_turn_direction(self, holdingTurnDirection: int):
+        """
+
+        Parameters
+        ----------
+        holdingTurnDirection: int
+
+        """
+        if holdingTurnDirection is None:
+            self.__logger.error("holdingTurnDirection must be an int and not None.")
+            return None
+        if type(holdingTurnDirection) is not int:
+            self.__logger.error("holdingTurnDirection must be an int and not {}.".format(
+                type(holdingTurnDirection)))
+            return None
+        self.__pigoData.update({"holdingTurnDirection": holdingTurnDirection})
+        self.__write_to_pigo_file()
 
     def set_waypoints(self, waypoints: np.ndarray):
         """

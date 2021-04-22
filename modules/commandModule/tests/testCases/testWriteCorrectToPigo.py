@@ -94,6 +94,21 @@ class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
         self.commandModule.set_flight_path_modify_id(example)
         self.assertEqual(self.__read_json("flightPathModifyId"), example)
     
+    def test_pass_if_write_correct_holding_turn_radius(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_holding_turn_radius(example)
+        self.assertEqual(self.__read_json("holdingTurnRadius"), example)
+    
+    def test_pass_if_write_correct_holding_turn_direction(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_holding_turn_direction(example)
+        self.assertEqual(self.__read_json("holdingTurnDirection"), example)
+    
+    def test_pass_if_write_correct_holding_altitude(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_holding_altitude(example)
+        self.assertEqual(self.__read_json("holdingAltitude"), example)
+    
     def test_pass_if_write_correct_homebase(self):
         example = {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5}  # correct value is an int
         self.commandModule.set_homebase(example)

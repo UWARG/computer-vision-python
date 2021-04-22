@@ -34,7 +34,10 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
                         "flightPathModifyPrevId": 1,
                         "flightPathModifyId": 1,
                         "initializingHomeBase": True,
-                        "homebase": {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5}}
+                        "homebase": {"latitude": 1.23, "longitude": 1.23, "altitude": 1, "turnRadius": 1.23, "waypointType": 5},
+                        "holdingTurnDirection": 1,
+                        "holdingTurnRadius": 1,
+                        "holdingAltitude": 1}
         self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
         self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
@@ -60,5 +63,8 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
         self.commandModule.set_flight_path_modify_id(self.testData["flightPathModifyId"])
         self.commandModule.set_initializing_home_base(self.testData["initializingHomeBase"])
         self.commandModule.set_homebase(self.testData["homebase"])
+        self.commandModule.set_holding_turn_direction(self.testData["holdingTurnDirection"])
+        self.commandModule.set_holding_turn_radius(self.testData["holdingTurnRadius"])
+        self.commandModule.set_holding_altitude(self.testData["holdingAltitude"])
 
         self.assertEqual(self.__read_json(), self.testData)
