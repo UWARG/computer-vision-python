@@ -39,7 +39,7 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("currentAirspeed", "0")
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_current_airspeed()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not an int.", ])
+        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not a float.", ])
         logging.info(cm.output)
 
     def test_type_error_if_get_is_landed_equals_wrong_type(self):

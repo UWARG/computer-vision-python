@@ -27,8 +27,8 @@ class TestReadingCorrectFromPOGIFiles(unittest.TestCase):
         self.assertEqual(0, self.commandModule.get_error_code())
 
     def test_pass_if_get_airspeed_equals_correct(self):
-        self.__value_instantiate("currentAirspeed", 0)
-        self.assertEqual(0, self.commandModule.get_current_airspeed())
+        self.__value_instantiate("currentAirspeed", 1.23)
+        self.assertEqual(1.23, self.commandModule.get_current_airspeed())
 
     def test_pass_if_get_is_landed_equals_correct(self):
         self.__value_instantiate("isLanded", True)

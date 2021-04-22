@@ -124,6 +124,6 @@ test_type_error_if_set_waypoint_next_directions_command_to_wrong_type (commandMo
 test_type_error_if_set_waypoints_to_wrong_type (commandModule.tests.testCases.testWriteWrongTypeToPigo.TestCaseWritingWrongTypeToPIGOFile) ... ok
 
 ----------------------------------------------------------------------
-Ran 124 tests in 0.432s
+Ran 124 tests in 0.466s
 
 OK

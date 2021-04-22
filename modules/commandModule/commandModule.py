@@ -145,7 +145,7 @@ class CommandModule:
 
         return currentAltitude
 
-    def get_current_airspeed(self) -> int:
+    def get_current_airspeed(self) -> float:
         """
         Returns the current airspeed from the POGI file
 
@@ -160,8 +160,8 @@ class CommandModule:
         if currentAirspeed is None:
             self.__logger.error("currentAirspeed not found in the POGI json file.")
             return None
-        if type(currentAirspeed) is not int:
-            self.__logger.error("currentAirspeed in the POGI file is not an int.")
+        if type(currentAirspeed) is not float:
+            self.__logger.error("currentAirspeed in the POGI file is not a float.")
             return None
 
         return currentAirspeed
@@ -639,38 +639,6 @@ class CommandModule:
                 type(holdingTurnDirection)))
             return None
         self.__pigoData.update({"holdingTurnDirection": holdingTurnDirection})
-        self.__write_to_pigo_file()
-
-    def set_waypoints(self, waypoints: np.ndarray):
-        """
-        Parameters
-        ----------
-        flightPathModifyId: np.array
-            A numpy array that contains a dictionary housing latitude, longitude, altitude, turnRadius and waypointType
-
-        """
-        if waypoints is None:
-            self.__logger.error("waypoints must be an array and not None.")
-            return None
-        if type(waypoints) is not np.ndarray:
-            self.__logger.error("waypoints must be an array and not {}.".format(
-                type(waypoints)))
-            return None
-        for waypoint in range(len(waypoints)):
-            for key in ("latitude", "longitude", "altitude", "turnRadius", "waypointType"):
-                if (waypoint[key] is None):
-                    self.__logger.error("{} is None".format(key))
-                    return None
-            for key in ("latitude", "longitude"):
-                if (type(waypoint[key]) is not float):
-                    self.__logger.error("{} is {} and not a float".format(key, type(waypoint[key])))
-                    return None
-            for key in ("altitude", "turnRadius", "waypointType"):
-                if(type(waypoint[key]) is not int):
-                    self.__logger.error("{} is {} and not an int".format(key, type(waypoint[key])))
-                    return None
-                   
-        self.__pigoData.update({"waypoints": waypoints})
         self.__write_to_pigo_file()
 
     def set_waypoints(self, waypoints: dict):
