@@ -58,3 +58,40 @@ class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
         example = True  # correct value is a bool
         self.commandModule.set_disconnect_autopilot(example)
         self.assertEqual(self.__read_json("disconnectAutoPilot"), example)
+    
+    def test_pass_if_write_correct_disconnect_autopilot(self):
+        example = True  # correct value is a bool
+        self.commandModule.set_initializing_home_base(example)
+        self.assertEqual(self.__read_json("initializingHomeBase"), example)
+    
+    def test_pass_if_write_correct_num_waypoints(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_num_waypoints(example)
+        self.assertEqual(self.__read_json("numWaypoints"), example)
+    
+    def test_pass_if_write_correct_waypoint_modify_flight_path_command(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_waypoint_modify_flight_path_command(example)
+        self.assertEqual(self.__read_json("waypointModifyFlightPathCommand"), example)
+    
+    def test_pass_if_write_correct_waypoint_next_directions_command(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_waypoint_next_directions_command(example)
+        self.assertEqual(self.__read_json("waypointNextDirectionsCommand"), example)
+    
+    def test_pass_if_write_correct_flight_path_modify_next_id(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_flight_path_modify_next_id(example)
+        self.assertEqual(self.__read_json("flightPathModifyNextId"), example)
+    
+    def test_pass_if_write_correct_flight_path_modify_prev_id(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_flight_path_modify_prev_id(example)
+        self.assertEqual(self.__read_json("flightPathModifyPrevId"), example)
+    
+    def test_pass_if_write_correct_flight_path_modify_id(self):
+        example = 1  # correct value is an int
+        self.commandModule.set_flight_path_modify_id(example)
+        self.assertEqual(self.__read_json("flightPathModifyId"), example)
+    
+    

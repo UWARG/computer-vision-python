@@ -334,9 +334,6 @@ class CommandModule:
 
         return waypoint_index
 
-
-
-
     def get_home_base_intialized(self) -> bool:
         self.__read_from_pogi_file()
         initialized = self.__pogiData["homeBaseInitialized"]
@@ -348,8 +345,6 @@ class CommandModule:
             return None
 
         return initialized
-
-
 
     def set_gps_coordinates(self, gpsCoordinates: dict):
         """
@@ -479,14 +474,13 @@ class CommandModule:
 
         """
         if numWaypoints is None:
-            self.__logger.error("numWaypoints must be an int and is None.")
+            self.__logger.error("numWaypoints must be an int and not None.")
             return None
         if type(numWaypoints) is not int:
             self.__logger.error("numWaypoints must be an int and not {}.".format(type(numWaypoints)))
             return None
         self.__pigoData.update({"numWaypoints": numWaypoints})
         self.__write_to_pigo_file()
-
 
     def set_waypoint_modify_flight_path_command(self, waypointModifyFlightPathCommand: int):
         """
@@ -497,15 +491,13 @@ class CommandModule:
 
         """
         if waypointModifyFlightPathCommand is None:
-            self.__logger.error("waypointModifyFlightPathCommand must be an int and is None.")
+            self.__logger.error("waypointModifyFlightPathCommand must be an int and not None.")
             return None
         if type(waypointModifyFlightPathCommand) is not int:
             self.__logger.error("waypointModifyFlightPathCommand must be an int and not {}.".format(type(waypointModifyFlightPathCommand)))
             return None
         self.__pigoData.update({"waypointModifyFlightPathCommand": waypointModifyFlightPathCommand})
         self.__write_to_pigo_file()
-
-
 
     def set_waypoint_next_directions_command(self, waypointNextDirectionsCommand: int):
         """
@@ -516,7 +508,7 @@ class CommandModule:
 
         """
         if waypointNextDirectionsCommand is None:
-            self.__logger.error("waypointNextDirectionsCommand must be an int and is None.")
+            self.__logger.error("waypointNextDirectionsCommand must be an int and not None.")
             return None
         if type(waypointNextDirectionsCommand) is not int:
             self.__logger.error("waypointNextDirectionsCommand must be an int and not {}.".format(type(waypointNextDirectionsCommand)))
@@ -533,83 +525,81 @@ class CommandModule:
 
         """
         if initializingHomeBase is None:
-            self.__logger.error("initializingHomeBase must be an int and is None.")
+            self.__logger.error("initializingHomeBase must be a bool and not None.")
             return None
         if type(initializingHomeBase) is not bool:
-            self.__logger.error("initializingHomeBase must be an int and not {}.".format(type(initializingHomeBase)))
+            self.__logger.error("initializingHomeBase must be a bool and not {}.".format(type(initializingHomeBase)))
             return None
         self.__pigoData.update({"initializingHomeBase": initializingHomeBase})
         self.__write_to_pigo_file()
-        
-    
-    def set_flight_path_modify_next_id(self, flightpathModifyNextId: int):
+
+    def set_flight_path_modify_next_id(self, flightPathModifyNextId: int):
         """
 
         Parameters
         ----------
-        flightpathModifyNextId: int
+        flightPathModifyNextId: int
 
         """
-        if flightpathModifyNextId is None:
-            self.__logger.error("flightpathModifyNextId must be an int and is None.")
+        if flightPathModifyNextId is None:
+            self.__logger.error("flightPathModifyNextId must be an int and not None.")
             return None
-        if type(flightpathModifyNextId) is not int:
-            self.__logger.error("flightpathModifyNextId must be an int and not {}.".format(
-                type(flightpathModifyNextId)))
+        if type(flightPathModifyNextId) is not int:
+            self.__logger.error("flightPathModifyNextId must be an int and not {}.".format(
+                type(flightPathModifyNextId)))
             return None
-        self.__pigoData.update({"flightpathModifyNextId": flightpathModifyNextId})
+        self.__pigoData.update({"flightPathModifyNextId": flightPathModifyNextId})
         self.__write_to_pigo_file()
 
-    def set_flight_path_modify_prev_id(self, flightpathModifyPrevId: int):
+    def set_flight_path_modify_prev_id(self, flightPathModifyPrevId: int):
         """
 
         Parameters
         ----------
-        flightpathModifyPrevId: int
+        flightPathModifyPrevId: int
 
         """
-        if flightpathModifyPrevId is None:
-            self.__logger.error("flightpathModifyPrevId must be an int and is None.")
+        if flightPathModifyPrevId is None:
+            self.__logger.error("flightPathModifyPrevId must be an int and not None.")
             return None
-        if type(flightpathModifyPrevId) is not int:
-            self.__logger.error("flightpathModifyPrevId must be an int and not {}.".format(
-                type(flightpathModifyPrevId)))
+        if type(flightPathModifyPrevId) is not int:
+            self.__logger.error("flightPathModifyPrevId must be an int and not {}.".format(
+                type(flightPathModifyPrevId)))
             return None
-        self.__pigoData.update({"flightpathModifyPrevId": flightpathModifyPrevId})
+        self.__pigoData.update({"flightPathModifyPrevId": flightPathModifyPrevId})
         self.__write_to_pigo_file()
 
-
-    def set_flight_path_modify_id(self, flightpathModifyId: int):
+    def set_flight_path_modify_id(self, flightPathModifyId: int):
         """
 
         Parameters
         ----------
-        flightpathModifyId: int
+        flightPathModifyId: int
 
         """
-        if flightpathModifyId is None:
-            self.__logger.error("flightpathModifyId must be an int and is None.")
+        if flightPathModifyId is None:
+            self.__logger.error("flightPathModifyId must be an int and not None.")
             return None
-        if type(flightpathModifyId) is not int:
-            self.__logger.error("flightpathModifyId must be an int and not {}.".format(
-                type(flightpathModifyId)))
+        if type(flightPathModifyId) is not int:
+            self.__logger.error("flightPathModifyId must be an int and not {}.".format(
+                type(flightPathModifyId)))
             return None
-        self.__pigoData.update({"flightpathModifyId": flightpathModifyId})
+        self.__pigoData.update({"flightPathModifyId": flightPathModifyId})
         self.__write_to_pigo_file()
 
     def set_waypoints(self, waypoints: np.ndarray):
         """
         Parameters
         ----------
-        flightpathModifyId: np.array
+        flightPathModifyId: np.array
             A numpy array that contains a dictionary housing latitude, longitude, altitude, turnRadius and waypointType
 
         """
         if waypoints is None:
-            self.__logger.error("waypointsd must be an int and is None.")
+            self.__logger.error("waypoints must be an array and not None.")
             return None
         if type(waypoints) is not np.ndarray:
-            self.__logger.error("waypoints must be an int and not {}.".format(
+            self.__logger.error("waypoints must be an array and not {}.".format(
                 type(waypoints)))
             return None
         for waypoint in range(len(waypoints)):
@@ -628,10 +618,11 @@ class CommandModule:
                    
         self.__pigoData.update({"waypoints": waypoints})
         self.__write_to_pigo_file()
+
     def set_homebase(self, homebase: dict):
         
         if homebase is None:
-            self.__logger.error("homebased must be an int and is None.")
+            self.__logger.error("homebased must be an int and not None.")
             return None
         if type(homebase) is not np.ndarray:
             self.__logger.error("homebase must be an int and not {}.".format(
