@@ -5,6 +5,7 @@ from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
 
 
 # Integration test to check mediator behaviour
+# Disable input verification on pipelines to run test
 def testVideoPipeline():
     videoPipeline = mp.Queue()
     coordinatePipeline = mp.Queue()
@@ -23,20 +24,3 @@ def testVideoPipeline():
 
     exitSignal.put(True)
 
-
-def testPipelinePause():
-    pipeline = mp.Queue()
-    pause = mp.Lock()
-    exitSignal = mp.Queue()
-
-    p = mp.Process(target=decklinkSrcWorker, args=(pause, exitSignal, pipeline))
-    p.start()
-
-    last_len = pipeline.qsize()
-    pause.acquire()
-    new_len = pipeline.qsize()
-    pause.release()
-
-    assert last_len == new_len
-
-    exitSignal.put(True)

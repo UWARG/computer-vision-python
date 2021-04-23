@@ -9,7 +9,8 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         pause.release()
 
         curr_frame = decklinkSrc.grab()
-        pipelineOut.put(curr_frame)
+        if curr_frame is not None:
+            pipelineOut.put(curr_frame)
 
 
         if not exitRequest.empty():

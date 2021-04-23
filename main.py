@@ -30,8 +30,11 @@ def flightProgram():
     Parameters: None
     """
     print("start flight program")
+    # Queue from decklinksrc to targetAcquisition
     videoPipeline = mp.Queue()
+    # Queue from targetAcquisition out to main/geolocation
     coordinatePipeline = mp.Queue()
+    # Utility locks
     pause = mp.Lock()
     quit = mp.Queue()
 
