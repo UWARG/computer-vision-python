@@ -62,6 +62,8 @@ class Geolocation:
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
 
+        self.__locationsList = []
+
         return
 
 
@@ -411,6 +413,17 @@ class Geolocation:
             return np.average(trimmedArray,axis=0)
 
 
+    # Helper function required for input
+    def concatenate_locations(self, newLocations):
+
+        self.__locationsList = self.__locationsList + newLocations
+
+
+    def convert_NP_from_list(self, locationsList):
+
+        return np.array(locationsList, dtype=object)
+
+
     def get_best_location(self,inputLocationTupleList):
 
         # For the  case of a single row matrix being passed to the function
@@ -457,7 +470,14 @@ class Geolocation:
             averagePair = (averageX,averageY)
 
         return (averagePair,averageError)
-    
+
+
+    def run_output(self, newLocations):
+
+        self.concatenate_locations(newLocations)
+        locations = self.convert_NP_from_list(self.__locationsList)
+        return True, self.get_best_location(locations)
+
 
     def map_location_from_pixel(self, transformationMatrix, pixels):
         """
