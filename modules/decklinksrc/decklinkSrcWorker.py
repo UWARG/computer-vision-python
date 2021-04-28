@@ -12,6 +12,6 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         if curr_frame is not None:
             pipelineOut.put(curr_frame)
 
-
+        # Kill process if exit is requested
         if not exitRequest.empty():
             return

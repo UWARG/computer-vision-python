@@ -9,6 +9,10 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.release()
 
         curr_frame = pipelineIn.get()
+
+        if curr_frame is None:
+            continue
+
         coordinates = targetAcquisition.get_coordinates(curr_frame)
         if coordinates is not None:
             pipelineOut.put(coordinates)
