@@ -7,11 +7,11 @@ import printer
 
 
 # If the queue is empty then the exit was not requested
-def exitRequested(requestQueue):
+def exit_requested(requestQueue):
     return not requestQueue.empty()
 
 
-def counterWorker(thousands, pause, exitRequest, pipelineOut):
+def counter_worker(thousands, pause, exitRequest, pipelineOut):
     """
     This function is used for multiprocessing.
     The controller of the process(es) will be referred to as the manager (just to make it easier).
@@ -46,7 +46,7 @@ def counterWorker(thousands, pause, exitRequest, pipelineOut):
         # All work should be done in the class method!
         # This wrapper function (counterWorker) should only be doing process things!
         # Single Responsibility Principle
-        ret, outData = counterClass.countUp()
+        ret, outData = counterClass.count_up()
         # outData should also be the only thing coming out, already packed and ready to go
 
         # Something went wrong so we'll skip insertion
@@ -70,7 +70,7 @@ def counterWorker(thousands, pause, exitRequest, pipelineOut):
         # i.e. I checked a value and I'm going to make a decision
         # but in the background that value has changed (but I don't know that)
         # Writes and reads are safe because queues have their own internal locks
-        if (exitRequested(exitRequest)):
+        if (exit_requested(exitRequest)):
             break
 
         # Better example of the above (C++ pseudo-code):
@@ -90,7 +90,7 @@ def counterWorker(thousands, pause, exitRequest, pipelineOut):
     return
 
 
-def printerWorker(prefix, pause, exitRequest, pipelineIn, pipelineOut):
+def printer_worker(prefix, pause, exitRequest, pipelineIn, pipelineOut):
     """
     This function is used for multiprocessing.
     The controller of the process(es) will be referred to as the manager (just to make it easier).
@@ -138,7 +138,7 @@ def printerWorker(prefix, pause, exitRequest, pipelineIn, pipelineOut):
         pipelineOut.put(outData)
 
         # Check whether a reset was called
-        if (exitRequested(exitRequest)):
+        if (exit_requested(exitRequest)):
             break
 
     # Once the process reaches the end of the function it will die automatically
@@ -171,13 +171,13 @@ if __name__ == "__main__":
     # Prepare processes
     c = []
     for i in range(0, numCounterProcesses):
-        c.append(mp.Process(target=counterWorker,
+        c.append(mp.Process(target=counter_worker,
                             args=(counters[i], counterPrinterPause, counterPrinterStop, counterPrinterPipeline,)))
     # Pause and stop are shared, so calling a pause/stop will stop the entire group of counters and printers
     # Of course, they can be not shared (simply use two different pauses and two different stops)
     p = []
     for i in range(0, numPrinterProcesses):
-        p.append(mp.Process(target=printerWorker,
+        p.append(mp.Process(target=printer_worker,
                             args=(printers[i], counterPrinterPause, counterPrinterStop, counterPrinterPipeline, printerMainPipeline)))
 
 

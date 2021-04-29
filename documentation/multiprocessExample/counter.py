@@ -25,7 +25,7 @@ class Counter:
 
     # The working function
     # If this was also a consumer then the function signature would include data input
-    def countUp(self):
+    def count_up(self):
 
         # Pretending we are hard at work
         time.sleep(0.15)
