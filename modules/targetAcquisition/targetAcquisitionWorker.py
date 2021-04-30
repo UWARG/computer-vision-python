@@ -14,8 +14,10 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
             continue
 
         coordinates = targetAcquisition.get_coordinates(curr_frame)
-        if coordinates is not None:
-            pipelineOut.put(coordinates)
+        if coordinates is None:
+            continue
+
+        pipelineOut.put(coordinates)
 
         if not exitRequest.empty():
             return
