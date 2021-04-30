@@ -1,8 +1,9 @@
 import tensorflow as tf
 import numpy as np
-import cv2
-import os
-from yolov2_assets.predict import yolo_predict
+import multiprocessing as mp
+from .yolov2_assets.predict import yolo_predict
+from time import sleep
+
 
 class TargetAcquisition:
     """
@@ -34,19 +35,17 @@ class TargetAcquisition:
         Interprets BoundBox class values to populate self.tentCoordinates with centres of tents
     """
 
-    def __init__ (self, deckLinkFrame=np.zeros((416, 416, 3))):
+    def __init__(self):
         """
         Initializes boxes, tentCoordinates attributes, sets currentFrame attribute to given frame, zeros otherwise
-
-        Parameters
-        ----------
-        deckLinkFrame : np.ndarray, optional
-            Variable size array containing data about a video frame (as given by cv2.imread())
         """
-        self.boxes = [] # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage of height and width of the image as (xmin, ymin) to (xmax, ymax)
+
+        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
+        # of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        self.boxes = []
         self.tentCoordinates = dict()
-        self.currentFrame = deckLinkFrame
-    
+        self.currentFrame = np.empty(0)
+
     def set_curr_frame(self, newFrame):
         """
         Sets given frame to current frame
@@ -57,7 +56,7 @@ class TargetAcquisition:
             Variable size array containing data about a video frame (as given by cv2.imread())
         """
         self.currentFrame = newFrame
-    
+
     def get_coordinates(self, newFrame=np.zeros((416, 416, 3))):
         """
         Returns a list of co-ordinates along a video frame where tents are located by running YOLOV2 model
@@ -75,17 +74,19 @@ class TargetAcquisition:
         # If new frame has been specified (is non-empty, set the current frame to the given frame)
         if np.count_nonzero(newFrame) != 0:
             self.set_curr_frame(newFrame)
+        else:
+            return
         # Run YOLOV2 model
         self.__predict()
         return self.tentCoordinates
-  
+
     def __predict(self):
         """
         PRIVATE: Runs YOLOV2 model on current frame and populates tentCoordinates and boxes attributes
         """
         # Run YOLOV2 model, put bounding boxes into list
         self.boxes = yolo_predict(self.currentFrame)
-        #Find centre coordinates for each bounding box
+        # Find centre coordinates for each bounding box
         self.__find_coordinates()
 
     def __find_coordinates(self):
@@ -95,12 +96,12 @@ class TargetAcquisition:
         image_h = self.currentFrame.shape[0]
         image_w = self.currentFrame.shape[1]
         for box in self.boxes:
-            xmin = int(box.xmin*image_w)
-            ymin = int(box.ymin*image_h)
-            xmax = int(box.xmax*image_w)
-            ymax = int(box.ymax*image_h)
+            xmin = int(box.xmin * image_w)
+            ymin = int(box.ymin * image_h)
+            xmax = int(box.xmax * image_w)
+            ymax = int(box.ymax * image_h)
 
-            self.tentCoordinates[box] = ((xmin+xmax)/2, (ymin+ymax)/2)
+            self.tentCoordinates[box] = ((xmin + xmax) / 2, (ymin + ymax) / 2)
 
 # Testing
 # tracker = TargetAcquisition(cv2.imread('yolov2_assets/single_test_images/raccoon-1.jpg'))
