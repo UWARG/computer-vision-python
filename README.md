@@ -25,16 +25,16 @@ To implement a new feature:
 * `ClassNames` in PascalCase (UpperCamelCase)
 * `CONSTANT_NAMES` in CAPITAL_SNAKE_CASE
 * `FileNames` in PascalCase (UpperCamelCase)
-* "Private" members (functions & variables) should have two underscores to indicate them as such: `def __myPrivateFunc()`, `__myPrivateSet = set()`
+* "Private" members (functions & variables) should have two underscores to indicate them as such: `def __my_private_func()`, `__myPrivateSet = set()`
 * Initialize any variables within class constructor to `None`, or some other value
 * Use constants for numbers that can be tweaked (e.g. pixel height/pixel width of an image, number of epochs in a model)
 * 4 spaces per level of indentation
-* There should be no space before an opening bracket (`myFunction(myVar)` NOT `myFunction (myVar)`)
+* There should be no space before an opening bracket (`my_function(myVar)` NOT `my_function (myVar)`)
 * Only use brackets when necessary (`while myInt < 3` NOT `while (myInt < 3)`)
 * Operators:
 * No spaces around `*`, `/`, `%`, `!`
 * One space on either side of `=`, `==`, `+`, `-`, `+=`, `-=`, etc
-* One space after every comma `myFunc(var1, var2, var3)`
+* One space after every comma `my_func(var1, var2, var3)`
 * Import statments should be grouped in the following order:
 1. Standard library imports (os, json, sys)
 2. Third-party imports (tensorflow, scipy, numpy - anything you need pip to install)
