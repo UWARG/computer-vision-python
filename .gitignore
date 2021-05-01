@@ -62,13 +62,5 @@ docs/_build/
 target/
 .idea
 .DS_Store
-
-modules/taxi/boxDetection/weights/*
-modules/taxi/boxDetection/__pycache__/*
-modules/taxi/boxDetection/*/__pycache__/*
-modules/targetAcquisition/taxi/boxDetection/weights/*
-modules/targetAcquisition/taxi/boxDetection/__pycache__/*
-modules/targetAcquisition/taxi/boxDetection/*/__pycache__/*
-modules/targetAcquisition/taxi/qrScan/__pycache__/*
-modules/targetAcquisition/taxi/qrScan/*/__pycache__/*
-modules/targetAcquisition/taxi/__pycache__/*
+.vscode
+__pycache__/
