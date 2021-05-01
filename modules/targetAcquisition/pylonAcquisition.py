@@ -64,17 +64,12 @@ class PylonAcquisition:
 
     def get_coordinates(self):
         """
-        Returns a list of co-ordinates along a video frame where tents are located by running YOLOV2 model
-
-        Parameters
-        ----------
-        newFrame : np.ndarray, optional
-            Variable size array containing data about a video frame (as given by cv2.imread())
+        Returns a list of co-ordinates along a video frame where tents are located by running YOLOV5 model
         
         Returns
         -------
-        dict<yolov2_assets.utils.BoundBox : tuple<xCo, yCo>>
-            Returns a dict of bounding boxes where tents are located, with centre coordinates for each
+        list
+            Returns a list of bounding boxes (top left and bot right) where tents are located
         """
         
         # Run YOLOV5 model
@@ -83,7 +78,7 @@ class PylonAcquisition:
 
     def __predict(self):
         """
-        PRIVATE: Runs YOLOV2 model on current frame and populates tentCoordinates and boxes attributes
+        PRIVATE: Runs YOLOV5 model on current frame and populates tentCoordinates and boxes attributes
         """
         # Run YOLOV5 model, put bounding boxes into list
         self.bbox = self.yolo.detect_boxes(self.currentFrame)
