@@ -419,11 +419,6 @@ class Geolocation:
         self.__locationsList = self.__locationsList + newLocations
 
 
-    def convert_NP_from_list(self, locationsList):
-
-        return np.array(locationsList, dtype=object)
-
-
     def get_best_location(self,inputLocationTupleList):
 
         # For the  case of a single row matrix being passed to the function
@@ -475,7 +470,7 @@ class Geolocation:
     def run_output(self, newLocations):
 
         self.concatenate_locations(newLocations)
-        locations = self.convert_NP_from_list(self.__locationsList)
+        locations = np.array(self.__locationsList, dtype=object)
         return True, self.get_best_location(locations)
 
 

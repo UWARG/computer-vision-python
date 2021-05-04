@@ -8,7 +8,7 @@ def exit_requested(requestQueue):
     return not requestQueue.empty()
 
 
-def geolocation_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutLock):
+def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutLock):
 
     print("Start Geolocation")
     locator = Geolocation()
@@ -20,8 +20,8 @@ def geolocation_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutL
 
         # Pixel coordinates of tents and plane data
         coordinates = pipelineIn.get()
-        # TODO verify this
-        if (not coordinates):
+        # Check for valid input
+        if (coordinates is None):
             continue
 
         ret, location = locator.run_locator(coordinates)
@@ -30,7 +30,7 @@ def geolocation_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutL
         if (not ret):
             continue
 
-        # External lock required as geolocationOutput will dump the queue
+        # External lock required as geolocation_output_worker will dump the queue (without using the internal one)
         pipelineOutLock.acquire()
         pipelineOut.put(location)
         pipelineOutLock.release()
@@ -43,7 +43,7 @@ def geolocation_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutL
     return
 
 
-def geolocation_output(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLock):
+def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLock):
 
     print("Start Geolocation Output")
     locator = Geolocation()
@@ -53,20 +53,23 @@ def geolocation_output(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLo
         pause.acquire()
         pause.release()
 
-        # Dump the contents of the input queue
+        # Dump the entirety of the input queue
         locations = []
         pipelineInLock.acquire()
         while True:
 
             try:
 
+                # This does not use the internal lock, which is why an external one is required
+                # get_nowait() used to prevent blocking on empty queue
                 location = pipelineIn.get_nowait()
-                # TODO verify this
-                if (not location):
+                # Check for valid input
+                if (location is None):
                     continue
 
                 locations.append(location)
 
+            # Queue is empty, done
             except queue.Empty:
 
                 break
