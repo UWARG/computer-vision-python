@@ -8,7 +8,8 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.acquire()
         pause.release()
         
-        values = pipelineIn.get()
+        frame = pipelineIn.get()
+        taxi.main(frame)
 
         pipelineOut.put()
 

@@ -197,12 +197,10 @@ class Taxi:
         else:
             print("Error: invalid state selected")
 
-    def main(self):
+    def main(self, cap):
         """
         Main operations: getting camera input and passing the image to appropriate methods
         """
-        cap = cv2.VideoCapture(0)
-
         # The number of consecutive frames where all <expectedCount> boxes are in view
         frameCount = 0
         totalWait = 0
@@ -215,8 +213,7 @@ class Taxi:
         distanceCount = 0
 
         while True:
-            ret, self.frame = cap.read()
-
+            self.frame = cap
             if self.state == "BOX":
                 self.bbox = self.yolo.detect_boxes(self.frame)
                 for (topLeft, botRight) in self.bbox:
