@@ -1,7 +1,7 @@
 from modules.geolocation.geolocation import Geolocation
 import multiprocessing as mp
-# For exception handling
-import queue
+import queue  # For exception handling
+import time  # For sleep()
 
 
 def exit_requested(requestQueue):
@@ -31,9 +31,21 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
             continue
 
         # External lock required as geolocation_output_worker will dump the queue (without using the internal one)
-        pipelineOutLock.acquire()
-        pipelineOut.put(location)
-        pipelineOutLock.release()
+        # Keep attempting if the pipeline is full
+        while True:
+
+            try:
+
+                pipelineOutLock.acquire()
+                pipelineOut.put_nowait(location)
+                pipelineOutLock.release()
+                break
+
+            except queue.Full:
+
+                pipelineOutLock.release()
+                time.sleep(0.5)  # Hopefully allow Geolocation Output to empty the queue a bit
+
 
         if (exit_requested(exitRequest)):
             break
