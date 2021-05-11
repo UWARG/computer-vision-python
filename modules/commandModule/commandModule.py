@@ -7,6 +7,7 @@ import logging
 import sys
 import os
 import time
+import numpy as np
 
 class CommandModule:
     """
@@ -144,7 +145,7 @@ class CommandModule:
 
         return currentAltitude
 
-    def get_current_airspeed(self) -> int:
+    def get_current_airspeed(self) -> float:
         """
         Returns the current airspeed from the POGI file
 
@@ -159,8 +160,8 @@ class CommandModule:
         if currentAirspeed is None:
             self.__logger.error("currentAirspeed not found in the POGI json file.")
             return None
-        if type(currentAirspeed) is not int:
-            self.__logger.error("currentAirspeed in the POGI file is not an int.")
+        if type(currentAirspeed) is not float:
+            self.__logger.error("currentAirspeed in the POGI file is not a float.")
             return None
 
         return currentAirspeed
@@ -193,7 +194,7 @@ class CommandModule:
         Returns
         -------
         dict:
-            Returns a dictionary that contains a set of three euler coordinates with names z, y, x
+            Returns a dictionary that contains a set of three euler coordinates with names yaw, pitch, roll
         """
         self.__read_from_pogi_file()
         eulerAnglesOfCamera = self.__pogiData["eulerAnglesOfCamera"]
@@ -204,15 +205,15 @@ class CommandModule:
         if type(eulerAnglesOfCamera) is not dict:
             self.__logger.error("eulerAnglesOfCamera in the POGI file is not a dictionary.")
             return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if key not in eulerAnglesOfCamera.keys():
                 self.__logger.error("{} key not found in eulerAnglesOfCamera.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if eulerAnglesOfCamera[key] is None:
                 self.__logger.error("{} in eulerAnglesOfCamera is null.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if type(eulerAnglesOfCamera[key]) is not float:
                 self.__logger.error("{} in eulerAnglesOfCamera is not a float.".format(key))
                 return None
@@ -226,7 +227,7 @@ class CommandModule:
         Returns
         -------
         dict:
-            Returns a dictionary that contains a set of three euler coordinates with names z, y, x
+            Returns a dictionary that contains a set of three euler coordinates with names yaw, pitch, roll
         """
         self.__read_from_pogi_file()
         eulerAnglesOfPlane = self.__pogiData["eulerAnglesOfPlane"]
@@ -237,15 +238,15 @@ class CommandModule:
         if type(eulerAnglesOfPlane) is not dict:
             self.__logger.error("eulerAnglesOfPlane in the POGI file is not a dictionary.")
             return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if key not in eulerAnglesOfPlane.keys():
                 self.__logger.error("{} key not found in eulerAnglesOfPlane.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if eulerAnglesOfPlane[key] is None:
                 self.__logger.error("{} in eulerAnglesOfPlane is null.".format(key))
                 return None
-        for key in ("z", "y", "x"):
+        for key in ("yaw", "pitch", "roll"):
             if type(eulerAnglesOfPlane[key]) is not float:
                 self.__logger.error("{} in eulerAnglesOfPlane is not a float.".format(key))
                 return None
@@ -284,6 +285,66 @@ class CommandModule:
                 return None
 
         return gpsCoordinates
+
+    def get_editing_flight_path_error_code(self) -> int:
+        self.__read_from_pogi_file()
+        error_code = self.__pogiData["editingFlightPathErrorCode"]
+        if(error_code is None):
+            self.__logger.error("editingFlightPathErrorCode must be an int and not None.")
+            return None
+        if type(error_code) is not int:
+            self.__logger.error("editingFlightPathErrorCode is not an int.")
+            return None
+
+        return error_code
+
+    def get_flight_path_following_error_code(self) -> int:
+        self.__read_from_pogi_file()
+        error_code = self.__pogiData["flightPathFollowingErrorCode"]
+        if(error_code is None):
+            self.__logger.error("flightPathFollowingErrorCode must be an int and not None.")
+            return None
+        if type(error_code) is not int:
+            self.__logger.error("flightPathFollowingErrorCode is not an int.")
+            return None
+
+        return error_code
+
+    def get_current_waypoint_id(self) -> int:
+        self.__read_from_pogi_file()
+        waypoint_id = self.__pogiData["currentWaypointId"]
+        if(waypoint_id is None):
+            self.__logger.error("currentWaypointId must be an int and not None.")
+            return None
+        if type(waypoint_id) is not int:
+            self.__logger.error("currentWaypointId is not an int.")
+            return None
+
+        return waypoint_id
+
+    def get_current_waypoint_index(self) -> int:
+        self.__read_from_pogi_file()
+        waypoint_index = self.__pogiData["currentWaypointIndex"]
+        if(waypoint_index is None):
+            self.__logger.error("currentWaypointIndex must be an int and not None.")
+            return None
+        if type(waypoint_index) is not int:
+            self.__logger.error("currentWaypointIndex is not an int.")
+            return None
+
+        return waypoint_index
+
+    def get_home_base_intialized(self) -> bool:
+        self.__read_from_pogi_file()
+        initialized = self.__pogiData["homeBaseInitialized"]
+        if(initialized is None):
+            self.__logger.error("homeBaseInitialized must be a bool and not None.")
+            return None
+        if type(initialized) is not bool:
+            self.__logger.error("homeBaseInitialized is not a bool.")
+            return None
+
+        return initialized
 
     def set_gps_coordinates(self, gpsCoordinates: dict):
         """
@@ -346,7 +407,7 @@ class CommandModule:
         Paramaters
         ----------
         gimbalCommands: dict
-            Dictionary that contains gimbal commands with pitch and yaw angles named y and z respectively
+            Dictionary that contains gimbal commands with pitch and yaw angles
         """
         if gimbalCommands is None:
             self.__logger.error("gimbalCommands must be a dict and not None.")
@@ -354,11 +415,11 @@ class CommandModule:
         if type(gimbalCommands) is not dict:
             self.__logger.error("gimbalCommands must be a dict and not {}.".format(type(gimbalCommands)))
             return None
-        for key in ("z", "y"):
+        for key in ("yaw", "pitch"):
             if key not in gimbalCommands.keys():
                 self.__logger.error("gimbalCommands must contain {} key.".format(key))
                 return None
-        for key in ("z", "y"):
+        for key in ("yaw", "pitch"):
             if type(gimbalCommands[key]) is not float:
                 self.__logger.error("gimbalCommands {} key must be a float.".format(key))
                 return None
@@ -402,6 +463,248 @@ class CommandModule:
             return None
 
         self.__pigoData.update({"beginTakeoff" : beginTakeoff})
+        self.__write_to_pigo_file()
+
+    def set_num_waypoints(self, numWaypoints: int):
+        """
+
+        Parameters
+        ----------
+        numWaypoints: int
+
+        """
+        if numWaypoints is None:
+            self.__logger.error("numWaypoints must be an int and not None.")
+            return None
+        if type(numWaypoints) is not int:
+            self.__logger.error("numWaypoints must be an int and not {}.".format(type(numWaypoints)))
+            return None
+        self.__pigoData.update({"numWaypoints": numWaypoints})
+        self.__write_to_pigo_file()
+
+    def set_waypoint_modify_flight_path_command(self, waypointModifyFlightPathCommand: int):
+        """
+
+        Parameters
+        ----------
+        waypointModifyFlightPathCommand: int
+
+        """
+        if waypointModifyFlightPathCommand is None:
+            self.__logger.error("waypointModifyFlightPathCommand must be an int and not None.")
+            return None
+        if type(waypointModifyFlightPathCommand) is not int:
+            self.__logger.error("waypointModifyFlightPathCommand must be an int and not {}.".format(type(waypointModifyFlightPathCommand)))
+            return None
+        self.__pigoData.update({"waypointModifyFlightPathCommand": waypointModifyFlightPathCommand})
+        self.__write_to_pigo_file()
+
+    def set_waypoint_next_directions_command(self, waypointNextDirectionsCommand: int):
+        """
+
+        Parameters
+        ----------
+        waypointNextDirectionsCommand: int
+
+        """
+        if waypointNextDirectionsCommand is None:
+            self.__logger.error("waypointNextDirectionsCommand must be an int and not None.")
+            return None
+        if type(waypointNextDirectionsCommand) is not int:
+            self.__logger.error("waypointNextDirectionsCommand must be an int and not {}.".format(type(waypointNextDirectionsCommand)))
+            return None
+        self.__pigoData.update({"waypointNextDirectionsCommand": waypointNextDirectionsCommand})
+        self.__write_to_pigo_file()
+
+    def set_initializing_home_base(self, initializingHomeBase: bool):
+        """
+
+        Parameters
+        ----------
+        initializingHomeBase: bool
+
+        """
+        if initializingHomeBase is None:
+            self.__logger.error("initializingHomeBase must be a bool and not None.")
+            return None
+        if type(initializingHomeBase) is not bool:
+            self.__logger.error("initializingHomeBase must be a bool and not {}.".format(type(initializingHomeBase)))
+            return None
+        self.__pigoData.update({"initializingHomeBase": initializingHomeBase})
+        self.__write_to_pigo_file()
+
+    def set_flight_path_modify_next_id(self, flightPathModifyNextId: int):
+        """
+
+        Parameters
+        ----------
+        flightPathModifyNextId: int
+
+        """
+        if flightPathModifyNextId is None:
+            self.__logger.error("flightPathModifyNextId must be an int and not None.")
+            return None
+        if type(flightPathModifyNextId) is not int:
+            self.__logger.error("flightPathModifyNextId must be an int and not {}.".format(
+                type(flightPathModifyNextId)))
+            return None
+        self.__pigoData.update({"flightPathModifyNextId": flightPathModifyNextId})
+        self.__write_to_pigo_file()
+
+    def set_flight_path_modify_prev_id(self, flightPathModifyPrevId: int):
+        """
+
+        Parameters
+        ----------
+        flightPathModifyPrevId: int
+
+        """
+        if flightPathModifyPrevId is None:
+            self.__logger.error("flightPathModifyPrevId must be an int and not None.")
+            return None
+        if type(flightPathModifyPrevId) is not int:
+            self.__logger.error("flightPathModifyPrevId must be an int and not {}.".format(
+                type(flightPathModifyPrevId)))
+            return None
+        self.__pigoData.update({"flightPathModifyPrevId": flightPathModifyPrevId})
+        self.__write_to_pigo_file()
+
+    def set_flight_path_modify_id(self, flightPathModifyId: int):
+        """
+
+        Parameters
+        ----------
+        flightPathModifyId: int
+
+        """
+        if flightPathModifyId is None:
+            self.__logger.error("flightPathModifyId must be an int and not None.")
+            return None
+        if type(flightPathModifyId) is not int:
+            self.__logger.error("flightPathModifyId must be an int and not {}.".format(
+                type(flightPathModifyId)))
+            return None
+        self.__pigoData.update({"flightPathModifyId": flightPathModifyId})
+        self.__write_to_pigo_file()
+    
+    def set_holding_altitude(self, holdingAltitude: int):
+        """
+
+        Parameters
+        ----------
+        holdingAltitude: int
+
+        """
+        if holdingAltitude is None:
+            self.__logger.error("holdingAltitude must be an int and not None.")
+            return None
+        if type(holdingAltitude) is not int:
+            self.__logger.error("holdingAltitude must be an int and not {}.".format(
+                type(holdingAltitude)))
+            return None
+        self.__pigoData.update({"holdingAltitude": holdingAltitude})
+        self.__write_to_pigo_file()
+    
+    def set_holding_turn_radius(self, holdingTurnRadius: int):
+        """
+
+        Parameters
+        ----------
+        holdingTurnRadius: int
+
+        """
+        if holdingTurnRadius is None:
+            self.__logger.error("holdingTurnRadius must be an int and not None.")
+            return None
+        if type(holdingTurnRadius) is not int:
+            self.__logger.error("holdingTurnRadius must be an int and not {}.".format(
+                type(holdingTurnRadius)))
+            return None
+        self.__pigoData.update({"holdingTurnRadius": holdingTurnRadius})
+        self.__write_to_pigo_file()
+    
+    def set_holding_turn_direction(self, holdingTurnDirection: int):
+        """
+
+        Parameters
+        ----------
+        holdingTurnDirection: int
+
+        """
+        if holdingTurnDirection is None:
+            self.__logger.error("holdingTurnDirection must be an int and not None.")
+            return None
+        if type(holdingTurnDirection) is not int:
+            self.__logger.error("holdingTurnDirection must be an int and not {}.".format(
+                type(holdingTurnDirection)))
+            return None
+        self.__pigoData.update({"holdingTurnDirection": holdingTurnDirection})
+        self.__write_to_pigo_file()
+
+    def set_waypoints(self, waypoints: dict):
+        """
+        Write waypoints to PIGO JSON file
+
+        Paramaters
+        ----------
+        waypoints: dict
+            Dictionary that contains latitude (float), longitude (float), altitude (int), turnRadius (float), and waypointType (int) for waypoints
+        """
+
+        if waypoints is None:
+            self.__logger.error("waypoints must be a dict and not None.")
+            return None
+        if type(waypoints) is not dict:
+            self.__logger.error("waypoints must be a dict and not {}.".format(type(waypoints)))
+            return None
+
+        for key in ("latitude", "longitude", "altitude", "turnRadius", "waypointType"):
+            if key not in waypoints.keys():
+                self.__logger.error("waypoints must contain {} key.".format(key))
+                return None
+        for key in ("latitude", "longitude", "turnRadius"):
+            if type(waypoints[key]) is not float:
+                self.__logger.error("waypoints {} key must be a float.".format(key))
+                return None
+        for key in ("altitude", "waypointType"):
+            if type(waypoints[key]) is not int:
+                self.__logger.error("waypoints {} key must be an int.".format(key))
+                return None
+
+        self.__pigoData.update({"waypoints": waypoints})
+        self.__write_to_pigo_file()
+
+    def set_homebase(self, homebase: dict):
+        """
+        Write homebase to PIGO JSON file
+
+        Paramaters
+        ----------
+        homebase: dict
+            Dictionary that contains latitude (float), longitude (float), altitude (int), turnRadius (float), and waypointType (int) for homebase
+        """
+
+        if homebase is None:
+            self.__logger.error("homebase must be a dict and not None.")
+            return None
+        if type(homebase) is not dict:
+            self.__logger.error("homebase must be a dict and not {}.".format(type(homebase)))
+            return None
+
+        for key in ("latitude", "longitude", "altitude", "turnRadius", "waypointType"):
+            if key not in homebase.keys():
+                self.__logger.error("homebase must contain {} key.".format(key))
+                return None
+        for key in ("latitude", "longitude", "turnRadius"):
+            if type(homebase[key]) is not float:
+                self.__logger.error("homebase {} key must be a float.".format(key))
+                return None
+        for key in ("altitude", "waypointType"):
+            if type(homebase[key]) is not int:
+                self.__logger.error("homebase {} key must be an int.".format(key))
+                return None
+
+        self.__pigoData.update({"homebase": homebase})
         self.__write_to_pigo_file()
 
     def set_disconnect_autopilot(self, disconnectAutoPilot: bool):

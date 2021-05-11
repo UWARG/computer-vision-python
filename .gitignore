@@ -61,3 +61,6 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+
+# CommandModule test logs
+modules/commandModule/tests/testLogs/
