@@ -20,13 +20,6 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
             temp = {key: value}
             json.dump(temp, file, ensure_ascii=False, indent=4, sort_keys=True)
 
-    def test_value_error_if_get_error_code_equals_null(self):
-        self.__value_instantiate("errorCode", None)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:errorCode not found in the POGI json file.", ])
-        logging.info(cm.output)
-
     def test_value_error_if_get_value_error_if_get_altitude_equals_none(self):
         self.__value_instantiate("currentAltitude", None)
         with self.assertLogs(level="ERROR") as cm:
@@ -139,45 +132,5 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.", ])
-        logging.info(cm.output)
-
-    def test_value_error_if_get_editing_flight_path_error_code_equals_none(self):
-        error_code = None
-        self.__value_instantiate("editingFlightPathErrorCode", error_code)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_editing_flight_path_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:editingFlightPathErrorCode must be an int and not None.", ])
-        logging.info(cm.output)
-
-    def test_value_error_if_get_flight_path_following_error_code_equals_none(self):
-        error_code = None
-        self.__value_instantiate("flightPathFollowingErrorCode", error_code)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_flight_path_following_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathFollowingErrorCode must be an int and not None.", ])
-        logging.info(cm.output)
-
-    def test_if_get_current_way_point_id_equals_none(self):
-        waypointId = None
-        self.__value_instantiate("currentWaypointId", waypointId)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_current_waypoint_id()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointId must be an int and not None.", ])
-        logging.info(cm.output)
-
-    def test_if_get_current_way_point_index_equals_none(self):
-        waypointIndex = None
-        self.__value_instantiate("currentWaypointIndex", waypointIndex)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_current_waypoint_index()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointIndex must be an int and not None.", ])
-        logging.info(cm.output)
-
-    def test_if_get_home_base_initialized_equals_none(self):
-        homeBaseInitialized = None
-        self.__value_instantiate("homeBaseInitialized", homeBaseInitialized)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_home_base_intialized()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homeBaseInitialized must be a bool and not None.", ])
         logging.info(cm.output)
 
