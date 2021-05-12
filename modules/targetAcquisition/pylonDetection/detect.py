@@ -9,9 +9,9 @@ import yaml
 from numpy import random
 import numpy as np
 
-from pylonDetection.utils.datasets import letterbox
-from pylonDetection.utils.general import check_requirements, non_max_suppression, scale_coords, set_logging
-from pylonDetection.utils.torch_utils import time_synchronized
+from modules.targetAcquisition.pylonDetection.utils.datasets import letterbox
+from modules.targetAcquisition.pylonDetection.utils.general import check_requirements, non_max_suppression, scale_coords, set_logging
+from modules.targetAcquisition.pylonDetection.utils.torch_utils import time_synchronized
 import tensorflow as tf
 from tensorflow import keras
 
@@ -19,7 +19,7 @@ from tensorflow import keras
 class Detection:
         
     def __init__(self):
-        self.weights=['./pylonDetection/weights/best.pb']
+        self.weights=['modules/targetAcquisition/pylonDetection/weights/best.pb']
         # Initialize
         set_logging()
         self.device =  torch.device('cpu')   # device = select_device(opt.device)
@@ -29,7 +29,7 @@ class Detection:
         self.weights = self.weights[0] if isinstance(self.weights, list) else self.weights
         suffix = Path(self.weights).suffix
         
-        with open('pylonDetection/data/data.yaml') as f:
+        with open('modules/targetAcquisition/pylonDetection/data/data.yaml') as f:
             self.names = yaml.load(f, Loader=yaml.FullLoader)['names']  # class names (assume COCO)
 
         self.backend = 'graph_def'

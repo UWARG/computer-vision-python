@@ -18,8 +18,8 @@ import yaml
 from PIL import Image, ImageDraw
 from scipy.signal import butter, filtfilt
 
-from pylonDetection.utils.general import xywh2xyxy, xyxy2xywh
-from pylonDetection.utils.metrics import fitness
+from modules.targetAcquisition.pylonDetection.utils.general import xywh2xyxy, xyxy2xywh
+from modules.targetAcquisition.pylonDetection.utils.metrics import fitness
 
 # Settings
 matplotlib.rc('font', **{'size': 11})

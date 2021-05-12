@@ -17,9 +17,9 @@ import torch
 import torchvision
 import yaml
 
-from pylonDetection.utils.google_utils import gsutil_getsize
-from pylonDetection.utils.metrics import fitness
-from pylonDetection.utils.torch_utils import init_torch_seeds
+from modules.targetAcquisition.pylonDetection.utils.google_utils import gsutil_getsize
+from modules.targetAcquisition.pylonDetection.utils.metrics import fitness
+from modules.targetAcquisition.pylonDetection.utils.torch_utils import init_torch_seeds
 
 # Settings
 torch.set_printoptions(linewidth=320, precision=5, profile='long')

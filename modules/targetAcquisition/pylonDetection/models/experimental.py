@@ -4,8 +4,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from pylonDetection.models.common import Conv, DWConv
-from pylonDetection.utils.google_utils import attempt_download
+from modules.targetAcquisition.pylonDetection.models.common import Conv, DWConv
+from modules.targetAcquisition.pylonDetection.utils.google_utils import attempt_download
 
 
 class CrossConv(nn.Module):

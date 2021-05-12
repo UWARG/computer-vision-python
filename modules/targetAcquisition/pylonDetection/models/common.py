@@ -7,9 +7,9 @@ import torch
 import torch.nn as nn
 from PIL import Image, ImageDraw
 
-from pylonDetection.utils.datasets import letterbox
-from pylonDetection.utils.general import non_max_suppression, make_divisible, scale_coords, xyxy2xywh
-from pylonDetection.utils.plots import color_list
+from modules.targetAcquisition.pylonDetection.utils.datasets import letterbox
+from modules.targetAcquisition.pylonDetection.utils.general import non_max_suppression, make_divisible, scale_coords, xyxy2xywh
+from modules.targetAcquisition.pylonDetection.utils.plots import color_list
 
 
 def autopad(k, p=None):  # kernel, padding
