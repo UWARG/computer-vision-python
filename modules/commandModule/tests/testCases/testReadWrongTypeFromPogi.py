@@ -21,12 +21,6 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
             temp = {key: value}
             json.dump(temp, file, ensure_ascii=False, indent=4, sort_keys=True)
 
-    def test_type_error_if_get_error_code_equals_null(self):
-        self.__value_instantiate("errorCode", "0")
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:errorCode found in POGI file is not an int.", ])
-        logging.info(cm.output)
 
     def test_type_error_if_get_altitude_equals_wrong_type(self):
         self.__value_instantiate("currentAltitude", "0")
@@ -142,42 +136,4 @@ class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
         self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.", ])
         logging.info(cm.output)
 
-    def test_value_error_if_get_editing_flight_path_error_code_equals_wrong_type(self):
-        error_code = "0"
-        self.__value_instantiate("editingFlightPathErrorCode", error_code)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_editing_flight_path_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:editingFlightPathErrorCode is not an int.", ])
-        logging.info(cm.output)
 
-    def test_value_error_if_get_flight_path_following_error_code_equals_wrong_type(self):
-        error_code = "0"
-        self.__value_instantiate("flightPathFollowingErrorCode", error_code)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_flight_path_following_error_code()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathFollowingErrorCode is not an int.", ])
-        logging.info(cm.output)
-
-    def test_if_get_current_way_point_id_equals_wrong_type(self):
-        waypointId = "0"
-        self.__value_instantiate("currentWaypointId", waypointId)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_current_waypoint_id()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointId is not an int.", ])
-        logging.info(cm.output)
-
-    def test_if_get_current_way_point_index_equals_wrong_type(self):
-        waypointIndex = "0"
-        self.__value_instantiate("currentWaypointIndex", waypointIndex)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_current_waypoint_index()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentWaypointIndex is not an int.", ])
-        logging.info(cm.output)
-
-    def test_if_get_home_base_initialized_equals_wrong_type(self):
-        homeBaseInitialized = "0"
-        self.__value_instantiate("homeBaseInitialized", homeBaseInitialized)
-        with self.assertLogs(level="ERROR") as cm:
-            self.commandModule.get_home_base_intialized()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homeBaseInitialized is not a bool.", ])
-        logging.info(cm.output)
