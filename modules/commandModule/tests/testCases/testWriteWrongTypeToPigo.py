@@ -85,3 +85,99 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                     self.commandModule.set_disconnect_autopilot(test)
                 self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not {}.".format(type(test)), ])
                 logging.info(cm.output)
+    
+    def test_type_error_if_set_initializing_home_base_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not bool:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_initializing_home_base(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:initializingHomeBase must be a bool and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_num_waypoints_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_num_waypoints(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:numWaypoints must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_waypoint_modify_flight_path_command_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_waypoint_modify_flight_path_command(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:waypointModifyFlightPathCommand must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_waypoint_next_directions_command_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_waypoint_next_directions_command(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:waypointNextDirectionsCommand must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_flight_path_modify_next_id_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_flight_path_modify_next_id(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathModifyNextId must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_flight_path_modify_prev_id_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_flight_path_modify_prev_id(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathModifyPrevId must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_flight_path_modify_id_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_flight_path_modify_id(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:flightPathModifyId must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_homebase_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_homebase(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:homebase must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_waypoints_to_wrong_type(self):
+        for test in self.testData:
+            if type(test) is not dict:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_waypoints(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:waypoints must be a dict and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_holding_altitude(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_altitude(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingAltitude must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+    
+    def test_type_error_if_set_holding_turn_direction(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_turn_direction(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnDirection must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
+
+    def test_type_error_if_set_holding_turn_radius(self):
+        for test in self.testData:
+            if type(test) is not int:
+                with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
+                    self.commandModule.set_holding_turn_radius(test)
+                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:holdingTurnRadius must be an int and not {}.".format(type(test)), ])
+                logging.info(cm.output)
