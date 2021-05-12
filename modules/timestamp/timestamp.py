@@ -1,4 +1,5 @@
 import datetime
+import numpy.typing as npt
 
 class Timestamp: 
     """
@@ -16,7 +17,6 @@ class Timestamp:
         sets the frame and timestamp
 
     """
-    def __init__(self, data, timestamp = datetime.datetime.now()):
+    def __init__(self, data: npt.ArrayLike, timestamp: datetime.datetime = datetime.datetime.now()):
         self.data = data
         self.timestamp = timestamp
-
