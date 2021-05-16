@@ -1,5 +1,7 @@
-import datetime
+import datetime as datetime
 import numpy.typing as npt
+import typing
+import time
 
 class Timestamp: 
     """
@@ -17,6 +19,9 @@ class Timestamp:
         sets the frame and timestamp
 
     """
-    def __init__(self, data: npt.ArrayLike, timestamp: datetime.datetime = datetime.datetime.now()):
+    def __init__(self, data: typing.Union[npt.ArrayLike, dict], timestamp: datetime.datetime = None):
         self.data = data
         self.timestamp = timestamp
+        if timestamp is None: 
+            self.timestamp = datetime.datetime.now()
+
