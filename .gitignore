@@ -62,3 +62,12 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+
+# CommandModule test logs
+modules/commandModule/tests/testLogs/
+
+
+# Pylon Detection cache
+modules/targetAcquisition/pylonDetection/__pycache__/*
+modules/targetAcquisition/pylonDetection/*/__pycache__/*
+
