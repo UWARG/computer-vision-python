@@ -1,6 +1,8 @@
-from modules/timestamp/Timestamp import Timestamp
+from modules.mergeImageWithTelemetry.mergedData import MergedData
+from modules.timestamp.timestamp import Timestamp
 
 import datetime
+import numpy.typing as npt
 import typing
 
 class MergeImageWithTelemetry:
@@ -23,7 +25,7 @@ class MergeImageWithTelemetry:
         initiallizes attributes
     put_back(newTelemetryData: Timestamp)
         places given telemetry data at the back of the telemetryData list
-    get_closest_telemetry(imageTimestamp: datetime.datetime)
+    merge_with_closest_telemetry(imageTimestamp: datetime.datetime)
         finds the telemetry with timestamp closest to the input datetime
     """
 
@@ -35,7 +37,7 @@ class MergeImageWithTelemetry:
     def put_back(self, newTelemetryData: typing.type[Timestamp]):
         self.telemetryData.append(newTelemetryData)
 
-    def get_closest_telemetry(self, imageTimestamp: datetime.datetime): 
+    def merge_with_closest_telemetry(self, imageTimestamp: datetime.datetime, imageData : npt.ArrayLike ): 
         """
         finds the telemetry with timestamp closest to the input datetime
         assumes that TelemetryData is sorted by increasing timestamp
@@ -74,7 +76,7 @@ class MergeImageWithTelemetry:
             nextTimeDelta = abs(nextTelemetry.timestamp - imageTimestamp)
             
             if nextTimeDelta > timeDelta:
-                ret = self.curData 
+                ret = MergedData(imageData, self.curData.data)
                 self.curData = nextTelemetry
                 return True, ret
             else: 

@@ -32,11 +32,10 @@ def pipelineMergeWorker(pause, exitRequest, imagePipelineIn, telemetryPipelineIn
 
             mergeImageWithTelemetry.put_back(telemetryData)
 
-        [success, closestTelemetry] = mergeImageWithTelemetry.get_closest_telemetry(curImage.timestamp)
+        [success, mergedData] = mergeImageWithTelemetry.merge_with_closest_telemetry(curImage.timestamp, curImage.data)
 
         if success: 
-            curImage.merge(closestTelemetry)
-            pipelineOut.put(curImage)
+            pipelineOut.put(mergedData)
             shouldGetImage = True # curImage has been matched with a telemetry
         else: 
             shouldGetImage = False # curImage has not been matched with a telemetry and we should keep it as the current image
