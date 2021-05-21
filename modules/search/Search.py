@@ -22,8 +22,8 @@ class Search:
 
         Returns
         -------
-        float
-            Returns the bearing between the plane and tent
+        dict
+            Returns a dictionary containing the angle between the plane and tent to be rotated (heading) and the distance to be travelled (latestDistance)
         """
 
         
@@ -41,4 +41,4 @@ class Search:
         theta = math.atan2(y,x)
         bearing = (theta*180/math.pi + 360)%360
 
-        return bearing
+        return {"heading": bearing, "latestDistance": 0}
