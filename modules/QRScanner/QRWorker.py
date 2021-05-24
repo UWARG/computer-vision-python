@@ -1,6 +1,7 @@
 from QR import QRScanner
+import cv2
 
-def qr_worker(pause, exitRequest, pipelineIn, pipelineOut):
+def qr_worker(pause, exitRequest, pipelineIn):
     """
     Initializes worker for QR Scanner module
     """
@@ -14,4 +15,7 @@ def qr_worker(pause, exitRequest, pipelineIn, pipelineOut):
         frame = pipelineIn.get()
         updatedFrame = qrScanner.main(frame)
 
-        qrScanner.put(updatedFrame)
+        cv2.imshow("Video feed", updatedFrame)
+        
+        if not exitRequest.empty():
+            return
