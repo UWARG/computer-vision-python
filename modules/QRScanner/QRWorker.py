@@ -1,6 +1,9 @@
 from QR import QRScanner
 
 def qr_worker(pause, exitRequest, pipelineIn, pipelineOut):
+    """
+    Initializes worker for QR Scanner module
+    """
     print("Start QR Scanner")
     qrScanner = QRScanner()
 
