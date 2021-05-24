@@ -1,7 +1,8 @@
 import imutils
 from imutils.video import VideoStream
 import QR
-import pyzbar from pyzbar
+import time
+from pyzbar import pyzbar
 import cv2
 
 class QRTest:
@@ -9,7 +10,7 @@ class QRTest:
         
         self.scanner = QR.QRScanner()
 
-        imagePath = "qrtest.jpg"
+        imagePath = "qrtest.png"
         self.run_single_image_test(imagePath)
         
         self.videoStream = VideoStream(src=0).start()
@@ -17,24 +18,31 @@ class QRTest:
     
     def run_single_image_test(self, imagePath):
         image = cv2.imread(imagePath)
-        cv2.imshow(self.scanner.main(image))
+        image = self.scanner.main(image)
+        cv2.imshow('single_image', image)
+
+        print("Press q to close")
 
         while True:
-            ans = input("Type 'q' to exit")
-            if ans == 'q':
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                cv2.destroyAllWindows()
                 break
 
     def run_video_test(self):
         print("Press q to exit the stream")
         while True:
             frame = self.videoStream.read()
-            frame = imutils.resize(frame, width=400)
+            frame = imutils.resize(frame)
 
-            self.scanner.main(frame)
-            
+            frame = self.scanner.main(frame)
+            cv2.imshow('video', frame)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
+                cv2.destroyAllWindows()
                 break
+        
+        self.videoStream.stop()
 
 if __name__ == "__main__":
     QRTest()
