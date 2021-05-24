@@ -1,199 +1,189 @@
-12:27:34,703 root INFO ['ERROR:commandModule.commandModule:currentAirspeed not found in the POGI json file.']
-12:27:34,704 root INFO ['ERROR:commandModule.commandModule:errorCode not found in the POGI json file.']
-12:27:34,705 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera not found in the POGI json file.']
-12:27:34,706 root INFO ['ERROR:commandModule.commandModule:x in eulerAnglesOfCamera is null.']
-12:27:34,707 root INFO ['ERROR:commandModule.commandModule:y in eulerAnglesOfCamera is null.']
-12:27:34,708 root INFO ['ERROR:commandModule.commandModule:z in eulerAnglesOfCamera is null.']
-12:27:34,709 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane not found in the POGI json file.']
-12:27:34,710 root INFO ['ERROR:commandModule.commandModule:x in eulerAnglesOfPlane is null.']
-12:27:34,713 root INFO ['ERROR:commandModule.commandModule:y in eulerAnglesOfPlane is null.']
-12:27:34,715 root INFO ['ERROR:commandModule.commandModule:z in eulerAnglesOfPlane is null.']
-12:27:34,717 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.']
-12:27:34,719 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates not found in the POGI json file.']
-12:27:34,721 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is null.']
-12:27:34,723 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is null.']
-12:27:34,726 root INFO ['ERROR:commandModule.commandModule:isLanded not found in the POGI json file.']
-12:27:34,728 root INFO ['ERROR:commandModule.commandModule:currentAltitude not found in the POGI json file.']
-12:27:34,731 filelock DEBUG Attempting to acquire lock 4369608272 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,731 filelock INFO Lock 4369608272 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,731 filelock DEBUG Attempting to release lock 4369608272 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,731 filelock INFO Lock 4369608272 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,732 filelock DEBUG Attempting to acquire lock 4369608464 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,733 filelock INFO Lock 4369608464 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,733 filelock DEBUG Attempting to release lock 4369608464 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,733 filelock INFO Lock 4369608464 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,734 filelock DEBUG Attempting to acquire lock 4369608368 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,734 filelock INFO Lock 4369608368 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,734 filelock DEBUG Attempting to release lock 4369608368 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,734 filelock INFO Lock 4369608368 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,735 filelock DEBUG Attempting to acquire lock 4369608176 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,735 filelock INFO Lock 4369608176 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,735 filelock DEBUG Attempting to release lock 4369608176 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,735 filelock INFO Lock 4369608176 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,736 filelock DEBUG Attempting to acquire lock 4369608272 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,736 filelock INFO Lock 4369608272 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,736 filelock DEBUG Attempting to release lock 4369608272 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,736 filelock INFO Lock 4369608272 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,737 filelock DEBUG Attempting to acquire lock 4369608512 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,738 filelock INFO Lock 4369608512 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,738 filelock DEBUG Attempting to release lock 4369608512 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,738 filelock INFO Lock 4369608512 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,739 filelock DEBUG Attempting to acquire lock 4369608368 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,739 filelock INFO Lock 4369608368 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,739 filelock DEBUG Attempting to release lock 4369608368 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,739 filelock INFO Lock 4369608368 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPogi.json.lock
-12:27:34,741 root INFO ['ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not an int.']
-12:27:34,742 root INFO ['ERROR:commandModule.commandModule:currentAltitude in the POGI file is not an int.']
-12:27:34,744 root INFO ['ERROR:commandModule.commandModule:errorCode found in POGI file is not an int.']
-12:27:34,748 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera in the POGI file is not a dictionary.']
-12:27:34,749 root INFO ['ERROR:commandModule.commandModule:x in eulerAnglesOfCamera is not a float.']
-12:27:34,751 root INFO ['ERROR:commandModule.commandModule:y in eulerAnglesOfCamera is not a float.']
-12:27:34,752 root INFO ['ERROR:commandModule.commandModule:z in eulerAnglesOfCamera is not a float.']
-12:27:34,754 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane in the POGI file is not a dictionary.']
-12:27:34,756 root INFO ['ERROR:commandModule.commandModule:x in eulerAnglesOfPlane is not a float.']
-12:27:34,758 root INFO ['ERROR:commandModule.commandModule:y in eulerAnglesOfPlane is not a float.']
-12:27:34,760 root INFO ['ERROR:commandModule.commandModule:z in eulerAnglesOfPlane is not a float.']
-12:27:34,762 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates in the POGI file is not a dictionary.']
-12:27:34,765 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is not a float.']
-12:27:34,768 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is not a float.']
-12:27:34,770 root INFO ['ERROR:commandModule.commandModule:isLanded in the POGI file is not an int.']
-12:27:34,772 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.']
-12:27:34,785 filelock DEBUG Attempting to acquire lock 4361822320 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,785 filelock INFO Lock 4361822320 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,786 filelock DEBUG Attempting to release lock 4361822320 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,786 filelock INFO Lock 4361822320 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,787 filelock DEBUG Attempting to acquire lock 4370083904 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,787 filelock INFO Lock 4370083904 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,787 filelock DEBUG Attempting to release lock 4370083904 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,788 filelock INFO Lock 4370083904 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,788 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,789 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,789 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,789 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,790 filelock DEBUG Attempting to acquire lock 4370085200 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,790 filelock INFO Lock 4370085200 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,790 filelock DEBUG Attempting to release lock 4370085200 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,790 filelock INFO Lock 4370085200 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,791 filelock DEBUG Attempting to acquire lock 4370084192 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,791 filelock INFO Lock 4370084192 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,791 filelock DEBUG Attempting to release lock 4370084192 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,791 filelock INFO Lock 4370084192 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,792 filelock DEBUG Attempting to acquire lock 4370085248 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,792 filelock INFO Lock 4370085248 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,793 filelock DEBUG Attempting to release lock 4370085248 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,793 filelock INFO Lock 4370085248 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,795 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain altitude key.']
-12:27:34,797 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain latitude key.']
-12:27:34,798 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain longitude key.']
-12:27:34,799 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain y key.']
-12:27:34,801 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain z key.']
-12:27:34,802 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain heading key.']
-12:27:34,803 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.']
-12:27:34,804 root INFO ['ERROR:commandModule.commandModule:beginLanding must be a bool and not None.']
-12:27:34,804 root INFO ['ERROR:commandModule.commandModule:beginTakeoff must be a bool and not None.']
-12:27:34,805 root INFO ['ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not None.']
-12:27:34,805 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must be a dict and not None.']
-12:27:34,806 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not None.']
-12:27:34,807 root INFO ['ERROR:commandModule.commandModule:groundCommands must be a dict and not None.']
-12:27:34,807 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,807 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,808 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,808 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,808 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,808 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,809 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,809 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,809 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,809 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,810 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,810 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,811 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,811 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,812 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,812 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,813 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,813 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,813 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,814 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,814 filelock DEBUG Attempting to acquire lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,814 filelock INFO Lock 4368506064 acquired on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,815 filelock DEBUG Attempting to release lock 4368506064 on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,815 filelock INFO Lock 4368506064 released on /Users/ksisjaya/Desktop/kevin_uwarg/modules/commandModule/tests/testCases/../testJSONs/testPigo.json.lock
-12:27:34,816 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'str'>."]
-12:27:34,819 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'int'>."]
-12:27:34,820 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'float'>."]
-12:27:34,820 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'complex'>."]
-12:27:34,821 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'list'>."]
-12:27:34,821 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'tuple'>."]
-12:27:34,821 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'range'>."]
-12:27:34,822 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'dict'>."]
-12:27:34,822 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'set'>."]
-12:27:34,822 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'frozenset'>."]
-12:27:34,823 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytes'>."]
-12:27:34,823 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytearray'>."]
-12:27:34,823 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'memoryview'>."]
-12:27:34,825 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'str'>."]
-12:27:34,825 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'int'>."]
-12:27:34,825 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'float'>."]
-12:27:34,826 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'complex'>."]
-12:27:34,826 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'list'>."]
-12:27:34,827 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'tuple'>."]
-12:27:34,827 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'range'>."]
-12:27:34,827 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'dict'>."]
-12:27:34,828 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'set'>."]
-12:27:34,828 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'frozenset'>."]
-12:27:34,828 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytes'>."]
-12:27:34,828 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytearray'>."]
-12:27:34,829 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'memoryview'>."]
-12:27:34,835 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'str'>."]
-12:27:34,836 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'int'>."]
-12:27:34,837 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'float'>."]
-12:27:34,837 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'complex'>."]
-12:27:34,837 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'list'>."]
-12:27:34,837 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'tuple'>."]
-12:27:34,838 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'range'>."]
-12:27:34,838 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'dict'>."]
-12:27:34,838 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'set'>."]
-12:27:34,838 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'frozenset'>."]
-12:27:34,839 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytes'>."]
-12:27:34,839 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytearray'>."]
-12:27:34,839 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'memoryview'>."]
-12:27:34,840 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'str'>."]
-12:27:34,840 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'int'>."]
-12:27:34,840 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'float'>."]
-12:27:34,841 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'complex'>."]
-12:27:34,841 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'list'>."]
-12:27:34,841 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'tuple'>."]
-12:27:34,841 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'range'>."]
-12:27:34,842 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'set'>."]
-12:27:34,842 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'frozenset'>."]
-12:27:34,842 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bool'>."]
-12:27:34,843 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytes'>."]
-12:27:34,843 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytearray'>."]
-12:27:34,843 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'memoryview'>."]
-12:27:34,850 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'str'>."]
-12:27:34,850 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'int'>."]
-12:27:34,852 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'float'>."]
-12:27:34,852 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'complex'>."]
-12:27:34,852 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'list'>."]
-12:27:34,853 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'tuple'>."]
-12:27:34,853 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'range'>."]
-12:27:34,854 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'set'>."]
-12:27:34,854 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'frozenset'>."]
-12:27:34,854 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bool'>."]
-12:27:34,854 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytes'>."]
-12:27:34,855 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytearray'>."]
-12:27:34,855 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'memoryview'>."]
-12:27:34,856 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'str'>."]
-12:27:34,857 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'int'>."]
-12:27:34,857 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'float'>."]
-12:27:34,857 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'complex'>."]
-12:27:34,858 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'list'>."]
-12:27:34,858 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'tuple'>."]
-12:27:34,858 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'range'>."]
-12:27:34,858 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'set'>."]
-12:27:34,859 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'frozenset'>."]
-12:27:34,859 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bool'>."]
-12:27:34,859 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytes'>."]
-12:27:34,860 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytearray'>."]
-12:27:34,860 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'memoryview'>."]
+17:53:54,257 root INFO ['ERROR:commandModule.commandModule:currentAirspeed not found in the POGI json file.']
+17:53:54,258 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera not found in the POGI json file.']
+17:53:54,261 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is null.']
+17:53:54,263 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is null.']
+17:53:54,270 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is null.']
+17:53:54,271 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane not found in the POGI json file.']
+17:53:54,274 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is null.']
+17:53:54,276 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is null.']
+17:53:54,279 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is null.']
+17:53:54,281 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.']
+17:53:54,282 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates not found in the POGI json file.']
+17:53:54,284 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is null.']
+17:53:54,290 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is null.']
+17:53:54,294 root INFO ['ERROR:commandModule.commandModule:isLanded not found in the POGI json file.']
+17:53:54,296 root INFO ['ERROR:commandModule.commandModule:currentAltitude not found in the POGI json file.']
+17:53:54,297 filelock DEBUG Attempting to acquire lock 2506522857584 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,298 filelock INFO Lock 2506522857584 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,303 filelock DEBUG Attempting to release lock 2506522857584 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,304 filelock INFO Lock 2506522857584 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,305 filelock DEBUG Attempting to acquire lock 2506522857584 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,305 filelock INFO Lock 2506522857584 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,309 filelock DEBUG Attempting to release lock 2506522857584 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,309 filelock INFO Lock 2506522857584 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,311 filelock DEBUG Attempting to acquire lock 2506522858064 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,311 filelock INFO Lock 2506522858064 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,312 filelock DEBUG Attempting to release lock 2506522858064 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,312 filelock INFO Lock 2506522858064 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,313 filelock DEBUG Attempting to acquire lock 2506522108928 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,314 filelock INFO Lock 2506522108928 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,315 filelock DEBUG Attempting to release lock 2506522108928 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,316 filelock INFO Lock 2506522108928 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,317 filelock DEBUG Attempting to acquire lock 2506900991376 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,318 filelock INFO Lock 2506900991376 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,318 filelock DEBUG Attempting to release lock 2506900991376 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,319 filelock INFO Lock 2506900991376 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPogi.json.lock
+17:53:54,322 root INFO ['ERROR:commandModule.commandModule:currentAirspeed in the POGI file is not a float.']
+17:53:54,325 root INFO ['ERROR:commandModule.commandModule:currentAltitude in the POGI file is not an int.']
+17:53:54,328 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfCamera in the POGI file is not a dictionary.']
+17:53:54,331 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is not a float.']
+17:53:54,333 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is not a float.']
+17:53:54,335 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is not a float.']
+17:53:54,337 root INFO ['ERROR:commandModule.commandModule:eulerAnglesOfPlane in the POGI file is not a dictionary.']
+17:53:54,340 root INFO ['ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is not a float.']
+17:53:54,342 root INFO ['ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is not a float.']
+17:53:54,344 root INFO ['ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is not a float.']
+17:53:54,346 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates in the POGI file is not a dictionary.']
+17:53:54,349 root INFO ['ERROR:commandModule.commandModule:latitude in gpsCoordinates is not a float.']
+17:53:54,351 root INFO ['ERROR:commandModule.commandModule:longitude in gpsCoordinates is not a float.']
+17:53:54,352 root INFO ['ERROR:commandModule.commandModule:isLanded in the POGI file is not an int.']
+17:53:54,355 root INFO ['ERROR:commandModule.commandModule:altitude in gpsCoordinates is not a float.']
+17:53:54,361 filelock DEBUG Attempting to acquire lock 2506901397360 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,361 filelock INFO Lock 2506901397360 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,362 filelock DEBUG Attempting to release lock 2506901397360 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,362 filelock INFO Lock 2506901397360 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,364 filelock DEBUG Attempting to acquire lock 2506901397216 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,364 filelock INFO Lock 2506901397216 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,364 filelock DEBUG Attempting to release lock 2506901397216 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,365 filelock INFO Lock 2506901397216 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,366 filelock DEBUG Attempting to acquire lock 2506901396160 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,366 filelock INFO Lock 2506901396160 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,367 filelock DEBUG Attempting to release lock 2506901396160 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,367 filelock INFO Lock 2506901396160 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,368 filelock DEBUG Attempting to acquire lock 2506901396160 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,368 filelock INFO Lock 2506901396160 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,369 filelock DEBUG Attempting to release lock 2506901396160 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,369 filelock INFO Lock 2506901396160 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,371 filelock DEBUG Attempting to acquire lock 2506901396352 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,371 filelock INFO Lock 2506901396352 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,371 filelock DEBUG Attempting to release lock 2506901396352 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,371 filelock INFO Lock 2506901396352 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,373 filelock DEBUG Attempting to acquire lock 2506522154656 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,373 filelock INFO Lock 2506522154656 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,374 filelock DEBUG Attempting to release lock 2506522154656 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,374 filelock INFO Lock 2506522154656 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,375 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain altitude key.']
+17:53:54,376 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain latitude key.']
+17:53:54,377 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must contain longitude key.']
+17:53:54,377 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain pitch key.']
+17:53:54,378 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must contain yaw key.']
+17:53:54,379 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain heading key.']
+17:53:54,380 root INFO ['ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.']
+17:53:54,380 root INFO ['ERROR:commandModule.commandModule:beginLanding must be a bool and not None.']
+17:53:54,381 root INFO ['ERROR:commandModule.commandModule:beginTakeoff must be a bool and not None.']
+17:53:54,382 root INFO ['ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not None.']
+17:53:54,383 root INFO ['ERROR:commandModule.commandModule:gimbalCommands must be a dict and not None.']
+17:53:54,383 root INFO ['ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not None.']
+17:53:54,385 root INFO ['ERROR:commandModule.commandModule:groundCommands must be a dict and not None.']
+17:53:54,385 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,386 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,386 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,386 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,386 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,387 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,387 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,387 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,387 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,387 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,388 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,388 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,388 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,389 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,389 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,389 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,389 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,389 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,390 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,390 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,390 filelock DEBUG Attempting to acquire lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,390 filelock INFO Lock 2506901812848 acquired on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,391 filelock DEBUG Attempting to release lock 2506901812848 on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,391 filelock INFO Lock 2506901812848 released on C:\Users\Andrew Zhao\PycharmProjects\UWARG-CV\computer-vision-python-andrew\computer-vision-python\modules\commandModule\tests\testCases\..\testJSONs\testPigo.json.lock
+17:53:54,392 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'str'>."]
+17:53:54,392 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'int'>."]
+17:53:54,392 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'float'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'complex'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'list'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'tuple'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'range'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'dict'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'set'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'frozenset'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytes'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'bytearray'>."]
+17:53:54,393 root INFO ["ERROR:commandModule.commandModule:beginLanding must be a bool and not <class 'memoryview'>."]
+17:53:54,394 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'str'>."]
+17:53:54,394 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'int'>."]
+17:53:54,394 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'float'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'complex'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'list'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'tuple'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'range'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'dict'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'set'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'frozenset'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytes'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'bytearray'>."]
+17:53:54,395 root INFO ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not <class 'memoryview'>."]
+17:53:54,396 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'str'>."]
+17:53:54,396 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'int'>."]
+17:53:54,396 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'float'>."]
+17:53:54,396 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'complex'>."]
+17:53:54,396 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'list'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'tuple'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'range'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'dict'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'set'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'frozenset'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytes'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'bytearray'>."]
+17:53:54,397 root INFO ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not <class 'memoryview'>."]
+17:53:54,398 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'str'>."]
+17:53:54,398 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'int'>."]
+17:53:54,398 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'float'>."]
+17:53:54,398 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'complex'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'list'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'tuple'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'range'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'set'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'frozenset'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bool'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytes'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'bytearray'>."]
+17:53:54,399 root INFO ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not <class 'memoryview'>."]
+17:53:54,400 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'str'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'int'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'float'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'complex'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'list'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'tuple'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'range'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'set'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'frozenset'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bool'>."]
+17:53:54,401 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytes'>."]
+17:53:54,402 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'bytearray'>."]
+17:53:54,402 root INFO ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not <class 'memoryview'>."]
+17:53:54,402 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'str'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'int'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'float'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'complex'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'list'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'tuple'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'range'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'set'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'frozenset'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bool'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytes'>."]
+17:53:54,403 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'bytearray'>."]
+17:53:54,404 root INFO ["ERROR:commandModule.commandModule:groundCommands must be a dict and not <class 'memoryview'>."]
