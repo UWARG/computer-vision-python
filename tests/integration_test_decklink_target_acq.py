@@ -3,7 +3,7 @@ import cv2
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.decklinksrc.decklinksrc import DeckLinkSRC
 
-def testTargetAcquisition():
+def test_decklink_targetAcquisition():
     decklinkSrc = DeckLinkSRC()
     tracker = TargetAcquisition()
     while True:
