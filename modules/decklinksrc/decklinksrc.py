@@ -1,5 +1,8 @@
 import cv2 as cv2
+import multiprocessing as mp
 import numpy as np
+from time import sleep
+
 
 class DeckLinkSRC:
     """
@@ -33,7 +36,7 @@ class DeckLinkSRC:
         Initializes DeckLink video stream
         """
         self.__currentFrame = None
-        self.capture = cv2.VideoCapture(0) #Starts capture on initialization of object
+        self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
 
     def stop(self):
         """
@@ -42,22 +45,11 @@ class DeckLinkSRC:
         self.capture.release()
         cv2.destroyAllWindows()
 
-
-    def grab(self, frame):
+    def grab(self):
         """
         Logic for grabbing single frame from DeckLink
         """
-        cv2.imshow('Grabbedframe', self.__currentFrame)
-
-    def get_frame(self):
-        """
-        Logic for returning the current frame as a numpy array
-
-        Returns
-        -------
-        np.ndarray
-            Numpy array containing information about the current frame
-        """
+        self.__currentFrame = self.capture.read()
         return self.__currentFrame
 
     def recordVideo(self, filename, xdim, ydim):
@@ -74,11 +66,11 @@ class DeckLinkSRC:
             Height of video frame in pixels
         """
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim) )
+        out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim))
 
-        while(self.capture.isOpened()):
+        while self.capture.isOpened():
             ret, frame = self.capture.read()
-            if ret == True:
+            if ret:
                 out.write(frame)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -86,17 +78,17 @@ class DeckLinkSRC:
             else:
                 break
 
-
     def display(self):
         """
         Logic for displaying video stream from DeckLink
         """
-        while(True):
+        while True:
             ret, frame = self.capture.read()
             self.__currentFrame = frame
             cv2.imshow('VideoStream', frame)
 
-            #OpenCV doesn't allow you to access a camera without a camera release, So feel free to replace this bottom with however the video stream will quit (right now it quits on spacebar)
+            # OpenCV doesn't allow you to access a camera without a camera release, So feel free to replace this
+            # bottom with however the video stream will quit (right now it quits on spacebar)
             key = cv2.waitKey(1)
             if key == ord(' '):
-                self.quitProgram()
+                self.stop()

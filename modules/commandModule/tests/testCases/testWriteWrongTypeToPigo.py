@@ -85,3 +85,4 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                     self.commandModule.set_disconnect_autopilot(test)
                 self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not {}.".format(type(test)), ])
                 logging.info(cm.output)
+    

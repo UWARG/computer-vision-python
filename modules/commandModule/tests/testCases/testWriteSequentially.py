@@ -23,10 +23,11 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
     def setUp(self):
         self.testData= {"gpsCoordinates": {"latitude": 2.34, "longitude": 1.34, "altitude": 1.278},
                         "groundCommands": {"heading": 1.23, "latestDistance": 2.34},
-                        "gimbalCommands": {"z": 1.34, "y": 34.2},
+                        "gimbalCommands": {"yaw": 1.34, "pitch": 34.2},
                         "beginLanding": True,
                         "beginTakeoff": False,
-                        "disconnectAutoPilot": False}
+                        "disconnectAutoPilot": False,
+                        }
         self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
         self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
@@ -44,4 +45,6 @@ class TestCaseWritingSequentialValuesToPIGOFile(unittest.TestCase):
         self.commandModule.set_ground_commands(self.testData["groundCommands"])
         self.commandModule.set_disconnect_autopilot(self.testData["disconnectAutoPilot"])
         self.commandModule.set_gimbal_commands(self.testData["gimbalCommands"])
+
+
         self.assertEqual(self.__read_json(), self.testData)
