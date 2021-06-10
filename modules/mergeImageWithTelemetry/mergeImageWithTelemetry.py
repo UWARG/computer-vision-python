@@ -34,7 +34,7 @@ class MergeImageWithTelemetry:
         self.start = True
         self.telemetryData = []
 
-    def put_back(self, newTelemetryData: typing.type[Timestamp]):
+    def put_back(self, newTelemetryData: Timestamp):
         self.telemetryData.append(newTelemetryData)
 
     def merge_with_closest_telemetry(self, imageTimestamp: datetime.datetime, imageData : npt.ArrayLike ): 

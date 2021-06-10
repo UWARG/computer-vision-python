@@ -8,29 +8,30 @@ def pipelineMergeWorker(pause, exitRequest, imagePipelineIn, telemetryPipelineIn
 
     while True: 
         if not exitRequest.empty():
+            print("end pipeline merge")
             return
         
         pause.acquire()
         pause.release()
         
         if shouldGetImage:
-            curImage = imagePipelineIn.get()
+            try: 
+                curImage = imagePipelineIn.get_noawait()
+            except: 
+                curImage = None
 
         if curImage is None:
             continue
 
         # put current elements of the telemetry pipeline into the queue
-        while not telemetryPipelineIn.empty(): 
-        
-            if not exitRequest.empty(): 
-                return 
-            
-            pause.acquire()
-            pause.release()
-
-            telemetryData = telemetryPipelineIn.get()
-
-            mergeImageWithTelemetry.put_back(telemetryData)
+        telemetryPipelineIn.acquire()
+        while True: 
+            try: 
+                telemetryData = telemetryPipelineIn.get_noawait()
+                mergeImageWithTelemetry.put_back(telemetryData)
+            except: 
+                break
+        telemetryPipelineIn.release()
 
         [success, mergedData] = mergeImageWithTelemetry.merge_with_closest_telemetry(curImage.timestamp, curImage.data)
 
