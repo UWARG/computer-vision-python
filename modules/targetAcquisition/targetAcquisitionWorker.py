@@ -5,6 +5,9 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
     print("start target acquisition")
     targetAcquisition = TargetAcquisition()
     while True:
+        if not exitRequest.empty():
+            return
+        
         pause.acquire()
         pause.release()
 
@@ -19,5 +22,4 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
 
         pipelineOut.put(coordinates)
 
-        if not exitRequest.empty():
-            return
+
