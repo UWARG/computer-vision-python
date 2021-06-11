@@ -11,7 +11,7 @@ def flight_command_worker(pipelineIn, pipelineOut):
 	data = pipelineIn.get()
 	# Cache data here
 	ground_command = {
-		'gpsCoordinates': [data[0], data[1]]
+		'gpsCoordinates': [data[0][0], data[0][1]]
 	}
 
 	command.set_gps_coordinates(ground_command)
