@@ -1,5 +1,3 @@
-#from modules.targetAcquisition.taxi import Taxi
-#from Taxi import Taxi
 from Taxi import Taxi
 
 def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
