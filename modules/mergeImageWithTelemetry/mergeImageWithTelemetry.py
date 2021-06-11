@@ -12,73 +12,84 @@ class MergeImageWithTelemetry:
 
     Attributes
     ----------
-    curData : Timestamp 
-        the current telemetry data 
-    start : bool
-        whether curData is None or not (whether get_closest_telemetry has been called before)
     telemetryData : list<Timestamp>
         list of the current telemetry data and their times in the form of Timestamp objects
+    image : Timestamp
+        the current image to match telemetry to in the form of a Timestamp class
 
     Methods
     -------
     __init__()
         initiallizes attributes
-    put_back(newTelemetryData: Timestamp)
+    should_get_image() 
+        whether a new image should be inputted to be matched 
+            - old image has already matched a telemetry timestamp or
+            - pipeline is just starting and there is no image yet
+    put_back_telemetry(newTelemetryData: Timestamp)
         places given telemetry data at the back of the telemetryData list
-    merge_with_closest_telemetry(imageTimestamp: datetime.datetime)
-        finds the telemetry with timestamp closest to the input datetime
+    get_closest_telemetry()
+        finds the telemetry with timestamp closest to the timestamp of the current image
     """
 
     def __init__(self): 
-        self.curData = None
-        self.start = True
         self.telemetryData = []
+        self.image = None
+    
+    def should_get_image(self): 
+        return self.image == None
+    
+    def set_image(self, image: Timestamp):
+        self.image = image
 
-    def put_back(self, newTelemetryData: Timestamp):
+    def put_back_telemetry(self, newTelemetryData: Timestamp):
         self.telemetryData.append(newTelemetryData)
 
-    def merge_with_closest_telemetry(self, imageTimestamp: datetime.datetime, imageData : npt.ArrayLike ): 
+    def get_closest_telemetry(self): 
         """
-        finds the telemetry with timestamp closest to the input datetime
+        finds the telemetry with closest timestamp to the image timestamp
         assumes that TelemetryData is sorted by increasing timestamp
 
         Parameters 
         ----------
         imageTimestamp : datetime.datetime 
             The time that the telemetry data should match with
+        imageData : npm.ArrayLike
+            The image data corresponding to the timestamp
 
         Returns 
         -------
-        [success, telemetry]
+        [success, mergedData]
 
         success : bool 
             whether such a telemetry timestamp could be found
-        telemetry : Timestamp
-            the closest time and the corresponding telemetry data in a Timestamp object
+        mergedData : MergedData
+            the merged image and telemetry data whose time difference is the closest together
         """
 
         if len(self.telemetryData) == 0:
-            if self.start: 
-                return False, None
-            return True, self.curData
-        
-        if self.start: 
-            self.curData = self.telemetryData.pop(0)
-            self.start = False
-        
-        timeDelta = abs(imageTimestamp - self.curData.timestamp)
+            return False, None
+        if self.image == None: 
+            return False, None
+
+        imageTimestamp = self.image.timestamp
+        imageData = self.image.data
+
+        oldestTelemetry = self.telemetryData.pop(0)
+        timeDelta = abs(imageTimestamp - oldestTelemetry.timestamp)
 
         while True:
+            # if we run out of telemetry data should we match with the last one or should we return false 
             if len(self.telemetryData) == 0:
-                return True, self.curData
+                self.telemetryData.append(oldestTelemetry)
+                return False, None
             
             nextTelemetry = self.telemetryData.pop(0)
             nextTimeDelta = abs(nextTelemetry.timestamp - imageTimestamp)
             
             if nextTimeDelta > timeDelta:
-                ret = MergedData(imageData, self.curData.data)
-                self.curData = nextTelemetry
-                return True, ret
+                self.telemetryData.insert(0, nextTelemetry)
+                self.image = None
+                return True, MergedData(imageData, oldestTelemetry.data)
             else: 
-                self.curData = nextTelemetry
+                oldestTelemetry = nextTelemetry
                 timeDelta = nextTimeDelta
