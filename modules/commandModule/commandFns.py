@@ -28,7 +28,7 @@ def write_pigo(newPigo):
     if isChanged :
         command.__pigoData = newPigo
 	command.__write_to_pigo_file()
-	return
+	return False
 #if nothing has changed, return the dictionary that was passed in
     else:
-        return
+        return True
