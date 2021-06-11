@@ -1,9 +1,7 @@
 from modules.commandModule.commandModule import CommandModule
 
-PIGO_DIR = ""
-
-def flight_command_worker(pipelineIn, pipelineOut):
-	command = CommandModule(pigoFileDirectory=PIGO_DIR)
+def flight_command_worker(pipelineIn, pipelineOut, pigo_dir=""):
+	command = CommandModule(pigoFileDirectory=pigo_dir)
 	# pipelineIn gives [[x,y], [range]]
 	if pipelineIn.empty:
 	   continue
