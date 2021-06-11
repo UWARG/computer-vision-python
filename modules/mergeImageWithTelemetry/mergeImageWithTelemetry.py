@@ -8,6 +8,8 @@ import typing
 class MergeImageWithTelemetry:
     """
     Merges image pipeline with telemetry pipeline
+
+    The imports used by this class may require python 3.8 or greater
     ...
 
     Attributes
@@ -25,6 +27,8 @@ class MergeImageWithTelemetry:
         whether a new image should be inputted to be matched 
             - old image has already matched a telemetry timestamp or
             - pipeline is just starting and there is no image yet
+    set_image(image: Timestamp): 
+        sets the input to be the current image
     put_back_telemetry(newTelemetryData: Timestamp)
         places given telemetry data at the back of the telemetryData list
     get_closest_telemetry()
@@ -49,13 +53,6 @@ class MergeImageWithTelemetry:
         finds the telemetry with closest timestamp to the image timestamp
         assumes that TelemetryData is sorted by increasing timestamp
 
-        Parameters 
-        ----------
-        imageTimestamp : datetime.datetime 
-            The time that the telemetry data should match with
-        imageData : npm.ArrayLike
-            The image data corresponding to the timestamp
-
         Returns 
         -------
         [success, mergedData]
@@ -78,7 +75,7 @@ class MergeImageWithTelemetry:
         timeDelta = abs(imageTimestamp - oldestTelemetry.timestamp)
 
         while True:
-            # if we run out of telemetry data should we match with the last one or should we return false 
+            # if we run out of telemetry data, unget the current telemetry and just return false 
             if len(self.telemetryData) == 0:
                 self.telemetryData.append(oldestTelemetry)
                 return False, None
@@ -87,6 +84,7 @@ class MergeImageWithTelemetry:
             nextTimeDelta = abs(nextTelemetry.timestamp - imageTimestamp)
             
             if nextTimeDelta > timeDelta:
+                # un_get the next telemetry
                 self.telemetryData.insert(0, nextTelemetry)
                 self.image = None
                 return True, MergedData(imageData, oldestTelemetry.data)
