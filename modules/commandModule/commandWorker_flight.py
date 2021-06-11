@@ -10,11 +10,11 @@ def flight_command_worker(pipelineIn, pipelineOut):
 	
 	data = pipelineIn.get()
 	# Cache data here
-	ground_command = {
+	gps_coordinates = {
 		'gpsCoordinates': [data[0][0], data[0][1]]
 	}
 
-	command.set_gps_coordinates(ground_command)
+	command.set_gps_coordinates(gps_coordinates)
 
 	#TODO: Write logic to get POGI
 
