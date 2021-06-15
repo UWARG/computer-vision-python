@@ -1,5 +1,5 @@
 from modules.search.Search import Search
-
+import json
 
 def searchWorker(pause, exitRequest, pipelineIn, pipelineOut):
     """
@@ -29,10 +29,12 @@ def searchWorker(pause, exitRequest, pipelineIn, pipelineOut):
     pause.acquire()
 
     # Getting data => a dictionary with structure: {tentGPS: value, planeGPS: value, angle: value} from input pipeline
-    planeData = pipelineIn.get()
-    tentData =
+    plane_data = pipelineIn.get()
+    with open("temp_pylon_gps", "r") as pylon_gps_file:
+        pylon_gps = json.load(pylon_gps_file)
+
     # Performing search using perform_search() of class Search
-    search_result = search.perform_search(values["tentGPS"], values["planeGPS"], values["angle"])
+    search_result = search.perform_search(pylon_gps, plane_data['gps'], plane_data['heading'])
 
     # Putting data => a float value: search_result to output pipeline
     pipelineOut.put(search_result)
