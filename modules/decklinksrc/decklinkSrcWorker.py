@@ -6,6 +6,10 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
     decklinkSrc = DeckLinkSRC()
 
     while True:
+        # Kill process if exit is requested
+        if not exitRequest.empty():
+            return
+
         pause.acquire()
         pause.release()
 
@@ -15,6 +19,4 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
 
         pipelineOut.put(curr_frame)
 
-        # Kill process if exit is requested
-        if not exitRequest.empty():
-            return
+
