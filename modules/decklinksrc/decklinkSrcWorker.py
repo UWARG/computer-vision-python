@@ -1,14 +1,16 @@
 from modules.decklinksrc.decklinksrc import DeckLinkSRC
-
+import logging
 
 def decklinkSrcWorker(pause, exitRequest, pipelineOut):
-    print("Start decklinksrc")
+    logger = logging.getLogger()
+    logger.debug("decklinkSrcWorker: Started DeckLinkSRC module")
+
     decklinkSrc = DeckLinkSRC()
 
     while True:
         # Kill process if exit is requested
         if not exitRequest.empty():
-            return
+            break
 
         pause.acquire()
         pause.release()
@@ -18,5 +20,5 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
             continue
 
         pipelineOut.put(curr_frame)
-
-
+    
+    logger.debug("decklinkSrcWorker: Stopped DeckLinkSRC module")

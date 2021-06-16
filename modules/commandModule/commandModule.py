@@ -74,7 +74,7 @@ class CommandModule:
         pigoFileDirectory: str
             String of POGI file directory
         """
-        self.__logger = logging.getLogger(__name__)
+        self.__logger = logging.getLogger()
         self.__pogiData = dict()
         self.__pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory

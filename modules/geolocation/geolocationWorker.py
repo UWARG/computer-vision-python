@@ -2,6 +2,7 @@ from modules.geolocation.geolocation import Geolocation
 import multiprocessing as mp
 import queue  # For exception handling
 import time  # For sleep()
+import logging
 
 
 def exit_requested(requestQueue):
@@ -9,8 +10,10 @@ def exit_requested(requestQueue):
 
 
 def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineOutLock):
-
-    print("Start Geolocation")
+    
+    logger = logging.getLogger()
+    logger.debug("geolocation_locator_worker: Start Geolocation Locator")
+    
     locator = Geolocation()
 
     while True:
@@ -51,13 +54,15 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
             break
 
 
-    print("Stop Geolocation")
+    logger.debug("geolocation_locator_worker: Stop Geolocation Locator")
     return
 
 
 def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLock):
 
-    print("Start Geolocation Output")
+    logger = logging.getLogger()
+    logger.debug("geolocation_output_worker: Start Geolocation Output")
+
     locator = Geolocation()
 
     while True:
@@ -100,5 +105,5 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
             break
 
 
-    print("Stop Geolocation Output")
+    logger.debug("geolocation_output_worker: Stop Geolocation Output")
     return
