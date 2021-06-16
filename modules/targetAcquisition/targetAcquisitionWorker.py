@@ -16,10 +16,10 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
         if curr_frame is None:
             continue
 
-        coordinates = targetAcquisition.get_coordinates(curr_frame)
-        if coordinates is None:
+        bbox = targetAcquisition.get_coordinates(curr_frame)
+        if bbox is None:
             continue
 
-        pipelineOut.put(coordinates)
+        pipelineOut.put(bbox)
 
 
