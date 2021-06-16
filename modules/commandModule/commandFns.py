@@ -1,7 +1,47 @@
+import json
+import os
 from modules.commandModule.commandModule import CommandModule
 
 PIGO_DIR = ""
 POGI_DIR = ""
+
+def json_changed(latestJsonDirectory, currentDict) -> bool:
+
+    """
+    Compares json values to a dict
+
+    Parameters
+    ----------
+    latestJsonDirectory: str
+        filepath to the latest json file to compare to
+    currentDict: dict
+        dictionary containing values to compare with
+
+    Returns
+    -------
+    bool:
+        True if json file and the dict do not match, False otherwise
+    """
+
+    # if latest pogi data file doesn't exist return true
+    if not os.path.isfile(latestJsonDirectory):
+        return True
+
+    # otherwise, get the latest json dict and compare
+    with open(latestJsonDirectory, 'r') as f:
+        latestDict = json.load(f)
+
+    # if current and latest pogi data doesnt match size, then something changed
+    if len(latestDict.keys()) != len(currentDict.keys()):
+        return True
+
+    # if keys in current pogi don't exist in latest pogi or if the values for the keys
+    # don't match, then something changed
+    for key in currentDict:
+        if not (key in latestDict and latestDict[key] == currentDict[key]):
+            return True
+    
+    return False
 
 def write_pigo(newPigo):
 #Boolean to check if any changes were made
@@ -34,15 +74,20 @@ def write_pigo(newPigo):
     else:
         return
 
-def read_pogi() -> dict:
+def read_pogi(POGI_DIR="") -> tuple:
 
     """
     Reads all data currently in the POGI file and returns as a dict
 
+    Parameters
+    ----------
+    POGI_DIR: str
+        directory to pogi json file; default == ""
+
     Returns
     -------
-    dict:
-        contains pogiData as specified in commandModule
+    tuple:
+        contains changed flag and pogi dict; i.e. (true, pogi) --> pogi is different from latest_pogi.json
     """
 
     command = CommandModule(pigoFileDirectory=PIGO_DIR, pogiFileDirectory=POGI_DIR)
@@ -50,12 +95,21 @@ def read_pogi() -> dict:
     # store all current POGI data into a dict
     # note: the keys included in the dict are those which are currently valid and working in commandModule
     #       (some fields are defined in the wiki but are currently commented out)
-    pogiData =  { 'currentAltitude' : command.get_current_altitude(),
-                  'currentAirspeed' : command.get_current_airspeed(),
-                  'isLanded' : command.get_is_landed(),
-                  'eulerAnglesOfCamera' : command.get_euler_angles_of_camera(),
-                  'eulerAnglesOfPlane' : command.get_euler_angles_of_plane(),
-                  'gpsCoordinates' : command.get_gps_coordinates(),
-                }
+    pogiData =  {
+    'currentAltitude' : command.get_current_altitude(),
+    'currentAirspeed' : command.get_current_airspeed(),
+    'isLanded' : command.get_is_landed(),
+    'eulerAnglesOfCamera' : command.get_euler_angles_of_camera(),
+    'eulerAnglesOfPlane' : command.get_euler_angles_of_plane(),
+    'gpsCoordinates' : command.get_gps_coordinates(),
+    }
+
+    latestJsonDirectory = ".\\latest_pogi.json"
+    isChanged = json_changed(latestJsonDirectory, pogiData)
     
-    return pogiData
+    # if pogi has changed, then write new data to latest_pogi.json
+    if isChanged:
+        with open(latestJsonDirectory, 'w') as pogiFile:
+            json.dump(pogiData, pogiFile, ensure_ascii=False, indent=4, sort_keys=True)
+    
+    return (isChanged, pogiData)

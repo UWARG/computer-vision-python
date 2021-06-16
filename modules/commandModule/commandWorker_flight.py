@@ -4,6 +4,16 @@ from modules.commandModule.commandFns import write_pigo, read_pogi
 POGI_DIR = ""
 PIGO_DIR = ""
 
+def pogi_subworker(pipelineOut, POGI_DIR):
+
+    # get the pogi data
+    changed, pogiData = read_pogi(POGI_DIR)
+
+    # if pogi has changed, output to the pipeline
+    if changed:
+        pipelineOut.put(pogiData)
+
+
 def flight_command_worker(pipelineIn, pipelineOut):
 	# pipelineIn gives [[x,y], [range]]
 	if pipelineIn.empty:
@@ -40,13 +50,7 @@ def pogi_command_worker(pause, exitRequest, pipelineOut):
         pause.acquire()
         pause.release()
 
-        # get the pogi data
-        pogiData = read_pogi()
-
-        # output to pipeline
-        # note: no null checking required since CommandModule returns None for fields that are unreadable/inaccesible
-        #       if all fields are None, then pogiData will be a dict with all elements as {'example_key' : None}
-        pipelineOut.put(pogiData)
+        pogi_subworker(pipelineOut, POGI_DIR)
 
         if not exitRequest.empty():
             return
