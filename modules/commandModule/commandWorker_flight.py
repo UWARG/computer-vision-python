@@ -1,10 +1,10 @@
 from modules.commandModule.commandModule import CommandModule
 
 def flight_command_worker(pipelineIn, pipelineOut, pigo_dir=""):
-	command = CommandModule(pigoFileDirectory=pigo_dir)
+	command = CommandModule(pogiFileDirectory="", pigoFileDirectory=pigo_dir)
 	# pipelineIn gives [[x,y], [range]]
 	if pipelineIn.empty:
-	   continue
+	   return
 	
 	data = pipelineIn.get()
 	# Cache data here
