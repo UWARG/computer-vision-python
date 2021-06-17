@@ -14,42 +14,42 @@ def pogi_subworker(pipelineOut, POGI_DIR):
         pipelineOut.put(pogiData)
 
 
-def flight_command_worker(pipelineIn, pipelineOut):
-	# pipelineIn gives [[x,y], [range]]
-	if pipelineIn.empty:
-	   continue
-	
-	data = pipelineIn.get()
-	# Cache data here
-	newPigo = {
-		'gpsCoordinates': [x, y]
-	}
-
-	write_pigo(newPigo)
-
-	#TODO: Write logic to get POGI
-
-
-def pogi_command_worker(pause, exitRequest, pipelineOut):
+def flight_command_worker(pipelineIn, pipelineOut, pause, exitRequest):
+    
     """
-    Producer worker function to return data currently in the POGI file
+    Worker function for PIGO and POGI data transactions
 
     Parameters
     ----------
+    pipelineIn : multiprocessing.Queue
+        input pipeline for pigoData
+    pipelineOut : multiprocessing.Queue
+        output pipeline for pogiData
     pause : multiprocessing.Lock
         a lock shared between worker processes
     exitRequest : multiprocessing.Queue
         a queue that determines when the worker process stops
-    pipelineOut : multiprocessing.Queue
-        output pipeline for pogiData
     """
 
-    print("Reading POGI data")
-
     while True:
+
         pause.acquire()
         pause.release()
+        
+        # PIGO Logic
+        # pipelineIn gives [[x,y], [range]]
+        if pipelineIn.empty:
+            continue
+        
+        data = pipelineIn.get()
+        # Cache data here
+        newPigo = {
+            'gpsCoordinates': [x, y]
+        }
 
+        write_pigo(newPigo)
+
+        # POGI Logic
         pogi_subworker(pipelineOut, POGI_DIR)
 
         if not exitRequest.empty():
