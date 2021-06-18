@@ -54,5 +54,3 @@ def flight_command_worker(pipelineIn, pipelineOut, pause, exitRequest):
         }
 
         write_pigo(newPigo)
-
-        
