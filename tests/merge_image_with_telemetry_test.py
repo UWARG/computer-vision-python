@@ -15,11 +15,13 @@ from datetime import datetime
 """
 
 def empty(): 
+    print("testing empty")
     merger = MergeImageWithTelemetry()
     [success, output] = merger.get_closest_telemetry()
     assert [success, output] == [False, None]
 
 def no_image():
+    print("testing no image")
     merger = MergeImageWithTelemetry()
     telemetry1 = Timestamp(["telemetry1"])
     telemetry2 = Timestamp(["telemetry2"])
@@ -31,6 +33,7 @@ def no_image():
     assert [success, output] == [False, None]
 
 def no_telemetry(): 
+    print("testing no telemetry")
     merger = MergeImageWithTelemetry()
     image = Timestamp(["image"])
     merger.set_image(image)
@@ -39,6 +42,7 @@ def no_telemetry():
     assert [success, output] == [False, None]
 
 def first(): 
+    print("testing first")
     merger = MergeImageWithTelemetry()
     image = Timestamp(["image"])
     telemetry1 = Timestamp(["telemetry1"])
@@ -52,6 +56,7 @@ def first():
     assert [success, output.image, output.telemetry] == [True, image.data, telemetry1.data]
 
 def middle(): 
+    print("testing middle")
     merger = MergeImageWithTelemetry()
     for i in range(4): 
         t = Timestamp([i])
@@ -72,6 +77,7 @@ def middle():
     assert [success, output.image, output.telemetry] == [True, image.data, telemetry.data]
 
 def last():
+    print("testing last")
     merger = MergeImageWithTelemetry()
 
     for i in range(4): 
@@ -90,21 +96,8 @@ def last():
     # made it to the end, the telemetry pipeline is waiting
 
 if __name__ == "__main__": 
-    print("testing empty")
-    empty()
-    print("****************** PASSED ************************")
-    print("testing no image")
-    no_image()
-    print("****************** PASSED ************************")
-    print("testing no telemetry")
-    no_telemetry()
-    print("****************** PASSED ************************")
-    print("testing first")
-    first()
-    print("****************** PASSED ************************")
-    print("testing middle")
-    middle()
-    print("****************** PASSED ************************")
-    print("testing last")
-    last()
-    print("****************** PASSED ************************")
+    functions = (empty, no_image, no_telemetry, first, middle, last)
+    
+    for func in functions: 
+        func()
+        print("****************** PASSED ************************")
