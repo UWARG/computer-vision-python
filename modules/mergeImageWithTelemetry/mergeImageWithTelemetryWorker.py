@@ -1,6 +1,6 @@
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetry import MergeImageWithTelemetry
 
-def pipelineMergeWorker(pause, exitRequest, imagePipelineIn, telemetryPipelineIn, pipelineOut):
+def pipelineMergeWorker(pause, exitRequest, imagePipelineIn, telemetryPipelineIn, telemetryPipelineLock, pipelineOut):
     print("start pipeline merge")
     mergeImageWithTelemetry = MergeImageWithTelemetry()
     curImage = None
@@ -14,14 +14,14 @@ def pipelineMergeWorker(pause, exitRequest, imagePipelineIn, telemetryPipelineIn
         pause.release()
 
         # put current elements of the telemetry pipeline into the queue
-        telemetryPipelineIn.acquire()
+        telemetryPipelineLock.acquire()
         while True: 
             try: 
                 telemetryData = telemetryPipelineIn.get_noawait()
                 mergeImageWithTelemetry.put_back_telemetry(telemetryData)
             except: 
                 break
-        telemetryPipelineIn.release()
+        telemetryPipelineLock.release()
         
         if mergeImageWithTelemetry.should_get_image():
             try: 
