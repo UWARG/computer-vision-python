@@ -35,6 +35,12 @@ def flight_command_worker(pipelineIn, pipelineOut, pause, exitRequest):
 
         pause.acquire()
         pause.release()
+
+        # POGI Logic
+        pogi_subworker(pipelineOut, POGI_DIR)
+
+        if not exitRequest.empty():
+            return
         
         # PIGO Logic
         # pipelineIn gives [[x,y], [range]]
@@ -44,13 +50,9 @@ def flight_command_worker(pipelineIn, pipelineOut, pause, exitRequest):
         data = pipelineIn.get()
         # Cache data here
         newPigo = {
-            'gpsCoordinates': [x, y]
+            'gpsCoordinates': data[0]
         }
 
         write_pigo(newPigo)
 
-        # POGI Logic
-        pogi_subworker(pipelineOut, POGI_DIR)
-
-        if not exitRequest.empty():
-            return
+        

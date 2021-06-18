@@ -104,7 +104,7 @@ def read_pogi(POGI_DIR="") -> tuple:
     'gpsCoordinates' : command.get_gps_coordinates(),
     }
 
-    latestJsonDirectory = ".\\latest_pogi.json"
+    latestJsonDirectory = os.path.join(os.getcwd(), "modules", "commandModule", "latest_pogi.json")
     isChanged = json_changed(latestJsonDirectory, pogiData)
     
     # if pogi has changed, then write new data to latest_pogi.json
