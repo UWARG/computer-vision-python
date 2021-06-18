@@ -2,7 +2,7 @@ import json
 
 from modules.commandModule.commandModule import CommandModule
 
-def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir=""):
+def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir="", pogi_dir=""):
 	command = CommandModule(pigoFileDirectory=pigo_dir)
 	while True:
         # Kill process if exit is requested

@@ -8,6 +8,7 @@ from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipeli
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
 
 PIGO_DIRECTORY = ""
+POGI_DIRECTORY = ""
 
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
@@ -35,22 +36,24 @@ def flightProgram():
     Parameters: None
     """
     print("start flight program")
-    # Queue from decklinksrc to targetAcquisition, containing video frame data
+    # Queue from decklinksrc out to fusion, containing timestamped video frame data
     videoPipeline = mp.Queue()
-    # Queue from targetAcquisition out to fusion module, containing pixel data about location of bbox in image
-    bboxCoordinatesPipeline = mp.Queue()
-    # Queue from command module out to fusion module containing telemetry data from POGI
+    # Queue from command module out to fusion module containing timestamped telemetry data from POGI
     telemetryPipeline = mp.Queue()
-    # Queue from fusion module out to geolocation locator, containing information about image pixel data & telemetry
+    # Queue from fusion module out to targetAcquisition, containing grouped image and telemetry data from a "single time"
     mergedDataPipeline = mp.Queue()
-    # Lock for mergedDataPipeline
-    mergedDataPipelineLock = mp.Lock()
-    # Intermediary pipeline transferring data from geolocaion_locator_worker to geolocation_ouput_worker
-    geolocationIntermediaryPipeline = mp.Queue()
-    # Lock for geolocationIntermediaryPipeline
-    geolocationIntermediaryPipelineLock = mp.Lock()
-    # Queue from geolocation module out to command module, containing GPS coordinates of pylons
-    coordinatePipeline = mp.Queue()
+    # Queue from targetAcquisition out to geolocation_locator_worker, containing centre-of-bbox coordinate data and associated telemetry data
+    bboxAndTelemetryPipeline = mp.Lock()
+    # Intermediary pipeline transferring a list of potential coordinates from geolocaion_locator_worker to geolocation_ouput_worker
+    geolocationIntermediatePipeline = mp.Queue()
+    # Queue from geolocation module out to command module, containing (x, y) coordinates of detected pylons
+    locationCommandPipeline = mp.Queue()
+
+    # Lock for bboxAndTelemetryPipeline
+    bboxAndTelemetryLock = mp.Lock()
+    # Lock for geolocationIntermediatePipeline
+    geolocationIntermediateLock = mp.Lock()
+
 
     
     # Utility locks
@@ -59,11 +62,11 @@ def flightProgram():
 
     processes = [
         mp.Process(target=decklinkSrcWorker, args=(pause, quit, videoPipeline)),
-        mp.Process(target=targetAcquisitionWorker, args=(pause, quit, videoPipeline, bboxCoordinatesPipeline)),
-        mp.Process(target=pipelineMergeWorker, args=(pause, quit, bboxCoordinatesPipeline, telemetryPipeline, mergedDataPipeline)),
-        mp.Process(target=geolocation_locator_worker, args=(pause, quit, mergedDataPipeline, geolocationIntermediaryPipeline, mergedDataPipelineLock)),
-        mp.Process(target=geolocation_output_worker, args=(pause, quit, geolocationIntermediaryPipeline, coordinatePipeline, geolocationIntermediaryPipelineLock)),
-        mp.Process(target=flight_command_worker, args=(pause, quit, coordinatePipeline, telemetryPipeline, PIGO_DIRECTORY))
+        mp.Process(target=pipelineMergeWorker, args=(pause, quit, videoPipeline, telemetryPipeline, mergedDataPipeline)),
+        mp.Process(target=targetAcquisitionWorker, args=(pause, quit, mergedDataPipeline, bboxAndTelemetryPipeline)),
+        mp.Process(target=geolocation_locator_worker, args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
+        mp.Process(target=geolocation_output_worker, args=(pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
+        mp.Process(target=flight_command_worker, args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
     ]
 
     for p in processes:
