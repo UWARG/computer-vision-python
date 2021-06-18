@@ -1,7 +1,7 @@
 from modules.search.Search import Search
 import json
 
-def searchWorker(pause, exitRequest, pipelineIn, pipelineOut):
+def search_worker(pause, exitRequest, pipelineIn, pipelineOut):
     """
         Search worker process to perform search with multiprocessing
         Gets data from the input pipeline, performs search, and puts it into the output pipeline
@@ -34,7 +34,7 @@ def searchWorker(pause, exitRequest, pipelineIn, pipelineOut):
         pylon_gps = json.load(pylon_gps_file)
 
     # Performing search using perform_search() of class Search
-    search_result = search.perform_search(pylon_gps, plane_data['gps'], plane_data['heading'])
+    search_result = search.perform_search(pylon_gps, plane_data['planeGPS'], plane_data['angle'])
 
     # Putting data => a float value: search_result to output pipeline
     pipelineOut.put(search_result)
