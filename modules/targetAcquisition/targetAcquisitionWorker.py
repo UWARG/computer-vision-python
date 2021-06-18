@@ -1,7 +1,7 @@
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 
 
-def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
+def targetAcquisitionWorker(pause, exitRequest, mergedDataPipelineIn, coordinatesTelemetryPipelineOut):
     print("start target acquisition")
     targetAcquisition = TargetAcquisition()
     while True:
@@ -11,15 +11,19 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.acquire()
         pause.release()
 
-        curr_frame = pipelineIn.get()
+        curr_frame = mergedDataPipelineIn.get()
 
         if curr_frame is None:
             continue
+        
+        # Set the current frame
+        targetAcquisition.set_curr_frame(curr_frame)
 
-        coordinates = targetAcquisition.get_coordinates(curr_frame)
-        if coordinates is None:
+        # Run model
+        res, coordinatesAndTelemetry = targetAcquisition.get_coordinates()
+        if not res:
             continue
 
-        pipelineOut.put(coordinates)
+        coordinatesTelemetryPipelineOut.put(coordinatesAndTelemetry)
 
 
