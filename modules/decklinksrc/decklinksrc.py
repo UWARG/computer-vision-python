@@ -42,6 +42,14 @@ class DeckLinkSRC:
         self.__logger.debug("decklinksrc/__init__: Started")
 
         self.__currentFrame = None
+        self.capture = None
+        self.start()
+
+    def start(self):
+        """
+        Logic for (re)starting video stream
+        """
+        self.__currentFrame = None
         self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
 
         self.__logger.debug("decklinksrc/__init__: Finished")
@@ -60,13 +68,14 @@ class DeckLinkSRC:
     def grab(self):
         """
         Logic for grabbing single frame from DeckLink
-        """        
-        self.__currentFrame = self.capture.read()
+        """
+        success, self.__currentFrame = self.capture.read()
         return self.__currentFrame
 
     def recordVideo(self, filename, xdim, ydim):
         """
         Logic for 
+        UNTESTED, use OBS to record
 
         Parameters
         ----------
