@@ -27,21 +27,16 @@ def searchWorker(pause, exitRequest, pipelineIn, pipelineOut):
     
     search = Search()
     
-    while True:
-        # Kill process if exit is requested
-        if not exitRequest.empty():
-            break
-
-        pause.acquire()
-        pause.release()
-        
-        # Getting data => a dictionary with structure: {tentGPS: value, planeGPS: value, angle: value} from input pipeline
-        values = pipelineIn.get()
-        
-        # Performing search using perform_search() of class Search
-        search_result = search.perform_search(values["tentGPS"], values["planeGPS"], values["angle"])
-        
-        # Putting data => a float value: search_result to output pipeline
-        pipelineOut.put(search_result)
+    pause.acquire()
+    pause.release()
+    
+    # Getting data => a dictionary with structure: {tentGPS: value, planeGPS: value, angle: value} from input pipeline
+    values = pipelineIn.get()
+    
+    # Performing search using perform_search() of class Search
+    search_result = search.perform_search(values["tentGPS"], values["planeGPS"], values["angle"])
+    
+    # Putting data => a float value: search_result to output pipeline
+    pipelineOut.put(search_result)
     
     logger.debug("searchWorker: Stop Search Module")
