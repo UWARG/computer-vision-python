@@ -7,10 +7,11 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     while True:
         pause.acquire()
         pause.release()
-        
         frame = pipelineIn.get()
-        if taxi.main(frame).latestDistance == 0:
-            pipelineOut.put(taxi.main(frame))
+        if (not frame == None):
+            command = taxi.main(frame)
+            if (hasattr(command, latestDistance)) and (command.latestDistance == 0):
+                pipelineOut.put(command)
 
         if not exitRequest.empty():
             return
