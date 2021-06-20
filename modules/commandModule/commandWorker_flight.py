@@ -1,5 +1,6 @@
 from modules.commandModule.commandModule import CommandModule
 from modules.commandModule.commandFns import write_pigo, read_pogi
+import logging
 
 POGI_DIR = ""
 PIGO_DIR = ""
@@ -13,44 +14,36 @@ def pogi_subworker(pipelineOut, POGI_DIR):
     if changed:
         pipelineOut.put(pogiData)
 
+def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir=""):
+	
+	logger = logging.getLogger()
+	logger.debug("flight_command_worker: Started Flight Command Module")
 
-def flight_command_worker(pipelineIn, pipelineOut, pause, exitRequest):
-    
-    """
-    Worker function for PIGO and POGI data transactions
+	command = CommandModule(pigoFileDirectory=pigo_dir)
+	while True:
+        # Kill process if exit is requested
+		if not exitRequest.empty():
+			break
+		
+		pause.acquire()
+		pause.release()
+		
+		# pipelineIn gives [[x,y], [range]]
+		if pipelineIn.empty():
+			continue
 
-    Parameters
-    ----------
-    pipelineIn : multiprocessing.Queue
-        input pipeline for pigoData
-    pipelineOut : multiprocessing.Queue
-        output pipeline for pogiData
-    pause : multiprocessing.Lock
-        a lock shared between worker processes
-    exitRequest : multiprocessing.Queue
-        a queue that determines when the worker process stops
-    """
+    pause.acquire()
+    pause.release()
 
-    while True:
+    # POGI Logic
+    pogi_subworker(pipelineOut, POGI_DIR)
 
-        pause.acquire()
-        pause.release()
+    # PIGO Logic
 
-        # POGI Logic
-        pogi_subworker(pipelineOut, POGI_DIR)
+    data = pipelineIn.get()
+    gps_coordinates = data[0]
+    # Cache data here
+    command.set_gps_coordinates(gps_coordinates)
+	
+	logger.debug("flight_command_worker: Stopped Flight Command Module")
 
-        if not exitRequest.empty():
-            return
-        
-        # PIGO Logic
-        # pipelineIn gives [[x,y], [range]]
-        if pipelineIn.empty:
-            continue
-        
-        data = pipelineIn.get()
-        # Cache data here
-        newPigo = {
-            'gpsCoordinates': data[0]
-        }
-
-        write_pigo(newPigo)
