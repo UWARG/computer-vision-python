@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import multiprocessing as mp
 import cv2
+import logging
 from modules.targetAcquisition.pylonDetection.detect import Detection
 from modules.mergeImageWithTelemetry.mergedData import MergedData
 from time import sleep
@@ -27,6 +28,8 @@ class TargetAcquisition:
         list of coordinates of the centres of the bounding boxes
     currentFrame : numpy.ndarray
         variable size numpy array (dim: X by Y by 3) of current video frame (given by cv2.imread) (default is a (416, 416, 3) zeros array)
+    __logger : Logger
+        Program-wide logger
 
 
     Methods
@@ -45,6 +48,8 @@ class TargetAcquisition:
         """
         Initializes bbox attributes, sets currentFrame attribute to given frame, zeros otherwise
         """
+        self.__logger = logging.getLogger()
+        self.__logger.debug("targetAcquisition/__init__: Started")
 
         # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
         # of height and width of the image as (xmin, ymin) to (xmax, ymax)
@@ -53,6 +58,8 @@ class TargetAcquisition:
         self.telemetryData = {}
         self.currentFrame = np.empty(0)
         self.yolo = Detection()
+
+        self.__logger.debug("targetAcquisition/__init__: Finished")
 
     def set_curr_frame(self, newFrame):
         """

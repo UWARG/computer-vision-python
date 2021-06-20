@@ -1,4 +1,5 @@
 import cv2 as cv2
+import logging
 import multiprocessing as mp
 import numpy as np
 from time import sleep
@@ -16,6 +17,8 @@ class DeckLinkSRC:
         VideoCapture class containing DeckLink stream
     __currentFrame : np.ndarray
         Numpy array storing information about current frame
+    __logger : Logger
+        Program-wide logger
 
     Methods
     -------
@@ -35,6 +38,9 @@ class DeckLinkSRC:
         """
         Initializes DeckLink video stream
         """
+        self.__logger = logging.getLogger()
+        self.__logger.debug("decklinksrc/__init__: Started")
+
         self.__currentFrame = None
         self.capture = None
         self.start()
@@ -46,12 +52,18 @@ class DeckLinkSRC:
         self.__currentFrame = None
         self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
 
+        self.__logger.debug("decklinksrc/__init__: Finished")
+
     def stop(self):
         """
         Logic for stopping video feed by releasing capture and destroying any windows open.
         """
+        self.__logger.debug("decklinksrc/stop: Started")
+
         self.capture.release()
         cv2.destroyAllWindows()
+        
+        self.__logger.debug("decklinksrc/__init__: Finished")
 
     def grab(self):
         """
@@ -74,6 +86,8 @@ class DeckLinkSRC:
         ydim : int
             Height of video frame in pixels
         """
+        self.__logger.debug("decklinksrc/recordVideo: Started DeckLink Video Record")
+
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(filename, fourcc, 25, (xdim, ydim))
 
@@ -86,11 +100,15 @@ class DeckLinkSRC:
                     break
             else:
                 break
+        
+        self.__logger.debug("decklinksrc/recordVideo: Stopped DeckLink Video Record")
 
     def display(self):
         """
         Logic for displaying video stream from DeckLink
         """
+        self.__logger.debug("decklinksrc/display: Started DeckLink Video Stream Display")
+
         while True:
             ret, frame = self.capture.read()
             self.__currentFrame = frame
@@ -101,3 +119,6 @@ class DeckLinkSRC:
             key = cv2.waitKey(1)
             if key == ord(' '):
                 self.stop()
+                break
+        
+        self.__logger.debug("decklinksrc/display: Stopped DeckLink Video Stream Display")
