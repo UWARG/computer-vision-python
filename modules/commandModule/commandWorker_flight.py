@@ -42,8 +42,11 @@ def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir=
 
     data = pipelineIn.get()
     gps_coordinates = data[0]
+
+    with open("temp_pylon_gps", "w") as pylon_gps_file:
+    	json.dump(gps_coordinates, pylon_gps_file)
     # Cache data here
     command.set_gps_coordinates(gps_coordinates)
 	
-	logger.debug("flight_command_worker: Stopped Flight Command Module")
+logger.debug("flight_command_worker: Stopped Flight Command Module")
 
