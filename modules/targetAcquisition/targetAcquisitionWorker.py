@@ -1,12 +1,16 @@
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
-
+import logging
 
 def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
-    print("start target acquisition")
+
+    logger = logging.getLogger()
+    logger.debug("targetAcquisitionWorker: Start Target Acquisition Module")
+    
     targetAcquisition = TargetAcquisition()
+    
     while True:
         if not exitRequest.empty():
-            return
+            break
         
         pause.acquire()
         pause.release()
@@ -19,7 +23,9 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
         bbox = targetAcquisition.get_coordinates(curr_frame)
         if bbox is None:
             continue
+        
+        logger.info("targetAcquisitionWorker: Found a box: " + str(coordinates))
+        pipelineOut.put(coordinates)
 
-        pipelineOut.put(bbox)
-
+    logger.debug("targetAcquisitionWorker: Stop Target Acquisition Module")
 

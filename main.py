@@ -1,4 +1,6 @@
 import argparse
+from datetime import datetime
+import logging
 import os
 import multiprocessing as mp
 from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
@@ -13,17 +15,22 @@ POGI_DIRECTORY = ""
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 
+logger = None
 
 def callTrain():
     main_directory = os.getcwd()
     """
     stores current working directory prior to change
     """
+    logger.debug("main/callTrain: Started")
+
     if os.path.exists("targetAcquisition/yolov2_assets"):
         # Importing file runs the process inside
         import modules.targetAcquisition.yolov2_assets.train
     else:
-        print("YOLOV2_ASSETS Directory not found. Specify path")
+        logger.error("main/callTrain: YOLOV2_ASSETS Directory not found. Specify path")
+    
+    logger.error("main/callTrain: Finished")
 
 
 def flightProgram():
@@ -35,8 +42,8 @@ def flightProgram():
         Send coordinates to command module
     Parameters: None
     """
-    print("start flight program")
-    # Queue from decklinksrc out to fusion, containing timestamped video frame data
+    logger.debug("main/flightProgram: Start flight program")
+    # Queue from decklinksrc to targetAcquisition
     videoPipeline = mp.Queue()
     # Queue from command module out to fusion module containing timestamped telemetry data from POGI
     telemetryPipeline = mp.Queue()
@@ -71,6 +78,8 @@ def flightProgram():
 
     for p in processes:
         p.start()
+    
+    logger.debug("main/flightProgram: Flight program init complete")
 
 
 
@@ -83,6 +92,22 @@ def searchProgram():
     """
     return
 
+
+def init_logger():
+    logFileName = os.path.join("logs", str(datetime.today().date()) + "_" +
+                                       str(datetime.today().hour) + "." +
+                                       str(datetime.today().minute) + "." +
+                                       str(datetime.today().second) + ".log")
+    
+    formatter = logging.Formatter(fmt='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%I:%M:%S')
+    fileHandler = logging.FileHandler(filename=logFileName, mode="w")
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+    fileHandler.setFormatter(formatter)
+
+    logging.basicConfig(level=logging.DEBUG, handlers=[fileHandler, streamHandler])
+    logging.debug("main/init_logger: Logger Initialized")
+    logger = logging.getLogger()
 
 def taxiProgram():
     """
@@ -99,6 +124,8 @@ if __name__ == '__main__':
     Parameters: Args for commands
     Returns: None
     """
+    init_logger()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
     # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
