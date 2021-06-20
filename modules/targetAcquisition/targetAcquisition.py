@@ -47,9 +47,11 @@ class TargetAcquisition:
 
         # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
         # of height and width of the image as (xmin, ymin) to (xmax, ymax)
+
         self.bbox=[((0, 0), (0, 0))]
         self.currentFrame = np.empty(0)
         self.yolo = Detection()
+
 
     def set_curr_frame(self, newFrame):
         """
@@ -71,23 +73,38 @@ class TargetAcquisition:
         list
             Returns a list of bounding boxes (top left and bot right) where tents are located
         """
-        
-        # Run YOLOV5 model
+        # If new frame has been specified (is non-empty, set the current frame to the given frame)
+        if np.count_nonzero(newFrame) != 0:
+            self.set_curr_frame(newFrame)
+        else:
+            return
+        # Run YOLOV2 model
         self.__predict()
-        return self.bbox
+        return self.tentCoordinates
 
     def __predict(self):
         """
         PRIVATE: Runs YOLOV5 model on current frame and populates tentCoordinates and boxes attributes
         """
-        # Run YOLOV5 model, put bounding boxes into list
-        self.bbox = self.yolo.detect_boxes(self.currentFrame)
-        # draw out the bounding boxes
-        for (topLeft, botRight) in self.bbox:
-            cv2.rectangle(self.currentFrame, topLeft, botRight, (0, 0, 255), 2)
-        cv2.imshow('img', self.currentFrame)
-        cv2.waitKey(0) 
-        cv2.destroyAllWindows()
+        # Run YOLOV2 model, put bounding boxes into list
+        self.boxes = yolo_predict(self.currentFrame)
+        # Find centre coordinates for each bounding box
+        self.__find_coordinates()
 
+    def __find_coordinates(self):
+        """
+        PRIVATE: Finds centre coordinates for each bounding box, populates tentCoordinates
+        """
+        image_h = self.currentFrame.shape[0]
+        image_w = self.currentFrame.shape[1]
+        for box in self.boxes:
+            xmin = int(box.xmin * image_w)
+            ymin = int(box.ymin * image_h)
+            xmax = int(box.xmax * image_w)
+            ymax = int(box.ymax * image_h)
 
+            self.tentCoordinates[box] = ((xmin + xmax) / 2, (ymin + ymax) / 2)
 
+# Testing
+# tracker = TargetAcquisition(cv2.imread('yolov2_assets/single_test_images/raccoon-1.jpg'))
+# print(tracker.get_coordinates())

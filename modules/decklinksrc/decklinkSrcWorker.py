@@ -5,6 +5,7 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
     print("Start decklinksrc")
     decklinkSrc = DeckLinkSRC()
 
+
     # i = 0  # Debugging
     while True:
         # Debugging
@@ -17,7 +18,7 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         if not exitRequest.empty():
             decklinkSrc.stop()
             return
-
+          
         pause.acquire()
         pause.release()
 
@@ -30,5 +31,3 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         # cv2.waitKey(1)
 
         pipelineOut.put(curr_frame)
-
-

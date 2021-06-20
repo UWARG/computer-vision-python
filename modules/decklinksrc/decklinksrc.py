@@ -44,6 +44,7 @@ class DeckLinkSRC:
         Logic for (re)starting video stream
         """
         self.__currentFrame = None
+
         self.capture = cv2.VideoCapture(0)  # Starts capture on initialization of object
 
     def stop(self):
