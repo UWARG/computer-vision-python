@@ -1,8 +1,10 @@
 from modules.decklinksrc.decklinksrc import DeckLinkSRC
-
+import logging
 
 def decklinkSrcWorker(pause, exitRequest, pipelineOut):
-    print("Start decklinksrc")
+    logger = logging.getLogger()
+    logger.debug("decklinkSrcWorker: Started DeckLinkSRC module")
+
     decklinkSrc = DeckLinkSRC()
 
     # i = 0  # Debugging
@@ -16,7 +18,7 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         # Kill process if exit is requested
         if not exitRequest.empty():
             decklinkSrc.stop()
-            return
+            break
 
         pause.acquire()
         pause.release()
@@ -30,5 +32,5 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         # cv2.waitKey(1)
 
         pipelineOut.put(curr_frame)
-
-
+    
+    logger.debug("decklinkSrcWorker: Stopped DeckLinkSRC module")

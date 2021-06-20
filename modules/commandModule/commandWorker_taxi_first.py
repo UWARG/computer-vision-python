@@ -1,4 +1,5 @@
 from modules.commandModule.commandModule import CommandModule
+import logging
 
 def taxi_command_worker_first(pipelineIn, pipelineOut):
 	"""
@@ -16,7 +17,7 @@ def taxi_command_worker_first(pipelineIn, pipelineOut):
 	None
 	"""
 	
-	if pipelineIn.empty:
+	if pipelineIn.empty():
 		print("No data in taxi_command_worker_first pipelineIn")
 		return
 	

@@ -74,7 +74,9 @@ class CommandModule:
         pigoFileDirectory: str
             String of POGI file directory
         """
-        self.__logger = logging.getLogger(__name__)
+        self.__logger = logging.getLogger()
+        self.__logger.debug("commandModule/__init__: Started")
+
         self.__pogiData = dict()
         self.__pigoData = dict()
         self.pogiFileDirectory = pogiFileDirectory
@@ -82,10 +84,12 @@ class CommandModule:
         self.__pogiLock = FileLock(pogiFileDirectory + ".lock")
         self.__pigoLock = FileLock(pigoFileDirectory + ".lock")
 
+        self.__logger.debug("commandModule/__init__: Finished")
+
     def __read_from_pogi_file(self):
         """
         Decodes JSON data from pogiFileDirectory JSON file and stores it in pogiData dictionary
-        """
+        """        
         try:
             with self.__pogiLock, open(self.pogiFileDirectory, "r") as pogiFile:
                 self.__pogiData = json.load(pogiFile)
