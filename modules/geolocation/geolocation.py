@@ -3,6 +3,8 @@ Geolocation module to map pixel coordinates to geographical coordinates
 """
 
 import numpy as np
+import math
+
 
 class Geolocation:
     """
@@ -66,8 +68,6 @@ class Geolocation:
 
         return
 
-
-
     def gather_point_pairs(self):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
@@ -97,7 +97,6 @@ class Geolocation:
 
             # Linear combination formula
             pixelInWorldSpace3a = self.__cameraDirection3c + scalar1m * self.__cameraOrientation3u + scalar1n * self.__cameraOrientation3v
-
             # Verify pixel vector is pointing downwards
             if (pixelInWorldSpace3a[2] > maximumZcomponent):
                 validPixelCount -= 1
@@ -112,7 +111,7 @@ class Geolocation:
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         return pixelGeoPairs
-    
+
     def __are_three_points_collinear(self, p1, p2, p3):
         """
         PRIVATE
@@ -136,10 +135,9 @@ class Geolocation:
         y = 1
         # Calculates the area of a triangle and checks if this value is 0
         # Actually calculates 2 times the area, since it skips the unnecessary step of multiplication by 0.5
-        return (p1[x]*(p2[y]-p3[y]) +
-                p2[x]*(p3[y]-p1[y]) +
-                p3[x]*(p1[y]-p2[y])) == 0
-
+        return (p1[x] * (p2[y] - p3[y]) +
+                p2[x] * (p3[y] - p1[y]) +
+                p3[x] * (p1[y] - p2[y])) == 0
 
     def get_non_collinear_points(self, coordinatesArray):
         """
@@ -172,15 +170,15 @@ class Geolocation:
             # For efficiency, this algorithm will check through sequential sets of points only, rather than
             # testing every single combination.
             for j in range(0, NUM_POINTS_NEEDED):
-                points[j] = coordinatesArray[(i+j) % len(coordinatesArray)]
+                points[j] = coordinatesArray[(i + j) % len(coordinatesArray)]
 
             # Check collinearity of all possible combinations
             areNotFourCollinear = True
             for i in range(0, NUM_POINTS_NEEDED):
-                areNotFourCollinear &= not self.__are_three_points_collinear(points[i], 
-                                                                             points[(i+1) % NUM_POINTS_NEEDED],
-                                                                             points[(i+2) % NUM_POINTS_NEEDED])
-            
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[i],
+                                                                             points[(i + 1) % NUM_POINTS_NEEDED],
+                                                                             points[(i + 2) % NUM_POINTS_NEEDED])
+
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
                 return points
@@ -220,8 +218,6 @@ class Geolocation:
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
         return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
 
-
-
     def convert_input(self):
         """
         Converts telemtry data into workable data
@@ -248,7 +244,7 @@ class Geolocation:
         u = self.__calculate_u_vector(compoundRotationMatrix)
         v = self.__calculate_v_vector(c, u)
 
-        return (o, c, u, v)
+        return o, c, u, v
 
     def __calculate_o_vector(self, compoundRotationMatrix: np.ndarray, gpsCameraOffset: np.ndarray) -> np.ndarray:
         """
@@ -404,25 +400,23 @@ class Geolocation:
 
         return rotationMatrix
 
-# Private function that checks if the trimmed array is empty ie all values were too far apart from the median
-# Returns median if array is empty, otherwise finds the average of the trimmed array
-    def __get_average_otherwise_median(self,trimmedArray,median):
-        if np.size(trimmedArray,0)==0:
-             return median
+    # Private function that checks if the trimmed array is empty ie all values were too far apart from the median
+    # Returns median if array is empty, otherwise finds the average of the trimmed array
+    def __get_average_otherwise_median(self, trimmedArray, median):
+        if np.size(trimmedArray, 0) == 0:
+            return median
         else:
-            return np.average(trimmedArray,axis=0)
-
+            return np.average(trimmedArray, axis=0)
 
     # Helper function required for input
     def concatenate_locations(self, newLocations):
 
         self.__locationsList = self.__locationsList + newLocations
 
-
-    def get_best_location(self,inputLocationTupleList):
+    def get_best_location(self, inputLocationTupleList):
 
         # For the  case of a single row matrix being passed to the function
-        if np.size(inputLocationTupleList,0)==1:
+        if np.size(inputLocationTupleList, 0) == 1:
 
             averagePair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
             averageError = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
@@ -438,8 +432,8 @@ class Geolocation:
             # Splits coordinate pair into x-coord and y-coord to remove outliers
             xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
             yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
-            xCoordTrimmed=[]
-            yCoordTrimmed=[]
+            xCoordTrimmed = []
+            yCoordTrimmed = []
 
             xCoordMedian = np.median(xCoord)
             yCoordMedian = np.median(yCoord)
@@ -448,8 +442,8 @@ class Geolocation:
             # A modified version of the trimmed mean calculation. Here the distance measurement is distance between every x,y point from the median coordinate pair, x median and y median.
             # 7 is the distance for how far a given point can be from the median
             # TODO: Z-scores could be used instead
-            for (x,y) in zip(xCoord,yCoord):
-                distance = math.hypot(xCoordMedian-x,yCoordMedian-y)
+            for (x, y) in zip(xCoord, yCoord):
+                distance = math.hypot(xCoordMedian - x, yCoordMedian - y)
 
                 if distance < 7:
                     xCoordTrimmed.append(x)
@@ -458,21 +452,45 @@ class Geolocation:
             # In the case of the values in the error array, the distance here is 3.5.
             errorArray = errorArray[(errorArray - errorMedian > -3.5) & (errorArray - errorMedian < 3.5)]
 
-            averageX = self.__get_average_otherwise_median(xCoordTrimmed,xCoordMedian)
-            averageY = self.__get_average_otherwise_median(yCoordTrimmed,yCoordMedian)
-            averageError =self.__get_average_otherwise_median(errorArray,errorMedian)
+            averageX = self.__get_average_otherwise_median(xCoordTrimmed, xCoordMedian)
+            averageY = self.__get_average_otherwise_median(yCoordTrimmed, yCoordMedian)
+            averageError = self.__get_average_otherwise_median(errorArray, errorMedian)
 
-            averagePair = (averageX,averageY)
+            averagePair = (averageX, averageY)
 
-        return (averagePair,averageError)
+        return (averagePair, averageError)
 
+    def run_locator(self, telemetry, coordinates):
+        euler_angles_plane = telemetry["eulerAnglesOfPlane"]
+        euler_angles_camera = telemetry["eulerAnglesOfCamera"]
+        # Pls confirm shape of gpsCoordinates from command
+        gps_x, gps_y = telemetry["gpsCoordinates"]
+
+        self.__eulerCamera = euler_angles_camera
+        self.__eulerPlane = euler_angles_plane
+        self.__longitude = gps_x
+        self.__latitude = gps_y
+
+        camera_o, camera_c, camera_u, camera_v = self.convert_input()
+        self.__cameraOrigin3o = camera_o
+        self.__cameraDirection3c = camera_c
+        self.__cameraOrientation3u = camera_u
+        self.__cameraOrientation3v = camera_v
+
+        point_pairs = self.gather_point_pairs()
+        non_collinear_points = self.get_non_collinear_points(point_pairs)
+
+        self.__pixelToGeoPairs = non_collinear_points
+        tranformation_matrix = self.calculate_pixel_to_geo_mapping()
+
+        geo_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        return geo_coordinates
 
     def run_output(self, newLocations):
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
         return True, self.get_best_location(locations)
-
 
     def map_location_from_pixel(self, transformationMatrix, pixels):
         """
@@ -489,13 +507,13 @@ class Geolocation:
         """
 
         # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
-        pixels = np.insert(pixels, 2, 1, axis = 1)
+        pixels = np.insert(pixels, 2, 1, axis=1)
 
         # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+        homogeneousCoordinates = np.matmul(transformationMatrix, pixels.T).T
 
         geoCoordinates = np.empty(shape=(0, 2))
-        
+
         # Cycle through all homogenized coordinates of pixels
         for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
@@ -506,8 +524,7 @@ class Geolocation:
             # Dehomogenizing the coordinate vector to compute the position in the destination image
             dehomogenizedX = h[0] / h[2]
             dehomogenizedY = h[1] / h[2]
-   
-            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
+
+            geoCoordinates = np.vstack((geoCoordinates, np.array([dehomogenizedX, dehomogenizedY])))
 
         return geoCoordinates
-

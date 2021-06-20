@@ -5,7 +5,8 @@ Unit tests for geolocation module
 import unittest
 import numpy as np
 
-import geolocation
+from modules.geolocation import geolocation
+
 
 class TestGatherPointPairs(unittest.TestCase):
     """
