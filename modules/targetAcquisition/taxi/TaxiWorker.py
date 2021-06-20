@@ -1,4 +1,4 @@
-from Taxi import Taxi
+from modules.targetAcquisition.taxi import Taxi
 
 def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     print("Start Taxi")
@@ -7,11 +7,11 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     while True:
         pause.acquire()
         pause.release()
+        
         frame = pipelineIn.get()
-        if (not frame == None):
-            command = taxi.main(frame)
-            if (hasattr(command, latestDistance)) and (command.latestDistance == 0):
-                pipelineOut.put(command)
+        taxi.main(frame)
+
+        pipelineOut.put()
 
         if not exitRequest.empty():
             return
