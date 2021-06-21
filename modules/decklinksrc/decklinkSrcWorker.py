@@ -1,4 +1,5 @@
 from modules.decklinksrc.decklinksrc import DeckLinkSRC
+from modules.timestamp.timestamp import Timestamp
 import logging
 
 def decklinkSrcWorker(pause, exitRequest, pipelineOut):
@@ -23,12 +24,13 @@ def decklinkSrcWorker(pause, exitRequest, pipelineOut):
         pause.acquire()
         pause.release()
 
-        curr_frame = decklinkSrc.grab()
-        if curr_frame is None:
+        # Timestamping logic has been implemented in worker to not interfere with Taxi program assumptions
+        curr_frame = Timestamp(decklinkSrc.grab())
+        if curr_frame is None or curr_frame.data is None:
             continue
 
         # Debugging
-        # cv2.imshow('VideoStream', curr_frame)
+        # cv2.imshow('VideoStream', curr_frame.data)
         # cv2.waitKey(1)
 
         pipelineOut.put(curr_frame)

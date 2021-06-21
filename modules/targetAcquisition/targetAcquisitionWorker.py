@@ -1,8 +1,7 @@
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 import logging
 
-def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
-
+def targetAcquisitionWorker(pause, exitRequest, mergedDataPipelineIn, coordinatesTelemetryPipelineOut):
     logger = logging.getLogger()
     logger.debug("targetAcquisitionWorker: Start Target Acquisition Module")
     
@@ -15,14 +14,20 @@ def targetAcquisitionWorker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.acquire()
         pause.release()
 
-        curr_frame = pipelineIn.get()
+        curr_frame = mergedDataPipelineIn.get()
 
         if curr_frame is None:
             continue
+        
+        # Set the current frame
+        targetAcquisition.set_curr_frame(curr_frame)
 
-        coordinates = targetAcquisition.get_coordinates(curr_frame)
-        if coordinates is None:
+        # Run model
+        res, coordinatesAndTelemetry = targetAcquisition.get_coordinates()
+        if not res:
             continue
+            
+        coordinatesTelemetryPipelineOut.put(coordinatesAndTelemetry)
         
         logger.info("targetAcquisitionWorker: Found a box: " + str(coordinates))
         pipelineOut.put(coordinates)
