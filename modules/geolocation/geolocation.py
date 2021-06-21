@@ -6,10 +6,6 @@ import numpy as np
 import math
 
 
-def __convert_val_to_rad(dict):
-    return zip(dict.keys(), list(map(lambda s: math.radians(s), dict.values())))
-
-
 class Geolocation:
     """
     Locates the geographical position of a set of pixels
