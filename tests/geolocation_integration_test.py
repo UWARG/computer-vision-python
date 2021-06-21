@@ -14,7 +14,11 @@ def test_run_locator():
         'y': 340,
         'z': 0
     }
-    mock_gps = [0, 0]
+    mock_gps = {
+        "longtitude": 0,
+        "lattitude": 0,
+        "altitude": 100
+    }
     mock_telemetry = {
         "eulerAnglesOfPlane": mock_plane_euler,
         "eulerAnglesOfCamera": mock_camera_euler,
@@ -24,4 +28,6 @@ def test_run_locator():
     mock_coordinates = [[0, 0]]
 
     locator = geolocation.Geolocation()
-    # Will be filled when I have  better test data
+    ret, data = locator.run_locator(mock_telemetry, mock_coordinates)
+
+    assert ret is True

@@ -6,6 +6,10 @@ import numpy as np
 import math
 
 
+def __convert_val_to_rad(dict):
+    return zip(dict.keys(), list(map(lambda s: math.radians(s), dict.values())))
+
+
 class Geolocation:
     """
     Locates the geographical position of a set of pixels
@@ -464,12 +468,15 @@ class Geolocation:
         euler_angles_plane = telemetry["eulerAnglesOfPlane"]
         euler_angles_camera = telemetry["eulerAnglesOfCamera"]
         # Pls confirm shape of gpsCoordinates from command
-        gps_x, gps_y = telemetry["gpsCoordinates"]
+        gps_x = telemetry["gpsCoordinates"]["longtitude"]
+        gps_y = telemetry["gpsCoordinates"]["lattitude"]
+        altitude = telemetry["gpsCoordinates"]["altitude"]
 
-        self.__eulerCamera = euler_angles_camera
-        self.__eulerPlane = euler_angles_plane
+        self.__eulerCamera = self.__convert_val_to_rad(euler_angles_camera)
+        self.__eulerPlane = self.__convert_val_to_rad(euler_angles_plane)
         self.__longitude = gps_x
         self.__latitude = gps_y
+        self.__altitude = altitude
 
         camera_o, camera_c, camera_u, camera_v = self.convert_input()
         self.__cameraOrigin3o = camera_o
@@ -478,13 +485,24 @@ class Geolocation:
         self.__cameraOrientation3v = camera_v
 
         point_pairs = self.gather_point_pairs()
+        # If insufficient point pairs, exit this run and try again
+        if len(point_pairs) < 4:
+            return False, None
+
         non_collinear_points = self.get_non_collinear_points(point_pairs)
+        # If insufficient point pairs, exit this run and try again
+        if len(non_collinear_points) < 4:
+            return False, None
 
         self.__pixelToGeoPairs = non_collinear_points
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
 
         geo_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
-        return geo_coordinates
+        return True, geo_coordinates
+
+    @staticmethod
+    def __convert_val_to_rad(convert_dict):
+        return dict(zip(convert_dict.keys(), list(map(lambda s: math.radians(s), convert_dict.values()))))
 
     def run_output(self, newLocations):
 
