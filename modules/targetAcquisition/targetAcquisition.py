@@ -4,6 +4,7 @@ import multiprocessing as mp
 import cv2
 import logging
 from modules.targetAcquisition.pylonDetection.detect import Detection
+from modules.mergeImageWithTelemetry.mergedData import MergedData
 from time import sleep
 
 from tensorflow.compat.v1 import ConfigProto
@@ -53,6 +54,8 @@ class TargetAcquisition:
         # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
         # of height and width of the image as (xmin, ymin) to (xmax, ymax)
         self.bbox=[((0, 0), (0, 0))]
+        self.coordinates = []
+        self.telemetryData = {}
         self.currentFrame = np.empty(0)
         self.yolo = Detection()
 
@@ -64,10 +67,11 @@ class TargetAcquisition:
 
         Parameters
         ----------
-        newFrame : np.ndarray
-            Variable size array containing data about a video frame (as given by cv2.imread())
+        newFrame : MergedData
+            MergedData object containing telemetry data & variable size array containing data about a video frame (as given by cv2.imread())
         """
-        self.currentFrame = newFrame
+        self.telemetryData = newFrame.telemetry
+        self.currentFrame = newFrame.image
 
     def get_coordinates(self):
         """
@@ -75,14 +79,27 @@ class TargetAcquisition:
         
         Returns
         -------
-        list
-            Returns a list of bounding boxes (top left and bot right) where tents are located
+        bool
+            First returned parameter is a boolean indicating whether the model found bboxes
+        tuple
+            Returns a two-tuple, where first entry is coordinates, second entry is telemetry data 
         """
         
         # Run YOLOV5 model
         self.__predict()
-        return self.bbox
 
+        # If no bounding boxes found, return False
+        if len(self.bbox) == 0:
+            return False, []
+        
+        # Find centre of bounding box
+        for i in range(1, len(self.bbox)):
+            x = self.bbox[i][0][0] + self.bbox[i][1][0]
+            y = self.bbox[i][0][1] + self.bbox[i][1][1]
+            self.coordinates.append((x, y))
+    
+        return True, (self.coordinates, self.telemetryData)
+    
     def __predict(self):
         """
         PRIVATE: Runs YOLOV5 model on current frame and populates tentCoordinates and boxes attributes
