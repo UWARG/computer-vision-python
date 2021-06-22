@@ -29,8 +29,7 @@ def targetAcquisitionWorker(pause, exitRequest, mergedDataPipelineIn, coordinate
             
         coordinatesTelemetryPipelineOut.put(coordinatesAndTelemetry)
         
-        logger.info("targetAcquisitionWorker: Found a box: " + str(coordinates))
-        pipelineOut.put(coordinates)
+        logger.info("targetAcquisitionWorker: Found a pylon: " + str(coordinatesAndTelemetry))
 
     logger.debug("targetAcquisitionWorker: Stop Target Acquisition Module")
 
