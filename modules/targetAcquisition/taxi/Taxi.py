@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from boxDetection.detect import Detection
+from modules.targetAcquisition.taxi.boxDetection.detect import Detection
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import InteractiveSession
 

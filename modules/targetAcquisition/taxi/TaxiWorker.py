@@ -1,4 +1,4 @@
-from Taxi import Taxi
+from modules.targetAcquisition.taxi.Taxi import Taxi
 
 
 def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
@@ -32,7 +32,7 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
         frame = pipelineIn.get()
         if frame is not None:
             command = taxi.main(frame)
-            if ('latestDistance' in command) and (command.latestDistance == 0):
+            if 'latestDistance' in command:
                 pipelineOut.put(command)
 
         if not exitRequest.empty():
