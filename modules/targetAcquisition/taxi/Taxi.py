@@ -244,6 +244,7 @@ class Taxi:
             self.totalWait += 1
             if self.totalWait > 250:
                 print(f"Waited {self.totalWait} frames without finding the expected number of bbox. Switching to human control.")
+                return {heading: 0.0,  latestDistance: 0.0}
 
         # Switch to track when all 5 boxes are in view
         if self.state == "TRACK":
@@ -298,12 +299,14 @@ class Taxi:
                     self.recalibrate = True
                     self.lastBbox = self.bbox
                     self.set_state("BOX")
+                    return {heading: 0.0,  latestDistance: 0.0}
 
             # Tracking fails or plane is already close enough
             else:
                 # Assuming the plane is facing the right box, tracking fails either due to algo error or the plane got too close to object
                 # Switch to human control to drive the plane to the right spot
                 print(f"Found: {found}\nDistance: {self.distanceFromBox > self.minDistanceFromBox}")
+                return {heading: 0.0,  latestDistance: 0.0}
 
         cv2.imshow('Image', self.frame)
 
