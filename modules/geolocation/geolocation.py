@@ -330,7 +330,7 @@ class Geolocation:
         # in order to get an fov, fix the c vector and scale u and v with fov factors to get an fov
         squeezedVector = np.squeeze(cVector)
         self.__logger.debug("geolocation/__calculate_c_vector: Returned " + str(squeezedVector))
-        return 
+        return squeezedVector
 
     def __calculate_u_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
 
@@ -517,8 +517,9 @@ class Geolocation:
         gps_y = telemetry["gpsCoordinates"]["lattitude"]
         altitude = telemetry["gpsCoordinates"]["altitude"]
 
-        self.__eulerCamera = self.__convert_val_to_rad(euler_angles_camera)
-        self.__eulerPlane = self.__convert_val_to_rad(euler_angles_plane)
+        # Expect euler angles to be in degrees
+        self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
+        self.__eulerPlane = self.__deg_vals_to_rad(euler_angles_plane)
         self.__longitude = gps_x
         self.__latitude = gps_y
         self.__altitude = altitude
@@ -546,7 +547,7 @@ class Geolocation:
         return True, geo_coordinates
 
     @staticmethod
-    def __convert_val_to_rad(convert_dict):
+    def __deg_vals_to_rad(convert_dict):
         return dict(zip(convert_dict.keys(), list(map(lambda s: math.radians(s), convert_dict.values()))))
 
     def run_output(self, newLocations):
@@ -592,7 +593,7 @@ class Geolocation:
             dehomogenizedX = h[0] / h[2]
             dehomogenizedY = h[1] / h[2]
 
-        geoCoordinates = np.vstack((geoCoordinates, np.array([dehomogenizedX, dehomogenizedY])))
+            geoCoordinates = np.vstack((geoCoordinates, np.array([dehomogenizedX, dehomogenizedY])))
         self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
 
         return geoCoordinates
