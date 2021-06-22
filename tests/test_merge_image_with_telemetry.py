@@ -14,13 +14,13 @@ from datetime import datetime
         should avoid the module not found errors (hopefully?)
 """
 
-def empty(): 
+def test_empty():
     print("testing empty")
     merger = MergeImageWithTelemetry()
     [success, output] = merger.get_closest_telemetry()
     assert [success, output] == [False, None]
 
-def no_image():
+def test_no_image():
     print("testing no image")
     merger = MergeImageWithTelemetry()
     telemetry1 = Timestamp(["telemetry1"])
@@ -32,7 +32,7 @@ def no_image():
     [success, output] = merger.get_closest_telemetry()
     assert [success, output] == [False, None]
 
-def no_telemetry(): 
+def test_no_telemetry():
     print("testing no telemetry")
     merger = MergeImageWithTelemetry()
     image = Timestamp(["image"])
@@ -41,7 +41,7 @@ def no_telemetry():
     [success, output] = merger.get_closest_telemetry()
     assert [success, output] == [False, None]
 
-def first(): 
+def test_first():
     print("testing first")
     merger = MergeImageWithTelemetry()
     image = Timestamp(["image"])
@@ -55,7 +55,7 @@ def first():
     [success, output] = merger.get_closest_telemetry()
     assert [success, output.image, output.telemetry] == [True, image.data, telemetry1.data]
 
-def middle(): 
+def test_middle():
     print("testing middle")
     merger = MergeImageWithTelemetry()
     for i in range(4): 
@@ -76,7 +76,7 @@ def middle():
     [success, output] = merger.get_closest_telemetry()
     assert [success, output.image, output.telemetry] == [True, image.data, telemetry.data]
 
-def last():
+def test_last():
     print("testing last")
     merger = MergeImageWithTelemetry()
 
@@ -93,11 +93,3 @@ def last():
 
     [success, output] = merger.get_closest_telemetry()
     assert [success, output] == [False, None]
-    # made it to the end, the telemetry pipeline is waiting
-
-if __name__ == "__main__": 
-    functions = (empty, no_image, no_telemetry, first, middle, last)
-    
-    for func in functions: 
-        func()
-        print("****************** PASSED ************************")
