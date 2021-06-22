@@ -63,6 +63,9 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+.DS_Store
+.vscode
+__pycache__/
 
 # CommandModule test logs
 modules/commandModule/tests/testLogs/
