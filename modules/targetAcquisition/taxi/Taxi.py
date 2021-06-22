@@ -8,6 +8,13 @@ config = ConfigProto()
 config.gpu_options.allow_growth = True
 session = InteractiveSession(config=config)
 
+# Constant declaration
+
+FOCAL_LENGTH = 24
+REAL_HEIGHT = 101.6
+IMAGE_HEIGHT = 1080
+SENSOR_HEIGHT = 4.63
+
 
 class Taxi:
     """
@@ -70,17 +77,10 @@ class Taxi:
     main()
         Main operations: getting camera input and passing the image to appropriate methods
     """
-    
-    # Constant declaration
-    
-    FOCAL_LENGTH = 24
-    REAL_HEIGHT = 101.6
-    IMAGE_HEIGHT = 1080
-    SENSOR_HEIGHT = 4.63
-    
+
     def __init__(self, state="BOX", bbox=[((0, 0), (0, 0))], frame=[], nextUncheckedID=0,
-                 expectedCount=5, numStableFrames=20, distanceFromBox=0,
-                 minDistanceFromBox=0, moveWaitTarget=0, recalibrate=False, lastBbox=[],
+                 expectedCount=1, numStableFrames=20, distanceFromBox=0,
+                 minDistanceFromBox=50, moveWaitTarget=75, recalibrate=False, lastBbox=[],
                  frameCount=0, totalWait=0, moveWaitCount=0, distanceCount=0):
         """
         Initializes variables
@@ -106,6 +106,22 @@ class Taxi:
         self.moveWaitCount = moveWaitCount
         self.distanceCount = distanceCount
 
+    def calculate_distance(self, pts):
+        """
+        Calculate approximate distance between box and drone
+        """
+
+        # Calculating object height in pixels by extracting y coordinates from each tuple 'pts'
+        objectHeight = pts[0][1] - \
+                       pts[1][1] if (pts[0][1] > pts[1][1]) else pts[1][1] - pts[0][1]
+
+        # Calculate distance
+        distance = (FOCAL_LENGTH * REAL_HEIGHT * IMAGE_HEIGHT) / \
+                   (objectHeight * SENSOR_HEIGHT)
+
+        # Convert to m
+        distance_m = distance * 1000
+        return distance_m
 
     def find_overlapped_bbox(self):
         """
@@ -143,21 +159,6 @@ class Taxi:
         print(f"Matched bbox: {bbox}, max overlap: {maxOverlap}")
         return bbox, maxOverlap
 
-    def calculate_distance(self, pts):
-        """
-        Calculate approximate distance between box and drone
-        """
-
-        # Calculating object height in pixels by extracting y coordinates from each tuple 'pts'
-        objectHeight = pts[0][1] - \
-            pts[1][1] if (pts[0][1] > pts[1][1]) else pts[1][1] - pts[0][1]
-
-        # Calculate distance
-        distance = (FOCAL_LENGTH * REAL_HEIGHT * IMAGE_HEIGHT) / \
-            (objectHeight * SENSOR_HEIGHT)
-
-        return distance
-
     def set_state(self, state):
         """
         Prepare variables for box detection, tracking etc.
@@ -172,7 +173,6 @@ class Taxi:
 
         elif state == "TRACK" or state == 1:
             self.state = "TRACK"
-
             # If switching to track from box for the first time, use the box ID
             if not self.recalibrate:
                 bbox = self.bbox[self.nextUncheckedID]
@@ -220,9 +220,9 @@ class Taxi:
             self.bbox = self.yolo.detect_boxes(self.frame)
             for (topLeft, botRight) in self.bbox:
                 cv2.rectangle(self.frame, topLeft,
-                                botRight, (0, 0, 255), 2)
+                              botRight, (0, 0, 255), 2)
 
-            # If initial run, expect 5 boxes
+            # If initial run, expect 1 box
             # If recalibrating, expect at least 1 box (less accurate but there's no other way)
             if not self.recalibrate:
                 expCount = self.expectedCount
@@ -230,7 +230,7 @@ class Taxi:
                 print("Recalibrating in BOX mode. Expecting 1 box")
                 expCount = 1
 
-            # YOLO can't move on until all 5 boxes stay in frame consistently/continuously for more than frameCount frames
+            # YOLO can't move on until all 1 box stay in frame consistently/continuously for more than frameCount frames
             if len(self.bbox) >= expCount:
                 self.frameCount += 1
             else:
@@ -242,17 +242,17 @@ class Taxi:
                 frameCount = 0
 
             self.totalWait += 1
-            if self.totalWait > 250:
-                print(f"Waited {self.totalWait} frames without finding the expected number of bbox. Switching to human control.")
-                return {heading: 0.0,  latestDistance: 0.0}
+            if self.totalWait > 150:
+                print(
+                    f"Waited {self.totalWait} frames without finding the expected number of bbox. Switching to human control.")
+                return {'latestDistance': 0.0}
 
-        # Switch to track when all 5 boxes are in view
+        # Switch to track when all 1 box are in view
         if self.state == "TRACK":
             # print("In tracking mode")
             found, bbox = self.tracker.update(self.frame)
 
             # Tracking succeeds and plane isn't already close enough
-            # print(f"Found: {found}, distance from box: {self.distanceFromBox}, min distance from box: {self.minDistanceFromBox}")
             if found and self.distanceFromBox > self.minDistanceFromBox:
                 # print("Tracking succeeds and plane isn't already close enough")
                 p1 = (int(bbox[0]), int(bbox[1]))
@@ -261,52 +261,53 @@ class Taxi:
                 cv2.rectangle(self.frame, p1, p2, (255, 0, 0), 2, 1)
 
                 # While not at half the distance from the box, keep moving forward
-                # if distanceCount < self.distanceFromBox // 2:
                 if self.distanceCount < 500:
-                    # print("While not at half the distance from the box, keep moving forward")
                     # Issue the next movement command every couple of frames
                     if self.moveWaitCount < self.moveWaitTarget:
                         print("Waiting to move")
                         self.moveWaitCount += 1
                     else:
+                        # Note TURNING HAS BEEN TURNED OFF. This will simply move forward.
                         # Don't need to turn if the bbox midpoint is within the center margin
                         # If center to left past margin, turn right by 1 degree
                         # If center to right past margin, turn left by 1 degree
                         margin = 50
                         turn = 0
                         forward = 0
-                        if (p1[0] + p2[0])/2 < self.frame.shape[0]/2 - margin:
-                            turn = 1
-                        elif (p1[0] + p2[0])/2 > self.frame.shape[0]/2 + margin:
-                            turn = -1
-                        else:
-                            forward = 5
-                            self.distanceCount += forward
+                        # Tempoararily disable turning due to complexity
+                        # if (p1[0] + p2[0]) / 2 < self.frame.shape[0] / 2 - margin:
+                        #     turn = 1
+                        # elif (p1[0] + p2[0]) / 2 > self.frame.shape[0] / 2 + margin:
+                        #     turn = -1
+                        # else:
+                        #     forward = 5
+                        forward = self.calculate_distance(self.bbox) / 4
+                        self.distanceCount += forward
                         print(
                             f"Turn {turn} degree(s) and move forward by {forward}")
 
                         # TODO: fix self.frame.shape not matching cv.imshow video shape
                         cv2.rectangle(self.frame, (240, 0),
-                                        (240, 640), (255, 0, 255), 2, 1)
+                                      (240, 640), (255, 0, 255), 2, 1)
 
-                        moveWaitCount = 0
-
+                        self.moveWaitCount = 0
+                        return {'latestDistance': forward}
                 # At the halfway point, do YOLO again to reset the size of the bounding box
                 # KCF and most other tracking algos have constant bbox size even when getting closer, which is a problem for distance calculation
                 else:
                     print("Distance limit reached, time to recalibrate")
-                    distanceCount = 0
+                    self.distanceCount = 0
                     self.recalibrate = True
                     self.lastBbox = self.bbox
                     self.set_state("BOX")
-                    return {heading: 0.0,  latestDistance: 0.0}
+                    return {'latestDistance': 0.0}
 
             # Tracking fails or plane is already close enough
             else:
                 # Assuming the plane is facing the right box, tracking fails either due to algo error or the plane got too close to object
                 # Switch to human control to drive the plane to the right spot
-                print(f"Found: {found}\nDistance: {self.distanceFromBox > self.minDistanceFromBox}")
-                return {heading: 0.0,  latestDistance: 0.0}
+                print(f"Found: {found}\nDistance: {self.distanceFromBox}")
+                return {'latestDistance': 0.0}
 
         cv2.imshow('Image', self.frame)
 

@@ -1,5 +1,6 @@
 from Taxi import Taxi
 
+
 def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     """
         Taxi Worker Process 
@@ -21,7 +22,7 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
         -------
         None
         """
-    
+
     print("Start Taxi")
     taxi = Taxi()
 
@@ -29,12 +30,10 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.acquire()
         pause.release()
         frame = pipelineIn.get()
-        if (not frame == None):
+        if frame is not None:
             command = taxi.main(frame)
-            if (hasattr(command, latestDistance)) and (command.latestDistance == 0):
+            if ('latestDistance' in command) and (command.latestDistance == 0):
                 pipelineOut.put(command)
 
         if not exitRequest.empty():
             return
-
-
