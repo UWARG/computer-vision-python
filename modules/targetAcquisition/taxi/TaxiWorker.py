@@ -1,4 +1,4 @@
-from modules.targetAcquisition.taxi import Taxi
+from Taxi import Taxi
 
 def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     """
@@ -28,14 +28,11 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     while True:
         pause.acquire()
         pause.release()
-        
         frame = pipelineIn.get()
-        
-        # Performing target acquisition using main() method of Taxi.py
-        # A stop/move command is returned which is put into the output pipeline
-        movement_command = taxi.main(frame)
-        
-        pipelineOut.put(movement_command)
+        if (not frame == None):
+            command = taxi.main(frame)
+            if (hasattr(command, latestDistance)) and (command.latestDistance == 0):
+                pipelineOut.put(command)
 
         if not exitRequest.empty():
             return
