@@ -6,7 +6,7 @@ def test_run_locator():
     # This test data is bogus, pls get me some realistic data
     mock_camera_euler = {
         'x': 0,
-        'y': -180,
+        'y': -90,
         'z': 0
     }
     mock_plane_euler = {
