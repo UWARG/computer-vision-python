@@ -21,13 +21,13 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
         pause.acquire()
         pause.release()
 
-        # Pixel coordinates of tents and plane data
-        coordinates = pipelineIn.get()
+        # Merged Data
+        merged_data = pipelineIn.get()
         # Check for valid input
-        if (coordinates is None):
+        if (merged_data is None):
             continue
 
-        ret, location = locator.run_locator(coordinates)
+        ret, location = locator.run_locator(merged_data.telemetry, merged_data.image)
 
         # Something has gone wrong, skip
         if (not ret):

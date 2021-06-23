@@ -110,7 +110,8 @@ class TargetAcquisition:
         for (topLeft, botRight) in self.bbox:
             cv2.rectangle(self.currentFrame, topLeft, botRight, (0, 0, 255), 2)
         cv2.imshow('img', self.currentFrame)
-        cv2.waitKey(2000)
+        cv2.waitKey(1000)
+        cv2.destroyAllWindows()
 
 
 
