@@ -7,7 +7,7 @@ numpy
 filelock==3.0.12
 watchdog==2.0.1
 pytest
-
+pyzbar
 Cython
 matplotlib>=3.2.2
 Pillow

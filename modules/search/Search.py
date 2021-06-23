@@ -31,10 +31,10 @@ class Search:
         self.__logger.debug("Search/perform_search: Started")
         
         planeLat = Decimal(math.radians(planeGPS["latitude"]))
-        planeLon = Decimal(math.radians(planeGPS["longtitude"]))
+        planeLon = Decimal(math.radians(planeGPS["longitude"]))
 
         tentLat = Decimal(math.radians(tentGPS["latitude"]))
-        tentLon = Decimal(math.radians(tentGPS["longtitude"]))
+        tentLon = Decimal(math.radians(tentGPS["longitude"]))
 
         diffLon = tentLon - planeLon
 
