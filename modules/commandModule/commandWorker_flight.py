@@ -14,9 +14,9 @@ def pogi_subworker(pipelineOut, POGI_DIR):
         pipelineOut.put(pogiData)
 
 def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir="", pogi_dir=""):
-	
-	logger = logging.getLogger()
-	logger.debug("flight_command_worker: Started Flight Command Module")
+
+    logger = logging.getLogger()
+    logger.debug("flight_command_worker: Started Flight Command Module")
     
     command = CommandModule(pigoFileDirectory=pigo_dir)
     while True:
@@ -43,5 +43,5 @@ def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir=
             json.dump(gps_coordinates, pylon_gps_file)
         # Cache data here
         command.set_gps_coordinates(gps_coordinates)
-	
+
     logger.debug("flight_command_worker: Stopped Flight Command Module")
