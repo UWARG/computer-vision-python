@@ -5,11 +5,18 @@ import os
 import multiprocessing as mp
 from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
 from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
+from modules.commandModule.commandWorker_flight import flight_command_worker
+from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
+from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+
+PIGO_DIRECTORY = ""
+POGI_DIRECTORY = ""
 
 # Main process called by command line
 # Main process manages PROGRAMS, programs call submodules for data processing and move data around to achieve a goal.
 
 logger = None
+
 
 def callTrain():
     main_directory = os.getcwd()
@@ -23,7 +30,7 @@ def callTrain():
         import modules.targetAcquisition.yolov2_assets.train
     else:
         logger.error("main/callTrain: YOLOV2_ASSETS Directory not found. Specify path")
-    
+
     logger.error("main/callTrain: Finished")
 
 
@@ -39,23 +46,43 @@ def flightProgram():
     logger.debug("main/flightProgram: Start flight program")
     # Queue from decklinksrc to targetAcquisition
     videoPipeline = mp.Queue()
-    # Queue from targetAcquisition out to main/geolocation
-    coordinatePipeline = mp.Queue()
+    # Queue from command module out to fusion module containing timestamped telemetry data from POGI
+    telemetryPipeline = mp.Queue()
+    # Queue from fusion module out to targetAcquisition, containing grouped image and telemetry data from a "single time"
+    mergedDataPipeline = mp.Queue()
+    # Queue from targetAcquisition out to geolocation_locator_worker, containing centre-of-bbox coordinate data and associated telemetry data
+    bboxAndTelemetryPipeline = mp.Lock()
+    # Intermediary pipeline transferring a list of potential coordinates from geolocaion_locator_worker to geolocation_ouput_worker
+    geolocationIntermediatePipeline = mp.Queue()
+    # Queue from geolocation module out to command module, containing (x, y) coordinates of detected pylons
+    locationCommandPipeline = mp.Queue()
+
+    # Lock for bboxAndTelemetryPipeline
+    bboxAndTelemetryLock = mp.Lock()
+    # Lock for geolocationIntermediatePipeline
+    geolocationIntermediateLock = mp.Lock()
+
     # Utility locks
     pause = mp.Lock()
     quit = mp.Queue()
 
     processes = [
         mp.Process(target=decklinkSrcWorker, args=(pause, quit, videoPipeline)),
-        mp.Process(target=targetAcquisitionWorker, args=(pause, quit, videoPipeline, coordinatePipeline))
+        mp.Process(target=pipelineMergeWorker,
+                   args=(pause, quit, videoPipeline, telemetryPipeline, mergedDataPipeline)),
+        mp.Process(target=targetAcquisitionWorker, args=(pause, quit, mergedDataPipeline, bboxAndTelemetryPipeline)),
+        mp.Process(target=geolocation_locator_worker,
+                   args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
+        mp.Process(target=geolocation_output_worker, args=(
+        pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
+        mp.Process(target=flight_command_worker,
+                   args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
     ]
 
     for p in processes:
         p.start()
-    
+
     logger.debug("main/flightProgram: Flight program init complete")
-
-
 
 
 def searchProgram():
@@ -68,11 +95,14 @@ def searchProgram():
 
 
 def init_logger():
-    logFileName = os.path.join("logs", str(datetime.today().date()) + "_" +
-                                       str(datetime.today().hour) + "." +
-                                       str(datetime.today().minute) + "." +
-                                       str(datetime.today().second) + ".log")
-    
+    baseDir = os.path.dirname(os.path.realpath(__file__))
+    logFileName = os.path.join(baseDir, "logs", str(datetime.today().date()) + "_" +
+                               str(datetime.today().hour) + "." +
+                               str(datetime.today().minute) + "." +
+                               str(datetime.today().second) + ".log")
+    with open(logFileName, 'w') as write_file:
+        write_file.write("LOG START")
+
     formatter = logging.Formatter(fmt='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%I:%M:%S')
     fileHandler = logging.FileHandler(filename=logFileName, mode="w")
     streamHandler = logging.StreamHandler()
@@ -81,7 +111,8 @@ def init_logger():
 
     logging.basicConfig(level=logging.DEBUG, handlers=[fileHandler, streamHandler])
     logging.debug("main/init_logger: Logger Initialized")
-    logger = logging.getLogger()
+    return logging.getLogger()
+
 
 def taxiProgram():
     """
@@ -98,7 +129,7 @@ if __name__ == '__main__':
     Parameters: Args for commands
     Returns: None
     """
-    init_logger()
+    logger = init_logger()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
