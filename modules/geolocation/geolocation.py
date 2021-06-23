@@ -72,6 +72,52 @@ class Geolocation:
         self.__logger.debug("geolocation/__init__: Finished")
         return
 
+
+    def set_constants(self):
+        """
+        Magic numbers for competition
+        """
+        self.__GPS_OFFSET = 0
+        self.__CAMERA_OFFSET = 0
+        self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
+        self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
+
+        self.__LAT_ORIGIN = 43.43592232053646
+        self.__LON_ORIGIN = -80.58007312309068
+        self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
+
+
+    # Requires set_constants() first
+    # TODO Unit tests
+    def local_from_lat_lon(self, latitude, longitude):
+        """
+        Get metres from longitude and latitude
+        x-axis is east, y-axis is north
+        Equations from https://www.themathdoctors.org/distances-on-earth-3-planar-approximation/
+
+        Parameters
+        ----------
+        coordinates
+
+        Returns
+        -------
+
+        """
+        y = np.deg2rad([latitude - self.__LAT_ORIGIN])[0] * self.__EARTH_RADIUS
+        x = np.deg2rad([longitude - self.__LON_ORIGIN])[0] * self.__EARTH_RADIUS * np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]
+
+        return x, y
+
+
+    # TODO Unit tests and description
+    def lat_lon_from_local(self, x, y):
+
+        latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
+        longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
+
+        return latitude, longitude
+
+
     def gather_point_pairs(self):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
@@ -513,15 +559,19 @@ class Geolocation:
         euler_angles_plane = telemetry["eulerAnglesOfPlane"]
         euler_angles_camera = telemetry["eulerAnglesOfCamera"]
         # Pls confirm shape of gpsCoordinates from command
-        gps_x = telemetry["gpsCoordinates"]["longtitude"]
-        gps_y = telemetry["gpsCoordinates"]["lattitude"]
+        gpsLongitude = telemetry["gpsCoordinates"]["longtitude"]
+        gpsLatitude = telemetry["gpsCoordinates"]["lattitude"]
         altitude = telemetry["gpsCoordinates"]["altitude"]
 
         # Expect euler angles to be in degrees
         self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
         self.__eulerPlane = self.__deg_vals_to_rad(euler_angles_plane)
-        self.__longitude = gps_x
-        self.__latitude = gps_y
+
+        # Competition
+        # TODO Properly integrate lat-lon converters - refactor unit tests
+        localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
+        self.__longitude = localCoordinates[0]
+        self.__latitude = localCoordinates[1]
         self.__altitude = altitude
 
         camera_o, camera_c, camera_u, camera_v = self.convert_input()
@@ -543,7 +593,10 @@ class Geolocation:
         self.__pixelToGeoPairs = non_collinear_points
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
 
-        geo_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        # Competition
+        # TODO Properly integrate lat-lon converters - refactor unit tests
+        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
         return True, geo_coordinates
 
     @staticmethod

@@ -15,6 +15,8 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
     logger.debug("geolocation_locator_worker: Start Geolocation Locator")
     
     locator = Geolocation()
+    # Competition
+    locator.set_constants()
 
     while True:
 
