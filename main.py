@@ -5,9 +5,11 @@ import os
 import multiprocessing as mp
 from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
 from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
+from modules.decklinksrc.decklinkSrcWorker_taxi import decklinkSrcWorker_taxi
 from modules.commandModule.commandWorker_flight import flight_command_worker
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.QRScanner.QRWorker import qr_worker
 
 PIGO_DIRECTORY = ""
 POGI_DIRECTORY = ""
@@ -85,14 +87,24 @@ def flightProgram():
     logger.debug("main/flightProgram: Flight program init complete")
 
 
-def searchProgram():
+def qrProgram():
     """
     Search program implementation here.
     Parameters: None
     Returns: None
     """
-    return
+    videoPipeline = mp.Queue()
 
+    pause = mp.Lock()
+    quit = mp.Queue()
+
+    processes = [
+        mp.Process(target=decklinkSrcWorker_taxi, args=(pause, quit, videoPipeline)),
+        mp.Process(target=qr_worker, args=(pause, quit, videoPipeline))
+    ]
+
+    for p in processes:
+        p.start()
 
 def init_logger():
     baseDir = os.path.dirname(os.path.realpath(__file__))
