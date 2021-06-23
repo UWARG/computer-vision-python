@@ -5,18 +5,18 @@ from modules.geolocation import geolocation
 def test_run_locator():
     # This test data is bogus, pls get me some realistic data
     mock_camera_euler = {
-        'x': 0,
-        'y': -90,
-        'z': 0
+        'yaw': 0,
+        'pitch': 90,
+        'roll': 0
     }
     mock_plane_euler = {
-        'x': 0,
-        'y': 0,
-        'z': 0
+        'yaw': 0,
+        'pitch': 0,
+        'roll': 0
     }
     mock_gps = {
-        "longtitude": 0,
-        "lattitude": 0,
+        "longitude": 0,
+        "latitude": 0,
         "altitude": 100
     }
     mock_telemetry = {
