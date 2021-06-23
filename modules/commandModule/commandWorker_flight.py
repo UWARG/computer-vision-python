@@ -3,6 +3,7 @@ from modules.commandModule.commandFns import write_pigo, read_pogi
 import logging
 import json
 from modules.commandModule.directories import POGI_DIR, PIGO_DIR
+from modules.timestamp.timestamp import Timestamp
 
 
 def pogi_subworker(pipelineOut, POGI_DIR):
@@ -11,7 +12,7 @@ def pogi_subworker(pipelineOut, POGI_DIR):
 
     # if pogi has changed, output to the pipeline
     if changed:
-        pipelineOut.put(pogiData)
+        pipelineOut.put(Timestamp(pogiData))
 
 
 def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir="", pogi_dir=""):
