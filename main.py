@@ -1,13 +1,17 @@
 import argparse
 from datetime import datetime
 import logging
+from modules.targetAcquisition.taxi.TaxiWorker import taxi_worker
 import os
 import multiprocessing as mp
+import json
 from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
 from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
-from modules.commandModule.commandWorker_flight import flight_command_worker
+from modules.commandModule.commandWorker_flight import flight_command_worker, pogi_subworker
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.search.searchWorker import searchWorker
+from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
 
 PIGO_DIRECTORY = ""
 POGI_DIRECTORY = ""
@@ -120,6 +124,57 @@ def taxiProgram():
     Parameters: None
     Returns: None
     """
+    logger.error("main/taxiProgram: Taxi Program Started")
+
+    # Set up data structures for first POGI retrieval
+    pogiInitPipeline = mp.Queue()
+    firstTelemetry = None
+
+    while True:
+        # Read pogi data and put it into the pipeline if it is available
+        pogi_subworker(pogiInitPipeline, POGI_DIRECTORY)
+        
+        # If we don't get any data, try again
+        if pogiInitPipeline.empty():
+            continue
+        
+        # Once we have data, break out of the loop
+        firstTelemetry = pogiInitPipeline.get()
+        break
+    
+    # Get cached Pylon GPS coordinates
+    pylonGpsData = None
+    with open("temp_pylon_gps") as file:
+        pylonGpsData = json.load(file)
+
+    # If any of the two pieces of data from above are None, throw an error and leave
+    if firstTelemetry is None:
+        logger.error("main/taxiProgram: Taxi program couldn't get telemetry data")
+        return
+    if pylonGpsData is None:
+        logger.error("main/taxiProgram: Taxi program couldn't get cached pylon gps data")
+        return
+    
+    # Get result from search and run taxi command worker with the given heading command
+    searchResult = searchWorker(firstTelemetry.data, pylonGpsData)
+    taxi_command_worker_first(searchResult)
+
+    # Set up pipeline architecture for taxi
+    deckLinkSrcOutTaxiInPipeline = mp.Queue() # Timestamped data
+    taxiOutCommandInPipeline = mp.Queue()
+    pause = mp.Lock()
+    quit = mp.Queue()
+
+    processes = [
+        mp.Process(target=decklinkSrcWorker, args=(pause, quit, deckLinkSrcOutTaxiInPipeline)),
+        mp.Process(target=taxi_worker, args=(pause, quit, deckLinkSrcOutTaxiInPipeline, taxiOutCommandInPipeline)),
+        mp.Process(target=command_taxi_worker_continuous, args=(pause, quit, taxiOutCommandInPipeline))
+    ]
+
+    for p in processes:
+        p.start()
+
+    logger.error("main/taxiProgram: Taxi Program Init Finished")
     return
 
 
