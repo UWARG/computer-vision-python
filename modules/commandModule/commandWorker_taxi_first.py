@@ -18,6 +18,7 @@ def taxi_command_worker_first(turn_command_data):
     -------
     None
     """
+    logger = logging.getLogger()
     logger.debug("commandWorker_taxi_first/taxi_command_worker_first: Started")
 
     command = CommandModule(pigoFileDirectory=PIGO_DIR, pogiFileDirectory=POGI_DIR)
