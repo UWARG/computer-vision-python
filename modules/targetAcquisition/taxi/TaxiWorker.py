@@ -31,7 +31,7 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
         pause.release()
         frame = pipelineIn.get()
         if frame is not None:
-            command = taxi.main(frame)
+            command = taxi.main(frame.data)
             if 'latestDistance' in command:
                 pipelineOut.put(command)
 
