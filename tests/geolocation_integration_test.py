@@ -15,8 +15,8 @@ def test_run_locator():
         'z': 0
     }
     mock_gps = {
-        "longtitude": 0,
-        "lattitude": 0,
+        "longitude": 0,
+        "latitude": 0,
         "altitude": 100
     }
     mock_telemetry = {

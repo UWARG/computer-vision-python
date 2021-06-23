@@ -559,8 +559,8 @@ class Geolocation:
         euler_angles_plane = telemetry["eulerAnglesOfPlane"]
         euler_angles_camera = telemetry["eulerAnglesOfCamera"]
         # Pls confirm shape of gpsCoordinates from command
-        gpsLongitude = telemetry["gpsCoordinates"]["longtitude"]
-        gpsLatitude = telemetry["gpsCoordinates"]["lattitude"]
+        gpsLongitude = telemetry["gpsCoordinates"]["longitude"]
+        gpsLatitude = telemetry["gpsCoordinates"]["latitude"]
         altitude = telemetry["gpsCoordinates"]["altitude"]
 
         # Expect euler angles to be in degrees
