@@ -1,3 +1,4 @@
+import logging
 import cv2
 
 from pyzbar import pyzbar
@@ -13,6 +14,8 @@ class QRScanner:
     codes : list<dict<str: str, str: tuple>>
         List of decoded QR codes in format {"text": given text, "rect": (x, y, w, h)},
         where x, y identify top left corner of bounding box & w, h identify width and height
+    __logger : Logger
+        Program-wide logger
     
     Methods
     -------
@@ -29,7 +32,12 @@ class QRScanner:
         """
         Initializes self.codes
         """
+        self.__logger = logging.getLogger()
+        self.__logger.debug("QR/__init__: Started")
+
         self.codes = []
+
+        self.__logger.debug("QR/__init__: Finished")
 
     def main(self, frame):
         """
@@ -40,8 +48,12 @@ class QRScanner:
         frame : np.ndarray
             Image to be processed
         """
+        self.__logger.debug("QR/main: Started")
+
         self.codes = []
         self.get_qr_codes(frame)
+
+        self.__logger.debug("QR/main: Finished")
         return self.draw_qr_codes(frame)
 
     def get_qr_codes(self, frame):

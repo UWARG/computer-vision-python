@@ -1,11 +1,14 @@
-from QR import QRScanner
+from modules.QRScanner.QR import QRScanner
+import logging
 import cv2
 
 def qr_worker(pause, exitRequest, pipelineIn):
     """
     Initializes worker for QR Scanner module
     """
-    print("Start QR Scanner")
+    logger = logging.getLogger()
+    logger.debug("QRWorker: Start QR Scanner Module")
+    
     qrScanner = QRScanner()
 
     while True:
@@ -16,6 +19,9 @@ def qr_worker(pause, exitRequest, pipelineIn):
         updatedFrame = qrScanner.main(frame)
 
         cv2.imshow("Video feed", updatedFrame)
+        cv2.waitKey(1)
         
         if not exitRequest.empty():
-            return
+            break
+    
+    logger.debug("QRWorker: Stop QR Scanner Module")

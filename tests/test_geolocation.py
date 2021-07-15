@@ -5,7 +5,8 @@ Unit tests for geolocation module
 import unittest
 import numpy as np
 
-import geolocation
+from modules.geolocation import geolocation
+
 
 class TestGatherPointPairs(unittest.TestCase):
     """
@@ -430,8 +431,8 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__WORLD_ORIGIN = np.array([0, 0, 0])
         self.locator._Geolocation__GPS_OFFSET = np.array([0, 0, 0])
         self.locator._Geolocation__CAMERA_OFFSET = np.array([0, 0, 0])
-        self.locator._Geolocation__eulerCamera = {"x": 0, "y": 0, "z": 0}
-        self.locator._Geolocation__eulerPlane = {"x": 0, "y": 0, "z": 0}
+        self.locator._Geolocation__eulerCamera = {"roll": 0, "pitch": 0, "yaw": 0}
+        self.locator._Geolocation__eulerPlane = {"roll": 0, "pitch": 0, "yaw": 0}
 
         actual = self.locator.convert_input()
 
@@ -456,8 +457,8 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__CAMERA_OFFSET = np.array([0, 0, 0])
 
         rightAngle = np.pi / 2
-        self.locator._Geolocation__eulerPlane = {"x": rightAngle, "y": rightAngle, "z": rightAngle}
-        self.locator._Geolocation__eulerCamera = {"x": rightAngle, "y": rightAngle, "z": rightAngle}
+        self.locator._Geolocation__eulerPlane = {"roll": rightAngle, "pitch": rightAngle, "yaw": rightAngle}
+        self.locator._Geolocation__eulerCamera = {"roll": rightAngle, "pitch": rightAngle, "yaw": rightAngle}
 
         actual = self.locator.convert_input()
 
@@ -473,8 +474,8 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__WORLD_ORIGIN = np.array([-50, 50, 50])
         self.locator._Geolocation__GPS_OFFSET = np.array([-0.5, 0, -0.5])
         self.locator._Geolocation__CAMERA_OFFSET = np.array([0.5, 0, 0.5])
-        self.locator._Geolocation__eulerPlane = {"x": np.deg2rad(45), "y": np.deg2rad(180), "z": np.deg2rad(90)}
-        self.locator._Geolocation__eulerCamera = {"x": np.deg2rad(90), "y": np.deg2rad(45), "z": np.deg2rad(135)}
+        self.locator._Geolocation__eulerPlane = {"roll": np.deg2rad(45), "pitch": np.deg2rad(180), "yaw": np.deg2rad(90)}
+        self.locator._Geolocation__eulerCamera = {"roll": np.deg2rad(90), "pitch": np.deg2rad(45), "yaw": np.deg2rad(135)}
 
         expected_o = np.array([-(50 + np.sqrt(2) /2), -(150 + np.sqrt(2) /2), 49])
         expected_c = np.array([(-np.sqrt(2) - 2) / 4, 0.5, (-np.sqrt(2) + 2) / 4])
@@ -496,8 +497,8 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__WORLD_ORIGIN = np.array([50, 25, -50])
         self.locator._Geolocation__GPS_OFFSET = np.array([-1, -1, 0])
         self.locator._Geolocation__CAMERA_OFFSET = np.array([5, 0, 2])
-        self.locator._Geolocation__eulerPlane = {"x": np.deg2rad(45), "y": 0, "z": np.deg2rad(270)}
-        self.locator._Geolocation__eulerCamera = {"x": np.deg2rad(180), "y": np.deg2rad(45), "z": np.deg2rad(315)}
+        self.locator._Geolocation__eulerPlane = {"roll": np.deg2rad(45), "pitch": 0, "yaw": np.deg2rad(270)}
+        self.locator._Geolocation__eulerCamera = {"roll": np.deg2rad(180), "pitch": np.deg2rad(45), "yaw": np.deg2rad(315)}
 
         expected_o = np.array([(-98.5 - (np.sqrt(2) * 2)), (46 + np.sqrt(2) / 2), (167.5 + 2 * np.sqrt(2))])
         expected_c = np.array([(-np.sqrt(2) + 2) / 4, -.5, (-np.sqrt(2) - 2) / 4])
