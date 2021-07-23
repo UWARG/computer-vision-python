@@ -1,7 +1,9 @@
-from ...commandModule import CommandModule
 import unittest
 import json
 import os
+
+from ...commandModule import CommandModule
+from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
     """
@@ -16,12 +18,15 @@ class TestCaseWritingCorrectValuesToPIGOFile(unittest.TestCase):
     """
 
     def setUp(self):
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
-        open(self.pigoFile, "w").close() # delete file contents before next unit test
+        os.remove(self.pigoFile)
+        os.remove(self.pogiFile)
 
     def __read_json(self, key):
         # used to check file output

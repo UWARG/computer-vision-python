@@ -3,18 +3,23 @@ import logging
 import unittest
 import os
 from ...commandModule import CommandModule
+from .generate_temp_json import generate_temp_json
 
 class TestReadingWrongTypeFromPOGIFiles(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.basicConfig(level=logging.DEBUG, )
         self.pogiData = dict()
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
         self.pogiData = dict()
+        os.remove(self.pigoFile)
+        os.remove(self.pogiFile)
 
     def __value_instantiate(self, key, value):
         with open(self.pogiFile, "w") as file:

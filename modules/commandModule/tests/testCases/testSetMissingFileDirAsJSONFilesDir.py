@@ -1,6 +1,8 @@
-from ...commandModule import CommandModule
 import unittest
 import os
+
+from ...commandModule import CommandModule
+from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingMissingFileDirAsJSONFileDir(unittest.TestCase):
     """
@@ -9,9 +11,15 @@ class TestCaseWritingMissingFileDirAsJSONFileDir(unittest.TestCase):
     - initializer
     """
     def setUp(self):
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.missingFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "oogaBooga.json")
+
+    def tearDown(self):
+        os.remove(self.pogiFile)
+        os.remove(self.pigoFile)
 
     def test_file_not_found_error_if_initialize_pogi_file_dir_as_missing_file_dir(self):
         with self.assertRaises(FileNotFoundError):

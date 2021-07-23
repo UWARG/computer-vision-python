@@ -2,6 +2,9 @@ from ...commandModule import CommandModule
 import unittest
 import os
 import logging
+import os
+
+from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingNullToPIGOFile(unittest.TestCase):
     """
@@ -15,12 +18,15 @@ class TestCaseWritingNullToPIGOFile(unittest.TestCase):
 	- set_disconnect_autopilot
     """
     def setUp(self):
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
-        open(self.pigoFile, "w").close() # delete file contents before next unit test
+        os.remove(self.pigoFile)
+        os.remove(self.pogiFile)
 
     def test_value_error_if_set_gps_coords_to_null(self):
         with self.assertLogs(level="ERROR") as cm:

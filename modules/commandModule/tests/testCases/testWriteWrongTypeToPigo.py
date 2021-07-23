@@ -1,7 +1,9 @@
-from ...commandModule import CommandModule
 import unittest
 import os
 import logging
+
+from ...commandModule import CommandModule
+from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
     """
@@ -30,13 +32,16 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                          bytes(5),
                          bytearray(5),
                          memoryview(bytes(5))]
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
         self.testData = []
-        open(self.pigoFile, "w").close() # delete file contents before next unit test
+        os.remove(self.pigoFile)
+        os.remove(self.pogiFile)
 
     def test_type_error_if_set_gps_coords_to_wrong_type(self):
         for test in self.testData:
