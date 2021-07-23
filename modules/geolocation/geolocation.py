@@ -460,9 +460,9 @@ class Geolocation:
 
         # get euler angles
         # note: naming conventions specified in CV-Telemetry docs and commandModule specs
-        yawAngle = eulerAngles["z"]
-        pitchAngle = eulerAngles["y"]
-        rollAngle = eulerAngles["x"]
+        yawAngle = eulerAngles["yaw"]
+        pitchAngle = eulerAngles["pitch"]
+        rollAngle = eulerAngles["roll"]
 
         # get plane yaw rotation matrix
         yawRotation = np.array([[float(np.cos([yawAngle])), -1 * float(np.sin([yawAngle])), 0],
