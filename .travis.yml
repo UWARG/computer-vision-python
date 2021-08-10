@@ -1,7 +1,10 @@
+language: python
 os:
   - linux
   - osx
-language: python
+jobs:
+  allow_failures:
+    - os: osx
 python:
   - "3.7"
   - "3.8"
