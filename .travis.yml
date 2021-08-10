@@ -1,0 +1,19 @@
+language: python
+os:
+  - linux
+  - osx
+jobs:
+  allow_failures:
+    - os: osx
+python:
+  - "3.7"
+  - "3.8"
+  - "3.9"
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install numpy==1.20
+# command to run tests
+script:
+  - pytest
+  
