@@ -2,7 +2,7 @@ import unittest
 import os
 import logging
 
-from ...commandModule import CommandModule
+from modules.commandModule.commandModule import CommandModule
 from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingMissingGroundCommandAttributes(unittest.TestCase):
@@ -26,12 +26,12 @@ class TestCaseWritingMissingGroundCommandAttributes(unittest.TestCase):
         temp = {"latestDistance":1.234}
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_ground_commands(temp)
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must contain heading key.", ])
+        self.assertEqual(cm.output, ["ERROR:root:groundCommands must contain heading key.", ])
         logging.info(cm.output)
 
     def test_key_error_if_set_ground_commands_missing_latest_distance_attribute(self):
         temp = {"heading":1.234}
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_ground_commands(temp)
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must contain latestDistance key.", ])
+        self.assertEqual(cm.output, ["ERROR:root:groundCommands must contain latestDistance key.", ])
         logging.info(cm.output)

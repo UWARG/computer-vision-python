@@ -2,7 +2,7 @@ import json
 import logging
 import unittest
 import os
-from ...commandModule import CommandModule
+from modules.commandModule.commandModule import CommandModule
 from .generate_temp_json import generate_temp_json
 
 class TestReadingNullFromPOGIFiles(unittest.TestCase):
@@ -29,28 +29,28 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("currentAltitude", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_current_altitude()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentAltitude not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:currentAltitude not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_airspeed_equals_none(self):
         self.__value_instantiate("currentAirspeed", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_current_airspeed()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:currentAirspeed not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:currentAirspeed not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_is_landed_equals_none(self):
         self.__value_instantiate("isLanded", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_is_landed()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:isLanded not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:isLanded not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_equals_none(self):
         self.__value_instantiate("eulerAnglesOfCamera", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:eulerAnglesOfCamera not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:eulerAnglesOfCamera not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_x_equals_none(self):
@@ -58,7 +58,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:roll in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_y_equals_none(self):
@@ -66,7 +66,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:pitch in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_camera_z_equals_none(self):
@@ -74,14 +74,14 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfCamera", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_camera()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfCamera is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:yaw in eulerAnglesOfCamera is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_equals_none(self):
         self.__value_instantiate("eulerAnglesOfPlane", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:eulerAnglesOfPlane not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:eulerAnglesOfPlane not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_x_equals_none(self):
@@ -89,7 +89,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfPlane", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:roll in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:roll in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_y_equals_none(self):
@@ -97,7 +97,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfPlane", euler_camera)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:pitch in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:pitch in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_euler_plane_z_equals_none(self):
@@ -105,14 +105,14 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("eulerAnglesOfPlane", euler_plane)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_euler_angles_of_plane()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:yaw in eulerAnglesOfPlane is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:yaw in eulerAnglesOfPlane is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_gps_equals_none(self):
         self.__value_instantiate("gpsCoordinates", None)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates not found in the POGI json file.", ])
+        self.assertEqual(cm.output, ["ERROR:root:gpsCoordinates not found in the POGI json file.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_gps_lat_equals_none(self):
@@ -120,7 +120,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("gpsCoordinates", gps)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:latitude in gpsCoordinates is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:latitude in gpsCoordinates is null.", ])
         logging.info(cm.output)
 
     def test_value_error_if_get_gps_lng_equals_none(self):
@@ -128,7 +128,7 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("gpsCoordinates", gps)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:longitude in gpsCoordinates is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:longitude in gpsCoordinates is null.", ])
         logging.info(cm.output)
     
     def test_value_error_if_get_gps_alt_equals_none(self):
@@ -136,6 +136,6 @@ class TestReadingNullFromPOGIFiles(unittest.TestCase):
         self.__value_instantiate("gpsCoordinates", gps)
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.get_gps_coordinates()
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:altitude in gpsCoordinates is null.", ])
+        self.assertEqual(cm.output, ["ERROR:root:altitude in gpsCoordinates is null.", ])
         logging.info(cm.output)
 

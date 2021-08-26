@@ -1,4 +1,4 @@
-from ...commandWorker_flight import flight_command_worker
+from modules.commandModule.commandWorker_flight import flight_command_worker
 import pytest
 import json
 import multiprocessing as mp

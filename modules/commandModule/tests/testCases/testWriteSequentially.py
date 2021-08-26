@@ -2,7 +2,7 @@ import unittest
 import json
 import os
 
-from ...commandModule import CommandModule
+from modules.commandModule.commandModule import CommandModule
 from .generate_temp_json import generate_temp_json
 
 """

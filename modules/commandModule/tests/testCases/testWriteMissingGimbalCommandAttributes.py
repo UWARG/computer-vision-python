@@ -2,7 +2,7 @@ import unittest
 import os
 import logging
 
-from ...commandModule import CommandModule
+from modules.commandModule.commandModule import CommandModule
 from .generate_temp_json import generate_temp_json
 
 class TestCaseWritingMissingGimbalCommandAttributes(unittest.TestCase):
@@ -26,12 +26,12 @@ class TestCaseWritingMissingGimbalCommandAttributes(unittest.TestCase):
         temp = {"pitch": 1.231}
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gimbal_commands(temp)
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must contain yaw key.", ])
+        self.assertEqual(cm.output, ["ERROR:root:gimbalCommands must contain yaw key.", ])
         logging.info(cm.output)
 
     def test_key_error_if_set_gimbal_commands_missing_pitch_attribute(self):
         temp = {"yaw": 1.213}
         with self.assertLogs(level="ERROR") as cm:
             self.commandModule.set_gimbal_commands(temp)
-        self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must contain pitch key.", ])
+        self.assertEqual(cm.output, ["ERROR:root:gimbalCommands must contain pitch key.", ])
         logging.info(cm.output)
