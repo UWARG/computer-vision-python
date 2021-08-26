@@ -3,7 +3,7 @@ import os
 import logging
 
 from modules.commandModule.commandModule import CommandModule
-from .generate_temp_json import generate_temp_json
+from modules.commandModule.tests.testCases.generate_temp_json import generate_temp_json
 
 class TestCaseWritingMissingGPSCoordinateAttributes(unittest.TestCase):
     """

@@ -4,7 +4,7 @@ import os
 import logging
 import os
 
-from .generate_temp_json import generate_temp_json
+from modules.commandModule.tests.testCases.generate_temp_json import generate_temp_json
 
 class TestCaseWritingNullToPIGOFile(unittest.TestCase):
     """
