@@ -3,7 +3,6 @@ from modules.geolocation import geolocation
 import numpy as np
 
 def test_run_locator():
-    # This test data is bogus, pls get me some realistic data
     mock_camera_euler = {
         'yaw': 0,
         'pitch': 90,
