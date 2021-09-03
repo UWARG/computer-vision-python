@@ -2,8 +2,8 @@ import json
 import os
 from modules.commandModule.commandModule import CommandModule
 
-PIGO_DIR = ""
-POGI_DIR = ""
+PIGO_DIR = "tempPIGO.json"
+POGI_DIR = "tempPOGO.json"
 
 
 def json_changed(latestJsonDirectory, currentDict) -> bool:
@@ -91,7 +91,9 @@ def read_pogi(POGI_DIR="") -> tuple:
         contains changed flag and pogi dict; i.e. (true, pogi) --> pogi is different from latest_pogi.json
     """
 
-    command = CommandModule(pigoFileDirectory=PIGO_DIR, pogiFileDirectory=POGI_DIR)
+    with open(PIGO_DIR, "w"):
+        # create a temporary PIGO file to satisfy command module requirements
+        command = CommandModule(pigoFileDirectory=PIGO_DIR, pogiFileDirectory=POGI_DIR)
 
     # store all current POGI data into a dict
     # note: the keys included in the dict are those which are currently valid and working in commandModule
@@ -113,4 +115,5 @@ def read_pogi(POGI_DIR="") -> tuple:
         with open(latestJsonDirectory, 'w') as pogiFile:
             json.dump(pogiData, pogiFile, ensure_ascii=False, indent=4, sort_keys=True)
 
+    os.remove(PIGO_DIR)
     return isChanged, pogiData
