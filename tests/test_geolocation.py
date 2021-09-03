@@ -142,9 +142,12 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-    def less_than_four_points_collinear(self):
+    def test_less_than_four_points_collinear(self):
         # Setup
-        coordinatesArray = np.array([[0, 0], [1, 1], [-1, -1]])
+        # Testing on second column
+        coordinatesArray = np.array([[[0, 0], [0, 0]],
+                                     [[0, 1], [1, 1]],
+                                     [[1, 0], [-1, -1]]])
         expected = 0
 
         # Run
@@ -154,9 +157,12 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-
     def test_four_points_collinear(self):
-        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10]])
+        # Testing on second column
+        coordinatesArray = np.array([[[0, 0], [0, 0]],
+                                     [[0, 1], [1, 1]],
+                                     [[1, 0], [2, 2]],
+                                     [[1, 1], [10, 10]]])
         expected = 0
 
         # Run
@@ -167,8 +173,12 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
     def test_four_points_non_collinear(self):
-        coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
-        expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+        # Testing on second column
+        coordinatesArray = np.array([[[0, 0], [0, 0]],
+                                     [[0, 0], [10, 12]],
+                                     [[0, 0], [-1, -1]],
+                                     [[0, 0], [100, 0]]])
+        expected = coordinatesArray
 
         # Run
         actual = self.locator.get_non_collinear_points(coordinatesArray)
@@ -177,8 +187,17 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
     def test_more_than_four_points_one_correct_case(self):
-        coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0], [4, 4]])
-        expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+        # Testing on second column
+        coordinatesArray = np.array([[[0, 0], [0, 0]],
+                                     [[0, 0], [10, 12]],
+                                     [[0, 0], [-1, -1]],
+                                     [[0, 0], [100, 0]],
+                                     [[0, 0], [4, 4]]])
+
+        expected = np.array([[[0, 0], [0, 0]],
+                             [[0, 0], [10, 12]],
+                             [[0, 0], [-1, -1]],
+                             [[0, 0], [100, 0]]])
 
         # Run
         actual = self.locator.get_non_collinear_points(coordinatesArray)
@@ -186,9 +205,15 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-    
+
     def test_more_than_four_points_no_correct_cases(self):
-        coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10], [15, 15], [3, 7]])
+        # Testing on second column
+        coordinatesArray = np.array([[[0, 0], [0, 0]],
+                                     [[0, 2], [1, 1]],
+                                     [[2, 0], [2, 2]],
+                                     [[2, 2], [10, 10]],
+                                     [[1, 3], [15, 15]],
+                                     [[4, 1], [3, 7]]])
         expected = 0
 
         # Run
@@ -419,12 +444,7 @@ class TestConvertInput(unittest.TestCase):
         return
 
     def test_all_zeroes(self):
-
-        expected_o = np.zeros(3)
-        expected_c = np.array([1, 0 ,0])
-        expected_u = np.array([0, 1 ,0])
-        expected_v = np.array([0, 0 ,1])
-
+        # Setup
         self.locator._Geolocation__latitude = 0
         self.locator._Geolocation__longitude = 0
         self.locator._Geolocation__altitude = 0
@@ -434,19 +454,20 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__eulerCamera = {"roll": 0, "pitch": 0, "yaw": 0}
         self.locator._Geolocation__eulerPlane = {"roll": 0, "pitch": 0, "yaw": 0}
 
+        expected_o = np.zeros(3)
+        expected_c = np.array([1, 0, 0])
+        expected_u = np.array([0, 1, 0])
+        expected_v = np.array([0, 0, 1])
+        expected = (expected_o, expected_c, expected_u, expected_v)
+
+        # Run
         actual = self.locator.convert_input()
 
-        expected = (expected_o, expected_c, expected_u, expected_v)
-        #assert
+        # Test
         np.testing.assert_almost_equal(actual, expected)
-        
+
     def test_90_degree_rotation(self):
-
-        expected_o = np.zeros(3)
-        expected_c = np.array([-1, 0, 0])
-        expected_u = np.array([0, 2, 0])
-        expected_v = np.array([0, 0, -2])
-
+        # Setup
         self.locator._Geolocation__FOV_FACTOR_H = 2
         self.locator._Geolocation__FOV_FACTOR_V = 2
         self.locator._Geolocation__latitude = 0
@@ -460,14 +481,20 @@ class TestConvertInput(unittest.TestCase):
         self.locator._Geolocation__eulerPlane = {"roll": rightAngle, "pitch": rightAngle, "yaw": rightAngle}
         self.locator._Geolocation__eulerCamera = {"roll": rightAngle, "pitch": rightAngle, "yaw": rightAngle}
 
+        expected_o = np.zeros(3)
+        expected_c = np.array([-1, 0, 0])
+        expected_u = np.array([0, 2, 0])
+        expected_v = np.array([0, 0, -2])
+        expected = (expected_o, expected_c, expected_u, expected_v)
+
+        # Run
         actual = self.locator.convert_input()
 
-        expected = (expected_o, expected_c, expected_u, expected_v)
-        # assert
+        # Test
         np.testing.assert_almost_equal(actual, expected)
 
     def test_point_set_1(self):
-
+        # Setup
         self.locator._Geolocation__latitude = -100
         self.locator._Geolocation__longitude = -100
         self.locator._Geolocation__altitude = 100
@@ -481,16 +508,16 @@ class TestConvertInput(unittest.TestCase):
         expected_c = np.array([(-np.sqrt(2) - 2) / 4, 0.5, (-np.sqrt(2) + 2) / 4])
         expected_u = np.array([(-np.sqrt(2) + 2) / 4, 0.5, (-np.sqrt(2) - 2) / 4])
         expected_v = np.array([-0.5, -np.sqrt(2) / 2, -0.5])
+        expected = (expected_o, expected_c, expected_u, expected_v)
 
+        # Run
         actual = self.locator.convert_input()
 
-        expected = (expected_o, expected_c, expected_u, expected_v)
-        # assert
+        # Test
         np.testing.assert_almost_equal(actual, expected)
 
-
     def test_point_set_2(self):
-
+        # Setup
         self.locator._Geolocation__longitude = -50
         self.locator._Geolocation__latitude = 75
         self.locator._Geolocation__altitude = 115
@@ -504,13 +531,33 @@ class TestConvertInput(unittest.TestCase):
         expected_c = np.array([(-np.sqrt(2) + 2) / 4, -.5, (-np.sqrt(2) - 2) / 4])
         expected_u = np.array([-0.5, (np.sqrt(2)) / 2, -.5])
         expected_v = np.array([(np.sqrt(2) + 2) / 4, .5, (np.sqrt(2) - 2) / 4])
+        expected = (expected_o, expected_c, expected_u, expected_v)
 
+        # Run
         actual = self.locator.convert_input()
 
-        expected = (expected_o, expected_c, expected_u, expected_v)
-        # assert
+        # Test
         np.testing.assert_almost_equal(actual, expected)
 
+    def test_point_set_3(self):
+        # Setup
+        self.locator._Geolocation__longitude = 0
+        self.locator._Geolocation__latitude = 0
+        self.locator._Geolocation__altitude = 100
+        self.locator._Geolocation__eulerPlane = {"roll": 0, "pitch": 0, "yaw": 0}
+        self.locator._Geolocation__eulerCamera = {"roll": 0, "pitch": np.deg2rad(90), "yaw": 0}
+
+        expected_o = np.array([0, 0, 100])
+        expected_c = np.array([0, 0, -1])
+        expected_u = np.array([0, 1, 0])
+        expected_v = np.array([1, 0, 0])
+        expected = (expected_o, expected_c, expected_u, expected_v)
+
+        # Run
+        actual = self.locator.convert_input()
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
 
 
 class TestGetBestLocation(unittest.TestCase):
@@ -643,8 +690,6 @@ class TestGetBestLocation(unittest.TestCase):
         np.testing.assert_almost_equal(actual[0], expectedCoordPair)
         np.testing.assert_almost_equal(actual[1], expectedError)
 
-               
- 
 
 if __name__ == "__main__":
     unittest.main()

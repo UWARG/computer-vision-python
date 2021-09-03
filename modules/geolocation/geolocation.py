@@ -59,9 +59,9 @@ class Geolocation:
         self.__eulerPlane = eulerPlane
 
         # Constants for input_conversion
-        self.__WORLD_ORIGIN = np.empty(3)
-        self.__GPS_OFFSET = np.empty(3)
-        self.__CAMERA_OFFSET = np.empty(3)
+        self.__WORLD_ORIGIN = np.zeros(3)
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
         self.__FOV_FACTOR_H = 1
         self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
@@ -69,6 +69,7 @@ class Geolocation:
 
         self.__locationsList = []
 
+        self.__inCompetition = False
         self.__logger.debug("geolocation/__init__: Finished")
         return
 
@@ -77,14 +78,17 @@ class Geolocation:
         """
         Magic numbers for competition
         """
-        self.__GPS_OFFSET = 0
-        self.__CAMERA_OFFSET = 0
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
         self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
         self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
+
+        self.__inCompetition = True
+        return
 
 
     # Requires set_constants() first
@@ -203,12 +207,12 @@ class Geolocation:
         Parameters
         ----------
         coordinatesArray : np.ndarray
-            Array with dimensions ( , 2), containing a list of coordinates
+            Array with dimensions ( , 2, 2), containing a list of coordinates
 
         Returns
         -------
         np.ndarray
-            Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
+            Array with dimensions (4, 2, 2), containing a list of coordinates that are non-collinear,
             or an empty list if none were found in the input array
         """
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
@@ -218,12 +222,12 @@ class Geolocation:
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
             self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
-            return np.empty(shape=(0, 2))
+            return np.empty(shape=(0, 2, 2))
 
         # Look at all sequential pairs of four points
         for i in range(0, len(coordinatesArray)):
             # Array for storing the four points currently being considered
-            points = np.empty(shape=(NUM_POINTS_NEEDED, 2))
+            points = np.empty(shape=(NUM_POINTS_NEEDED, 2, 2))
 
             # Append four sequential points to the array, loop around to index 0 if needed
             # For efficiency, this algorithm will check through sequential sets of points only, rather than
@@ -233,18 +237,18 @@ class Geolocation:
 
             # Check collinearity of all possible combinations
             areNotFourCollinear = True
-            for i in range(0, NUM_POINTS_NEEDED):
-                areNotFourCollinear &= not self.__are_three_points_collinear(points[i],
-                                                                             points[(i + 1) % NUM_POINTS_NEEDED],
-                                                                             points[(i + 2) % NUM_POINTS_NEEDED])
+            for k in range(0, NUM_POINTS_NEEDED):
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[k][1],
+                                                                             points[(k + 1) % NUM_POINTS_NEEDED][1],
+                                                                             points[(k + 2) % NUM_POINTS_NEEDED][1])
 
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
                 self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
                 return points
-        
+
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
-        return np.empty(shape=(0, 2))
+        return np.empty(shape=(0, 2, 2))
 
     def calculate_pixel_to_geo_mapping(self):
         """
@@ -567,12 +571,17 @@ class Geolocation:
         self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
         self.__eulerPlane = self.__deg_vals_to_rad(euler_angles_plane)
 
-        # Competition
-        # TODO Properly integrate lat-lon converters - refactor unit tests
-        localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
-        self.__longitude = localCoordinates[0]
-        self.__latitude = localCoordinates[1]
-        self.__altitude = altitude
+        # Competition or non-competition
+        if (self.__inCompetition):
+            # TODO Properly integrate lat-lon converters - refactor unit tests
+            localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
+            self.__longitude = localCoordinates[0]
+            self.__latitude = localCoordinates[1]
+            self.__altitude = altitude
+        else:
+            self.__longitude = gpsLongitude
+            self.__latitude = gpsLatitude
+            self.__altitude = altitude
 
         camera_o, camera_c, camera_u, camera_v = self.convert_input()
         self.__cameraOrigin3o = camera_o
@@ -585,6 +594,7 @@ class Geolocation:
         if len(point_pairs) < 4:
             return False, None
 
+        # Get right column of geographical
         non_collinear_points = self.get_non_collinear_points(point_pairs)
         # If insufficient point pairs, exit this run and try again
         if len(non_collinear_points) < 4:
@@ -593,10 +603,12 @@ class Geolocation:
         self.__pixelToGeoPairs = non_collinear_points
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
 
-        local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
-        # Competition
-        # TODO Properly integrate lat-lon converters - refactor unit tests
-        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
+        geo_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        # Competition or non-competition
+        if (self.__inCompetition):
+            # TODO Properly integrate lat-lon converters - refactor unit tests
+            geo_coordinates = self.lat_lon_from_local(geo_coordinates[0], geo_coordinates[1])
+
         return True, geo_coordinates
 
     @staticmethod

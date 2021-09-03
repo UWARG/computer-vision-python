@@ -1,7 +1,7 @@
 import pytest
 from modules.geolocation import geolocation
+import numpy as np
 
-@pytest.mark.skip(reason="geolocation module is broken beyond testing")
 def test_run_locator():
     # This test data is bogus, pls get me some realistic data
     mock_camera_euler = {
@@ -25,9 +25,12 @@ def test_run_locator():
         "gpsCoordinates": mock_gps
     }
 
-    mock_coordinates = [[0, 0]]
+    mock_coordinates = [[500, 1000]]
+
+    expected = np.array([100, 0])
 
     locator = geolocation.Geolocation()
     ret, data = locator.run_locator(mock_telemetry, mock_coordinates)
 
     assert ret is True
+    np.testing.assert_almost_equal(data[0], expected)
