@@ -1,7 +1,9 @@
-from ...commandModule import CommandModule
 import unittest
 import os
 import logging
+
+from modules.commandModule.commandModule import CommandModule
+from modules.commandModule.tests.testCases.generate_temp_json import generate_temp_json
 
 class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
     """
@@ -30,20 +32,23 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
                          bytes(5),
                          bytearray(5),
                          memoryview(bytes(5))]
-        self.pigoFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json")
-        self.pogiFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json")
+        self.pigoFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPigo.json"))
+        self.pogiFile = generate_temp_json(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "testJSONs", "testPogi.json"))
         self.commandModule = CommandModule(pigoFileDirectory=self.pigoFile, pogiFileDirectory=self.pogiFile)
 
     def tearDown(self):
         self.testData = []
-        open(self.pigoFile, "w").close() # delete file contents before next unit test
+        os.remove(self.pigoFile)
+        os.remove(self.pogiFile)
 
     def test_type_error_if_set_gps_coords_to_wrong_type(self):
         for test in self.testData:
             if type(test) is not dict:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_gps_coordinates(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gpsCoordinates must be a dict and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:gpsCoordinates must be a dict and not {}.".format(type(test)), ])
                 logging.info(cm.output)
     
     def test_type_error_if_set_ground_commands_to_wrong_type(self):
@@ -51,7 +56,7 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
             if type(test) is not dict:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_ground_commands(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:groundCommands must be a dict and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:groundCommands must be a dict and not {}.".format(type(test)), ])
                 logging.info(cm.output)
 
     def test_type_error_if_set_gimbal_commands_to_wrong_type(self):
@@ -59,7 +64,7 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
             if type(test) is not dict:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_gimbal_commands(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:gimbalCommands must be a dict and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:gimbalCommands must be a dict and not {}.".format(type(test)), ])
                 logging.info(cm.output)
 
     def test_type_error_if_set_begin_landing_to_wrong_type(self):
@@ -67,7 +72,7 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
             if type(test) is not bool:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_begin_landing(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:beginLanding must be a bool and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:beginLanding must be a bool and not {}.".format(type(test)), ])
                 logging.info(cm.output)
 
     def test_type_error_if_set_begin_takeoff_to_wrong_type(self):
@@ -75,7 +80,7 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
             if type(test) is not bool:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_begin_takeoff(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:beginTakeoff must be a bool and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:beginTakeoff must be a bool and not {}.".format(type(test)), ])
                 logging.info(cm.output)
 
     def test_type_error_if_set_disconnect_autopilot_to_wrong_type(self):
@@ -83,6 +88,6 @@ class TestCaseWritingWrongTypeToPIGOFile(unittest.TestCase):
             if type(test) is not bool:
                 with self.subTest(passed_data=test), self.assertLogs(level="ERROR") as cm:
                     self.commandModule.set_disconnect_autopilot(test)
-                self.assertEqual(cm.output, ["ERROR:commandModule.commandModule:disconnectAutopilot must be a bool and not {}.".format(type(test)), ])
+                self.assertEqual(cm.output, ["ERROR:root:disconnectAutopilot must be a bool and not {}.".format(type(test)), ])
                 logging.info(cm.output)
     

@@ -33,7 +33,7 @@ def flight_command_worker(pause, exitRequest, pipelineIn, pipelineOut, pigo_dir=
             continue
 
         # POGI Logic
-        pogi_subworker(pipelineOut, POGI_DIR)
+        pogi_subworker(pipelineOut, pogi_dir)
 
         # PIGO Logic
 
