@@ -3,7 +3,7 @@ keras==2.0.8
 imgaug
 opencv-python
 h5py
-numpy
+numpy>=1.21.1
 filelock==3.0.12
 watchdog==2.0.1
 pytest
