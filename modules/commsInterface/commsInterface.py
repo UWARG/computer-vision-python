@@ -1,6 +1,6 @@
-import usb.core
-import usb.util
-import serial
+import usb.core # import for pyusb
+import usb.util # import for pyusb
+import serial # import for pyserial
 
 class CommsInterface:
     def __init__(self, type: bool):
@@ -44,7 +44,7 @@ class CommsInterface:
             return self.dev.read(endpointId, self.ep.wMaxPacketSize)
         elif self.uart_or_usb == 1:
             read_data = endpointId.readline()
-            return str(read_data[0:len(read_data)].decode('utf-8'))
+            return read_data
         
 
     def write(self, endpointId, data):
@@ -61,14 +61,15 @@ class CommsInterface:
 
 class USBInterface(CommsInterface):
     def __init__(self, type: bool, idVendor=None, idProduct=None):
+        # use lsusb -v in the terminal to list the idVendor and idProduct of connected usb devices 
         self.idVendor = idVendor
         self.idProduct = idProduct
-        super().__init__(self, type)
+        super().__init__(self, 0)
 
 class UARTInterface(CommsInterface):
-    def __init__(self, type: bool, uart_port, baudrate):
+    def __init__(self, type: bool, uart_port: str, baudrate: int = 9600):
         self.uart_port = uart_port
         self.baudrate = baudrate
-        super().__init__(self, type)
+        super().__init__(self, 1)
 
 
