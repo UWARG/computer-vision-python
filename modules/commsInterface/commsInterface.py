@@ -3,8 +3,9 @@ import usb.util # import for pyusb
 import serial # import for pyserial
 from digi.xbee.devices import XBeeDevice
 
+
 class CommsInterface:
-    def __init__(self, type: bool):
+    def __init__(self, usb_type: bool):
         """
         Initializes parameters for USB or UART
 
@@ -14,7 +15,7 @@ class CommsInterface:
             Boolean used to specify selection of USB or UART;
             0|False for USB, 1|True for UART
         """
-        self.uart_or_usb = type
+        self.uart_or_usb = usb_type
     
     def create_end_point_FC(self):
         """
@@ -46,7 +47,6 @@ class CommsInterface:
         elif self.uart_or_usb == 1:
             read_data = endpointId.readline()
             return read_data
-        
 
     def write(self, endpointId, data):
         """
@@ -62,7 +62,7 @@ class CommsInterface:
 
 
 class USBInterface(CommsInterface):
-    def __init__(self, type: bool, idVendor=None, idProduct=None):
+    def __init__(self, idVendor=None, idProduct=None):
         # use lsusb -v in the terminal to list the idVendor and idProduct of connected usb devices 
         self.idVendor = idVendor
         self.idProduct = idProduct
@@ -70,7 +70,7 @@ class USBInterface(CommsInterface):
 
 
 class UARTInterface(CommsInterface):
-    def __init__(self, type: bool, uart_port: str, baudrate: int = 9600):
+    def __init__(self, uart_port: str, baudrate: int = 9600):
         self.uart_port = uart_port
         self.baudrate = baudrate
         super().__init__(self, 1)
