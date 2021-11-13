@@ -3,7 +3,7 @@ keras==2.0.8
 imgaug
 opencv-python
 h5py
-numpy
+numpy>=1.21.1
 filelock==3.0.12
 watchdog==2.0.1
 pytest
@@ -17,6 +17,7 @@ tensorboard>=2.2
 torch>=1.7.0
 torchvision>=0.8.1
 tqdm>=4.41.0
+unittest-xml-reporting
 pyusb>=1.2.1
 pyserial>=3.5
 
