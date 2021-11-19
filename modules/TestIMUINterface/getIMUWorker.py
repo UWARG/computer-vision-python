@@ -1,8 +1,8 @@
 import time
-from .getIMUData import getIMUINterface
+#from .getIMUData import getIMUINterface
+import getIMUData
 
-getIMUWorker = getIMUINterface()
+getIMUWorker = getIMUData.getIMUINterface('/dev/ttyACM0')
 
 while(True):
-    getIMUWorker.getIMUData() #pass in comport
-    time.sleep(5)
+    print(getIMUWorker.getIMUData()) 
