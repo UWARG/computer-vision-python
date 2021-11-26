@@ -94,3 +94,39 @@ class QRScanner:
             cv2.putText(frame, qr["text"], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         return frame
+        
+    def get_qr_text(self): 
+        text = self.codes[0]["text"]
+        text_array = text.split("\n")
+        if len(text_array) != 3: 
+            return {
+                "success": False,
+                "has_questions": False,
+                "error_message": "Could not parse newlines correctly",
+                "format": "Questions:\n Word word? Word word? Word word?\n Date; Time; device_id; sensor_id; longitude; latitude",
+                "text": text
+            }
+        else: 
+            questions = text_array[1]
+            d = text_array[2].split("; ")
+            if len(d) != 5: 
+                return {
+                        "success": False,
+                        "has_questions": True,
+                        "error_message": "Could not parse semicolons correctly in the third line",
+                        "questions": questions,
+                        "format": "Date; Time; device_id; sensor_id; longitude; latitude",
+                        "text": text
+                    }
+            return {
+                "success": True,
+                "questions" : questions,
+                "date" : d[0],
+                "time" : d[1],
+                "device_id" : d[2],
+                "sensor_id" : d[3],
+                "longitude" : d[4],
+                "latitude" : d[5],
+                "text": text
+            }
+            
