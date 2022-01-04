@@ -1,5 +1,5 @@
 tensorflow-gpu
-keras==2.0.8
+keras
 imgaug
 opencv-python
 h5py
