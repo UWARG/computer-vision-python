@@ -3,6 +3,8 @@ Geolocation module to map pixel coordinates to geographical coordinates
 """
 
 import numpy as np
+import math
+import logging
 
 class Geolocation:
     """
@@ -27,6 +29,9 @@ class Geolocation:
         -------
         Geolocation
         """
+
+        self.__logger = logging.getLogger()
+        self.__logger.debug("geolocation/__init__: Started")
 
         # Input to gather_point_pairs()
         self.__cameraOrigin3o = np.array([0.0, 0.0, 2.0])
@@ -64,8 +69,53 @@ class Geolocation:
 
         self.__locationsList = []
 
+        self.__logger.debug("geolocation/__init__: Finished")
         return
 
+
+    def set_constants(self):
+        """
+        Magic numbers for competition
+        """
+        self.__GPS_OFFSET = 0
+        self.__CAMERA_OFFSET = 0
+        self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
+        self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
+
+        self.__LAT_ORIGIN = 43.43592232053646
+        self.__LON_ORIGIN = -80.58007312309068
+        self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
+
+
+    # Requires set_constants() first
+    # TODO Unit tests
+    def local_from_lat_lon(self, latitude, longitude):
+        """
+        Get metres from longitude and latitude
+        x-axis is east, y-axis is north
+        Equations from https://www.themathdoctors.org/distances-on-earth-3-planar-approximation/
+
+        Parameters
+        ----------
+        coordinates
+
+        Returns
+        -------
+
+        """
+        y = np.deg2rad([latitude - self.__LAT_ORIGIN])[0] * self.__EARTH_RADIUS
+        x = np.deg2rad([longitude - self.__LON_ORIGIN])[0] * self.__EARTH_RADIUS * np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]
+
+        return x, y
+
+
+    # TODO Unit tests and description
+    def lat_lon_from_local(self, x, y):
+
+        latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
+        longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
+
+        return latitude, longitude
 
 
     def gather_point_pairs(self):
@@ -76,6 +126,7 @@ class Geolocation:
         -------
         # np.array(shape=(n, 2, 2))
         """
+        self.__logger.debug("geolocation/gather_point_pairs: Started")
 
         pixelGeoPairs = np.empty(shape=(0, 2, 2))
         minimumPixelCount = 4  # Required for creating the map
@@ -97,7 +148,6 @@ class Geolocation:
 
             # Linear combination formula
             pixelInWorldSpace3a = self.__cameraDirection3c + scalar1m * self.__cameraOrientation3u + scalar1n * self.__cameraOrientation3v
-
             # Verify pixel vector is pointing downwards
             if (pixelInWorldSpace3a[2] > maximumZcomponent):
                 validPixelCount -= 1
@@ -111,8 +161,9 @@ class Geolocation:
             pair = np.vstack((self.__referencePixels[i], [x, y]))
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
+        self.__logger.debug("geolocation/gather_point_pairs: Returned " + str(pixelGeoPairs))
         return pixelGeoPairs
-    
+
     def __are_three_points_collinear(self, p1, p2, p3):
         """
         PRIVATE
@@ -132,14 +183,18 @@ class Geolocation:
         bool
             True if the three points are collinear, otherwise false
         """
+        self.__logger.debug("geolocation/__are_three_points_collinear: Started")
+        
         x = 0
         y = 1
         # Calculates the area of a triangle and checks if this value is 0
         # Actually calculates 2 times the area, since it skips the unnecessary step of multiplication by 0.5
-        return (p1[x]*(p2[y]-p3[y]) +
-                p2[x]*(p3[y]-p1[y]) +
-                p3[x]*(p1[y]-p2[y])) == 0
+        isCollinear =  (p1[x]*(p2[y]-p3[y]) +
+                        p2[x]*(p3[y]-p1[y]) +
+                        p3[x]*(p1[y]-p2[y])) == 0
 
+        self.__logger.debug("geolocation/__are_three_points_collinear: Returned " + str(isCollinear))
+        return isCollinear
 
     def get_non_collinear_points(self, coordinatesArray):
         """
@@ -156,11 +211,13 @@ class Geolocation:
             Array with dimensions (4, 2), containing a list of coordinates that are non-collinear,
             or an empty list if none were found in the input array
         """
+        self.__logger.debug("geolocation/get_non_collinear_points: Started")
+
         NUM_POINTS_NEEDED = 4
-        # Empty array in case no set of four non-collinear points are found
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
+            self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
             return np.empty(shape=(0, 2))
 
         # Look at all sequential pairs of four points
@@ -172,19 +229,21 @@ class Geolocation:
             # For efficiency, this algorithm will check through sequential sets of points only, rather than
             # testing every single combination.
             for j in range(0, NUM_POINTS_NEEDED):
-                points[j] = coordinatesArray[(i+j) % len(coordinatesArray)]
+                points[j] = coordinatesArray[(i + j) % len(coordinatesArray)]
 
             # Check collinearity of all possible combinations
             areNotFourCollinear = True
             for i in range(0, NUM_POINTS_NEEDED):
-                areNotFourCollinear &= not self.__are_three_points_collinear(points[i], 
-                                                                             points[(i+1) % NUM_POINTS_NEEDED],
-                                                                             points[(i+2) % NUM_POINTS_NEEDED])
-            
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[i],
+                                                                             points[(i + 1) % NUM_POINTS_NEEDED],
+                                                                             points[(i + 2) % NUM_POINTS_NEEDED])
+
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
+                self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
                 return points
-
+        
+        self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
         return np.empty(shape=(0, 2))
 
     def calculate_pixel_to_geo_mapping(self):
@@ -195,6 +254,7 @@ class Geolocation:
         -------
         np.array(shape=(3,3))
         """
+        self.__logger.debug("geolocation/calculate_pixel_to_geo_mapping: Started")
 
         # Declare 4 matrices
         # Assign relevant values, shapes and data types
@@ -218,9 +278,9 @@ class Geolocation:
         sourcePixelMatrixInverse = np.linalg.pinv(sourcePixelMatrix)
 
         # Return matrix product of mappedGeoMatrix and sourcePixelMatrixInverse
-        return (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
-
-
+        matrixProduct = (mappedGeoMatrix.dot(sourcePixelMatrixInverse))
+        self.__logger.debug("geolocation/calculate_pixel_to_geo_mapping: Returned " + str(matrixProduct))
+        return matrixProduct
 
     def convert_input(self):
         """
@@ -231,6 +291,8 @@ class Geolocation:
         list:
             list of numpy arrays that represent the o, c, u and v vectors
         """
+        self.__logger.debug("geolocation/convert_input: Started")
+
         # get plane and camera rotation matrices
         planeRotation = self.__calculate_rotation_matrix(self.__eulerPlane)
         cameraRotation = self.__calculate_rotation_matrix(self.__eulerCamera)
@@ -248,6 +310,7 @@ class Geolocation:
         u = self.__calculate_u_vector(compoundRotationMatrix)
         v = self.__calculate_v_vector(c, u)
 
+        self.__logger.debug("geolocation/convert_input: Returned " + str((o, c, u, v)))
         return (o, c, u, v)
 
     def __calculate_o_vector(self, compoundRotationMatrix: np.ndarray, gpsCameraOffset: np.ndarray) -> np.ndarray:
@@ -266,6 +329,8 @@ class Geolocation:
         oVector: numpy array
             Array containing components of the o vector
         """
+        self.__logger.debug("geolocation/__calculate_o_vector: Started")
+
         # get GPS module coordinates
         gpsModule = np.empty(3)
         gpsModule[0] = self.__longitude - self.__WORLD_ORIGIN[0]
@@ -278,7 +343,9 @@ class Geolocation:
         rotatedOffset = np.matmul(transposedMatrix, gpsCameraOffset)
 
         # get camera coordinates in world space
-        return np.add(gpsModule, rotatedOffset)
+        cameraCoordinates = np.add(gpsModule, rotatedOffset)
+        self.__logger.debug("geolocation/__calculate_o_vector: Returned " + str(cameraCoordinates))
+        return cameraCoordinates
 
     def __calculate_c_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
 
@@ -295,6 +362,8 @@ class Geolocation:
         cVector:
             Array containing components of the c vector
         """
+        self.__logger.debug("geolocation/__calculate_c_vector: Started")
+
         # apply compound rotation matrix to cVectorCameraSpace
         cVector = np.matmul(compoundRotationMatrix, self.__C_VECTOR_CAMERA_SPACE)
 
@@ -305,7 +374,9 @@ class Geolocation:
 
         # reshape vector
         # in order to get an fov, fix the c vector and scale u and v with fov factors to get an fov
-        return np.squeeze(cVector)
+        squeezedVector = np.squeeze(cVector)
+        self.__logger.debug("geolocation/__calculate_c_vector: Returned " + str(squeezedVector))
+        return squeezedVector
 
     def __calculate_u_vector(self, compoundRotationMatrix: np.ndarray) -> np.ndarray:
 
@@ -322,6 +393,8 @@ class Geolocation:
         uVector: numpy array
             Array containing camera rotation vector
         """
+        self.__logger.debug("geolocation/__calculate_u_vector: Started")
+
         # apply compound rotation matrix to uVectorCameraSpace
         uVector = np.matmul(compoundRotationMatrix, self.__U_VECTOR_CAMERA_SPACE)
 
@@ -332,7 +405,10 @@ class Geolocation:
 
         # reshape vector and apply field of view factor
         uVector = np.squeeze(uVector)
-        return uVector * self.__FOV_FACTOR_H
+        scaledVector = uVector * self.__FOV_FACTOR_H
+        self.__logger.debug("geolocation/__calculate_u_vector: Returned " + str(scaledVector))
+        return scaledVector
+
 
     def __calculate_v_vector(self, c: np.ndarray, u: np.ndarray) -> np.ndarray:
         """
@@ -350,6 +426,8 @@ class Geolocation:
         numpyArray:
             array containing the remaining camera rotation vector
         """
+        self.__logger.debug("geolocation/__calculate_v_vector: Started")
+
         # cross product c and u to get v
         vVector = np.cross(c, u)
 
@@ -360,8 +438,9 @@ class Geolocation:
 
         # apply field of view factor
         vVector = np.squeeze(vVector)
-
-        return vVector * self.__FOV_FACTOR_V
+        scaledVector = vVector * self.__FOV_FACTOR_V
+        self.__logger.debug("geolocation/__calculate_v_vector: Returned " + str(scaledVector))
+        return scaledVector
 
     def __calculate_rotation_matrix(self, eulerAngles: np.ndarray) -> np.ndarray:
         """
@@ -377,11 +456,13 @@ class Geolocation:
         rotationMatrix: numpy array
             Rotation matrix calculated from the given euler angles
         """
+        self.__logger.debug("geolocation/__calculate_rotation_matrix: Started")
+
         # get euler angles
         # note: naming conventions specified in CV-Telemetry docs and commandModule specs
-        yawAngle = eulerAngles["z"]
-        pitchAngle = eulerAngles["y"]
-        rollAngle = eulerAngles["x"]
+        yawAngle = eulerAngles["yaw"]
+        pitchAngle = eulerAngles["pitch"]
+        rollAngle = eulerAngles["roll"]
 
         # get plane yaw rotation matrix
         yawRotation = np.array([[float(np.cos([yawAngle])), -1 * float(np.sin([yawAngle])), 0],
@@ -402,27 +483,34 @@ class Geolocation:
         # note: assume ZYX euler angles (i.e. R = RzRyRx); otherwise, change the multiplication order
         rotationMatrix = np.matmul(yawRotation, np.matmul(pitchRotation, rollRotation))
 
+        self.__logger.debug("geolocation/__calculate_rotation_matrix: Returned " + str(rotationMatrix))
         return rotationMatrix
 
-# Private function that checks if the trimmed array is empty ie all values were too far apart from the median
-# Returns median if array is empty, otherwise finds the average of the trimmed array
-    def __get_average_otherwise_median(self,trimmedArray,median):
-        if np.size(trimmedArray,0)==0:
-             return median
-        else:
-            return np.average(trimmedArray,axis=0)
+    # Private function that checks if the trimmed array is empty ie all values were too far apart from the median
+    # Returns median if array is empty, otherwise finds the average of the trimmed array
 
+    def __get_average_otherwise_median(self,trimmedArray,median):
+        self.__logger.debug("geolocation/__get_average_otherwise_median: Started")
+
+        if np.size(trimmedArray,0)==0:
+            self.__logger.debug("geolocation/__get_average_otherwise_median: Returned " + str(median))
+            return median
+        else:
+            average = np.average(trimmedArray,axis=0)
+            self.__logger.debug("geolocation/__get_average_otherwise_median: Returned " + str(average))
+            return average
 
     # Helper function required for input
     def concatenate_locations(self, newLocations):
-
+        self.__logger.debug("geolocation/concatenate_locations: Started, input: " + str(newLocations))
         self.__locationsList = self.__locationsList + newLocations
-
+        self.__logger.debug("geolocation/concatenate_locations: Finished")
 
     def get_best_location(self,inputLocationTupleList):
+        self.__logger.debug("geolocation/get_best_location: Started")
 
         # For the  case of a single row matrix being passed to the function
-        if np.size(inputLocationTupleList,0)==1:
+        if np.size(inputLocationTupleList, 0) == 1:
 
             averagePair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
             averageError = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
@@ -438,8 +526,8 @@ class Geolocation:
             # Splits coordinate pair into x-coord and y-coord to remove outliers
             xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
             yCoord = np.vstack(coordPair[:, [1][0]]).astype(np.float64)
-            xCoordTrimmed=[]
-            yCoordTrimmed=[]
+            xCoordTrimmed = []
+            yCoordTrimmed = []
 
             xCoordMedian = np.median(xCoord)
             yCoordMedian = np.median(yCoord)
@@ -448,8 +536,8 @@ class Geolocation:
             # A modified version of the trimmed mean calculation. Here the distance measurement is distance between every x,y point from the median coordinate pair, x median and y median.
             # 7 is the distance for how far a given point can be from the median
             # TODO: Z-scores could be used instead
-            for (x,y) in zip(xCoord,yCoord):
-                distance = math.hypot(xCoordMedian-x,yCoordMedian-y)
+            for (x, y) in zip(xCoord, yCoord):
+                distance = math.hypot(xCoordMedian - x, yCoordMedian - y)
 
                 if distance < 7:
                     xCoordTrimmed.append(x)
@@ -458,21 +546,71 @@ class Geolocation:
             # In the case of the values in the error array, the distance here is 3.5.
             errorArray = errorArray[(errorArray - errorMedian > -3.5) & (errorArray - errorMedian < 3.5)]
 
-            averageX = self.__get_average_otherwise_median(xCoordTrimmed,xCoordMedian)
-            averageY = self.__get_average_otherwise_median(yCoordTrimmed,yCoordMedian)
-            averageError =self.__get_average_otherwise_median(errorArray,errorMedian)
+            averageX = self.__get_average_otherwise_median(xCoordTrimmed, xCoordMedian)
+            averageY = self.__get_average_otherwise_median(yCoordTrimmed, yCoordMedian)
+            averageError = self.__get_average_otherwise_median(errorArray, errorMedian)
 
-            averagePair = (averageX,averageY)
+            averagePair = (averageX, averageY)
 
+        self.__logger.debug("geolocation/get_best_location: Returned " + str((averagePair, averageError)))
         return (averagePair,averageError)
 
+    def run_locator(self, telemetry, coordinates):
+        euler_angles_plane = telemetry["eulerAnglesOfPlane"]
+        euler_angles_camera = telemetry["eulerAnglesOfCamera"]
+        # Pls confirm shape of gpsCoordinates from command
+        gpsLongitude = telemetry["gpsCoordinates"]["longitude"]
+        gpsLatitude = telemetry["gpsCoordinates"]["latitude"]
+        altitude = telemetry["gpsCoordinates"]["altitude"]
+
+        # Expect euler angles to be in degrees
+        self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
+        self.__eulerPlane = self.__deg_vals_to_rad(euler_angles_plane)
+
+        # Competition
+        # TODO Properly integrate lat-lon converters - refactor unit tests
+        localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
+        self.__longitude = localCoordinates[0]
+        self.__latitude = localCoordinates[1]
+        self.__altitude = altitude
+
+        camera_o, camera_c, camera_u, camera_v = self.convert_input()
+        self.__cameraOrigin3o = camera_o
+        self.__cameraDirection3c = camera_c
+        self.__cameraOrientation3u = camera_u
+        self.__cameraOrientation3v = camera_v
+
+        point_pairs = self.gather_point_pairs()
+        # If insufficient point pairs, exit this run and try again
+        if len(point_pairs) < 4:
+            return False, None
+
+        non_collinear_points = self.get_non_collinear_points(point_pairs)
+        # If insufficient point pairs, exit this run and try again
+        if len(non_collinear_points) < 4:
+            return False, None
+
+        self.__pixelToGeoPairs = non_collinear_points
+        tranformation_matrix = self.calculate_pixel_to_geo_mapping()
+
+        local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        # Competition
+        # TODO Properly integrate lat-lon converters - refactor unit tests
+        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
+        return True, geo_coordinates
+
+    @staticmethod
+    def __deg_vals_to_rad(convert_dict):
+        return dict(zip(convert_dict.keys(), list(map(lambda s: math.radians(s), convert_dict.values()))))
 
     def run_output(self, newLocations):
+        self.__logger.debug("geolocation/run_output: Started")
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
+        
+        self.__logger.debug("geolocation/run_output: Returned " + str((True, self.get_best_location)))
         return True, self.get_best_location(locations)
-
 
     def map_location_from_pixel(self, transformationMatrix, pixels):
         """
@@ -487,15 +625,16 @@ class Geolocation:
         -------
             np.array(shape=(5,2))
         """
+        self.__logger.debug("geolocation/map_location_from_pixel: Started")
 
         # Express all 2D coordinates of pixels as 3D coordinates with z value = 1
-        pixels = np.insert(pixels, 2, 1, axis = 1)
+        pixels = np.insert(pixels, 2, 1, axis=1)
 
         # Compute Homogeneous Coordinates: Product of Image Pixels and Coordinates
-        homogeneousCoordinates = np.matmul(transformationMatrix,pixels.T).T
+        homogeneousCoordinates = np.matmul(transformationMatrix, pixels.T).T
 
         geoCoordinates = np.empty(shape=(0, 2))
-        
+
         # Cycle through all homogenized coordinates of pixels
         for h in homogeneousCoordinates:
             # Checking if the homogenized value of Z equals 0. If so, we return an empty array.
@@ -506,8 +645,8 @@ class Geolocation:
             # Dehomogenizing the coordinate vector to compute the position in the destination image
             dehomogenizedX = h[0] / h[2]
             dehomogenizedY = h[1] / h[2]
-   
-            geoCoordinates = np.vstack((geoCoordinates,np.array([dehomogenizedX,dehomogenizedY])))
+
+            geoCoordinates = np.vstack((geoCoordinates, np.array([dehomogenizedX, dehomogenizedY])))
+        self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
 
         return geoCoordinates
-

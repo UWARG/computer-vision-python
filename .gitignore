@@ -12,6 +12,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
@@ -62,6 +63,9 @@ docs/_build/
 # PyBuilder
 target/
 .idea
+.DS_Store
+.vscode
+__pycache__/
 
 # CommandModule test logs
 modules/commandModule/tests/testLogs/
