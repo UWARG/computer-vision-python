@@ -12,6 +12,7 @@ def test_fltConnEncoding():
             "detect_flag": 1
         }
     }
-
-    print(build_fijo_bytearray(command))
+    byte_array = build_fijo_bytearray(command)
+    print(byte_array)
+    print(len(byte_array))
 
