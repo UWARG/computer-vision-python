@@ -4,9 +4,6 @@ A new computer vision system written in Python
 
 Please read the documentation and git best practices below before creating a pull request
 
-## Current Status:
-![Dashboard](metrics.repository.svg)
-
 ## Git Practices
 To implement a new feature:
 1. Create a new branch from main
