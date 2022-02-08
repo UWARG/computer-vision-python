@@ -17,5 +17,7 @@ jobs:
           repo: computer-vision-python
           plugin_lines: yes
           plugin_followup: yes
-          plugin_projects: yes
+          plugin_activity: yes
+          plugin_contributors: yes
+          
           plugin_projects_repositories: lowlighter/metrics/projects/1
