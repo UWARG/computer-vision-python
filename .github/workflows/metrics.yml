@@ -13,8 +13,8 @@ jobs:
           template: repository
           filename: metrics.repository.svg
           token: ${{ secrets.METRICS_TOKEN }}
-          user: lowlighter
-          repo: metrics
+          user: UWARG
+          repo: computer-vision-python
           plugin_lines: yes
           plugin_followup: yes
           plugin_projects: yes
