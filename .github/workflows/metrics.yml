@@ -18,6 +18,6 @@ jobs:
           plugin_lines: yes
           plugin_followup: yes
           plugin_activity: yes
+          plugin_activity_limit: 50
+          plugin_activity_filter: pr, comment, push, review
           plugin_contributors: yes
-          
-          plugin_projects_repositories: lowlighter/metrics/projects/1
