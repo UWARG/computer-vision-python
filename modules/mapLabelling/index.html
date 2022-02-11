@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<!-- <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVYeoKaMRbznDE-6fpZlMJoDWJbOQ2tMs&callback=myMap">
+  </script>
+  <title>My Google Map</title>
+  <style>
+    #map{
+      height:400px;
+      width:100%;
+    }
+  </style>
+</head> -->
+<body>
+
+<h1>My Google Map</h1>
+  <div id="googleMap" style="width:100%;height:400px;"></div>
+
+  <script>
+
+    const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let labelIndex = 0;
+
+    function myMap() {
+      var options= {
+      center:new google.maps.LatLng(43.471761497511075, -80.53813030950396),
+      zoom:17,
+      mapTypeId: 'hybrid'
+      };
+
+      // New map
+      const map = new google.maps.Map(document.getElementById("googleMap"), options);
+
+      // Listen for click on map
+      google.maps.event.addListener(map, 'click',
+      function(event){
+        // Add marker
+        addMarker({coords:event.latLng});
+      });
+
+
+      // // Add marker
+      var marker = new google.maps.Marker({
+        position:{lat:43.4723,lng:-80.5449},
+        map:map,
+        //icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag/png'
+      });
+
+      var infoWindow = new google.maps.InfoWindow({ // declare new infoWindow
+        content:'<small><b>University of Waterloo</b></small>' // should time be in an array or in the info?
+      });
+
+      marker.addListener('click', function(){ // listens for click on marker
+        infoWindow.open(map, marker);
+      });
+
+      //https://developers.google.com/maps/documentation/javascript/geolocation
+      const locationButton = document.createElement("button");
+
+      locationButton.textContent = "Find Current Location";
+      locationButton.classList.add("custom-map-control-button");
+      map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+      locationButton.addEventListener("click", () => {
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+
+              infoWindow.setPosition(pos);
+              infoWindow.setContent("You are here.");
+              infoWindow.open(map);
+              map.setCenter(pos);
+            },
+            () => {
+              handleLocationError(true, infoWindow, map.getCenter());
+            }
+          );
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      });
+
+
+
+      const resetButton = document.createElement("button");
+
+      resetButton.textContent = "return to UW";
+      resetButton.classList.add("custom-map-control-button");
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(resetButton);
+      resetButton.addEventListener("click", () => {
+            const pos = {
+              lat: 43.47176928355972,
+              lng: -80.53819468243238,
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent("Returned to UW.");
+            infoWindow.open(map);
+            map.setCenter(pos);
+
+          () => {
+            handleLocationError(true, infoWindow, map.getCenter());
+          }
+    });
+      //
+      // var infoWindow = new google.maps.InfoWindow({
+      //   content: '<h1>Lynn MA</h1>' // lynn MA is location
+      // });
+      //
+      // marker.addListener('click', function(){
+      //   infoWindow.open(map, marker);
+      // });
+
+      // Array of Markers
+      // markers only display if an action was performed at a location
+      const markers = [
+        {
+          coords:{lat:43.47032870664077, lng:-80.53632271709621}, // note: add time variable
+          //iconImage:'https://developers.google.com/maps/documentation/javascript/exmples/full/images/beacahflag.png',
+          content:'<small>Claudette Millar Hall</small>'
+        },
+        {
+          coords:{lat:43.470712803230846, lng: -80.53905835393833},
+          content:'<small>Carl A. Polluck Hall</small>'
+        },
+        {
+          coords:{lat:43.47136426850519, lng: -80.54002416541886},
+          content:'<small>WEEF Lab</small>'
+        },
+        {
+          coords:{lat:43.472913823628204, lng: -80.53983887671062},
+          content:'<small>Engineering 5</small>'
+        },
+        {
+          coords:{lat:43.47282803997284, lng:-80.5397344868302},
+          content:'<small>Engineering 7</small>'
+        },
+        {
+          coords:{lat:43.47229859478983, lng: -80.53679478585923},
+          content:'<small>Marble Slab Creamery</small>'
+        },
+      ];
+
+      marker.addListener('click', function(){ // listens for click on marker
+        infoWindow.open(map, markers);
+      });
+
+      // array of actual red line movement
+      // there should be more coordinates here than markers
+      const flightPlanCoordinates = [
+        new google.maps.LatLng(43.47036890733803, -80.5362815379075),
+        new google.maps.LatLng(43.471065, -80.537680),
+        new google.maps.LatLng(43.470699, -80.537885),
+        new google.maps.LatLng(43.470794, -80.538194),
+        new google.maps.LatLng(43.470670, -80.538825),
+        new google.maps.LatLng(43.47073421526762, -80.53905567172941),
+        new google.maps.LatLng(43.47119262569689, -80.53951567055144),
+        new google.maps.LatLng(43.47108945932336, -80.53988045097043),
+        new google.maps.LatLng(43.47130747107536, -80.54003065466938),
+        new google.maps.LatLng(43.471437888450296, -80.54010307427907),
+        new google.maps.LatLng(43.471584364346576, -80.53968330859445),
+        new google.maps.LatLng(43.47243693457104, -80.54091980691322),
+        new google.maps.LatLng(43.47289825180128, -80.53985496997458),
+        new google.maps.LatLng(43.47276394461899, -80.53975036380857),
+        new google.maps.LatLng(43.472178050369685, -80.53954115149237),
+        new google.maps.LatLng(43.47197366731934, -80.53935071465979),
+        new google.maps.LatLng(43.47202622302512, -80.53908785816459),
+        new google.maps.LatLng(43.471235936072276, -80.53785940644642),
+        new google.maps.LatLng(43.47162718779775, -80.53752413031066),
+        new google.maps.LatLng(43.47202233000695, -80.53672483204367),
+        new google.maps.LatLng(43.47220530138471, -80.5368133449377),
+      ];
+      const flightPath = new google.maps.Polyline({
+        path: flightPlanCoordinates,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+      });
+
+      flightPath.setMap(map);
+
+      // Loop through Markers
+      for (var i = 0; i < markers.length; i++){
+        // Add marker
+        addMarker(markers[i]);
+      }
+      //
+      // Add marker function
+      function addMarker(props) {
+        var marker = new google.maps.Marker({
+          position:props.coords,
+          label: labels[labelIndex++ % labels.length],
+          map:map,
+          //icon:props/iconImage
+        });
+      //
+        // Check for custom icon
+        // if (props.iconImage){
+        //   // Set icon image
+        //   marker.setIcon(props.iconImage);
+        // }
+
+        // Check content
+        if (props.content){
+          var infoWindow = new google.maps.InfoWindow({
+            content: props.content
+          });
+
+          marker.addListener('click', function(){
+            infoWindow.open(map, marker);
+          });
+        }
+       }
+     }
+
+     function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(
+        browserHasGeolocation
+          ? "Error: The Geolocation service failed."
+          : "Error: Your browser doesn't support geolocation."
+      );
+      infoWindow.open(map);
+    }
+  </script>
+
+  <script src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDVYeoKaMRbznDE-6fpZlMJoDWJbOQ2tMs&callback=myMap"></script>
+</body>
+</html>
