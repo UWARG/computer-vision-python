@@ -3,7 +3,7 @@ import struct
 from modules.commsInterface.commsInterface import UARTInterface
 
 UART_PORT = ""
-PADDING_BYTES = 3
+PADDING_BYTES = 5
 
 
 class FltConnSend:
@@ -37,10 +37,10 @@ def build_fijo_bytearray(request):
 
     byte_list = [
         struct.pack("c", "$"[0].encode("ascii")),
-        *[struct.pack("x") for _ in range(PADDING_BYTES)],
-        pack_to_int(takeoff_command),
-        pack_to_int(qr_scan_flag),
         pack_to_int(detect_flag),
+        pack_to_int(qr_scan_flag),
+        pack_to_int(takeoff_command),
+        *[struct.pack("x") for _ in range(PADDING_BYTES)]
         pack_to_float(latitude),
         pack_to_float(longitude)
     ]
