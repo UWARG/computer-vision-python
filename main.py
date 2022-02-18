@@ -208,7 +208,7 @@ def showVideo(): # this function needs to call functions in videoDisplay and dec
     quit = mp.Queue()
 
     processes = [
-        mp.Process(target=decklinkSrcWorker, args=(pause, quit, videoPipeline)),
+        mp.Process(target=decklinkSrcWorker_taxi, args=(pause, quit, videoPipeline)),
         mp.Process(target=videoDisplay, args=(pause, quit, videoPipeline))
     ]
 

@@ -20,10 +20,7 @@ def videoDisplay(pause, exitRequest, pipelineIn):
     if current_frame is None:
       continue
 
-    frame = current_frame.read()
-    #out.write(current_frame)
-
-    cv2.imshow('Frame', frame) #current_frame bad argument
+    cv2.imshow('Frame', current_frame) #current_frame bad argument
 
     if cv2.waitKey(25) & 0xFF == ord('q'):
       exitRequest = 1
