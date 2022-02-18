@@ -23,5 +23,5 @@ def qr_worker(pause, exitRequest, pipelineIn):
         
         if not exitRequest.empty():
             break
-    
+
     logger.debug("QRWorker: Stop QR Scanner Module")

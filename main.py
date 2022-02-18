@@ -11,9 +11,10 @@ from modules.decklinksrc.decklinkSrcWorker_taxi import decklinkSrcWorker_taxi
 from modules.QRScanner.QRWorker import qr_worker
 from modules.search.searchWorker import searchWorker
 from modules.commandModule.commandWorker_flight import flight_command_worker, pogi_subworker
-from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
+#from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.videoDisplay.videoDisplayWorker import videoDisplay
 
 PIGO_DIRECTORY = ""
 POGI_DIRECTORY = ""
@@ -116,8 +117,8 @@ def init_logger():
                                str(datetime.today().hour) + "." +
                                str(datetime.today().minute) + "." +
                                str(datetime.today().second) + ".log")
-    with open(logFileName, 'w') as write_file:
-        write_file.write("LOG START")
+#    with open(logFileName, 'w') as write_file:
+#        write_file.write("LOG START")
 
     formatter = logging.Formatter(fmt='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%I:%M:%S')
     fileHandler = logging.FileHandler(filename=logFileName, mode="w")
@@ -136,6 +137,7 @@ def taxiProgram():
     Parameters: None
     Returns: None
     """
+    #function definition: Log 'msg % args' with severity 'ERROR'.
     logger.error("main/taxiProgram: Taxi Program Started")
 
     # Set up data structures for first POGI retrieval
@@ -148,7 +150,7 @@ def taxiProgram():
         
         # If we don't get any data, try again
         if pogiInitPipeline.empty():
-            continue
+            continue # skips the rest of the loop and loops again
         
         # Once we have data, break out of the loop
         firstTelemetry = pogiInitPipeline.get()
@@ -189,20 +191,48 @@ def taxiProgram():
     logger.error("main/taxiProgram: Taxi Program Init Finished")
     return
 
+def showVideo(): # this function needs to call functions in videoDisplay and decklinkSrcWorker
+    """
+    Display video implementation here.
+    Parameters: None
+    Returns: None
+    """
 
-if __name__ == '__main__':
+#    logger.debug("main/showVideo: Video Display Started") # start message, logs with severity DEBUG
+
+    videoPipeline = mp.Queue()
+    # Queue from command module out to fusion module containing timestamped telemetry data from POGI
+
+    # Utility locks
+    pause = mp.Lock()
+    quit = mp.Queue()
+
+    processes = [
+        mp.Process(target=decklinkSrcWorker, args=(pause, quit, videoPipeline)),
+        mp.Process(target=videoDisplay, args=(pause, quit, videoPipeline))
+    ]
+
+    for p in processes:
+        p.start()
+
+    #logger.debug("main/showVideo: Video Display Finished")
+    return
+
+if __name__ == '__main__': # test video in main function
     """
     Starts the appropriate program based on what was passed in as a command line argument.
     Parameters: Args for commands
     Returns: None
     """
-    logger = init_logger()
+#    logger = init_logger()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
-    # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
-    program = parser.parse_args().program
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
+    # # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
+    # program = parser.parse_args().program
 
-    assert program + 'Program' in locals()
+    # assert program + 'Program' in locals()
 
-    locals()[program + 'Program']()
+    # locals()[program + 'Program']()
+
+    showVideo()

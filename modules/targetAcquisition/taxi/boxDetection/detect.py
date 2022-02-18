@@ -9,9 +9,9 @@ import yaml
 from numpy import random
 import numpy as np
 
-from boxDetection.utils.datasets import letterbox
-from boxDetection.utils.general import check_requirements, non_max_suppression, scale_coords, set_logging
-from boxDetection.utils.torch_utils import time_synchronized
+from modules.targetAcquisition.taxi.boxDetection.utils.datasets import letterbox
+from modules.targetAcquisition.taxi.boxDetection.utils.general import check_requirements, non_max_suppression, scale_coords, set_logging
+from modules.targetAcquisition.taxi.boxDetection.utils.torch_utils import time_synchronized
 import tensorflow as tf
 from tensorflow import keras
 
