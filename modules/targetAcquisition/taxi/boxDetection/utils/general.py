@@ -17,9 +17,9 @@ import torch
 import torchvision
 import yaml
 
-from boxDetection.utils.google_utils import gsutil_getsize
-from boxDetection.utils.metrics import fitness
-from boxDetection.utils.torch_utils import init_torch_seeds
+from modules.targetAcquisition.taxi.boxDetection.utils.google_utils import gsutil_getsize
+from modules.targetAcquisition.taxi.boxDetection.utils.metrics import fitness
+from modules.targetAcquisition.taxi.boxDetection.utils.torch_utils import init_torch_seeds
 
 # Settings
 torch.set_printoptions(linewidth=320, precision=5, profile='long')

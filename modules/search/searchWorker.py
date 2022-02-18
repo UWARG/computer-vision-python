@@ -14,7 +14,7 @@ def searchWorker(plane_data, pylon_gps):
     
     Returns
     -------
-    serach_result: Ground command object
+    search_result: Ground command object
     """
   
     logger = logging.getLogger()
