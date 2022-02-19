@@ -34,7 +34,7 @@ def contour_detection(processed, original):
         x, y, w, h = cv2.boundingRect(cnt)
 
         # Draw bounding box around the detected contours
-        cv2.rectangle(original, (x, y), (x + w, y + h), GREEN, 2)
+        cv2.rectangle(original, (x, y), (x + w, y + h), BLUE, 2)
         cv2.putText(image, "Object", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, BLUE)
 
     cv2.imshow('Window', original)  # show for testing
