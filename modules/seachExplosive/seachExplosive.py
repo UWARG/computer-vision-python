@@ -64,12 +64,12 @@ def edge_detection(image):
     imgDil = cv2.dilate(imgErode, kernel, iterations=1)
 
     # Apply filter for further noise reduction
-    img_blur = cv2.bilateralFilter(imgDil, 8, 75, 75)
+    imgBlur = cv2.bilateralFilter(imgDil, 8, 75, 75)
 
     # Calculate the thresholds using empirical rule
     # Find the mean and standard deviation of pixel intensities
-    mean = np.nanmean(img_blur)
-    std = np.nanstd(img_blur)
+    mean = np.nanmean(imgBlur)
+    std = np.nanstd(imgBlur)
 
     # Finding lower threshold
     if mean - 2 * std < 0:
@@ -84,12 +84,12 @@ def edge_detection(image):
         upper = mean + std
 
     # Perform edge detection with the computed bounds
-    imgEdges = cv2.Canny(img_blur, lower, upper)
+    imgEdges = cv2.Canny(imgBlur, lower, upper)
 
     return imgEdges
 
 
-def find_explosive(image):
+def find_object(image):
     """
     Detects objects on the given image assuming a relatively uniform background (i.e field of grass)
 
@@ -109,4 +109,4 @@ def find_explosive(image):
 # For testing purposes
 if __name__ == "__main__":
     image = cv2.imread("sampleImages/sample_4.jpg")  # change image to the sample image you wish to test
-    find_explosive(image)
+    find_object(image)
