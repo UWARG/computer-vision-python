@@ -11,10 +11,10 @@ from modules.decklinksrc.decklinkSrcWorker_taxi import decklinkSrcWorker_taxi
 from modules.QRScanner.QRWorker import qr_worker
 from modules.search.searchWorker import searchWorker
 from modules.commandModule.commandWorker_flight import flight_command_worker, pogi_subworker
-#from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
+from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
-from modules.videoDisplay.videoDisplayWorker import videoDisplay
+from modules.videoDisplay.videoDisplayWorker import videoDisplayWorker
 
 PIGO_DIRECTORY = ""
 POGI_DIRECTORY = ""
@@ -198,7 +198,7 @@ def showVideo(): # this function needs to call functions in videoDisplay and dec
     Returns: None
     """
 
-#    logger.debug("main/showVideo: Video Display Started") # start message, logs with severity DEBUG
+    #logger.debug("main/showVideo: Video Display Started") # start message, logs with severity DEBUG
 
     videoPipeline = mp.Queue()
     # Queue from command module out to fusion module containing timestamped telemetry data from POGI
@@ -209,7 +209,7 @@ def showVideo(): # this function needs to call functions in videoDisplay and dec
 
     processes = [
         mp.Process(target=decklinkSrcWorker_taxi, args=(pause, quit, videoPipeline)),
-        mp.Process(target=videoDisplay, args=(pause, quit, videoPipeline))
+        mp.Process(target=videoDisplayWorker, args=(pause, quit, videoPipeline))
     ]
 
     for p in processes:
@@ -224,7 +224,7 @@ if __name__ == '__main__': # test video in main function
     Parameters: Args for commands
     Returns: None
     """
-#    logger = init_logger()
+    # logger = init_logger()
 
     # parser = argparse.ArgumentParser()
     # parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
@@ -235,4 +235,4 @@ if __name__ == '__main__': # test video in main function
 
     # locals()[program + 'Program']()
 
-    showVideo()
+    qrProgram()

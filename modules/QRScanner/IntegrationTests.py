@@ -5,7 +5,7 @@ import time
 
 from pyzbar import pyzbar
 
-import QRScanner.QR
+import QR#Scanner.QR
 
 class QRTest:
     """
@@ -35,8 +35,8 @@ class QRTest:
         """
         self.scanner = QR.QRScanner()
 
-        imagePath = "qrtest.png"
-        self.run_single_image_test(imagePath)
+        # imagePath = "qrtestnew.png"
+        # self.run_single_image_test(imagePath)
         
         self.videoStream = VideoStream(src=0).start()
         self.run_video_test()
@@ -51,7 +51,12 @@ class QRTest:
             Relative path to the image to be tested
         """
         image = cv2.imread(imagePath)
-        image = self.scanner.main(image)
+        image, output = self.scanner.main(image)
+
+        print(output)
+
+        #print(self.scanner.get_qr_text()) #HERE
+
         cv2.imshow('single_image', image)
 
         print("Press q to close")
@@ -66,17 +71,27 @@ class QRTest:
         """
         Runs QR Scanner on live video feed
         """
+        test = None
+
         print("Press q to exit the stream")
         while True:
             frame = self.videoStream.read()
             frame = imutils.resize(frame)
 
-            frame = self.scanner.main(frame)
+            frame, output = self.scanner.main(frame)
             cv2.imshow('video', frame)
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 cv2.destroyAllWindows()
                 break
+
+            if output != None and test == None:
+                test = output # ONLY STORES FIRST QR DETECTED, CAN CHANGE IF STATEMENT TO UPDATE IF NEW QR IS DETECTED
+
+            # if output != None and test != output:
+            #     test = output # THIS STORES LAST QR CODE DETECTED
+
+        print (test)
         
         self.videoStream.stop()
 
