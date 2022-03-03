@@ -1,4 +1,6 @@
+from ast import Constant
 import logging
+from pickle import NONE
 import cv2
 
 from pyzbar import pyzbar
@@ -88,12 +90,28 @@ class QRScanner:
         np.ndarray
             Returns the frame with the bounding boxes and text drawn
         """
+        #global output
+        output = None
+
         for qr in self.codes:
             (x, y, w, h) = qr["rect"]
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
             cv2.putText(frame, qr["text"], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            output = qr["text"]
 
-        return frame
+            if output != None:
+                #output = qr["text"]
+                return frame, output 
+            
+            # print(output) HERE PRINTS CORRECT MESSAGE
+            # Note: output only has info when the qr code is currently being shown on camera
+            # when camera is not detecting code, output = None
+
+        #output = ""
+        #output = qr["text"]
+        #print(output) #THIS PRINTS REPEATEDLY WHEN RUN AND TELLS IF QR IS CURRENTLY DETECTED
+
+        return frame, output  
         
     def get_qr_text(self): 
         text = self.codes[0]["text"]
@@ -108,7 +126,7 @@ class QRScanner:
             }
         else: 
             questions = text_array[1]
-            d = text_array[2].split("; ")
+            d = text_array[2].split("; ") # HERE
             if len(d) != 5: 
                 return {
                         "success": False,

@@ -2,7 +2,7 @@
 import cv2
 import logging
 
-def videoDisplay(pause, exitRequest, pipelineIn):
+def videoDisplayWorker(pause, exitRequest, pipelineIn):
   logger = logging.getLogger()
   logger.debug("videoDisplay: Started video display")
 
@@ -20,7 +20,7 @@ def videoDisplay(pause, exitRequest, pipelineIn):
     if current_frame is None:
       continue
 
-    cv2.imshow('Frame', current_frame) #current_frame bad argument
+    cv2.imshow('Frame', current_frame)
 
     if cv2.waitKey(25) & 0xFF == ord('q'):
       exitRequest = 1
