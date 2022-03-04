@@ -40,7 +40,7 @@ def build_fijo_bytearray(request):
         pack_to_int(detect_flag),
         pack_to_int(qr_scan_flag),
         pack_to_int(takeoff_command),
-        *[struct.pack("x") for _ in range(PADDING_BYTES)]
+        *[struct.pack("x") for _ in range(PADDING_BYTES)],
         pack_to_float(latitude),
         pack_to_float(longitude)
     ]
