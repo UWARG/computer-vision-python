@@ -14,8 +14,8 @@ Pillow
 PyYAML>=5.3
 scipy>=1.4.1
 tensorboard>=2.2
-torch>=1.7.0
-torchvision>=0.8.1
+torch
+torchvision==0.1.7
 tqdm>=4.41.0
 unittest-xml-reporting
 pyusb>=1.2.1

@@ -85,20 +85,13 @@ class XBeeInterface:
         self.device_dict = dict()
         self.id_counter = 0
 
-    def read_callback(self, device_id):
-        def callback(xbee_message):
-            data = xbee_message.data.decode("utf8")
-            self.func_dict[device_id](data)
-        return callback
-
     def write(self, device_id, data):
         self.device_dict[device_id].send_data_broadcast(data)
 
     def create_device(self, read_function, device_port):
         device = XBeeDevice(device_port, 9600)
         device.open()
-        device.add_data_received_callback(self.read_callback(self.id_counter))
         self.func_dict[self.id_counter] = read_function
+        device.add_data_received_callback(read_function)
         self.device_dict[self.id_counter] = device
         self.id_counter += 1
-
