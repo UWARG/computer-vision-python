@@ -5,7 +5,7 @@ from digi.xbee.devices import XBeeDevice
 
 
 class CommsInterface:
-    def __init__(self, usb_type: bool):
+    def __init__(self, usb_type: int):
         """
         Initializes parameters for USB or UART
 
@@ -66,14 +66,14 @@ class USBInterface(CommsInterface):
         # use lsusb -v in the terminal to list the idVendor and idProduct of connected usb devices 
         self.idVendor = idVendor
         self.idProduct = idProduct
-        super().__init__(self, 0)
+        super().__init__(0)
 
 
 class UARTInterface(CommsInterface):
     def __init__(self, uart_port: str, baudrate: int = 9600):
         self.uart_port = uart_port
         self.baudrate = baudrate
-        super().__init__(self, 1)
+        super().__init__(1)
 
 
 class XBeeInterface:
