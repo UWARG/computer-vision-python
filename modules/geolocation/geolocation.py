@@ -77,14 +77,16 @@ class Geolocation:
         """
         Magic numbers for competition
         """
-        self.__GPS_OFFSET = 0
-        self.__CAMERA_OFFSET = 0
+        self.__GPS_OFFSET = np.array([0, 0, 0])
+        self.__CAMERA_OFFSET = np.array([0, 0, 0])
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
         self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
         self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
+
+        self.__cameraResolution = np.array([1920, 1080])
 
 
     # Requires set_constants() first
@@ -579,9 +581,9 @@ class Geolocation:
 
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
-        localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
-        self.__longitude = localCoordinates[0]
-        self.__latitude = localCoordinates[1]
+        #localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
+        self.__longitude = gpsLongitude #localCoordinates[0]
+        self.__latitude = gpsLatitude #localCoordinates[1]
         self.__altitude = altitude
 
         camera_o, camera_c, camera_u, camera_v = self.convert_input()
@@ -616,8 +618,8 @@ class Geolocation:
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
-        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
-        return True, geo_coordinates
+        #geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
+        return True, local_coordinates
 
     @staticmethod
     def __deg_vals_to_rad(convert_dict):
