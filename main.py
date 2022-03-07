@@ -224,15 +224,13 @@ if __name__ == '__main__': # test video in main function
     Parameters: Args for commands
     Returns: None
     """
-#    logger = init_logger()
+    logger = init_logger()
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
-    # # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
-    # program = parser.parse_args().program
+    parser = argparse.ArgumentParser()
+    parser.add_argument("program", help="Program name to execute (flight, taxi, search)")
+    # Locals is a symbol table, it allows you to execute a function by doing a search of its name.
+    program = parser.parse_args().program
 
-    # assert program + 'Program' in locals()
+    assert program + 'Program' in locals()
 
-    # locals()[program + 'Program']()
-
-    showVideo()
+    locals()[program + 'Program']()
