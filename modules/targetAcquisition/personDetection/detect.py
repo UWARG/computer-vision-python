@@ -6,23 +6,20 @@ os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import sys
+sys.path.insert(0,'modules/targetAcquisition/Yolov5_DeepSort_Pytorch')
+sys.path.insert(0,'modules/targetAcquisition/Yolov5_DeepSort_Pytorch/deep_sort/deep/reid')
 sys.path.insert(0, 'modules/targetAcquisition/Yolov5_DeepSort_Pytorch/yolov5')
 
-import argparse
 import os
 import platform
 import shutil
-import time
 from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
 
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.models.experimental import attempt_load
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.downloads import attempt_download
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.models.common import DetectMultiBackend
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.datasets import LoadImages, LoadStreams
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, scale_coords, 
                                   check_imshow, xyxy2xywh, increment_path, set_logging)
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.torch_utils import select_device, time_sync
@@ -48,12 +45,12 @@ class Detection:
                         )
 
     def detect_boxes(self, current_frame):
-        yolo_model = 'modules/targetAcquisition/best.pt'
+        yolo_model = 'modules/targetAcquisition/personDetection/weights/best.pt'
         path = 'modules/targetAcquisition/personDetection'
         output = 'inference/output'
-        imgsz = [640, 640]
+        imgsz = 416
         conf_thres = 0.3
-        iou_thres = 0.5
+        iou_thres = 0.45
         device = ''
         show_vid = True
         save_vid = True 
@@ -178,21 +175,18 @@ class Detection:
                         cls = output[5]
 
                         # normalize bbox xyxy and add tuples of bbox to list
+                        bbox_cord.append((output[0]/img0.shape(0), output[1]/img0.shape(1)), (output[2]/img0.shape(0), output[3]/img0.shape(1)))
+                        bbox_cord.sort(key=lambda tup: tup[0][0])
+                            
 
                         c = int(cls)  # integer class
                         label = f'{id} {names[c]} {conf:.2f}'
                         annotator.box_label(bboxes, label, color=colors(c, True))
 
                         if save_txt:
-                            # to MOT format
-                            bbox_left = output[0]
-                            bbox_top = output[1]
-                            bbox_w = output[2] - output[0]
-                            bbox_h = output[3] - output[1]
-                            # Write MOT compliant results to file
+                            # Write normalized xyxy results to file for debugging
                             with open(txt_path, 'a') as f:
-                                f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
-                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+                                f.write(('%g ' * 10 + '\n') % (output[0], output[1], output[2], output[3]))
                             
                         LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
                 
@@ -227,7 +221,7 @@ class Detection:
             if platform == 'darwin':  # MacOS
                 os.system('open ' + save_path)
 
-        # return list of bbox tuples
+        return bbox_cord
 
     def close_writer(self):
         self.vidWriter.release()

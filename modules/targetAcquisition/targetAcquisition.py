@@ -3,7 +3,7 @@ import numpy as np
 import multiprocessing as mp
 import cv2
 import logging
-from modules.targetAcquisition.pylonDetection.detect import Detection
+from modules.targetAcquisition.personDetection.detect import Detection
 from modules.mergeImageWithTelemetry.mergedData import MergedData
 from time import sleep
 

@@ -1,6 +1,5 @@
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.targetAcquisition.personDetection.detect import Detection
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.newTrack import detect
 import logging
 import cv2
 import time

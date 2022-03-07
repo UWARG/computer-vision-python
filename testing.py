@@ -1,8 +1,9 @@
 import sys
-sys.path.insert(0,'modules/targetAcquisition/Yolov5_DeepSort_Pytorch')
-sys.path.append('modules/targetAcquisition/Yolov5_DeepSort_Pytorch/deep_sort/deep/reid')
+# sys.path.insert(0,'modules/targetAcquisition/Yolov5_DeepSort_Pytorch')
+# sys.path.append('modules/targetAcquisition/Yolov5_DeepSort_Pytorch/deep_sort/deep/reid')
 import multiprocessing as mp
-from modules.targetAcquisition.testWorker import targetAcquisitionWorker, imageFaker
+from modules.targetAcquisition.personDetection.detect import Detection
+from modules.targetAcquisition.testworker import targetAcquisitionWorker, imageFaker
 
 def run(): 
     pipelineIn = mp.Queue()
