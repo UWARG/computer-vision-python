@@ -3,16 +3,18 @@ import sys
 # sys.path.append('modules/targetAcquisition/Yolov5_DeepSort_Pytorch/deep_sort/deep/reid')
 import multiprocessing as mp
 from modules.targetAcquisition.personDetection.detect import Detection
-from modules.targetAcquisition.testworker import targetAcquisitionWorker, imageFaker
+from modules.targetAcquisition.tests.testWorker import targetAcquisitionWorker, imageFaker, logger
 
 def run(): 
     pipelineIn = mp.Queue()
+    pipelineOut = mp.Queue()
     pause = mp.Lock()
     quit = mp.Queue()
 
     processes = [
-        mp.Process(target = targetAcquisitionWorker, args = (pause, quit, pipelineIn)),
+        mp.Process(target = targetAcquisitionWorker, args = (pause, quit, pipelineIn, pipelineOut)),
         mp.Process(target = imageFaker, args = (pause, quit, pipelineIn)),
+        mp.Process(target = logger, args = (pause, quit, pipelineOut)),
     ]
 
     for p in processes:

@@ -21,7 +21,7 @@ import numpy as np
 
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.models.common import DetectMultiBackend
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, scale_coords, 
-                                  check_imshow, xyxy2xywh, increment_path, set_logging)
+                                  check_imshow, xyxy2xywh, xywh2xyxy, increment_path, set_logging)
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.torch_utils import select_device, time_sync
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.plots import Annotator, colors
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.deep_sort.utils.parser import get_config
@@ -34,9 +34,9 @@ class Detection:
         set_logging()
         self.device =  torch.device('cpu')
         self.cfg = get_config()
-        self.cfg.merge_from_file('modules/targetAcquisition/personDetection/deep_sort.yaml')
+        self.cfg.merge_from_file('modules/targetAcquisition/personDetection/config/deep_sort.yaml')
         half = self.device.type != 'cpu'
-        self.vidWriter = None
+        self.vidWriter = None # used to save a video of the tracking
         self.tracker = DeepSort(self.cfg.DEEPSORT.MODEL_TYPE,
                         self.device,
                         max_dist=self.cfg.DEEPSORT.MAX_DIST,
@@ -45,16 +45,19 @@ class Detection:
                         )
 
     def detect_boxes(self, current_frame):
+        #for config
         yolo_model = 'modules/targetAcquisition/personDetection/weights/best.pt'
-        path = 'modules/targetAcquisition/personDetection'
+        path = 'modules/targetAcquisition/personDetection' # used in construction of imShow window name param
         output = 'inference/output'
         imgsz = 416
         conf_thres = 0.3
         iou_thres = 0.45
         device = ''
-        show_vid = True
-        save_vid = True 
-        save_txt = True
+
+        # For visualizing and saving output
+        show_vid = True # shows each image 
+        save_vid = False 
+        save_txt = False 
         classes = None
         agnostic_nms = False
         augment = False
@@ -63,12 +66,11 @@ class Detection:
         visualize = False
         max_det = 1000
         dnn = False
-        project = './runs/track'
+        project = 'modules/targetAcquisition/personDetection/runs/track' #determines where results will be saved to (txt/video)
         name = 'exp'
         exist_ok = True
         bs = 1
-        frame_idx = 0
-        
+        frame_idx = 0 # frame id
 
         if not evaluate:
             if os.path.exists(output):
@@ -86,52 +88,44 @@ class Detection:
         stride, names, pt, jit, _ = model.stride, model.names, model.pt, model.jit, model.onnx
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
-        # Set Dataloader
-        vid_path, vid_writer = [None] * bs, [None] * bs
         # Check if environment supports image displays
         if show_vid:
             show_vid = check_imshow()
 
         # extract what is in between the last '/' and last '.'
-        txt_path = str(Path(save_dir)) + '/' + 'saved' + '.txt'
+        txt_path = str(Path(save_dir)) + '/' + 'results' + '.txt'
 
         if pt and device.type != 'cpu':
             model(torch.zeros(1, 3, *imgsz).to(device).type_as(next(model.model.parameters())))  # warmup
-        dt, seen = [0.0, 0.0, 0.0, 0.0], 0
+        seen = 0
 
         img0 = current_frame
 
         # Padding Resize
-        img = letterbox(img0, [640, 640], 32, auto=True)[0]
+        img = letterbox(img0, imgsz, 32, auto=True)[0]
 
         # Convert
         img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
         img = np.ascontiguousarray(img)
 
         im0s = img0
+
         s = f'image {frame_idx} {path}: ' #path is a mock of where the image would be if we were passing in a file
 
-        t1 = time_sync()
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
-        t2 = time_sync()
-        dt[0] += t2 - t1
 
         # variable for return bounding box coordinates
         bbox_cord = []
 
         # Inference
         pred = model(img, augment, visualize)
-        t3 = time_sync()
-        dt[1] += t3 - t2
 
         # Apply NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det)
-        print(pred)
-        dt[2] += time_sync() - t3
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
@@ -146,8 +140,6 @@ class Detection:
 
             if det is not None and len(det):
                 # Rescale boxes from img_size to im0 size
-                print(img.shape)
-                print(im0.shape)
                 det[:, :4] = scale_coords(
                     img.shape[2:], det[:, :4], im0.shape).round()
 
@@ -156,16 +148,18 @@ class Detection:
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
+                # pass detections to DeepSort
                 xywhs = xyxy2xywh(det[:, 0:4])
                 confs = det[:, 4]
                 clss = det[:, 5]
 
-                t4 = time_sync()
                 outputs = self.tracker.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
-                t5 = time_sync()
-                dt[3] += t5 - t4
 
-                # if outputs = 0, normalize xyxy and add to list
+                # if outputs = 0 still add to list 
+                if len(outputs) == 0:
+                    for *xyxy, conf, cls in det:
+                        bbox_cord.append(((int(xyxy[0]),int(xyxy[1])),(int(xyxy[2]),int(xyxy[3]))))
+                        bbox_cord.sort(key=lambda tup: tup[0][0])
 
                 # draw boxes for visualization
                 if len(outputs) > 0:
@@ -175,7 +169,7 @@ class Detection:
                         cls = output[5]
 
                         # normalize bbox xyxy and add tuples of bbox to list
-                        bbox_cord.append((output[0]/img0.shape(0), output[1]/img0.shape(1)), (output[2]/img0.shape(0), output[3]/img0.shape(1)))
+                        bbox_cord.append(((output[0],output[1]),(output[2],output[3])))
                         bbox_cord.sort(key=lambda tup: tup[0][0])
                             
 
@@ -184,17 +178,22 @@ class Detection:
                         annotator.box_label(bboxes, label, color=colors(c, True))
 
                         if save_txt:
-                            # Write normalized xyxy results to file for debugging
+                            # to MOT format
+                            bbox_left = output[0]
+                            bbox_top = output[1]
+                            bbox_w = output[2] - output[0]
+                            bbox_h = output[3] - output[1]
+                            # Write MOT compliant results to file
                             with open(txt_path, 'a') as f:
-                                f.write(('%g ' * 10 + '\n') % (output[0], output[1], output[2], output[3]))
-                            
-                        LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
+                                f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
+                                                               bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
                 
             else:
                 self.tracker.increment_ages()
                 LOGGER.info('No detections')
 
-            
+            frame_idx += 1
+
             # Stream results
             im0 = annotator.result()
             if show_vid:
@@ -210,18 +209,5 @@ class Detection:
                 else:
                     self.vidWriter = cv2.VideoWriter('runs/track/exp/vid.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 1, (im0.shape[1], im0.shape[0]))
                     self.vidWriter.write(im0)
-                print(save_path)
-
-        # Print results
-        t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
-        LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS, %.1fms deep sort update \
-            per image at shape {(1, 3, *imgsz)}' % t)
-        if save_txt or save_vid:
-            print('Results saved to %s' % save_path)
-            if platform == 'darwin':  # MacOS
-                os.system('open ' + save_path)
 
         return bbox_cord
-
-    def close_writer(self):
-        self.vidWriter.release()
