@@ -118,7 +118,7 @@ class Detection:
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
 
-        # variable for return bounding box coordinates
+        # variable for returning bounding box coordinates
         bbox_cord = []
 
         # Inference
@@ -211,3 +211,7 @@ class Detection:
                     self.vidWriter.write(im0)
 
         return bbox_cord
+
+    # function to close vid_writer, should call this from worker before ending if we want to save a video of the tracking 
+    def close_writer(self):
+        self.vidWriter.release()
