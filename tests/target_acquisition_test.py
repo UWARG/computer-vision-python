@@ -2,12 +2,6 @@ import pytest
 import cv2
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.mergeImageWithTelemetry.mergedData import MergedData
-import os 
-
-os.chdir('modules/targetAcquisition/Yolov5_DeepSort_Pytorch')
-os.system('git submodule update --init')
-os.chdir('../../../')
-
 
 def testTargetAcquisition():
     tracker = TargetAcquisition()

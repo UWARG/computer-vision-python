@@ -6,12 +6,6 @@ def _import_all_modules():
     __all__ = []
     globals_, locals_ = globals(), locals()
 
-    # get DeepSort submodules
-    os.chdir('modules/targetAcquisition/Yolov5_DeepSort_Pytorch')
-    os.system('git submodule update --init')
-    os.chdir('../../../')
-
-
     # Dynamically import all the package modules in this file's directory.
     for filename in os.listdir(f'{__name__}'):
         # Process all python files in directory that don't start
