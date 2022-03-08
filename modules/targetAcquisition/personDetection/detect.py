@@ -110,7 +110,7 @@ class Detection:
 
         im0s = img0
 
-        s = f'image {frame_idx} {path}: ' #path is a mock of where the image would be if we were passing in a file
+        s = f'image {frame_idx} {path}: '
 
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -134,7 +134,6 @@ class Detection:
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg, vid.mp4, ...
-            s += '%gx%g ' % img.shape[2:]  # print string
 
             annotator = Annotator(im0, line_width=2, pil=not ascii)
 
@@ -142,11 +141,6 @@ class Detection:
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(
                     img.shape[2:], det[:, :4], im0.shape).round()
-
-                # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # pass detections to DeepSort
                 xywhs = xyxy2xywh(det[:, 0:4])
@@ -172,7 +166,6 @@ class Detection:
                         bbox_cord.append(((output[0],output[1]),(output[2],output[3])))
                         bbox_cord.sort(key=lambda tup: tup[0][0])
                             
-
                         c = int(cls)  # integer class
                         label = f'{id} {names[c]} {conf:.2f}'
                         annotator.box_label(bboxes, label, color=colors(c, True))
@@ -204,9 +197,9 @@ class Detection:
 
             # Save results (image with detections)
             if save_vid:
-                if isinstance(self.vidWriter, cv2.VideoWriter):
+                if isinstance(self.vidWriter, cv2.VideoWriter): # checks if vidWriter already exists, if it does, continues using that one
                     self.vidWriter.write(im0)
-                else:
+                else: 
                     self.vidWriter = cv2.VideoWriter('runs/track/exp/vid.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 1, (im0.shape[1], im0.shape[0]))
                     self.vidWriter.write(im0)
 
