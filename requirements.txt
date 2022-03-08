@@ -21,6 +21,7 @@ unittest-xml-reporting
 pyusb>=1.2.1
 pyserial>=3.5
 digi-xbee
+gdown
 
 # FROM BOX DETECTECTION: DUPLICATES POSSIBLE
 # logging -------------------------------------
