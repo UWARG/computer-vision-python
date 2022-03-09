@@ -5,7 +5,7 @@ import time
 
 from pyzbar import pyzbar
 
-import QR#Scanner.QR
+import QR
 
 class QRTest:
     """
@@ -86,10 +86,7 @@ class QRTest:
                 break
 
             if output != None and test == None:
-                test = output # ONLY STORES FIRST QR DETECTED, CAN CHANGE IF STATEMENT TO UPDATE IF NEW QR IS DETECTED
-
-            # if output != None and test != output:
-            #     test = output # THIS STORES LAST QR CODE DETECTED
+                test = output
 
         print (test)
         

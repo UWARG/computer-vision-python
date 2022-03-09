@@ -102,14 +102,6 @@ class QRScanner:
             if output != None:
                 #output = qr["text"]
                 return frame, output 
-            
-            # print(output) HERE PRINTS CORRECT MESSAGE
-            # Note: output only has info when the qr code is currently being shown on camera
-            # when camera is not detecting code, output = None
-
-        #output = ""
-        #output = qr["text"]
-        #print(output) #THIS PRINTS REPEATEDLY WHEN RUN AND TELLS IF QR IS CURRENTLY DETECTED
 
         return frame, output  
         

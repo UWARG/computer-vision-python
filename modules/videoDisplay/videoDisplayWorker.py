@@ -26,27 +26,4 @@ def videoDisplayWorker(pause, exitRequest, pipelineIn):
       exitRequest = 1
       break
 
-    # cap = cv2.VideoCapture()
-        
-    # if (cap.isOpened()== False): 
-    #   print("Error opening video")
-        
-    # while(cap.isOpened()):
-            
-    #   # Capture frame-by-frame
-    #   ret, frame = cap.read()
-    #   if ret == True:
-        
-    #     # Display the resulting frame
-    #     cv2.imshow('Frame', curr_frame)
-        
-    #     # press q to close
-    #     if cv2.waitKey(25) & 0xFF == ord('q'):
-    #       break
-          
-    #   else: 
-    #     break
-
-  # here, add displaying the curr_frame to window
-
   logger.debug("videoDisplay: Stopped video display")

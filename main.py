@@ -44,7 +44,7 @@ def callTrain():
 def flightProgram():
     """
     Flight program implementation goes here. Outline:
-        Instantiate pipeline, video mediator, start frame caputre, feed tent coordinates into pipeline.
+        Instantiate pipeline, video mediator, start frame capture, feed tent coordinates into pipeline.
         Feed tent coordinates from pipeline into geolocation
         Get GPS coordinates from geolocation
         Send coordinates to command module
@@ -80,8 +80,8 @@ def flightProgram():
         mp.Process(target=targetAcquisitionWorker, args=(pause, quit, mergedDataPipeline, bboxAndTelemetryPipeline)),
         mp.Process(target=geolocation_locator_worker,
                    args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
-        mp.Process(target=geolocation_output_worker, args=(
-        pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
+        mp.Process(target=geolocation_output_worker, 
+                   args=(pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
         mp.Process(target=flight_command_worker,
                    args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
     ]
@@ -218,7 +218,7 @@ def showVideo(): # this function needs to call functions in videoDisplay and dec
     #logger.debug("main/showVideo: Video Display Finished")
     return
 
-if __name__ == '__main__': # test video in main function
+if __name__ == '__main__':
     """
     Starts the appropriate program based on what was passed in as a command line argument.
     Parameters: Args for commands
