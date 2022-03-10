@@ -27,7 +27,7 @@ def taxi_worker(pause, exitRequest, pipelineIn, pipelineOut):
     taxi = Taxi()
 
     while True:
-        pause.acquire()
+        pause.acquire() # acquire and release functions? research
         pause.release()
         frame = pipelineIn.get()
         if frame is not None:
