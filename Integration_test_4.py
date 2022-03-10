@@ -1,0 +1,19 @@
+import argparse
+from datetime import datetime
+import logging
+from modules.targetAcquisition.taxi.TaxiWorker import taxi_worker
+import os
+import multiprocessing as mp
+import json
+from modules.targetAcquisition.targetAcquisitionWorker import targetAcquisitionWorker
+from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
+from modules.decklinksrc.decklinkSrcWorker_taxi import decklinkSrcWorker_taxi
+from modules.QRScanner.QRWorker import qr_worker
+from modules.search.searchWorker import searchWorker
+from modules.commandModule.commandWorker_flight import flight_command_worker, pogi_subworker
+from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
+from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
+from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.videoDisplay.videoDisplayWorker import videoDisplayWorker
+
+print ("Hello World")
