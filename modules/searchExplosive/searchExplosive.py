@@ -14,7 +14,7 @@ class SearchExplosive:
 
     def __init__(self, image):
         """
-        Initializes image attribute
+        Initializes attributes
 
         Parameters
         ----------
@@ -23,6 +23,8 @@ class SearchExplosive:
         """
         self.image = image
         self.edges = None
+        self.contours = None
+        self.detectedContours = image  # will hold the image with bounding boxes
 
     def edge_detection(self):
         """
@@ -36,6 +38,10 @@ class SearchExplosive:
         -------
             None
         """
+        if not self.image:
+            print("ERROR: no image given")
+            return
+
         # Convert to grayscale
         imgGrayscale = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
@@ -87,26 +93,25 @@ class SearchExplosive:
             return
 
         # Find the contours
-        contours, hierarchy = cv2.findContours(self.edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        self.contours, hierarchy = cv2.findContours(self.edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
         # Draw bounding box around each contour
-        for cnt in contours:
+        for cnt in self.contours:
             x, y, w, h = cv2.boundingRect(cnt)
 
-            imgHeight, imgWidth, channels = self.image.shape
+            imgHeight, imgWidth, channels = self.detectedContours.shape
             imgArea = imgHeight * imgWidth
             rectArea = w * h
 
             # Get rid of any unwanted contour detections if their bounding box is less than 0.1% of the image area
             if (rectArea / imgArea) * 100 < 0.1:
+                self.contours.remove(cnt)
                 continue
 
             # Draw bounding box around the detected contours
-            cv2.rectangle(self.image, (x, y), (x + w, y + h), BLUE, 2)
+            cv2.rectangle(self.detectedContours, (x, y), (x + w, y + h), BLUE, 2)
             cv2.putText(image, "Object", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, BLUE)
 
-        cv2.imshow('Window', self.image)  # show for testing
-        cv2.waitKey(0)  # show for testing
 
 
 # For testing purposes
@@ -116,3 +121,6 @@ if __name__ == "__main__":
     detector = SearchExplosive(image)
     detector.edge_detection()
     detector.contour_detection()
+
+    cv2.imshow('Window', detector.detectedContours)  # show for testing
+    cv2.waitKey(0)  # show for testing
