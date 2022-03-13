@@ -20,8 +20,8 @@ from PIL import Image, ExifTags
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-from boxDetection.utils.general import xyxy2xywh, xywh2xyxy, clean_str
-from boxDetection.utils.torch_utils import torch_distributed_zero_first
+from modules.targetAcquisition.taxi.boxDetection.utils.general import xyxy2xywh, xywh2xyxy, clean_str
+from modules.targetAcquisition.taxi.boxDetection.utils.torch_utils import torch_distributed_zero_first
 
 # Parameters
 help_url = 'https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data'

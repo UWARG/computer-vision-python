@@ -19,9 +19,10 @@ def qr_worker(pause, exitRequest, pipelineIn):
         updatedFrame = qrScanner.main(frame)
 
         cv2.imshow("Video feed", updatedFrame)
+
         cv2.waitKey(1)
         
         if not exitRequest.empty():
             break
-    
+
     logger.debug("QRWorker: Stop QR Scanner Module")

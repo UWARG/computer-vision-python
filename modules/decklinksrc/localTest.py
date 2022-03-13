@@ -3,7 +3,7 @@ import multiprocessing as mp
 import decklinkSrcWorker
 import cv2
 
-if __name__ = "__main__":
+if __name__ == "__main__":
 
     pause = mp.Lock()
     exitRequest = mp.Queue()

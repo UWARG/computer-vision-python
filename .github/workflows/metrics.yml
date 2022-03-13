@@ -1,0 +1,23 @@
+name: Generate Metrics
+on:
+  # Schedule daily updates
+  schedule: [{cron: "0 0 * * *"}]
+  workflow_dispatch:
+  push: {branches: ["master", "main"]}
+jobs:
+  github-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lowlighter/metrics@latest
+        with:
+          template: repository
+          filename: metrics.repository.svg
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: UWARG
+          repo: computer-vision-python
+          plugin_lines: yes
+          plugin_followup: yes
+          plugin_activity: yes
+          plugin_activity_limit: 10
+          plugin_activity_filter: pr, comment, push, review
+          plugin_contributors: yes
