@@ -24,7 +24,7 @@ def searchExplosiveWorker(pause, exitRequest, pipelineIn):
         detector.edge_detection()
         detector.contour_detection()
 
-        if not detector.contours:
+        if detector.count == 0:
             logger.debug("searchExplosiveWorker: No detected objects")
         cv2.imshow("Video feed", detector.detectedContours)
         cv2.waitKey(1)

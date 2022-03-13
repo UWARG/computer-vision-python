@@ -23,7 +23,7 @@ class SearchExplosive:
         """
         self.image = image
         self.edges = None
-        self.contours = None
+        self.count = 0  # used to count number of bounding boxes drawn
         self.detectedContours = image  # will hold the image with bounding boxes
 
     def edge_detection(self):
@@ -38,9 +38,6 @@ class SearchExplosive:
         -------
             None
         """
-        if not self.image:
-            print("ERROR: no image given")
-            return
 
         # Convert to grayscale
         imgGrayscale = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -87,10 +84,9 @@ class SearchExplosive:
         -------
             None
         """
-
         if self.edges is None:
-            print("ERROR: Detect edges before contours")
-            return
+             print("ERROR: Detect edges before contours")
+             return
 
         # Find the contours
         self.contours, hierarchy = cv2.findContours(self.edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -105,22 +101,9 @@ class SearchExplosive:
 
             # Get rid of any unwanted contour detections if their bounding box is less than 0.1% of the image area
             if (rectArea / imgArea) * 100 < 0.1:
-                self.contours.remove(cnt)
                 continue
 
             # Draw bounding box around the detected contours
             cv2.rectangle(self.detectedContours, (x, y), (x + w, y + h), BLUE, 2)
-            cv2.putText(image, "Object", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, BLUE)
-
-
-
-# For testing purposes
-if __name__ == "__main__":
-    image = cv2.imread("sampleImages/sample_4.jpg")  # change image to the sample image you wish to test
-
-    detector = SearchExplosive(image)
-    detector.edge_detection()
-    detector.contour_detection()
-
-    cv2.imshow('Window', detector.detectedContours)  # show for testing
-    cv2.waitKey(0)  # show for testing
+            cv2.putText(self.detectedContours, "Object", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, BLUE)
+            self.count += 1
