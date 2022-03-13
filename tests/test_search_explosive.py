@@ -23,7 +23,7 @@ def test_empty_edges_contour_detection():
 
 def test_edge_detection():
     # test happy path in edge detection method
-    image = cv2.imread("sampleImages/sample_4.jpg")
+    image = cv2.imread("tests/sampleImages/sample_4.jpg")
     detector = SearchExplosive(image)
     detector.edge_detection()
     assert detector.edges.size != 0  # should be edges detected
@@ -31,7 +31,7 @@ def test_edge_detection():
 
 def test_contour_detection():
     # test happy path in contour detection method
-    image = cv2.imread("sampleImages/sample_4.jpg")
+    image = cv2.imread("tests/sampleImages/sample_4.jpg")
     detector = SearchExplosive(image)
     detector.edge_detection()
     detector.contour_detection()
@@ -40,7 +40,7 @@ def test_contour_detection():
 
 def test_contour_detection_2():
     # test happy path in contour detection method
-    image = cv2.imread("sampleImages/sample_2.jpg")
+    image = cv2.imread("tests/sampleImages/sample_2.jpg")
     detector = SearchExplosive(image)
     detector.edge_detection()
     detector.contour_detection()
@@ -49,7 +49,7 @@ def test_contour_detection_2():
 
 def test_edge_detection_with_plain_image():
     # test plain frame in edge detection method, no edges should be detected
-    image = cv2.imread("sampleImages/plain_white_img.jpg")
+    image = cv2.imread("tests/sampleImages/plain_white_img.jpg")
     detector = SearchExplosive(image)
     detector.edge_detection()
     assert not detector.edges.any()
@@ -57,7 +57,7 @@ def test_edge_detection_with_plain_image():
 
 def test_contour_detection_with_plain_image():
     # test contour detection when no contours should be detected
-    image = cv2.imread("sampleImages/plain_white_img.jpg")
+    image = cv2.imread("tests/sampleImages/plain_white_img.jpg")
     detector = SearchExplosive(image)
     detector.edge_detection()
     detector.contour_detection()
