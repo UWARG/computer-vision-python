@@ -14,6 +14,7 @@ from modules.commandModule.commandWorker_flight import flight_command_worker, po
 from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.videoDisplay.videoDisplayWorker import videoDisplayWorker
 
 PIGO_DIRECTORY = ""
 POGI_DIRECTORY = ""
@@ -43,7 +44,7 @@ def callTrain():
 def flightProgram():
     """
     Flight program implementation goes here. Outline:
-        Instantiate pipeline, video mediator, start frame caputre, feed tent coordinates into pipeline.
+        Instantiate pipeline, video mediator, start frame capture, feed tent coordinates into pipeline.
         Feed tent coordinates from pipeline into geolocation
         Get GPS coordinates from geolocation
         Send coordinates to command module
@@ -79,8 +80,8 @@ def flightProgram():
         mp.Process(target=targetAcquisitionWorker, args=(pause, quit, mergedDataPipeline, bboxAndTelemetryPipeline)),
         mp.Process(target=geolocation_locator_worker,
                    args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
-        mp.Process(target=geolocation_output_worker, args=(
-        pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
+        mp.Process(target=geolocation_output_worker, 
+                   args=(pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
         mp.Process(target=flight_command_worker,
                    args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
     ]
@@ -116,8 +117,8 @@ def init_logger():
                                str(datetime.today().hour) + "." +
                                str(datetime.today().minute) + "." +
                                str(datetime.today().second) + ".log")
-    with open(logFileName, 'w') as write_file:
-        write_file.write("LOG START")
+#    with open(logFileName, 'w') as write_file:
+#        write_file.write("LOG START")
 
     formatter = logging.Formatter(fmt='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%I:%M:%S')
     fileHandler = logging.FileHandler(filename=logFileName, mode="w")
@@ -136,6 +137,7 @@ def taxiProgram():
     Parameters: None
     Returns: None
     """
+    #function definition: Log 'msg % args' with severity 'ERROR'.
     logger.error("main/taxiProgram: Taxi Program Started")
 
     # Set up data structures for first POGI retrieval
@@ -148,7 +150,7 @@ def taxiProgram():
         
         # If we don't get any data, try again
         if pogiInitPipeline.empty():
-            continue
+            continue # skips the rest of the loop and loops again
         
         # Once we have data, break out of the loop
         firstTelemetry = pogiInitPipeline.get()
@@ -189,6 +191,32 @@ def taxiProgram():
     logger.error("main/taxiProgram: Taxi Program Init Finished")
     return
 
+def showVideo(): # this function needs to call functions in videoDisplay and decklinkSrcWorker
+    """
+    Display video implementation here.
+    Parameters: None
+    Returns: None
+    """
+
+    #logger.debug("main/showVideo: Video Display Started") # start message, logs with severity DEBUG
+
+    videoPipeline = mp.Queue()
+    # Queue from command module out to fusion module containing timestamped telemetry data from POGI
+
+    # Utility locks
+    pause = mp.Lock()
+    quit = mp.Queue()
+
+    processes = [
+        mp.Process(target=decklinkSrcWorker_taxi, args=(pause, quit, videoPipeline)),
+        mp.Process(target=videoDisplayWorker, args=(pause, quit, videoPipeline))
+    ]
+
+    for p in processes:
+        p.start()
+
+    #logger.debug("main/showVideo: Video Display Finished")
+    return
 
 if __name__ == '__main__':
     """

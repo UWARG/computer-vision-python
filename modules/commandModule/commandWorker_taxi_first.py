@@ -1,6 +1,6 @@
 from modules.commandModule.commandModule import CommandModule
 import logging
-from directories import PIGO_DIR, POGI_DIR
+from modules.commandModule.directories import PIGO_DIR, POGI_DIR
 
 
 def taxi_command_worker_first(turn_command_data):
