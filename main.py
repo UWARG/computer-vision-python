@@ -119,13 +119,14 @@ def searchExplosiveProgram():
     Parameters: None
     Returns: None
     """
-    videoPipeline = mp.Queue()
+    pipelineIn = mp.Queue()
+    pipelineOut = mp.Queue()
 
     pause = mp.Lock()
     quit = mp.Queue()
 
     processes = [
-        mp.Process(target=searchExplosiveWorker, args=(pause, quit, videoPipeline)),
+        mp.Process(target=searchExplosiveWorker, args=(pause, quit, pipelineIn, pipelineOut)),
     ]
 
     for p in processes:

@@ -3,7 +3,7 @@ import logging
 import cv2
 
 
-def searchExplosiveWorker(pause, exitRequest, pipelineIn):
+def searchExplosiveWorker(pause, exitRequest, pipelineIn, pipelineOut):
     logger = logging.getLogger()
     logger.debug("searchExplosiveWorker: Start Search Explosive Module")
 
@@ -26,7 +26,7 @@ def searchExplosiveWorker(pause, exitRequest, pipelineIn):
 
         if detector.count == 0:
             logger.debug("searchExplosiveWorker: No detected objects")
-        cv2.imshow("Video feed", detector.detectedContours)
-        cv2.waitKey(1)
+
+        pipelineOut.put(detector.detectedContours)
 
     logger.debug("searchExplosiveWorker: Stop Search Explosive Module")
