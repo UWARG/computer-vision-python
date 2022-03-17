@@ -1,14 +1,18 @@
 # libraries
-from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
+#from modules.decklinksrc.decklinkSrcWorker import decklinkSrcWorker
 
 import cv2
+from matplotlib.font_manager import is_opentype_cff_font
 import numpy as np
 import multiprocessing as mp
 import logging
+import time
 
 # method that displays webcam
 def displayCamera():
   cap = cv2.VideoCapture(0)
+  is_open = None
+  is_open = False
 
   if (cap.isOpened() == False):
     print("Unable to read camera feed")
@@ -20,13 +24,20 @@ def displayCamera():
   # Define the codec and create VideoWriter object
   out = cv2.VideoWriter('outpy.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (frame_width,frame_height))
 
+  timeout = 5 #5 seconds
+  timeout_start = time.time()
+
   while(True):
     ret, frame = cap.read()
+    is_open = True
 
     if ret == True:
       out.write(frame)
 
       cv2.imshow('frame',frame)
+
+      if time.time() > timeout_start + timeout:
+        break
 
       if cv2.waitKey(1) & 0xFF == ord('q'): # close the window when 'q' is clicked
         break
@@ -37,6 +48,8 @@ def displayCamera():
 
     if cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1: # close the window when top right 'X' is clicked
         break
+
+  is_open = False
 
   cap.release()
   out.release()
@@ -52,3 +65,5 @@ def displayVideo(pause, exitRequest, frameIn): # this function needs to take in 
     
 
     logger.debug("videoDisplay: Stopped video display")
+
+displayCamera()
