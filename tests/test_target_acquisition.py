@@ -50,7 +50,7 @@ def logger(exitRequest, coordinatesTelemetryPipelineIn):
         print(coordinates)
     
 # Run this from main
-def run(): 
+def test(): 
     pipelineIn = mp.Queue()
     pipelineOut = mp.Queue()
     pause = mp.Lock()
