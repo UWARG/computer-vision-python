@@ -97,7 +97,7 @@ class Detection:
 
         if pt and device.type != 'cpu':
             model(torch.zeros(1, 3, *imgsz).to(device).type_as(next(model.model.parameters())))  # warmup
-        seen = 0
+        dt, seen = [0.0, 0.0, 0.0, 0.0], 0
 
         img0 = current_frame
 
@@ -112,20 +112,26 @@ class Detection:
 
         s = f'image {frame_idx} {path}: '
 
+        t1 = time_sync()
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
+        t2 = time_sync()
+        dt[0] += t2 - t1
 
         # variable for returning bounding box coordinates
         bbox_cord = []
 
         # Inference
         pred = model(img, augment, visualize)
+        t3 = time_sync()
+        dt[1] += t3 - t2
 
         # Apply NMS
         pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det)
+        dt[2] += time_sync() - t3
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
@@ -144,10 +150,13 @@ class Detection:
 
                 # pass detections to DeepSort
                 xywhs = xyxy2xywh(det[:, 0:4])
+                t4 = time_sync()
                 confs = det[:, 4]
                 clss = det[:, 5]
 
                 outputs = self.tracker.update(xywhs.cpu(), confs.cpu(), clss.cpu(), im0)
+                t5 = time_sync()
+                dt[3] += t5 - t4
 
                 # if outputs = 0 still add to list 
                 if len(outputs) == 0:
@@ -180,6 +189,8 @@ class Detection:
                             with open(txt_path, 'a') as f:
                                 f.write(('%g ' * 10 + '\n') % (frame_idx + 1, id, bbox_left,  # MOT format
                                                                bbox_top, bbox_w, bbox_h, -1, -1, -1, -1))
+                                                               
+                LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
                 
             else:
                 self.tracker.increment_ages()
