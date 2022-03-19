@@ -2,6 +2,7 @@
 Geolocation module to map pixel coordinates to geographical coordinates
 """
 
+from _typeshed import Self
 import numpy as np
 import math
 import logging
@@ -118,9 +119,17 @@ class Geolocation:
         return latitude, longitude
 
 
-    def gather_point_pairs(self):
+    def gather_point_pairs(self, cameraResolution, U, V, C, cameraOrigin3o, referencePixels):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
+
+        Parameters
+        ----------
+        U, V : ndarray
+         vectors that point in directions of axis of image
+        C : ndarray
+         vector that point in direction of camera, magnitude based on cameraResolution
+         
 
         Returns
         -------
@@ -130,35 +139,35 @@ class Geolocation:
 
         pixelGeoPairs = np.empty(shape=(0, 2, 2))
         minimumPixelCount = 4  # Required for creating the map
-        validPixelCount = self.__referencePixels.shape[0]  # Current number of valid pixels (number of rows)
+        validPixelCount = referencePixels.shape[0]  # Current number of valid pixels (number of rows)
         maximumZcomponent = -0.1  # This must be lesser than zero and determines if the pixel is pointing downwards
 
         # Find corresponding geographical coordinate for every valid pixel
-        for i in range(0, self.__referencePixels.shape[0]):
+        for i in range(0, referencePixels.shape[0]):
 
             # Not enough pixels to create the map, abort
             if (validPixelCount < minimumPixelCount):
                 return np.empty(shape=(0, 2, 2))
 
             # Convert current pixel to vector in world space
-            pixel = self.__referencePixels[i]
+            pixel = referencePixels[i]
             # Scaling in the u, v direction
-            scalar1m = 2 * pixel[0] / self.__cameraResolution[0] - 1
-            scalar1n = 2 * pixel[1] / self.__cameraResolution[1] - 1
+            scalar1m = 2 * pixel[0] / cameraResolution[0] - 1
+            scalar1n = 2 * pixel[1] / cameraResolution[1] - 1
 
             # Linear combination formula
-            pixelInWorldSpace3a = self.__cameraDirection3c + scalar1m * self.__cameraOrientation3u + scalar1n * self.__cameraOrientation3v
+            pixelInWorldSpace3a = C + scalar1m * U + scalar1n * V
             # Verify pixel vector is pointing downwards
             if (pixelInWorldSpace3a[2] > maximumZcomponent):
                 validPixelCount -= 1
                 continue
 
             # Find intersection of the pixel line with the xy-plane
-            x = self.__cameraOrigin3o[0] - pixelInWorldSpace3a[0] * self.__cameraOrigin3o[2] / pixelInWorldSpace3a[2]
-            y = self.__cameraOrigin3o[1] - pixelInWorldSpace3a[1] * self.__cameraOrigin3o[2] / pixelInWorldSpace3a[2]
+            x = cameraOrigin3o[0] - pixelInWorldSpace3a[0] * cameraOrigin3o[2] / pixelInWorldSpace3a[2]
+            y = cameraOrigin3o[1] - pixelInWorldSpace3a[1] * cameraOrigin3o[2] / pixelInWorldSpace3a[2]
 
             # Insert result
-            pair = np.vstack((self.__referencePixels[i], [x, y]))
+            pair = np.vstack((referencePixels[i], [x, y]))
             pixelGeoPairs = np.concatenate((pixelGeoPairs, [pair]))
 
         self.__logger.debug("geolocation/gather_point_pairs: Returned " + str(pixelGeoPairs))
@@ -246,7 +255,7 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
         return np.empty(shape=(0, 2))
 
-    def calculate_pixel_to_geo_mapping(self):
+    def calculate_pixel_to_geo_mapping(self, pairs):
         """
         Outputs transform matrix for mapping pixels to geographical points
 
@@ -259,10 +268,10 @@ class Geolocation:
         # Declare 4 matrices
         # Assign relevant values, shapes and data types
         # Create a 3x3 matrix with the coordinates as vectors with 1 as the z component => np.array([[x1, x2, x3], [y1, y2, y3], [1, 1, 1]])
-        sourcePixelMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
-        sourcePixelVector = np.vstack((self.__pixelToGeoPairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
-        mappedGeoMatrix = np.vstack((self.__pixelToGeoPairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
-        mappedGeoVector = np.vstack((self.__pixelToGeoPairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
+        sourcePixelMatrix = np.vstack((pairs[0:3, 0:1].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        sourcePixelVector = np.vstack((pairs[3, 0:1].reshape(1, 2).T, [1])).astype(np.float64)
+        mappedGeoMatrix = np.vstack((pairs[0:3, 1:2].reshape(3, 2).T, [1, 1, 1])).astype(np.float64)
+        mappedGeoVector = np.vstack((pairs[3, 1:2].reshape(1, 2).T, [1])).astype(np.float64)
 
         # Solve system of linear equations to get value of coefficients
         solvedPixelVector = np.linalg.solve(sourcePixelMatrix, sourcePixelVector)
@@ -282,7 +291,7 @@ class Geolocation:
         self.__logger.debug("geolocation/calculate_pixel_to_geo_mapping: Returned " + str(matrixProduct))
         return matrixProduct
 
-    def convert_input(self):
+    def convert_input(self, eulerPlane, eulerCamera):
         """
         Converts telemtry data into workable data
 
@@ -294,8 +303,8 @@ class Geolocation:
         self.__logger.debug("geolocation/convert_input: Started")
 
         # get plane and camera rotation matrices
-        planeRotation = self.__calculate_rotation_matrix(self.__eulerPlane)
-        cameraRotation = self.__calculate_rotation_matrix(self.__eulerCamera)
+        planeRotation = self.__calculate_rotation_matrix(eulerPlane)
+        cameraRotation = self.__calculate_rotation_matrix(eulerCamera)
 
         # get plane and camera compound rotation matrix
         # note: apply camera rotation and then plane rotation in that order
@@ -574,13 +583,13 @@ class Geolocation:
         self.__latitude = localCoordinates[1]
         self.__altitude = altitude
 
-        camera_o, camera_c, camera_u, camera_v = self.convert_input()
+        camera_o, camera_c, camera_u, camera_v = self.convert_input(self.__eulerPlane, self.__eulerCamera)
         self.__cameraOrigin3o = camera_o
         self.__cameraDirection3c = camera_c
         self.__cameraOrientation3u = camera_u
         self.__cameraOrientation3v = camera_v
 
-        point_pairs = self.gather_point_pairs()
+        point_pairs = self.gather_point_pairs(self.__cameraResolution, camera_u, camera_v, camera_c, camera_o, self.__referencePixels)
         # If insufficient point pairs, exit this run and try again
         if len(point_pairs) < 4:
             return False, None
@@ -591,7 +600,7 @@ class Geolocation:
             return False, None
 
         self.__pixelToGeoPairs = non_collinear_points
-        tranformation_matrix = self.calculate_pixel_to_geo_mapping()
+        tranformation_matrix = self.calculate_pixel_to_geo_mapping(self.__pixelToGeoPairs)
 
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
         # Competition
@@ -650,3 +659,4 @@ class Geolocation:
         self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
 
         return geoCoordinates
+
