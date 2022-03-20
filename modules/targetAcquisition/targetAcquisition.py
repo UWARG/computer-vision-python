@@ -74,7 +74,7 @@ class TargetAcquisition:
 #         self.currentFrame = newFrame.image
         return
 #
-#     def get_coordinates(self):
+    def get_coordinates(self):
 #         """
 #         Returns a list of co-ordinates along a video frame where tents are located by running YOLOV5 model
 #
@@ -102,7 +102,7 @@ class TargetAcquisition:
 #         return True, (self.coordinates, self.telemetryData)
         return
 #
-#     def __predict(self):
+    def __predict(self):
 #         """
 #         PRIVATE: Runs YOLOV5 model on current frame and populates tentCoordinates and boxes attributes
 #         """
