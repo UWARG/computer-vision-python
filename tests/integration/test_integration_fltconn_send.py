@@ -1,8 +1,5 @@
 from modules.communications.FltConnSendWorker import flt_conn_send_worker
 import multiprocessing as mp
-import pytest
-
-integration = pytest.mark.skipif("not config.getoption('longrun')")
 
 
 def dummy_producer():
@@ -19,7 +16,6 @@ def dummy_producer():
         }
 
 
-@integration
 def test_integration_fltconnsend():
     dummy_messages_pipeline = mp.Queue()
     pause = mp.Lock()
