@@ -51,8 +51,7 @@ class TargetAcquisition:
         self.__logger = logging.getLogger()
         self.__logger.debug("targetAcquisition/__init__: Started")
 
-        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
-        # of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle as (xmin, ymin) to (xmax, ymax)
         self.bbox=[((0, 0), (0, 0))]
         self.coordinates = []
         self.telemetryData = {}
