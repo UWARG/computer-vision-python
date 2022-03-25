@@ -2,8 +2,8 @@ import struct
 
 from modules.commsInterface.commsInterface import UARTInterface
 
-UART_PORT = ""
-PADDING_BYTES = 5
+UART_PORT = "/dev/ttyTHS1"
+PADDING_BYTES = 0
 
 
 class FltConnSend:
@@ -40,9 +40,15 @@ def build_fijo_bytearray(request):
         pack_to_int(detect_flag),
         pack_to_int(qr_scan_flag),
         pack_to_int(takeoff_command),
-        *[struct.pack("x") for _ in range(PADDING_BYTES)],
+        struct.pack("x"),
+        struct.pack("x"),
+        struct.pack("x"),
+        struct.pack("x"),
         pack_to_float(latitude),
         pack_to_float(longitude)
     ]
 
-    return bytes(b''.join(byte_list))
+    b= bytes(b''.join(byte_list))
+    print(b)
+    print(len(b))
+    return b

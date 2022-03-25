@@ -1,5 +1,6 @@
+"""
 def _import_all_modules():
-    """ Dynamically imports all modules in this package. """
+    # Dynamically imports all modules in this package. 
     import traceback
     import os
     global __all__
@@ -26,3 +27,4 @@ def _import_all_modules():
 
 
 _import_all_modules()
+"""

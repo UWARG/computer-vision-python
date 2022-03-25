@@ -35,7 +35,8 @@ class CommsInterface:
 
             return self.ep.bEndpointAddress
         elif self.uart_or_usb == 1:
-            return serial.Serial(self.uart_port, self.baudrate)
+            port = serial.Serial(self.uart_port, self.baudrate)
+            return port
 
     def read(self, endpointId):
         """
@@ -56,7 +57,9 @@ class CommsInterface:
             self.dev.write(endpointId, data)
             return True
         elif self.uart_or_usb == 1:
-            endpointId.write(data.encode())
+            if not endpointId.isOpen():
+                endpointId.open()
+            endpointId.write(data)
             endpointId.close()
             return True
 
@@ -70,7 +73,7 @@ class USBInterface(CommsInterface):
 
 
 class UARTInterface(CommsInterface):
-    def __init__(self, uart_port: str, baudrate: int = 9600):
+    def __init__(self, uart_port: str, baudrate: int = 115200):
         self.uart_port = uart_port
         self.baudrate = baudrate
         super().__init__(1)
