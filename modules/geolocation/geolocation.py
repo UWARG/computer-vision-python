@@ -77,8 +77,8 @@ class Geolocation:
         """
         Magic numbers for competition
         """
-        self.__GPS_OFFSET = 0
-        self.__CAMERA_OFFSET = 0
+        self.__GPS_OFFSET = np.empty(3) # = 0
+        self.__CAMERA_OFFSET = np.empty(3) # = 0
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
@@ -214,11 +214,12 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
 
         NUM_POINTS_NEEDED = 4
+        indexes = []
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
             self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
-            return np.empty(shape=(0, 2))
+            return indexes
 
         # Look at all sequential pairs of four points
         for i in range(0, len(coordinatesArray)):
@@ -231,20 +232,35 @@ class Geolocation:
             for j in range(0, NUM_POINTS_NEEDED):
                 points[j] = coordinatesArray[(i + j) % len(coordinatesArray)]
 
-            # Check collinearity of all possible combinations
             areNotFourCollinear = True
-            for i in range(0, NUM_POINTS_NEEDED):
-                areNotFourCollinear &= not self.__are_three_points_collinear(points[i],
-                                                                             points[(i + 1) % NUM_POINTS_NEEDED],
-                                                                             points[(i + 2) % NUM_POINTS_NEEDED])
+            index0 = None
+            index1 = None
+            index2 = None
+            index3 = None
+
+            # Check collinearity of all possible combinations
+            for k in range(0, NUM_POINTS_NEEDED):
+                areNotFourCollinear &= not self.__are_three_points_collinear(points[k],
+                                                                             points[(k + 1) % NUM_POINTS_NEEDED],
+                                                                             points[(k + 2) % NUM_POINTS_NEEDED])
+                # Store indexes of current iteration
+                index0 = k
+                index1 = (k + 1) % NUM_POINTS_NEEDED
+                index2 = (k + 2) % NUM_POINTS_NEEDED
+                index3 = (k + 3) % NUM_POINTS_NEEDED
 
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
                 self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
-                return points
+                # return points
+                indexes = [index0, index1, index2, index3]
+                
+                # Sort and return the indexes in ascending order
+                indexes.sort()
+                return indexes
         
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
-        return np.empty(shape=(0, 2))
+        return indexes
 
     def calculate_pixel_to_geo_mapping(self):
         """
@@ -284,7 +300,7 @@ class Geolocation:
 
     def convert_input(self):
         """
-        Converts telemtry data into workable data
+        Converts telemetry data into workable data
 
         Returns
         -------
@@ -333,7 +349,7 @@ class Geolocation:
 
         # get GPS module coordinates
         gpsModule = np.empty(3)
-        gpsModule[0] = self.__longitude - self.__WORLD_ORIGIN[0]
+        gpsModule[0] = self.__longitude - self.__WORLD_ORIGIN[0] 
         gpsModule[1] = self.__latitude - self.__WORLD_ORIGIN[1]
         gpsModule[2] = self.__altitude - self.__WORLD_ORIGIN[2]
 
@@ -341,7 +357,7 @@ class Geolocation:
         # note: for rotation matrices, transpose is equivalent to inverse
         transposedMatrix = np.transpose(compoundRotationMatrix)
         rotatedOffset = np.matmul(transposedMatrix, gpsCameraOffset)
-
+  
         # get camera coordinates in world space
         cameraCoordinates = np.add(gpsModule, rotatedOffset)
         self.__logger.debug("geolocation/__calculate_o_vector: Returned " + str(cameraCoordinates))
@@ -503,7 +519,7 @@ class Geolocation:
     # Helper function required for input
     def concatenate_locations(self, newLocations):
         self.__logger.debug("geolocation/concatenate_locations: Started, input: " + str(newLocations))
-        self.__locationsList = self.__locationsList + newLocations
+        self.__locationsList = self.__locationsList + newLocations # TypeError: can only concatenate list (not "NoneType") to list
         self.__logger.debug("geolocation/concatenate_locations: Finished")
 
     def get_best_location(self,inputLocationTupleList):
@@ -556,12 +572,13 @@ class Geolocation:
         return (averagePair,averageError)
 
     def run_locator(self, telemetry, coordinates):
-        euler_angles_plane = telemetry["eulerAnglesOfPlane"]
+        euler_angles_plane = telemetry["eulerAnglesOfPlane"] 
         euler_angles_camera = telemetry["eulerAnglesOfCamera"]
+
         # Pls confirm shape of gpsCoordinates from command
-        gpsLongitude = telemetry["gpsCoordinates"]["longitude"]
-        gpsLatitude = telemetry["gpsCoordinates"]["latitude"]
-        altitude = telemetry["gpsCoordinates"]["altitude"]
+        gpsLongitude = telemetry["gpsCoordinates"]["longitude"] #'longitude': 43.4723,
+        gpsLatitude = telemetry["gpsCoordinates"]["latitude"] #'latitude': -80.5449,
+        altitude = telemetry["gpsCoordinates"]["altitude"] #'altitude': 100
 
         # Expect euler angles to be in degrees
         self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
@@ -570,25 +587,41 @@ class Geolocation:
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
         localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
-        self.__longitude = localCoordinates[0]
-        self.__latitude = localCoordinates[1]
-        self.__altitude = altitude
+        # localCoordinates stores (x, y) -> metres from UW origin
+        self.__longitude = localCoordinates[0] # store the x (metres from UW)
+        self.__latitude = localCoordinates[1] # store the y (metres from UW)
+        self.__altitude = altitude # store the altitude (example: 100)
 
-        camera_o, camera_c, camera_u, camera_v = self.convert_input()
-        self.__cameraOrigin3o = camera_o
-        self.__cameraDirection3c = camera_c
-        self.__cameraOrientation3u = camera_u
-        self.__cameraOrientation3v = camera_v
+        camera_o, camera_c, camera_u, camera_v = self.convert_input() # Converts telemtry data into workable data
+        self.__cameraOrigin3o = camera_o # store 4 vectors          
+        self.__cameraDirection3c = camera_c # c is orientation of camera  
+        self.__cameraOrientation3u = camera_u # u is axis of image   
+        self.__cameraOrientation3v = camera_v # v is axis of image                     
 
         point_pairs = self.gather_point_pairs()
+        
         # If insufficient point pairs, exit this run and try again
         if len(point_pairs) < 4:
             return False, None
 
-        non_collinear_points = self.get_non_collinear_points(point_pairs)
+        # Slice point_pairs to shape (n, 2) for input of get_non_collinear_points
+        points = point_pairs[:,1]
+
+        # Get the 4 non-collinear indexes of the array above
+        indexes = self.get_non_collinear_points(points)
+
         # If insufficient point pairs, exit this run and try again
-        if len(non_collinear_points) < 4:
+        if len(indexes) < 4:   
             return False, None
+
+        non_collinear_points = np.empty(shape=(0, 2, 2))
+        # Create a subset of the (n, 2, 2) array above using the array of indexes
+        for i in len(indexes):
+            for j in len(point_pairs):
+                if i == j:
+                    non_collinear_points = np.concatenate((non_collinear_points, point_pairs[j]))
+                    # non_collinear_points only stores the 4 non-collinear point pairs
+                    # indicated by the indexes array
 
         self.__pixelToGeoPairs = non_collinear_points
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
