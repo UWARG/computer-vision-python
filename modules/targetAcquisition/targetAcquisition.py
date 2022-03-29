@@ -51,8 +51,7 @@ class TargetAcquisition:
         self.__logger = logging.getLogger()
         self.__logger.debug("targetAcquisition/__init__: Started")
 
-        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle by percentage
-        # of height and width of the image as (xmin, ymin) to (xmax, ymax)
+        # Contains BoundBox objects (see utils.py), each of which contains opposite corners of a rectangle as (xmin, ymin) to (xmax, ymax)
         self.bbox=[((0, 0), (0, 0))]
         self.coordinates = []
         self.telemetryData = {}
@@ -94,8 +93,8 @@ class TargetAcquisition:
         
         # Find centre of bounding box
         for i in range(1, len(self.bbox)):
-            x = self.bbox[i][0][0] + self.bbox[i][1][0]
-            y = self.bbox[i][0][1] + self.bbox[i][1][1]
+            x = self.bbox[i][0][0] + self.bbox[i][1][0] // 2
+            y = self.bbox[i][0][1] + self.bbox[i][1][1] // 2
             self.coordinates.append((x, y))
     
         return True, (self.coordinates, self.telemetryData)
