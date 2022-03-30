@@ -29,7 +29,7 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
         if (merged_data is None):
             continue
 
-        ret, location = locator.run_locator(merged_data.telemetry, merged_data.image)
+        ret, location = locator.run_locator(merged_data.telemetry, merged_data.image) # look into these attributes
 
         # Something has gone wrong, skip
         if (not ret):

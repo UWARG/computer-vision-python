@@ -249,12 +249,16 @@ class Geolocation:
                 index2 = (k + 2) % NUM_POINTS_NEEDED
                 index3 = (k + 3) % NUM_POINTS_NEEDED
 
+                # If points are colinear, stop looping
+                if (not areNotFourCollinear):
+                    break
+
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
                 self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
                 # return points
                 indexes = [index0, index1, index2, index3]
-                
+
                 # Sort and return the indexes in ascending order
                 indexes.sort()
                 return indexes
