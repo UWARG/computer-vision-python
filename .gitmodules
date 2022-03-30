@@ -1,0 +1,3 @@
+[submodule "modules/targetAcquisition/Yolov5_DeepSort_Pytorch"]
+	path = modules/targetAcquisition/Yolov5_DeepSort_Pytorch
+	url = https://github.com/mikel-brostrom/Yolov5_DeepSort_Pytorch.git

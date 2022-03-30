@@ -14,6 +14,7 @@ from modules.commandModule.commandWorker_flight import flight_command_worker, po
 from modules.commandModule.commandWorker_taxi_first import command_taxi_worker_continuous, taxi_command_worker_first
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetryWorker import pipelineMergeWorker
 from modules.geolocation.geolocationWorker import geolocation_locator_worker, geolocation_output_worker
+from modules.searchExplosive.searchExplosiveWorker import searchExplosiveWorker
 from modules.videoDisplay.videoDisplayWorker import videoDisplayWorker
 
 PIGO_DIRECTORY = ""
@@ -110,6 +111,27 @@ def qrProgram():
 
     for p in processes:
         p.start()
+
+
+def searchExplosiveProgram():
+    """
+    Search Explosive program implementation
+    Parameters: None
+    Returns: None
+    """
+    pipelineIn = mp.Queue()
+    pipelineOut = mp.Queue()
+
+    pause = mp.Lock()
+    quit = mp.Queue()
+
+    processes = [
+        mp.Process(target=searchExplosiveWorker, args=(pause, quit, pipelineIn, pipelineOut)),
+    ]
+
+    for p in processes:
+        p.start()
+
 
 def init_logger():
     baseDir = os.path.dirname(os.path.realpath(__file__))
