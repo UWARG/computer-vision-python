@@ -616,8 +616,8 @@ class Geolocation:
 
         non_collinear_points = np.empty(shape=(0, 2, 2))
         # Create a subset of the (n, 2, 2) array above using the array of indexes
-        for i in len(indexes):
-            for j in len(point_pairs):
+        for i in range(0, len(indexes)):
+            for j in range (0, len(point_pairs)):
                 if i == j:
                     non_collinear_points = np.concatenate((non_collinear_points, point_pairs[j]))
                     # non_collinear_points only stores the 4 non-collinear point pairs
