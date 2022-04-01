@@ -30,7 +30,7 @@ def build_fijo_bytearray(request):
     takeoff_command = request['data']['takeoff_command']
 
     def pack_to_int(val):
-        return struct.pack("i", val)
+        return struct.pack("B", val)
 
     def pack_to_float(val):
         return struct.pack("f", val)
