@@ -103,6 +103,8 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
 
         pipelineOut.put(bestOutput)
 
+        # put list of latitude and longitude here?
+
         if (exit_requested(exitRequest)):
             break
 
