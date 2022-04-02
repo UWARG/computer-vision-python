@@ -243,7 +243,7 @@ class Geolocation:
                 indexes[0] = k
                 indexes[1] = (k + 1) % NUM_POINTS_NEEDED
                 indexes[2] = (k + 2) % NUM_POINTS_NEEDED
-                indexes[3] = (k + 3) % NUM_POINTS_NEEDED #err0r?
+                indexes[3] = (k + 3) % NUM_POINTS_NEEDED
 
                 # If points are collinear, stop looping
                 if (areNotFourCollinear == False):
