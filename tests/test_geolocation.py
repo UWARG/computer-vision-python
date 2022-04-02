@@ -199,7 +199,7 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
     def test_more_than_four_points_last_correct_case(self):
-        coordinatesArray = np.array([[0, 0], [1, 1], [100, 0], [-1, -1], [4, 4], [2, -2], [-4, 10]])
+        coordinatesArray = np.array([[0, 0], [1, 1], [100, 0], [-1, -1], [4, 4], [-2, -2], [-4, 10]])
         expected = np.array([0, 1, 2, 6])
 
         # Run 

@@ -241,9 +241,9 @@ class Geolocation:
                                                                              points[(k + 2) % NUM_POINTS_NEEDED])
                 # Store indexes of current iteration
                 indexes[0] = (i)
-                indexes[1] = ((i + 1) % NUM_POINTS_NEEDED)
-                indexes[2] = ((i + 2) % NUM_POINTS_NEEDED)
-                indexes[3] = ((i + 3) % NUM_POINTS_NEEDED)
+                indexes[1] = ((i + 1) % len(coordinatesArray))
+                indexes[2] = ((i + 2) % len(coordinatesArray))
+                indexes[3] = ((i + 3) % len(coordinatesArray))
 
                 # If points are collinear, stop looping
                 if (areNotFourCollinear == False):
@@ -609,7 +609,7 @@ class Geolocation:
         if len(indexes) < 4:
             return False, None
 
-        non_collinear_points = np.empty(shape=(4, 2, 2))
+        non_collinear_points = np.array(indexes)
 
         # Create a subset of the (n, 2, 2) array above using the array of indexes
         non_collinear_points = [point_pairs[i] for i in indexes]
