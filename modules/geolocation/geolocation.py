@@ -231,6 +231,7 @@ class Geolocation:
             # testing every single combination.
             for j in range(0, NUM_POINTS_NEEDED):
                 points[j] = coordinatesArray[(i + j) % len(coordinatesArray)]
+                indexes[j] = ((i + j) % len(coordinatesArray))
 
             areNotFourCollinear = True
 
@@ -239,11 +240,6 @@ class Geolocation:
                 areNotFourCollinear &= not self.__are_three_points_collinear(points[k],
                                                                              points[(k + 1) % NUM_POINTS_NEEDED],
                                                                              points[(k + 2) % NUM_POINTS_NEEDED])
-                # Store indexes of current iteration
-                indexes[0] = (i)
-                indexes[1] = ((i + 1) % len(coordinatesArray))
-                indexes[2] = ((i + 2) % len(coordinatesArray))
-                indexes[3] = ((i + 3) % len(coordinatesArray))
 
                 # If points are collinear, stop looping
                 if (areNotFourCollinear == False):
@@ -609,10 +605,8 @@ class Geolocation:
         if len(indexes) < 4:
             return False, None
 
-        non_collinear_points = np.array(indexes)
-
         # Create a subset of the (n, 2, 2) array above using the array of indexes
-        non_collinear_points = [point_pairs[i] for i in indexes]
+        non_collinear_points = (point_pairs[indexes])
         # non_collinear_points only stores the 4 non-collinear point pairs
         # indicated by the indexes array
 
