@@ -214,7 +214,7 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
 
         NUM_POINTS_NEEDED = 4
-        indexes = [0, 0, 0, 0] #this or np.empty?
+        indexes = np.empty(shape=(NUM_POINTS_NEEDED))
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
@@ -240,17 +240,17 @@ class Geolocation:
                                                                              points[(k + 1) % NUM_POINTS_NEEDED],
                                                                              points[(k + 2) % NUM_POINTS_NEEDED])
                 # Store indexes of current iteration
-                indexes[0] = k
-                indexes[1] = (k + 1) % NUM_POINTS_NEEDED
-                indexes[2] = (k + 2) % NUM_POINTS_NEEDED
-                indexes[3] = (k + 3) % NUM_POINTS_NEEDED
+                indexes[0] = (i)
+                indexes[1] = ((i + 1) % NUM_POINTS_NEEDED)
+                indexes[2] = ((i + 2) % NUM_POINTS_NEEDED)
+                indexes[3] = ((i + 3) % NUM_POINTS_NEEDED)
 
                 # If points are collinear, stop looping
                 if (areNotFourCollinear == False):
                     break
 
             # If all four points are non-collinear, return this combination of points
-            if areNotFourCollinear == True:
+            if areNotFourCollinear:
                 self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
 
                 # Sort and return the indexes in ascending order
@@ -258,7 +258,7 @@ class Geolocation:
                 return indexes
         
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
-        return []
+        return np.empty(0)
 
     def calculate_pixel_to_geo_mapping(self):
         """
