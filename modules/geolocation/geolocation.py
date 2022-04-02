@@ -619,7 +619,7 @@ class Geolocation:
         for i in range(0, len(indexes)):
             for j in range (0, len(point_pairs)):
                 if i == j:
-                    non_collinear_points = np.concatenate((non_collinear_points, point_pairs[j]))
+                    non_collinear_points = np.concatenate((non_collinear_points, [point_pairs[j]]))
                     # non_collinear_points only stores the 4 non-collinear point pairs
                     # indicated by the indexes array
 
