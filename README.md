@@ -145,3 +145,6 @@ Also note that it isn't necessary to explain which functions/attributes are publ
 
 ### More docs
 If you encounter a scenario that isn't mentioned above, refer to the Python PEP8 style guide (https://www.python.org/dev/peps/pep-0008/#function-annotations) or use common sense.
+
+### Note
+1. to clone git submodules use command `git submodule update --init --recursive`
