@@ -1,4 +1,4 @@
-tensorflow-gpu
+tensorflow
 keras
 imgaug
 opencv-python
@@ -21,6 +21,8 @@ unittest-xml-reporting
 pyusb>=1.2.1
 pyserial>=3.5
 digi-xbee
+easydict
+gdown
 
 # FROM BOX DETECTECTION: DUPLICATES POSSIBLE
 # logging -------------------------------------
@@ -38,4 +40,4 @@ pandas
 
 # extras --------------------------------------
 thop  # FLOPS computation
-pycocotools>=2.0  # COCO mAP
+#pycocotools>=2.0  # COCO mAP
