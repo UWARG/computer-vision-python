@@ -119,15 +119,15 @@ class Geolocation:
         return latitude, longitude
 
 
-    def gather_point_pairs(self, cameraResolution, U, V, C, cameraOrigin3o, referencePixels):
+    def gather_point_pairs(self, cameraResolution, camera3u, camera3v, camera3c, cameraOrigin3o, referencePixels):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
 
         Parameters
         ----------
-        U, V : ndarray
+        camera3u, camera3v : ndarray
          vectors that point in directions of axis of image
-        C : ndarray
+        camera3c : ndarray
          vector that point in direction of camera, magnitude based on cameraResolution
          
 
@@ -156,7 +156,7 @@ class Geolocation:
             scalar1n = 2 * pixel[1] / cameraResolution[1] - 1
 
             # Linear combination formula
-            pixelInWorldSpace3a = C + scalar1m * U + scalar1n * V
+            pixelInWorldSpace3a = camera3c + scalar1m * camera3u + scalar1n * camera3v
             # Verify pixel vector is pointing downwards
             if (pixelInWorldSpace3a[2] > maximumZcomponent):
                 validPixelCount -= 1
@@ -659,4 +659,3 @@ class Geolocation:
         self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
 
         return geoCoordinates
-
