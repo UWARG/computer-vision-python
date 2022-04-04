@@ -77,8 +77,8 @@ class Geolocation:
         """
         Magic numbers for competition
         """
-        self.__GPS_OFFSET = 0
-        self.__CAMERA_OFFSET = 0
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
@@ -214,7 +214,7 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
 
         NUM_POINTS_NEEDED = 4
-        indexes = np.empty(shape=(NUM_POINTS_NEEDED))
+        indexes = np.empty(shape=(NUM_POINTS_NEEDED), dtype = int)
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
