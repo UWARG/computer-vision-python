@@ -79,6 +79,7 @@ class Geolocation:
         """
         self.__GPS_OFFSET = np.zeros(3)
         self.__CAMERA_OFFSET = np.zeros(3)
+        self.__WORLD_ORIGIN = np.zeros(3)
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
