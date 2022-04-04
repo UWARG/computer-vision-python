@@ -168,7 +168,10 @@ class TestGetNonCollinearPoints(unittest.TestCase):
 
     def test_four_points_non_collinear(self):
         coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+<<<<<<< HEAD
         #expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
+=======
+>>>>>>> main
         expected = np.array([0, 1, 2, 3])
 
         # Run
@@ -179,8 +182,12 @@ class TestGetNonCollinearPoints(unittest.TestCase):
 
     def test_more_than_four_points_one_correct_case(self):
         coordinatesArray = np.array([[0, 0], [10, 12], [-1, -1], [100, 0], [4, 4]])
+<<<<<<< HEAD
         # expected = np.array([[0, 0], [10, 12], [-1, -1], [100, 0]])
         expected = [0, 1, 2, 3]
+=======
+        expected = np.array([0, 1, 2, 3])
+>>>>>>> main
 
         # Run
         actual = self.locator.get_non_collinear_points(coordinatesArray)
@@ -196,6 +203,16 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         # Run
         points = self.locator.get_non_collinear_points(coordinatesArray)
         actual = np.size(points)
+
+        # Test
+        np.testing.assert_almost_equal(actual, expected)
+
+    def test_more_than_four_points_last_correct_case(self):
+        coordinatesArray = np.array([[0, 0], [1, 1], [100, 0], [-1, -1], [4, 4], [-2, -2], [-4, 10]])
+        expected = np.array([0, 1, 2, 6])
+
+        # Run 
+        actual = self.locator.get_non_collinear_points(coordinatesArray)
 
         # Test
         np.testing.assert_almost_equal(actual, expected)

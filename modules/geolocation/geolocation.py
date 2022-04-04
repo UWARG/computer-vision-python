@@ -214,7 +214,11 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
 
         NUM_POINTS_NEEDED = 4
+<<<<<<< HEAD
         indexes = []
+=======
+        indexes = np.empty(shape=(NUM_POINTS_NEEDED))
+>>>>>>> main
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
@@ -231,18 +235,25 @@ class Geolocation:
             # testing every single combination.
             for j in range(0, NUM_POINTS_NEEDED):
                 points[j] = coordinatesArray[(i + j) % len(coordinatesArray)]
+                indexes[j] = ((i + j) % len(coordinatesArray))
 
+            areNotFourCollinear = True
+
+<<<<<<< HEAD
             areNotFourCollinear = True
             index0 = None
             index1 = None
             index2 = None
             index3 = None
 
+=======
+>>>>>>> main
             # Check collinearity of all possible combinations
             for k in range(0, NUM_POINTS_NEEDED):
                 areNotFourCollinear &= not self.__are_three_points_collinear(points[k],
                                                                              points[(k + 1) % NUM_POINTS_NEEDED],
                                                                              points[(k + 2) % NUM_POINTS_NEEDED])
+<<<<<<< HEAD
                 # Store indexes of current iteration
                 index0 = k
                 index1 = (k + 1) % NUM_POINTS_NEEDED
@@ -251,20 +262,32 @@ class Geolocation:
 
                 # If points are colinear, stop looping
                 if (not areNotFourCollinear):
+=======
+
+                # If points are collinear, stop looping
+                if (areNotFourCollinear == False):
+>>>>>>> main
                     break
 
             # If all four points are non-collinear, return this combination of points
             if areNotFourCollinear:
                 self.__logger.debug("geolocation/get_non_collinear_points: Returned " + str(points))
+<<<<<<< HEAD
                 # return points
                 indexes = [index0, index1, index2, index3]
+=======
+>>>>>>> main
 
                 # Sort and return the indexes in ascending order
                 indexes.sort()
                 return indexes
         
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
+<<<<<<< HEAD
         return indexes
+=======
+        return np.empty(0)
+>>>>>>> main
 
     def calculate_pixel_to_geo_mapping(self):
         """
@@ -615,6 +638,7 @@ class Geolocation:
         indexes = self.get_non_collinear_points(points)
 
         # If insufficient point pairs, exit this run and try again
+<<<<<<< HEAD
         if len(indexes) < 4:   
             return False, None
 
@@ -626,6 +650,15 @@ class Geolocation:
                     non_collinear_points = np.concatenate((non_collinear_points, [point_pairs[j]]))
                     # non_collinear_points only stores the 4 non-collinear point pairs
                     # indicated by the indexes array
+=======
+        if len(indexes) < 4:
+            return False, None
+
+        # Create a subset of the (n, 2, 2) array above using the array of indexes
+        non_collinear_points = (point_pairs[indexes])
+        # non_collinear_points only stores the 4 non-collinear point pairs
+        # indicated by the indexes array
+>>>>>>> main
 
         self.__pixelToGeoPairs = non_collinear_points
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
