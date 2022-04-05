@@ -618,7 +618,7 @@ class Geolocation:
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
         geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
-        return True, geo_coordinates
+        return True, [geo_coordinates]
 
     @staticmethod
     def __deg_vals_to_rad(convert_dict):
