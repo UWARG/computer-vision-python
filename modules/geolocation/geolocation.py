@@ -617,8 +617,11 @@ class Geolocation:
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
-        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
-        return True, [geo_coordinates]
+        geo_coordinates = np.empty(shape=(len(coordinates), 2))
+        for i in range (0, len(coordinates)):
+            geo_coordinates[i] = (self.lat_lon_from_local(local_coordinates[i]))
+            
+        return True, geo_coordinates
 
     @staticmethod
     def __deg_vals_to_rad(convert_dict):
