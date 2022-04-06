@@ -1,5 +1,5 @@
 """
-Unit tests for geolocation module
+pytests for geolocation module
 """
 import pytest
 import numpy as np
