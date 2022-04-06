@@ -1,14 +1,13 @@
 """
 Unit tests for geolocation module
 """
-
-import unittest
+import pytest
 import numpy as np
 
 from modules.geolocation import geolocation
 
 
-class TestGatherPointPairs(unittest.TestCase):
+class TestGatherPointPairs():
     """
     Tests Geolocation.gather_point_pairs()
     """
@@ -122,7 +121,7 @@ class TestGatherPointPairs(unittest.TestCase):
         np.testing.assert_equal(actual, expected)
 
 
-class TestGetNonCollinearPoints(unittest.TestCase):
+class TestGetNonCollinearPoints():
     """
     Tests get_non_collinear_points()
     """
@@ -209,7 +208,7 @@ class TestGetNonCollinearPoints(unittest.TestCase):
         np.testing.assert_almost_equal(actual, expected)
 
 
-class TestPointMatrixToGeoMapping(unittest.TestCase):
+class TestPointMatrixToGeoMapping():
     """
     Tests Geolocation.calculate_pixel_to_geo_mapping()
     """
@@ -293,7 +292,7 @@ class TestPointMatrixToGeoMapping(unittest.TestCase):
         # Test
         np.testing.assert_almost_equal(actual, expected)
     
-class TestMapLocationFromPixel(unittest.TestCase):
+class TestMapLocationFromPixel():
     """
     Tests Geolocation.map_location_from_pixel()
     """
@@ -422,7 +421,7 @@ class TestMapLocationFromPixel(unittest.TestCase):
         
 
 
-class TestConvertInput(unittest.TestCase):
+class TestConvertInput():
 
     def setUp(self):
         self.locator = geolocation.Geolocation()
@@ -523,7 +522,7 @@ class TestConvertInput(unittest.TestCase):
 
 
 
-class TestGetBestLocation(unittest.TestCase):
+class TestGetBestLocation():
     """
     Tests Geolocation.outputanalysis(inputLocationTupleList)
     """
@@ -652,9 +651,3 @@ class TestGetBestLocation(unittest.TestCase):
 
         np.testing.assert_almost_equal(actual[0], expectedCoordPair)
         np.testing.assert_almost_equal(actual[1], expectedError)
-
-               
- 
-
-if __name__ == "__main__":
-    unittest.main()

@@ -2,7 +2,6 @@
 Geolocation module to map pixel coordinates to geographical coordinates
 """
 
-from _typeshed import Self
 import numpy as np
 import math
 import logging
@@ -119,7 +118,7 @@ class Geolocation:
         return latitude, longitude
 
 
-    def gather_point_pairs(self, cameraResolution, camera3u, camera3v, camera3c, cameraOrigin3o, referencePixels):
+    def gather_point_pairs(self, camera3u, camera3v, camera3c, cameraOrigin3o, referencePixels):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
 
@@ -152,8 +151,8 @@ class Geolocation:
             # Convert current pixel to vector in world space
             pixel = referencePixels[i]
             # Scaling in the u, v direction
-            scalar1m = 2 * pixel[0] / cameraResolution[0] - 1
-            scalar1n = 2 * pixel[1] / cameraResolution[1] - 1
+            scalar1m = 2 * pixel[0] / self.cameraResolution[0] - 1
+            scalar1n = 2 * pixel[1] / self.cameraResolution[1] - 1
 
             # Linear combination formula
             pixelInWorldSpace3a = camera3c + scalar1m * camera3u + scalar1n * camera3v
@@ -593,13 +592,9 @@ class Geolocation:
         self.__latitude = localCoordinates[1]
         self.__altitude = altitude
 
-        camera_o, camera_c, camera_u, camera_v = self.convert_input(self.__eulerPlane, self.__eulerCamera)
-        self.__cameraOrigin3o = camera_o
-        self.__cameraDirection3c = camera_c
-        self.__cameraOrientation3u = camera_u
-        self.__cameraOrientation3v = camera_v
-
-        point_pairs = self.gather_point_pairs(self.__cameraResolution, camera_u, camera_v, camera_c, camera_o, self.__referencePixels)
+        self.__cameraOrigin3o, self.__cameraDirection3c, self.__cameraOrientation3u, self.__cameraOrientation3v = self.convert_input(self.__eulerPlane, self.__eulerCamera)
+        point_pairs = self.gather_point_pairs(self.__cameraOrientation3u, self.__cameraOrientation3v, self.__cameraDirection3c, self.__cameraOrigin3o, self.__referencePixels)
+        
         # If insufficient point pairs, exit this run and try again
         if len(point_pairs) < 4:
             return False, None
@@ -677,5 +672,4 @@ class Geolocation:
 
             geoCoordinates = np.vstack((geoCoordinates, np.array([dehomogenizedX, dehomogenizedY])))
         self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
-
         return geoCoordinates
