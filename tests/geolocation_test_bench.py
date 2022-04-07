@@ -70,5 +70,3 @@ if __name__ == "__main__":
         if key == ord(' '):
             cv2.destroyAllWindows()
             break
-
-
