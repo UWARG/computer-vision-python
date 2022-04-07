@@ -5,6 +5,7 @@ Geolocation module to map pixel coordinates to geographical coordinates
 import numpy as np
 import math
 import logging
+import os.path
 
 class Geolocation:
     """
@@ -690,6 +691,10 @@ class Geolocation:
         return geoCoordinates
 
     def write_locations(self, locations):
-        with open('write.txt', 'a') as f:
+        # write the txt to save inside mapLabelling folder
+        # https://stackoverflow.com/questions/8024248/telling-python-to-save-a-txt-file-to-a-certain-directory-on-windows-and-mac
+        save_path = 'C:/Users/Owner/Documents/Jeffrey/School/Waterloo/Co-op/WARG/computer-vision-python/modules/mapLabelling'
+        completeName = os.path.join(save_path, 'new.txt')
+        with open(completeName, 'a') as f:
             f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
             f.write('\n')
