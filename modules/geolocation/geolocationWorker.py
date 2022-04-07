@@ -106,6 +106,9 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
         if (exit_requested(exitRequest)):
             break
 
+    # write to file here? using locations list [], does locations need to be outside of the loop? global
+    # call function using locations here
+    locator.write_locations(locations)
 
     logger.debug("geolocation_output_worker: Stop Geolocation Output")
     return

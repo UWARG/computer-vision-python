@@ -162,7 +162,7 @@
         for (let i = 0; i < myArray.length; i++){
           // Add marker
           //addMarker(myArray[i]);
-          myArray[i] = {coords:{lat:parseFloat(myArray[i][0]), lng:parseFloat(myArray[i][1])}};
+          myArray[i] = {coords:{lat:parseFloat(myArray[i][0]), lng:parseFloat(myArray[i][1])}}; // switch 0 and 1 if backwards in txt
           addMarker(myArray[i]);
         }
       });
