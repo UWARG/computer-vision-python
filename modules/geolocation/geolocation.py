@@ -59,13 +59,17 @@ class Geolocation:
         self.__eulerPlane = eulerPlane
 
         # Constants for input_conversion
-        self.__WORLD_ORIGIN = np.empty(3)
-        self.__GPS_OFFSET = np.empty(3)
-        self.__CAMERA_OFFSET = np.empty(3)
+        self.__WORLD_ORIGIN = np.zeros(3)
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
         self.__FOV_FACTOR_H = 1
         self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
+
+        self.__LAT_ORIGIN = 43.43592232053646
+        self.__LON_ORIGIN = -80.58007312309068
+        self.__EARTH_RADIUS = 6368073
 
         self.__locationsList = []
 

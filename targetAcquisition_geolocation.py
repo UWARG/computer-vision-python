@@ -23,23 +23,7 @@ def test_targetAcquisition_to_geolocation(get_image):
     decklinkSrc = DeckLinkSRC()
     target = TargetAcquisition()
     location = Geolocation()
-    #merged = MergeImageWithTelemetry()
 
-    # euler = {
-    #     'yaw': 5.0,
-    #     'pitch': -2.0,
-    #     'roll': 3.0
-    # }
-    # gps = {
-    #     'longitude': 43.4723,
-    #     'latitude': -80.5449,
-    #     'altitude': 50
-    # }
-    # telemetry = {
-    #     'eulerAnglesOfPlane': euler,
-    #     'eulerAnglesOfCamera': euler,
-    #     'gpsCoordinates': gps
-    # }
     mock_camera_euler = {
         'yaw': 5.0,
         'pitch': 60,
@@ -51,8 +35,8 @@ def test_targetAcquisition_to_geolocation(get_image):
         'roll': 0
     }
     mock_gps = {
-        "longitude": 43.4723,
-        "latitude": -80.5449,
+        "longitude": -80.5449,
+        "latitude": 43.4723,
         "altitude": 100
     }
     mock_telemetry = {
