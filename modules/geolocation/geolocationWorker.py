@@ -106,7 +106,8 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
         if (not ret):
             continue
 
-        pipelineOut.put(bestOutput)
+        # pipelineOut.put(bestOutput)
+        # Output is ebing written to a file rather than pipelineOut
 
         if (exit_requested(exitRequest)):
             break
