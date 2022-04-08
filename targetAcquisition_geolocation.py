@@ -3,6 +3,7 @@ import pytest
 import cv2
 import time
 import datetime as datetime
+import os.path
 
 from modules.decklinksrc.decklinkSrcWorker_taxi import DeckLinkSRC
 from modules.mergeImageWithTelemetry.mergedData import MergedData
@@ -50,7 +51,7 @@ def test_targetAcquisition_to_geolocation(get_image):
     check1, coordinates_and_telemetry = target.get_coordinates()
 
     location.set_constants()
-    check2, geo_coordinates = location.run_locator(merged.telemetry, [[0, 0],[1, 1], [2,3], [4,5]])
+    check2, geo_coordinates = location.run_locator(merged.telemetry, [[0, 0],[60, 523], [200,0], [430,505]])
     # check3, locations = location.run_output(geo_coordinates) 
     #print (check1, coordinates_and_telemetry)
     print (check2, geo_coordinates)
@@ -59,7 +60,9 @@ def test_targetAcquisition_to_geolocation(get_image):
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]]
 
-    location.write_locations(geo_coordinates)
+    save_path = 'C:/Users/Owner/Documents/Jeffrey/School/Waterloo/Co-op/WARG/computer-vision-python/modules/mapLabelling'
+    completeName = os.path.join(save_path, 'new.txt')
+    location.write_locations(geo_coordinates, completeName)
 
     # print (check3, locations)
 

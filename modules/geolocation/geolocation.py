@@ -5,7 +5,6 @@ Geolocation module to map pixel coordinates to geographical coordinates
 import numpy as np
 import math
 import logging
-import os.path
 
 class Geolocation:
     """
@@ -621,9 +620,6 @@ class Geolocation:
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
 
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
-        # [[ 1.0012e+07  -1.378e+07]
-        # [ 1.0012e+07  -1.378e+07]]
-        # ... (# of rows = # of points in parameter)
 
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
@@ -642,11 +638,6 @@ class Geolocation:
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
-        # [[-80.54561231850593 43.472406971594125]
-        #  [-80.54561117040404 43.47240788947427]
-        #  [-80.54561031256442 43.47240983973664]
-        #  [-80.54560801000646 43.47241168180702]]
-        # ... (# of points passed in)
         
         self.__logger.debug("geolocation/run_output: Returned " + str((True, self.get_best_location)))
         return True, self.get_best_location(locations)
@@ -690,11 +681,9 @@ class Geolocation:
 
         return geoCoordinates
 
-    def write_locations(self, locations):
-        # write the txt to save inside mapLabelling folder
-        # https://stackoverflow.com/questions/8024248/telling-python-to-save-a-txt-file-to-a-certain-directory-on-windows-and-mac
-        save_path = 'C:/Users/Owner/Documents/Jeffrey/School/Waterloo/Co-op/WARG/computer-vision-python/modules/mapLabelling'
-        completeName = os.path.join(save_path, 'new.txt')
+    def write_locations(self, locations, completeName):
         with open(completeName, 'a') as f:
             f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
             f.write('\n')
+        return True
+            
