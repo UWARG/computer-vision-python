@@ -98,7 +98,7 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
 
         # write the csv to save inside mapLabelling folder
         # https://stackoverflow.com/questions/8024248/telling-python-to-save-a-txt-file-to-a-certain-directory-on-windows-and-mac
-        save_path = 'C:/Users/Owner/Documents/Jeffrey/School/Waterloo/Co-op/WARG/computer-vision-python/modules/mapLabelling'
+        save_path = save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
         completeName = os.path.join(save_path, 'new.csv')
         ret = locator.write_locations(locations, completeName)
 

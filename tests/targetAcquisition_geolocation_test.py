@@ -60,7 +60,7 @@ def test_targetAcquisition_to_geolocation(get_image):
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]]
 
-    save_path = 'C:/Users/Owner/Documents/Jeffrey/School/Waterloo/Co-op/WARG/computer-vision-python/modules/mapLabelling'
+    save_path = save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
     completeName = os.path.join(save_path, 'new.csv')
     location.write_locations(geo_coordinates, completeName)
 
@@ -75,5 +75,6 @@ def test_targetAcquisition_to_geolocation(get_image):
     # assert check3 == True 
     # assert locations != None
 
-test = get_image()
-test_targetAcquisition_to_geolocation(test)
+if __name__ == "__main__":
+    test = get_image()
+    test_targetAcquisition_to_geolocation(test)
