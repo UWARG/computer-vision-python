@@ -60,7 +60,7 @@ def test_targetAcquisition_to_geolocation(get_image):
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]]
 
-    save_path = save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
+    save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
     completeName = os.path.join(save_path, 'new.csv')
     location.write_locations(geo_coordinates, completeName)
 
