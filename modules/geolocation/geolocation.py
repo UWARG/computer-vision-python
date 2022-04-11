@@ -33,30 +33,16 @@ class Geolocation:
         self.__logger = logging.getLogger()
         self.__logger.debug("geolocation/__init__: Started")
 
-        # Input to gather_point_pairs()
-        self.__cameraOrigin3o = np.array([0.0, 0.0, 2.0])
-        self.__cameraDirection3c = np.array([0.0, 0.0, -1.0])
-        self.__cameraOrientation3u = np.array([1.0, 0.0, 0.0])
-        self.__cameraOrientation3v = 1 * np.cross(self.__cameraDirection3c, self.__cameraOrientation3u)
         self.__cameraResolution = np.array([1000, 1000])  # TODO Make global?
         self.__referencePixels = np.array([[0, 0],
                                            [0, 1000],
                                            [1000, 0],
                                            [1000, 1000]])
 
-        # Output of gather_point_pairs()
-        # Input to calculate_pixel_to_geo_mapping()
-        self.__pixelToGeoPairs = np.array([[[0, 0], [0, 0]],
-                                           [[1, 1], [1, 1]],
-                                           [[2, 2], [2, 2]],
-                                           [[3, 3], [3, 3]]])
-
         # Inputs to input_conversion
         self.__latitude = gpsCoordinates["latitude"]
         self.__longitude = gpsCoordinates["longitude"]
         self.__altitude = gpsCoordinates["altitude"]
-        self.__eulerCamera = eulerCamera
-        self.__eulerPlane = eulerPlane
 
         # Constants for input_conversion
         self.__WORLD_ORIGIN = np.zeros(3)
@@ -66,11 +52,11 @@ class Geolocation:
         self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
-
         self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
         self.__EARTH_RADIUS = 6368073
 
+        # List for best output
         self.__locationsList = []
 
         self.__logger.debug("geolocation/__init__: Finished")
@@ -81,19 +67,26 @@ class Geolocation:
         """
         Magic numbers for competition
         """
+        self.__cameraResolution = np.array([1920, 1080])  # TODO Make global?
+        self.__referencePixels = np.array([[0, 0],  # Corners
+                                           [0, 1080],
+                                           [1920, 0],
+                                           [1920, 1080],
+                                           [960, 540],  # Diamond
+                                           [0, 810],
+                                           [1920, 810],
+                                           [960, 945]])  # Not edge so collinearity avoided
+
         self.__GPS_OFFSET = np.zeros(3)
         self.__CAMERA_OFFSET = np.zeros(3)
-        self.__WORLD_ORIGIN = np.zeros(3)
-        self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
-        self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
+        self.__FOV_FACTOR_H = np.tan(np.deg2rad([36.5 / 2]))  # GoPro Hero 7: 85.8 degrees, PiCam v2: 36.5 degrees
+        self.__FOV_FACTOR_V = np.tan(np.deg2rad([22.4 / 2]))  # GoPro Hero 7: 55.2 degrees, PiCam v2: 22.4 degrees
 
         self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
         self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
 
 
-    # Requires set_constants() first
-    # TODO Unit tests
     def local_from_lat_lon(self, latitude, longitude):
         """
         Get metres from longitude and latitude
@@ -114,8 +107,11 @@ class Geolocation:
         return x, y
 
 
-    # TODO Unit tests and description
+    # TODO Description
     def lat_lon_from_local(self, x, y):
+        """
+        Get latitude and longitude from x, y coordinates
+        """
 
         latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
         longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
@@ -123,17 +119,20 @@ class Geolocation:
         return latitude, longitude
 
 
-    def gather_point_pairs(self, camera3u, camera3v, camera3c, cameraOrigin3o, referencePixels):
+    def gather_point_pairs(self, cameraOrigin3o, cameraDirection3c, camera3u, camera3v, referencePixels):
         """
         Outputs pixel-geographical coordinate point pairs from camera position and orientation
 
         Parameters
         ----------
         camera3u, camera3v : ndarray
-         vectors that point in directions of axis of image
-        camera3c : ndarray
-         vector that point in direction of camera, magnitude based on cameraResolution
-         
+         vectors that point in directions of axis of image, magnitude dependent on resolution and FOV
+        cameraDirection3c : ndarray
+         vector that point in direction of camera, magnitude equal to 1
+        cameraOrigin3o : ndarray
+         Location of camera
+        referencePixels : np.array(shape=(n, 2))
+         Array of pixel coordinates
 
         Returns
         -------
@@ -156,11 +155,11 @@ class Geolocation:
             # Convert current pixel to vector in world space
             pixel = referencePixels[i]
             # Scaling in the u, v direction
-            scalar1m = 2 * pixel[0] / self.cameraResolution[0] - 1
-            scalar1n = 2 * pixel[1] / self.cameraResolution[1] - 1
+            scalar1m = 2 * pixel[0] / self.__cameraResolution[0] - 1
+            scalar1n = 2 * pixel[1] / self.__cameraResolution[1] - 1
 
             # Linear combination formula
-            pixelInWorldSpace3a = camera3c + scalar1m * camera3u + scalar1n * camera3v
+            pixelInWorldSpace3a = cameraDirection3c + scalar1m * camera3u + scalar1n * camera3v
             # Verify pixel vector is pointing downwards
             if (pixelInWorldSpace3a[2] > maximumZcomponent):
                 validPixelCount -= 1
@@ -588,8 +587,8 @@ class Geolocation:
         altitude = telemetry["gpsCoordinates"]["altitude"]
 
         # Expect euler angles to be in degrees
-        self.__eulerCamera = self.__deg_vals_to_rad(euler_angles_camera)
-        self.__eulerPlane = self.__deg_vals_to_rad(euler_angles_plane)
+        eulerCameraRad = self.__deg_vals_to_rad(euler_angles_camera)
+        eulerPlaneRad = self.__deg_vals_to_rad(euler_angles_plane)
 
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
@@ -598,9 +597,9 @@ class Geolocation:
         self.__latitude = localCoordinates[1]
         self.__altitude = altitude
 
-        self.__cameraOrigin3o, self.__cameraDirection3c, self.__cameraOrientation3u, self.__cameraOrientation3v = self.convert_input(self.__eulerPlane, self.__eulerCamera)
-        point_pairs = self.gather_point_pairs(self.__cameraOrientation3u, self.__cameraOrientation3v, self.__cameraDirection3c, self.__cameraOrigin3o, self.__referencePixels)
-        
+        cameraOrigin3o, cameraDirection3c, cameraOrientation3u, cameraOrientation3v = self.convert_input(eulerPlaneRad, eulerCameraRad)
+        point_pairs = self.gather_point_pairs(cameraOrigin3o, cameraDirection3c, cameraOrientation3u, cameraOrientation3v, self.__referencePixels)
+
         # If insufficient point pairs, exit this run and try again
         if len(point_pairs) < 4:
             return False, None
@@ -620,8 +619,7 @@ class Geolocation:
         # non_collinear_points only stores the 4 non-collinear point pairs
         # indicated by the indexes array
 
-        self.__pixelToGeoPairs = non_collinear_points
-        tranformation_matrix = self.calculate_pixel_to_geo_mapping(self.__pixelToGeoPairs)
+        tranformation_matrix = self.calculate_pixel_to_geo_mapping(non_collinear_points)
 
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
 
