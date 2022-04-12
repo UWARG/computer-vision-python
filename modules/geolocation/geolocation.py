@@ -56,6 +56,9 @@ class Geolocation:
         self.__LON_ORIGIN = -80.58007312309068
         self.__EARTH_RADIUS = 6368073
 
+        # Minimum number of point pairs for matrix creation
+        self.__MINIMUM_PAIR_COUNT = 4
+
         # List for best output
         self.__locationsList = []
 
@@ -141,7 +144,6 @@ class Geolocation:
         self.__logger.debug("geolocation/gather_point_pairs: Started")
 
         pixelGeoPairs = np.empty(shape=(0, 2, 2))
-        minimumPixelCount = 4  # Required for creating the map
         validPixelCount = referencePixels.shape[0]  # Current number of valid pixels (number of rows)
         maximumZcomponent = -0.1  # This must be lesser than zero and determines if the pixel is pointing downwards
 
@@ -149,7 +151,7 @@ class Geolocation:
         for i in range(0, referencePixels.shape[0]):
 
             # Not enough pixels to create the map, abort
-            if (validPixelCount < minimumPixelCount):
+            if (validPixelCount < self.__MINIMUM_PAIR_COUNT):
                 return np.empty(shape=(0, 2, 2))
 
             # Convert current pixel to vector in world space
@@ -196,7 +198,7 @@ class Geolocation:
             True if the three points are collinear, otherwise false
         """
         self.__logger.debug("geolocation/__are_three_points_collinear: Started")
-        
+
         x = 0
         y = 1
         # Calculates the area of a triangle and checks if this value is 0
@@ -264,7 +266,7 @@ class Geolocation:
                 # Sort and return the indexes in ascending order
                 indexes.sort()
                 return indexes
-        
+
         self.__logger.debug("geolocation/get_non_collinear_points: Returned np.empty(shape=(0,2))")
         return np.empty(0)
 
@@ -409,7 +411,7 @@ class Geolocation:
         ----------
         compoundRotationMatrix: numpy array
             Array containing rotation matrix for camera and plane rotations
-            
+
         Returns
         -------
         uVector: numpy array
@@ -538,7 +540,6 @@ class Geolocation:
             averagePair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
             averageError = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
 
-
         else:
 
             # Splits the 3D numpy arrray into three separate arrays
@@ -591,7 +592,6 @@ class Geolocation:
         eulerPlaneRad = self.__deg_vals_to_rad(euler_angles_plane)
 
         # Competition
-        # TODO Properly integrate lat-lon converters - refactor unit tests
         localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
         self.__longitude = localCoordinates[0]
         self.__latitude = localCoordinates[1]
@@ -601,7 +601,7 @@ class Geolocation:
         point_pairs = self.gather_point_pairs(cameraOrigin3o, cameraDirection3c, cameraOrientation3u, cameraOrientation3v, self.__referencePixels)
 
         # If insufficient point pairs, exit this run and try again
-        if len(point_pairs) < 4:
+        if len(point_pairs) < self.__MINIMUM_PAIR_COUNT:
             return False, None
 
         # Slice point_pairs to shape (n, 2) for input of get_non_collinear_points
@@ -611,7 +611,7 @@ class Geolocation:
         indexes = self.get_non_collinear_points(points)
 
         # If insufficient point pairs, exit this run and try again
-        if len(indexes) < 4:
+        if len(indexes) < self.__MINIMUM_PAIR_COUNT:
             return False, None
 
         # Create a subset of the (n, 2, 2) array above using the array of indexes
@@ -621,14 +621,11 @@ class Geolocation:
 
         tranformation_matrix = self.calculate_pixel_to_geo_mapping(non_collinear_points)
 
-        local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+        local_output_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
 
         # Competition
-        # TODO Properly integrate lat-lon converters - refactor unit tests
-        geo_coordinates = np.empty(shape=(len(coordinates), 2))
-        for i in range (0, len(coordinates)):
-            geo_coordinates[i] = (self.lat_lon_from_local(local_coordinates[i][0], local_coordinates[i][1]))
-            
+        geo_coordinates = np.array([self.lat_lon_from_local(coordinate[0], coordinate[1]) for coordinate in local_output_coordinates])
+
         return True, geo_coordinates
 
     @staticmethod
@@ -640,14 +637,14 @@ class Geolocation:
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
-        
+
         self.__logger.debug("geolocation/run_output: Returned " + str((True, self.get_best_location)))
         return True, self.get_best_location(locations)
 
     def map_location_from_pixel(self, transformationMatrix, pixels):
         """
         Maps Geographical Location Coordinates in the destination image
-        
+
         Parameters
         -------
             transformationMatrix : np.array(shape=(3,3))
@@ -687,4 +684,3 @@ class Geolocation:
             f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
             f.write('\n')
         return True
-            

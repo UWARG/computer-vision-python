@@ -180,7 +180,7 @@ class TestGetNonCollinearPoints:
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-    
+
     def test_more_than_four_points_no_correct_cases(self, locator):
         coordinatesArray = np.array([[0, 0], [1, 1], [2, 2], [10, 10], [15, 15], [3, 7]])
         expected = 0
@@ -242,8 +242,8 @@ class TestPointMatrixToGeoMapping:
 
         # Test
         np.testing.assert_almost_equal(actual, expected)
-     
-    
+
+
     def test_point_set_1(self, locator):
 
         # Setup
@@ -262,7 +262,7 @@ class TestPointMatrixToGeoMapping:
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
-        
+
     def test_point_set_2(self, locator):
 
         # Setup
@@ -277,7 +277,8 @@ class TestPointMatrixToGeoMapping:
         actual = locator.calculate_pixel_to_geo_mapping(points)
         # Test
         np.testing.assert_almost_equal(actual, expected)
-    
+
+
 class TestMapLocationFromPixel:
     """
     Tests Geolocation.map_location_from_pixel()
@@ -298,7 +299,7 @@ class TestMapLocationFromPixel:
 
         # Run
         actual = locator.map_location_from_pixel(onesTransformationMatrix, pixelCoordinates)
-        
+
         # Test
         np.testing.assert_almost_equal(actual, expected)
 
@@ -315,8 +316,8 @@ class TestMapLocationFromPixel:
                                      [1604,12],
                                      [0,4]])
 
-        expected = np.array([[7.739130435, 15.39130435], 
-                             [1.489681051, 3.816135084], 
+        expected = np.array([[7.739130435, 15.39130435],
+                             [1.489681051, 3.816135084],
                              [1.359456218, 30.18352659],
                              [1.362330735, 39.52379975],
                              [8,5.409090909]])
@@ -326,7 +327,7 @@ class TestMapLocationFromPixel:
 
         # Test
         np.testing.assert_almost_equal(actual, expected)
-    
+
     def test_set_2_float(self, locator):
 
         # Setup
@@ -340,8 +341,8 @@ class TestMapLocationFromPixel:
                                      [72,66],
                                      [94,77]])
 
-        expected = np.array([[15.76673823, 22.52792524], 
-                             [7.00192958,  6.93441577], 
+        expected = np.array([[15.76673823, 22.52792524],
+                             [7.00192958,  6.93441577],
                              [11.45331267, 14.85447104],
                              [10.03761573, 12.3341739],
                              [10.37866862, 12.94040829]])
@@ -365,8 +366,8 @@ class TestMapLocationFromPixel:
                                      [1604,12],
                                      [0,4]])
 
-        expected = np.array([[0.24883274, 0.03550557], 
-                             [0.16376375, 0.01135106], 
+        expected = np.array([[0.24883274, 0.03550557],
+                             [0.16376375, 0.01135106],
                              [0.48787354, 0.10242681],
                              [0.66262702, 0.15153561],
                              [0.14479400, 0.00625329]])
@@ -501,7 +502,7 @@ class TestConvertInput:
 
 class TestGetBestLocation():
     """
-    Tests Geolocation.locator(inputLocationTupleList)
+    Tests Geolocation.get_best_location()
     """
 
     def test_all_ones(self, locator):
