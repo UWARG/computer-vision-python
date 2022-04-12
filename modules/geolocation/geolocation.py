@@ -59,13 +59,17 @@ class Geolocation:
         self.__eulerPlane = eulerPlane
 
         # Constants for input_conversion
-        self.__WORLD_ORIGIN = np.empty(3)
-        self.__GPS_OFFSET = np.empty(3)
-        self.__CAMERA_OFFSET = np.empty(3)
+        self.__WORLD_ORIGIN = np.zeros(3)
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
         self.__FOV_FACTOR_H = 1
         self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
+
+        self.__LAT_ORIGIN = 43.43592232053646
+        self.__LON_ORIGIN = -80.58007312309068
+        self.__EARTH_RADIUS = 6368073
 
         self.__locationsList = []
 
@@ -77,8 +81,9 @@ class Geolocation:
         """
         Magic numbers for competition
         """
-        self.__GPS_OFFSET = 0
-        self.__CAMERA_OFFSET = 0
+        self.__GPS_OFFSET = np.zeros(3)
+        self.__CAMERA_OFFSET = np.zeros(3)
+        self.__WORLD_ORIGIN = np.zeros(3)
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([85.8 / 2]))
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([55.2 / 2]))
 
@@ -214,7 +219,7 @@ class Geolocation:
         self.__logger.debug("geolocation/get_non_collinear_points: Started")
 
         NUM_POINTS_NEEDED = 4
-        indexes = np.empty(shape=(NUM_POINTS_NEEDED))
+        indexes = np.empty(shape=(NUM_POINTS_NEEDED), dtype = int)
 
         # If there aren't four points, return the empty array
         if len(coordinatesArray) < NUM_POINTS_NEEDED:
@@ -513,7 +518,8 @@ class Geolocation:
     # Helper function required for input
     def concatenate_locations(self, newLocations):
         self.__logger.debug("geolocation/concatenate_locations: Started, input: " + str(newLocations))
-        self.__locationsList = self.__locationsList + newLocations
+        for i in range (0, len(newLocations)):
+            self.__locationsList.append(newLocations[i])
         self.__logger.debug("geolocation/concatenate_locations: Finished")
 
     def get_best_location(self,inputLocationTupleList):
@@ -531,7 +537,7 @@ class Geolocation:
             # Splits the 3D numpy arrray into three separate arrays
             coordPair = np.vstack(inputLocationTupleList[:, 0]).astype(np.float64)
             errorArray = np.vstack(inputLocationTupleList[:, 1]).astype(np.float64)
-            confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
+            # confidenceArray = np.vstack(inputLocationTupleList[:, 2]).astype(np.float64)
 
             # Splits coordinate pair into x-coord and y-coord to remove outliers
             xCoord = np.vstack(coordPair[:, [0][0]]).astype(np.float64)
@@ -614,9 +620,13 @@ class Geolocation:
         tranformation_matrix = self.calculate_pixel_to_geo_mapping()
 
         local_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
+
         # Competition
         # TODO Properly integrate lat-lon converters - refactor unit tests
-        geo_coordinates = self.lat_lon_from_local(local_coordinates[0], local_coordinates[1])
+        geo_coordinates = np.empty(shape=(len(coordinates), 2))
+        for i in range (0, len(coordinates)):
+            geo_coordinates[i] = (self.lat_lon_from_local(local_coordinates[i][0], local_coordinates[i][1]))
+            
         return True, geo_coordinates
 
     @staticmethod
@@ -670,3 +680,10 @@ class Geolocation:
         self.__logger.debug("geolocation/map_location_from_pixel: Returned " + str(geoCoordinates))
 
         return geoCoordinates
+
+    def write_locations(self, locations, completeName):
+        with open(completeName, 'a') as f:
+            f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
+            f.write('\n')
+        return True
+            
