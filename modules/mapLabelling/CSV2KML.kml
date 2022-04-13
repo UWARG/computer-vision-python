@@ -13,7 +13,7 @@
       </PolyStyle>
     </Style>
     <Placemark>
-      <name>Intruder Route</name>
+      <name>Intruder Path</name>
       <description></description>
       <styleUrl>#IntruderPath</styleUrl>
       <LineString>
