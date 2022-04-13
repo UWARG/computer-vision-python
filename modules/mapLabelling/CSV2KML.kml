@@ -16,8 +16,6 @@
       <description>This is a red line indicating Intruder Path.</description>
       <styleUrl>#IntruderPath</styleUrl> <!--Uses the style of the line set above-->
       <LineString>
-        <extrude>1</extrude> <!---->
-        <tessellate>1</tessellate> <!---->
         <coordinates> 
           -80.5362815379075,43.47036890733803
           -80.537680,43.471065
