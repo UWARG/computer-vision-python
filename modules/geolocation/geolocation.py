@@ -683,7 +683,8 @@ class Geolocation:
 
     def write_locations(self, locations, completeName):
         with open(completeName, 'a') as f:
-            f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
-            f.write('\n')
+            for i in range (0, len(locations)):
+                f.write('{:4}'.format(locations[i][1]) + ',' + '{:4}'.format(locations[i][0]) + ',0')
+                f.write('\n')
         return True
             
