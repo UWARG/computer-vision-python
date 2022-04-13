@@ -2,8 +2,8 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>Flight Path</name>
-    <description></description>
-    <Style id="yellowLineGreenPoly">
+    <description>This map is a test map made by importing a KML file in</description>
+    <Style id="IntruderPath">
       <LineStyle>
         <color>ff0000ff</color>
         <width>3</width>
@@ -15,7 +15,7 @@
     <Placemark>
       <name>Intruder Route</name>
       <description></description>
-      <styleUrl>#yellowLineGreenPoly</styleUrl>
+      <styleUrl>#IntruderPath</styleUrl>
       <LineString>
         <extrude>1</extrude>
         <tessellate>1</tessellate>
