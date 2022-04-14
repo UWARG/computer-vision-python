@@ -687,7 +687,7 @@ class Geolocation:
         kml = simplekml.Kml()
         lines = kml.newlinestring(name='Path',
                                   description='This is the path of the intruder.',
-                                  coords = locations) #list of long/lat
+                                  coords = locations) # Using list of long/lat
 
         lines.style.linestyle.width = 3
         lines.style.linestyle.color = simplekml.Color.red
