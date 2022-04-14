@@ -8,10 +8,11 @@ import multiprocessing as mp
 import logging
 import time
 
+is_open = None
 # method that displays webcam
 def displayCamera():
   cap = cv2.VideoCapture(0)
-  is_open = None
+  global is_open
   is_open = False
 
   if (cap.isOpened() == False):
