@@ -4,19 +4,30 @@
     <name>Flight Path</name>
     <description>This map is a test map made by importing a KML file</description>
 
-    <Style id="IntruderPath"> <!--Sets the style of the line-->
+    <Style id="IntruderPath"> <!--Declare a shared style-->
       <LineStyle>
         <color>ff0000ff</color> <!--Code for red colour-->
         <width>3</width>
       </LineStyle>
     </Style>
 
+    <!-- Below is an example of placing a marker specified with lat/long -->
+    <!--     
+    <Placemark>
+    <name>University of Waterloo</name>
+    <description>This is a marker at the origin (UW)</description>
+    <Point>
+      <coordinates>-80.5449,43.4723</coordinates>
+    </Point>
+    </Placemark> 
+    -->
+
     <Placemark>
       <name>Intruder Path</name>
       <description>This is a red line indicating Intruder Path.</description>
-      <styleUrl>#IntruderPath</styleUrl> <!--Uses the style of the line set above-->
+      <styleUrl>#IntruderPath</styleUrl> <!--Line uses the style of the line set above-->
       <LineString>
-        <coordinates> 
+        <coordinates> <!--Copy paste coordinates that make up the Intruder Path here-->
           -80.5362815379075,43.47036890733803
           -80.537680,43.471065
           -80.537885,43.470699

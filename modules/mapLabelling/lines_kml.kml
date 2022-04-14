@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <LineStyle id="5">
+                <color>ff0000ff</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+        </Style>
+        <Placemark id="3">
+            <name>Path</name>
+            <description>This is the path of the intruder.</description>
+            <styleUrl>#4</styleUrl>
+            <LineString id="2">
+                <coordinates>-80.54479302840586,43.471587681494064,0.0 -80.5440929980845,43.47150030401867,0.0 -80.54481550473989,43.471877235147794,0.0 -80.54416998238857,43.47221054000725,0.0</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

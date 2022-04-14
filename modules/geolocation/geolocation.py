@@ -5,6 +5,8 @@ Geolocation module to map pixel coordinates to geographical coordinates
 import numpy as np
 import math
 import logging
+import os.path
+import simplekml
 
 class Geolocation:
     """
@@ -120,7 +122,7 @@ class Geolocation:
         latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
         longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
 
-        return latitude, longitude
+        return longitude, latitude
 
 
     def gather_point_pairs(self):
@@ -682,9 +684,15 @@ class Geolocation:
         return geoCoordinates
 
     def write_locations(self, locations, completeName):
-        with open(completeName, 'a') as f:
-            for i in range (0, len(locations)):
-                f.write('{:4}'.format(locations[i][1]) + ',' + '{:4}'.format(locations[i][0]))
-                f.write('\n')
+        kml = simplekml.Kml()
+        lines = kml.newlinestring(name='Path',
+                                  description='This is the path of the intruder.',
+                                  coords = locations) #list of long/lat
+
+        lines.style.linestyle.width = 3
+        lines.style.linestyle.color = simplekml.Color.red
+
+        kml.save(completeName) # Save KML file using completeName given
+
         return True
-            
+        
