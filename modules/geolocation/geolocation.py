@@ -5,7 +5,6 @@ Geolocation module to map pixel coordinates to geographical coordinates
 import numpy as np
 import math
 import logging
-import os.path
 import simplekml
 
 class Geolocation:
@@ -639,7 +638,6 @@ class Geolocation:
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
-
         self.__logger.debug("geolocation/run_output: Returned " + str((True, self.get_best_location)))
         return True, self.get_best_location(locations)
 
@@ -693,4 +691,3 @@ class Geolocation:
         kml.save(completeName) # Save KML file using completeName given
 
         return True
-      
