@@ -4,6 +4,11 @@ import cv2
 import time
 import datetime as datetime
 import os.path
+import csv
+import simplekml
+
+import subprocess
+import pandas as pd
 
 from modules.decklinksrc.decklinkSrcWorker_taxi import DeckLinkSRC
 from modules.mergeImageWithTelemetry.mergedData import MergedData
@@ -14,7 +19,7 @@ from modules.mergeImageWithTelemetry.mergeImageWithTelemetry import MergeImageWi
 
 # @pytest.fixture
 def get_image():
-    img1 = cv2.imread('frame1.jpg')
+    img1 = cv2.imread('tests/testImages/frame1.jpg')
     return img1
     # cv2.imshow('img', img1) #JUST TO CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
@@ -61,7 +66,7 @@ def test_targetAcquisition_to_geolocation(get_image):
     #         [    -80.546      43.472]]
 
     save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
-    completeName = os.path.join(save_path, 'new.csv')
+    completeName = os.path.join(save_path, 'lines_kml.kml')
     location.write_locations(geo_coordinates, completeName)
 
     # print (check3, locations)

@@ -5,6 +5,7 @@ Geolocation module to map pixel coordinates to geographical coordinates
 import numpy as np
 import math
 import logging
+import simplekml
 
 class Geolocation:
     """
@@ -119,7 +120,7 @@ class Geolocation:
         latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
         longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
 
-        return latitude, longitude
+        return longitude, latitude
 
 
     def gather_point_pairs(self, cameraOrigin3o, cameraDirection3c, camera3u, camera3v, referencePixels):
@@ -637,7 +638,6 @@ class Geolocation:
 
         self.concatenate_locations(newLocations)
         locations = np.array(self.__locationsList, dtype=object)
-
         self.__logger.debug("geolocation/run_output: Returned " + str((True, self.get_best_location)))
         return True, self.get_best_location(locations)
 
@@ -680,7 +680,14 @@ class Geolocation:
         return geoCoordinates
 
     def write_locations(self, locations, completeName):
-        with open(completeName, 'a') as f:
-            f.write('\n'.join([','.join(['{:4}'.format(item) for item in row]) for row in locations]))
-            f.write('\n')
+        kml = simplekml.Kml()
+        lines = kml.newlinestring(name='Path',
+                                  description='This is the path of the intruder.',
+                                  coords = locations) # Using list of long/lat
+
+        lines.style.linestyle.width = 3
+        lines.style.linestyle.color = simplekml.Color.red
+
+        kml.save(completeName) # Save KML file using completeName given
+
         return True
