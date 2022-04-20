@@ -37,6 +37,7 @@ pandas
 # onnx>=1.8.0
 # scikit-learn==0.19.2  # for coreml quantization
 # tensorflow==2.4.0
+simplekml
 
 # extras --------------------------------------
 thop  # FLOPS computation
