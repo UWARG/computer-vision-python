@@ -19,7 +19,7 @@ from modules.mergeImageWithTelemetry.mergeImageWithTelemetry import MergeImageWi
 
 # @pytest.fixture
 def get_image():
-    img1 = cv2.imread('frame1.jpg')
+    img1 = cv2.imread('tests/testImages/frame1.jpg')
     return img1
     # cv2.imshow('img', img1) #JUST TO CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
