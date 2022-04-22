@@ -61,7 +61,7 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
     return
 
 
-def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLock):
+def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineInLock):
 
     logger = logging.getLogger()
     logger.debug("geolocation_output_worker: Start Geolocation Output")

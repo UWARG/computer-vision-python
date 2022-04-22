@@ -11,8 +11,9 @@ from modules.geolocation.geolocation import Geolocation
 # @pytest.fixture
 def get_image():
     img1 = cv2.imread('tests/testImages/pylon_test.jpg')
+    # assert img1 != None
     return img1
-    # cv2.imshow('img', img1) #CHECK IF IMAGE IS TAKEN CORRECTLY
+    # cv2.imshow('img', img1) # CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
@@ -44,14 +45,12 @@ def test_targetAcquisition_to_geolocation(get_image):
 
     target.set_curr_frame(merged)
     check1, coordinates_and_telemetry = target.get_coordinates()
-    print (check1,coordinates_and_telemetry)
+    print(check1,coordinates_and_telemetry)
 
     location.set_constants()
     check2, geo_coordinates = location.run_locator(target.telemetryData, [[0, 0],[60, 523], [200,0], [430,505]])
     # connection between targetAcquisition and geolocation above: (target.telemetryData)
 
-    # check3, locations = location.run_output(geo_coordinates) 
-    # print (check1, coordinates_and_telemetry)
     print (check2, geo_coordinates)
     # True    [[    -80.546      43.472]
     #         [    -80.546      43.472]

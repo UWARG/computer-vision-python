@@ -82,9 +82,7 @@ def flightProgram():
         mp.Process(target=geolocation_locator_worker,
                    args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
         mp.Process(target=geolocation_output_worker, 
-                   args=(pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
-        mp.Process(target=flight_command_worker,
-                   args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
+                   args=(pause, quit, geolocationIntermediatePipeline, geolocationIntermediateLock)),
     ]
 
     for p in processes:
