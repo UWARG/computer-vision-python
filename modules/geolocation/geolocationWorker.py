@@ -30,7 +30,7 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
         if (merged_data is None):
             continue
 
-        ret, location = locator.run_locator(merged_data.telemetryData, merged_data.coordinates)
+        ret, location = locator.run_locator(merged_data[1], merged_data[0])
 
         # Something has gone wrong, skip
         if (not ret):
@@ -62,7 +62,7 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
 
 
 def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineInLock):
-
+    # No pipelineOut queue, instead writes locations to CSV file
     logger = logging.getLogger()
     logger.debug("geolocation_output_worker: Start Geolocation Output")
 

@@ -8,10 +8,10 @@ from modules.mergeImageWithTelemetry.mergedData import MergedData
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.geolocation.geolocation import Geolocation
 
-# @pytest.fixture
+@pytest.fixture
 def get_image():
     img1 = cv2.imread('tests/testImages/pylon_test.jpg')
-    # assert img1 != None
+    assert img1 != None
     return img1
     # cv2.imshow('img', img1) # CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
@@ -45,13 +45,13 @@ def test_targetAcquisition_to_geolocation(get_image):
 
     target.set_curr_frame(merged)
     check1, coordinates_and_telemetry = target.get_coordinates()
-    print(check1,coordinates_and_telemetry)
+    # print(check1,coordinates_and_telemetry)
 
     location.set_constants()
-    check2, geo_coordinates = location.run_locator(target.telemetryData, [[0, 0],[60, 523], [200,0], [430,505]])
+    check2, geo_coordinates = location.run_locator(coordinates_and_telemetry[1], [[0, 0],[60, 523], [200,0], [430,505]])
     # connection between targetAcquisition and geolocation above: (target.telemetryData)
 
-    print (check2, geo_coordinates)
+    # print (check2, geo_coordinates)
     # True    [[    -80.546      43.472]
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]
@@ -61,16 +61,11 @@ def test_targetAcquisition_to_geolocation(get_image):
     completeName = os.path.join(save_path, 'new.csv')
     location.write_locations(geo_coordinates, completeName)
 
-    # print (check3, locations)
+    assert check1 == True 
+    assert coordinates_and_telemetry != None
 
-    # assert check1 == True 
-    # assert coordinates_and_telemetry != None
-
-    # assert check2 == True
-    # assert geo_coordinates != None
-
-    # assert check3 == True 
-    # assert locations != None
+    assert check2 == True
+    assert geo_coordinates != None
 
 if __name__ == "__main__":
     test = get_image()
