@@ -48,7 +48,7 @@ def flightProgram():
         Instantiate pipeline, video mediator, start frame capture, feed tent coordinates into pipeline.
         Feed tent coordinates from pipeline into geolocation
         Get GPS coordinates from geolocation
-        Send coordinates to command module
+        Write coordinates to CSV file in mapLabelling module
     Parameters: None
     """
     logger.debug("main/flightProgram: Start flight program")
@@ -82,10 +82,9 @@ def flightProgram():
         mp.Process(target=geolocation_locator_worker,
                    args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
         mp.Process(target=geolocation_output_worker, 
-                   args=(pause, quit, geolocationIntermediatePipeline, locationCommandPipeline, geolocationIntermediateLock)),
-        mp.Process(target=flight_command_worker,
-                   args=(pause, quit, locationCommandPipeline, telemetryPipeline, PIGO_DIRECTORY, POGI_DIRECTORY))
-    ]
+                   args=(pause, quit, geolocationIntermediatePipeline, geolocationIntermediateLock)),
+        """geolocation_output_worker recieves long/lat locations and writes locations to CSV"""
+    ]               
 
     for p in processes:
         p.start()

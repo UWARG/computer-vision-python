@@ -30,7 +30,7 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
         if (merged_data is None):
             continue
 
-        ret, location = locator.run_locator(merged_data.telemetry, merged_data.image)
+        ret, location = locator.run_locator(merged_data[1], merged_data[0])
 
         # Something has gone wrong, skip
         if (not ret):
@@ -61,8 +61,8 @@ def geolocation_locator_worker(pause, exitRequest, pipelineIn, pipelineOut, pipe
     return
 
 
-def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipelineInLock):
-
+def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineInLock):
+    # No pipelineOut queue, instead writes locations to CSV file
     logger = logging.getLogger()
     logger.debug("geolocation_output_worker: Start Geolocation Output")
 
@@ -97,7 +97,6 @@ def geolocation_output_worker(pause, exitRequest, pipelineIn, pipelineOut, pipel
         pipelineInLock.release()
 
         # write the csv to save inside mapLabelling folder
-        # https://stackoverflow.com/questions/8024248/telling-python-to-save-a-txt-file-to-a-certain-directory-on-windows-and-mac
         save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
         completeName = os.path.join(save_path, 'new.csv')
         ret = locator.write_locations(locations, completeName)

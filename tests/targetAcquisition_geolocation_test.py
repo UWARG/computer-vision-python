@@ -1,32 +1,23 @@
 from numpy import outer
 import pytest
 import cv2
-import time
-import datetime as datetime
 import os.path
-import csv
-import simplekml
-
-import subprocess
-import pandas as pd
 
 from modules.decklinksrc.decklinkSrcWorker_taxi import DeckLinkSRC
 from modules.mergeImageWithTelemetry.mergedData import MergedData
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.geolocation.geolocation import Geolocation
-from modules.timestamp.timestamp import Timestamp
-from modules.mergeImageWithTelemetry.mergeImageWithTelemetry import MergeImageWithTelemetry
 
-# @pytest.fixture
+@pytest.fixture
 def get_image():
-    img1 = cv2.imread('tests/testImages/frame1.jpg')
+    img1 = cv2.imread('tests/testImages/pylon_test.jpg')
+    assert img1 != None
     return img1
-    # cv2.imshow('img', img1) #JUST TO CHECK IF IMAGE IS TAKEN CORRECTLY
+    # cv2.imshow('img', img1) # CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
 def test_targetAcquisition_to_geolocation(get_image):
-    decklinkSrc = DeckLinkSRC()
     target = TargetAcquisition()
     location = Geolocation()
 
@@ -54,31 +45,27 @@ def test_targetAcquisition_to_geolocation(get_image):
 
     target.set_curr_frame(merged)
     check1, coordinates_and_telemetry = target.get_coordinates()
+    # print(check1,coordinates_and_telemetry)
 
     location.set_constants()
-    check2, geo_coordinates = location.run_locator(merged.telemetry, [[0, 0],[60, 523], [200,0], [430,505]])
-    # check3, locations = location.run_output(geo_coordinates) 
-    #print (check1, coordinates_and_telemetry)
-    print (check2, geo_coordinates)
+    check2, geo_coordinates = location.run_locator(coordinates_and_telemetry[1], [[0, 0],[60, 523], [200,0], [430,505]])
+    # connection between targetAcquisition and geolocation above: (target.telemetryData)
+
+    # print (check2, geo_coordinates)
     # True    [[    -80.546      43.472]
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]
     #         [    -80.546      43.472]]
 
     save_path = os.path.join(os.getcwd(), 'modules/mapLabelling')
-    completeName = os.path.join(save_path, 'lines_kml.kml')
+    completeName = os.path.join(save_path, 'new.csv')
     location.write_locations(geo_coordinates, completeName)
 
-    # print (check3, locations)
+    assert check1 == True 
+    assert coordinates_and_telemetry != None
 
-    # assert check1 == True 
-    # assert coordinates_and_telemetry != None
-
-    # assert check2 == True
-    # assert geo_coordinates != None
-
-    # assert check3 == True 
-    # assert locations != None
+    assert check2 == True
+    assert geo_coordinates != None
 
 if __name__ == "__main__":
     test = get_image()
