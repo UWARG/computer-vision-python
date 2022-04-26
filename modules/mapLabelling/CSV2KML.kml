@@ -11,7 +11,7 @@
       </LineStyle>
     </Style>
 
-    <!-- Below is an example of placing a marker specified with lat/long -->
+    <!-- Below is an example of placing a marker specified with lon/lat -->
     <!--     
     <Placemark>
     <name>University of Waterloo</name>

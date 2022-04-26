@@ -83,8 +83,8 @@ def flightProgram():
                    args=(pause, quit, bboxAndTelemetryPipeline, geolocationIntermediatePipeline, bboxAndTelemetryLock)),
         mp.Process(target=geolocation_output_worker, 
                    args=(pause, quit, geolocationIntermediatePipeline, geolocationIntermediateLock)),
-        """geolocation_output_worker recieves long/lat locations and writes locations to CSV"""
-    ]               
+        # geolocation_output_worker receives long/lat locations and writes locations to CSV
+    ]
 
     for p in processes:
         p.start()

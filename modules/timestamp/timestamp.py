@@ -2,7 +2,7 @@ import datetime as datetime
 import numpy.typing as npt
 import typing
 
-class Timestamp: 
+class Timestamp:
     """
     Adds the time stamp to a given input (either video frame or telemetry)
 

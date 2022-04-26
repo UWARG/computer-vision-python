@@ -11,11 +11,11 @@ from modules.geolocation.geolocation import Geolocation
 @pytest.fixture
 def get_image():
     img1 = cv2.imread('tests/testImages/pylon_test.jpg')
-    assert img1 != None
-    return img1
+    assert img1.any() != None
     # cv2.imshow('img', img1) # CHECK IF IMAGE IS TAKEN CORRECTLY
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
+    yield img1
 
 def test_targetAcquisition_to_geolocation(get_image):
     target = TargetAcquisition()
@@ -66,7 +66,3 @@ def test_targetAcquisition_to_geolocation(get_image):
 
     assert check2 == True
     assert geo_coordinates != None
-
-if __name__ == "__main__":
-    test = get_image()
-    test_targetAcquisition_to_geolocation(test)

@@ -4,7 +4,7 @@ import numpy.typing as npt
     contains the merged data
 """
 
-class MergedData: 
+class MergedData:
     """
         contains the merged data
 
@@ -17,7 +17,7 @@ class MergedData:
 
         methods
         ------
-        init 
+        init
             initializes the data
     """
     def __init__(self, image : npt.ArrayLike, telemetry: dict):

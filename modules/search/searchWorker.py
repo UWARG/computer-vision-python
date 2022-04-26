@@ -24,8 +24,8 @@ def searchWorker(plane_data, pylon_gps):
 
     # Performing search using perform_search() of class Search
     plane_gps = {
-        "latitude": plane_data["gpsCoordinates"]["latitude"],
-        "longitude": plane_data["gpsCoordinates"]["longitude"]
+        "longitude": plane_data["gpsCoordinates"]["longitude"],
+        "latitude": plane_data["gpsCoordinates"]["latitude"]
     }
     search_result = search.perform_search(pylon_gps, plane_gps)
     
