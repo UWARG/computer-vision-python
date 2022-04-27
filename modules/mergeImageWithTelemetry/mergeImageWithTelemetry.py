@@ -35,29 +35,29 @@ class MergeImageWithTelemetry:
         finds the telemetry with timestamp closest to the timestamp of the current image
     """
 
-    def __init__(self): 
+    def __init__(self):
         self.telemetryData = []
         self.image = None
-    
-    def should_get_image(self): 
+
+    def should_get_image(self):
         return self.image == None
-    
+
     def set_image(self, image: Timestamp):
         self.image = image
 
     def put_back_telemetry(self, newTelemetryData: Timestamp):
         self.telemetryData.append(newTelemetryData)
 
-    def get_closest_telemetry(self): 
+    def get_closest_telemetry(self):
         """
         finds the telemetry with closest timestamp to the image timestamp
         assumes that TelemetryData is sorted by increasing timestamp
 
-        Returns 
+        Returns
         -------
         [success, mergedData]
 
-        success : bool 
+        success : bool
             whether such a telemetry timestamp could be found
         mergedData : MergedData
             the merged image and telemetry data whose time difference is the closest together
@@ -65,7 +65,7 @@ class MergeImageWithTelemetry:
 
         if len(self.telemetryData) == 0:
             return False, None
-        if self.image == None: 
+        if self.image == None:
             return False, None
 
         imageTimestamp = self.image.timestamp
@@ -79,15 +79,15 @@ class MergeImageWithTelemetry:
             if len(self.telemetryData) == 0:
                 self.telemetryData.append(oldestTelemetry)
                 return False, None
-            
+
             nextTelemetry = self.telemetryData.pop(0)
             nextTimeDelta = abs(nextTelemetry.timestamp - imageTimestamp)
-            
+
             if nextTimeDelta > timeDelta:
                 # un_get the next telemetry
                 self.telemetryData.insert(0, nextTelemetry)
                 self.image = None
                 return True, MergedData(imageData, oldestTelemetry.data)
-            else: 
+            else:
                 oldestTelemetry = nextTelemetry
                 timeDelta = nextTimeDelta

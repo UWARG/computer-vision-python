@@ -2,12 +2,12 @@ from modules.search.Search import Search
 from modules.search.searchWorker import searchWorker
 
 mock_tent = {
-    "latitude": 51.083665,
-    "longitude": -114.114693
+    "longitude": -114.114693,
+    "latitude": 51.083665
 }
 mock_plane = {
-    "latitude": 51.059971,
-    "longitude": -114.10714
+    "longitude": -114.10714,
+    "latitude": 51.059971
 }
 
 

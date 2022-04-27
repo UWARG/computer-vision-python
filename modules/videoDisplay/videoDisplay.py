@@ -45,7 +45,7 @@ def displayCamera():
 
     # Break the loop
     else:
-      break 
+      break
 
     if cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1: # close the window when top right 'X' is clicked
         break
@@ -67,4 +67,5 @@ def displayVideo(pause, exitRequest, frameIn): # this function needs to take in 
 
     logger.debug("videoDisplay: Stopped video display")
 
-displayCamera()
+if __name__ == "__main__":
+  displayCamera()

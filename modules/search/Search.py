@@ -17,9 +17,9 @@ class Search:
         Parameters
         ----------
         tentGPS : obj
-          dictionary containing lat and long coordinates of the tent
+          dictionary containing long and lat coordinates of the tent
         planeGPS : obj
-          dictionary containing lat and long coordinate of the plane
+          dictionary containing long and lat coordinate of the plane
         angle : float
           bearings notation in degrees
 
@@ -30,11 +30,11 @@ class Search:
         """
         self.__logger.debug("Search/perform_search: Started")
         
-        planeLat = Decimal(math.radians(planeGPS["latitude"]))
         planeLon = Decimal(math.radians(planeGPS["longitude"]))
+        planeLat = Decimal(math.radians(planeGPS["latitude"]))
 
-        tentLat = Decimal(math.radians(tentGPS["latitude"]))
         tentLon = Decimal(math.radians(tentGPS["longitude"]))
+        tentLat = Decimal(math.radians(tentGPS["latitude"]))
 
         diffLon = tentLon - planeLon
 

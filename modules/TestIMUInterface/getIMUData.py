@@ -1,9 +1,9 @@
 import serial
 import time
 
-class getIMUINterface:
-    def getIMUData(comPort):
-        ser = serial.Serial(comPort, 9600)
+class getIMUInterface:
+    def getIMUData(self, comPortStr):
+        ser = serial.Serial(comPortStr, 9600)
         while(True):
             b = ser.readline()
             x = 0

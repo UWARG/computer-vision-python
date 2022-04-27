@@ -12,14 +12,14 @@ class Geolocation:
     """
 
     # TODO Class members
-    def __init__(self, gpsCoordinates={"latitude": 0, "longitude": 0, "altitude": 0}, eulerCamera={}, eulerPlane={}):
+    def __init__(self, gpsCoordinates={"longitude": 0, "latitude": 0, "altitude": 0}, eulerCamera={}, eulerPlane={}):
         """
         Initial setup of class members
 
         Parameters
         ----------
         gpsCoordinates: dict
-            Dictionary that contains GPS coordinate data with key names latitude, longitude, and altitude
+            Dictionary that contains GPS coordinate data with key names longitude, latitude, and altitude
         eulerCamera: dict
             Dictionary that contains a set of three euler angles for the camera with key names z, y, x
         eulerPlane: dict
@@ -40,8 +40,8 @@ class Geolocation:
                                            [1000, 1000]])
 
         # Inputs to input_conversion
-        self.__latitude = gpsCoordinates["latitude"]
         self.__longitude = gpsCoordinates["longitude"]
+        self.__latitude = gpsCoordinates["latitude"]
         self.__altitude = gpsCoordinates["altitude"]
 
         # Constants for input_conversion
@@ -52,8 +52,8 @@ class Geolocation:
         self.__FOV_FACTOR_V = 1
         self.__C_VECTOR_CAMERA_SPACE = [1, 0, 0]
         self.__U_VECTOR_CAMERA_SPACE = [0, 1, 0]
-        self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
+        self.__LAT_ORIGIN = 43.43592232053646
         self.__EARTH_RADIUS = 6368073
 
         # Minimum number of point pairs for matrix creation
@@ -85,12 +85,12 @@ class Geolocation:
         self.__FOV_FACTOR_H = np.tan(np.deg2rad([36.5 / 2]))  # GoPro Hero 7: 85.8 degrees, PiCam v2: 36.5 degrees
         self.__FOV_FACTOR_V = np.tan(np.deg2rad([22.4 / 2]))  # GoPro Hero 7: 55.2 degrees, PiCam v2: 22.4 degrees
 
-        self.__LAT_ORIGIN = 43.43592232053646
         self.__LON_ORIGIN = -80.58007312309068
+        self.__LAT_ORIGIN = 43.43592232053646
         self.__EARTH_RADIUS = 6368073  # From https://planetcalc.com/7721/
 
 
-    def local_from_lat_lon(self, latitude, longitude):
+    def local_from_lon_lat(self, longitude, latitude):
         """
         Get metres from longitude and latitude
         x-axis is east, y-axis is north
@@ -104,20 +104,21 @@ class Geolocation:
         -------
 
         """
-        y = np.deg2rad([latitude - self.__LAT_ORIGIN])[0] * self.__EARTH_RADIUS
+
         x = np.deg2rad([longitude - self.__LON_ORIGIN])[0] * self.__EARTH_RADIUS * np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]
+        y = np.deg2rad([latitude - self.__LAT_ORIGIN])[0] * self.__EARTH_RADIUS
 
         return x, y
 
 
     # TODO Description
-    def lat_lon_from_local(self, x, y):
+    def lon_lat_from_local(self, x, y):
         """
-        Get latitude and longitude from x, y coordinates
+        Get longitude and latitude from x, y coordinates
         """
 
-        latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
         longitude = np.rad2deg([x / self.__EARTH_RADIUS / np.cos(np.deg2rad([self.__LAT_ORIGIN]))[0]])[0] + self.__LON_ORIGIN
+        latitude = np.rad2deg([y / self.__EARTH_RADIUS])[0] + self.__LAT_ORIGIN
 
         return longitude, latitude
 
@@ -592,7 +593,7 @@ class Geolocation:
         eulerPlaneRad = self.__deg_vals_to_rad(euler_angles_plane)
 
         # Competition
-        localCoordinates = self.local_from_lat_lon(gpsLatitude, gpsLongitude)
+        localCoordinates = self.local_from_lon_lat(gpsLongitude, gpsLatitude)
         self.__longitude = localCoordinates[0]
         self.__latitude = localCoordinates[1]
         self.__altitude = altitude
@@ -624,7 +625,7 @@ class Geolocation:
         local_output_coordinates = self.map_location_from_pixel(tranformation_matrix, coordinates)
 
         # Competition
-        geo_coordinates = np.array([self.lat_lon_from_local(coordinate[0], coordinate[1]) for coordinate in local_output_coordinates])
+        geo_coordinates = np.array([self.lon_lat_from_local(coordinate[0], coordinate[1]) for coordinate in local_output_coordinates])
 
         return True, geo_coordinates
 

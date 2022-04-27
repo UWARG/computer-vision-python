@@ -1,8 +1,9 @@
 import pytest
+import time
+from datetime import datetime
+
 from modules.mergeImageWithTelemetry.mergeImageWithTelemetry import MergeImageWithTelemetry
 from modules.timestamp.timestamp import Timestamp
-
-from datetime import datetime
 
 """
     Unit tests for the MergeImageWithTelemetry module. 
@@ -46,6 +47,7 @@ def test_first():
     merger = MergeImageWithTelemetry()
     image = Timestamp(["image"])
     telemetry1 = Timestamp(["telemetry1"])
+    time.sleep(0.1)
     telemetry2 = Timestamp(["telemetry2"])
 
     merger.set_image(image)
@@ -61,14 +63,15 @@ def test_middle():
     for i in range(4): 
         t = Timestamp([i])
         merger.put_back_telemetry(t)
-    
-    now = datetime.now()
-    image = Timestamp(["image"], now)
+    time.sleep(0.1)
+
+    image = Timestamp(["image"])
     merger.set_image(image)
 
-    telemetry = Timestamp(["telemetry"], now)
+    telemetry = Timestamp(["telemetry"])
     merger.put_back_telemetry(telemetry)
 
+    time.sleep(0.1)
     for i in range(4, 9): 
         t = Timestamp([i])
         merger.put_back_telemetry(t)
@@ -83,12 +86,12 @@ def test_last():
     for i in range(4): 
         t = Timestamp([i])
         merger.put_back_telemetry(t)
-    
-    now = datetime.now()
-    image = Timestamp(["image"], now)
+    time.sleep(0.1)
+
+    image = Timestamp(["image"])
     merger.set_image(image)
 
-    telemetry = Timestamp(["telemetry"], now)
+    telemetry = Timestamp(["telemetry"])
     merger.put_back_telemetry(telemetry)
 
     [success, output] = merger.get_closest_telemetry()

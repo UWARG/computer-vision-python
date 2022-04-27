@@ -412,8 +412,8 @@ class TestConvertInput:
         expected_u = np.array([0, 1 ,0])
         expected_v = np.array([0, 0 ,1])
 
-        locator._Geolocation__latitude = 0
         locator._Geolocation__longitude = 0
+        locator._Geolocation__latitude = 0
         locator._Geolocation__altitude = 0
         locator._Geolocation__WORLD_ORIGIN = np.array([0, 0, 0])
         locator._Geolocation__GPS_OFFSET = np.array([0, 0, 0])
@@ -436,8 +436,8 @@ class TestConvertInput:
 
         locator._Geolocation__FOV_FACTOR_H = 2
         locator._Geolocation__FOV_FACTOR_V = 2
-        locator._Geolocation__latitude = 0
         locator._Geolocation__longitude = 0
+        locator._Geolocation__latitude = 0
         locator._Geolocation__altitude = 0
         locator._Geolocation__WORLD_ORIGIN = np.array([0, 0, 0])
         locator._Geolocation__GPS_OFFSET = np.array([0, 0, 0])
@@ -455,8 +455,8 @@ class TestConvertInput:
 
     def test_point_set_1(self, locator):
 
-        locator._Geolocation__latitude = -100
         locator._Geolocation__longitude = -100
+        locator._Geolocation__latitude = -100
         locator._Geolocation__altitude = 100
         locator._Geolocation__WORLD_ORIGIN = np.array([-50, 50, 50])
         locator._Geolocation__GPS_OFFSET = np.array([-0.5, 0, -0.5])
@@ -630,14 +630,14 @@ class TestLatLonConversion:
     def test_invertible_zeroes(self, locator):
 
         # Setup
-        locator._Geolocation__LAT_ORIGIN = 43.43
         locator._Geolocation__LON_ORIGIN = -80.58
+        locator._Geolocation__LAT_ORIGIN = 43.43
         expectedX = 0
         expectedY = 0
 
         # Run
-        lat, lon = locator.lat_lon_from_local(expectedX, expectedY)
-        actualX, actualY = locator.local_from_lat_lon(lat, lon)
+        lon, lat = locator.lon_lat_from_local(expectedX, expectedY)
+        actualX, actualY = locator.local_from_lon_lat(lon, lat)
 
         # Test
         np.testing.assert_almost_equal(actualX, expectedX)
@@ -646,14 +646,14 @@ class TestLatLonConversion:
     def test_invertible_positive(self, locator):
 
         # Setup
-        locator._Geolocation__LAT_ORIGIN = 43.43
         locator._Geolocation__LON_ORIGIN = -80.58
+        locator._Geolocation__LAT_ORIGIN = 43.43
         expectedX = 500
         expectedY = 360
 
         # Run
-        lat, lon = locator.lat_lon_from_local(expectedX, expectedY)
-        actualX, actualY = locator.local_from_lat_lon(lat, lon)
+        lon, lat = locator.lon_lat_from_local(expectedX, expectedY)
+        actualX, actualY = locator.local_from_lon_lat(lon, lat)
 
         # Test
         np.testing.assert_almost_equal(actualX, expectedX)
@@ -662,14 +662,14 @@ class TestLatLonConversion:
     def test_invertible_negative(self, locator):
 
         # Setup
-        locator._Geolocation__LAT_ORIGIN = 43.43
         locator._Geolocation__LON_ORIGIN = -80.58
+        locator._Geolocation__LAT_ORIGIN = 43.43
         expectedX = -128
         expectedY = -1024
 
         # Run
-        lat, lon = locator.lat_lon_from_local(expectedX, expectedY)
-        actualX, actualY = locator.local_from_lat_lon(lat, lon)
+        lon, lat = locator.lon_lat_from_local(expectedX, expectedY)
+        actualX, actualY = locator.local_from_lon_lat(lon, lat)
 
         # Test
         np.testing.assert_almost_equal(actualX, expectedX)
@@ -678,14 +678,14 @@ class TestLatLonConversion:
     def test_invertible_positiveX_negativeY(self, locator):
 
         # Setup
-        locator._Geolocation__LAT_ORIGIN = 43.43
         locator._Geolocation__LON_ORIGIN = -80.58
+        locator._Geolocation__LAT_ORIGIN = 43.43
         expectedX = 600
         expectedY = -900
 
         # Run
-        lat, lon = locator.lat_lon_from_local(expectedX, expectedY)
-        actualX, actualY = locator.local_from_lat_lon(lat, lon)
+        lon, lat = locator.lon_lat_from_local(expectedX, expectedY)
+        actualX, actualY = locator.local_from_lon_lat(lon, lat)
 
         # Test
         np.testing.assert_almost_equal(actualX, expectedX)
@@ -694,14 +694,14 @@ class TestLatLonConversion:
     def test_invertible_negativeX_positiveY(self, locator):
 
         # Setup
-        locator._Geolocation__LAT_ORIGIN = 43.43
         locator._Geolocation__LON_ORIGIN = -80.58
+        locator._Geolocation__LAT_ORIGIN = 43.43
         expectedX = -440
         expectedY = 69
 
         # Run
-        lat, lon = locator.lat_lon_from_local(expectedX, expectedY)
-        actualX, actualY = locator.local_from_lat_lon(lat, lon)
+        lon, lat = locator.lon_lat_from_local(expectedX, expectedY)
+        actualX, actualY = locator.local_from_lon_lat(lon, lat)
 
         # Test
         np.testing.assert_almost_equal(actualX, expectedX)
