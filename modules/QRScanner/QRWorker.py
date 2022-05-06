@@ -16,7 +16,10 @@ def qr_worker(pause, exitRequest, pipelineIn):
         pause.release()
 
         frame = pipelineIn.get()
-        updatedFrame = qrScanner.main(frame)
+        updatedFrame, output = qrScanner.main(frame)
+
+        if (output is not None):
+            print(output)
 
         cv2.imshow("Video feed", updatedFrame)
 
