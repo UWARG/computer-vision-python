@@ -4,6 +4,17 @@ A new computer vision system written in Python
 
 Please read the documentation and git best practices below before creating a pull request
 
+### IMPORTANT NOTE for setting up
+1. find a directory on your pc and git clone this repo
+2. to clone git submodules use command `git submodule update --init --recursive`
+3. You can download python 3.8.10 (the one that I am using) (keeping only one version of python will make your life so much easier)
+4. Create a virtual environment by first calling `pip install virtualenv`
+5. Open Computer Vision Python folder in vscode and in the terminal, type `virtualenv cvPython` where cvPython is the virtual environment name. (you can also type `virtualenv -p python3 cvPython` if you want to make sure it's python3)
+6. Now a virtualenv called cvPython is created. If you have windows, do `.\cvPython\Scripts\Activate.ps1` (in case your systems says `Execution of script is not available`, open Powershell with run as Admin and type `powershell Set-ExecutionPolicy RemoteSigned`). If you have Mac/Linux, you can just do `source ./cvPython/bin/activate`
+7. You will then see a (cvPython) in front of your command line, this means you are in the virtual environment
+8. Now `pip install -r requirements.txt` will install everything you need
+
+
 ## Git Practices
 To implement a new feature:
 1. Create a new branch from main
@@ -146,5 +157,3 @@ Also note that it isn't necessary to explain which functions/attributes are publ
 ### More docs
 If you encounter a scenario that isn't mentioned above, refer to the Python PEP8 style guide (https://www.python.org/dev/peps/pep-0008/#function-annotations) or use common sense.
 
-### Note
-1. to clone git submodules use command `git submodule update --init --recursive`
