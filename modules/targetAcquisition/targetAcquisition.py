@@ -83,22 +83,39 @@ class TargetAcquisition:
         tuple
             Returns a two-tuple, where first entry is coordinates, second entry is telemetry data 
         """
-        
+
         # Run YOLOV5 model
         self.__predict()
 
         # If no bounding boxes found, return False
         if len(self.bbox) == 0:
             return False, []
-        
+
         # Find centre of bounding box
         for i in range(1, len(self.bbox)):
             x = self.bbox[i][0][0] + self.bbox[i][1][0] // 2
             y = self.bbox[i][0][1] + self.bbox[i][1][1] // 2
             self.coordinates.append((x, y))
-    
+
         return True, (self.coordinates, self.telemetryData)
-    
+
+    def get_boxes(self):
+        """
+        Competition: Returns a list of box corners
+
+        Returns
+        -------
+        bool
+            First returned parameter is a boolean indicating whether the model found bboxes
+        tuple
+            Returns a list of tuples, where each element is a pair of tuples.
+        """
+
+        # Run YOLOV5 model
+        self.__predict()
+
+        return self.bbox
+
     def __predict(self):
         """
         PRIVATE: Runs YOLOV5 model on current frame and populates tentCoordinates and boxes attributes
