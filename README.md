@@ -5,8 +5,8 @@ A new computer vision system written in Python
 Please read the documentation and git best practices below before creating a pull request
 
 ### IMPORTANT NOTE for setting up
-1. find a directory on your pc and git clone this repo
-2. to clone git submodules use command `git submodule update --remote`
+1. find a directory on your pc and git clone this repo (make sure you config your git first)
+2. to clone git submodules run command `git submodule update --init --recursive` and `git submodule update --remote`
 3. You can download python 3.8.10 (the one that I am using) (keeping only one version of python will make your life so much easier)
 4. Create a virtual environment by first calling `pip install virtualenv`
 5. Open Computer Vision Python folder in vscode and in the terminal, type `virtualenv cvPython` where cvPython is the virtual environment name. (you can also type `virtualenv -p python3 cvPython` if you want to make sure it's python3)
