@@ -65,4 +65,4 @@ def test_targetAcquisition_to_geolocation(get_image):
     assert coordinates_and_telemetry != None
 
     assert check2 == True
-    assert geo_coordinates != None
+    assert geo_coordinates is not None
