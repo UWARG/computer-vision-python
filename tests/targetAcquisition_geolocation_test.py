@@ -3,7 +3,8 @@ import pytest
 import cv2
 import os.path
 
-from modules.decklinksrc.decklinkSrcWorker_taxi import DeckLinkSRC
+
+
 from modules.mergeImageWithTelemetry.mergedData import MergedData
 from modules.targetAcquisition.targetAcquisition import TargetAcquisition
 from modules.geolocation.geolocation import Geolocation

@@ -30,7 +30,7 @@ from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.augmentation
 
 class Detection:
     def __init__(self):
-        self.weights='modules/targetAcquisition/best.pt'
+        self.weights='modules/targetAcquisition/personDetection/weights/best.pt'
         set_logging()
         self.device =  torch.device('cpu')
         self.cfg = get_config()
