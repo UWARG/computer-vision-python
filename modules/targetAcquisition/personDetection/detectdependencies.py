@@ -19,6 +19,22 @@ from pathlib import Path
 from subprocess import check_output
 from datetime import datetime
 
+def set_logging(name=None, verbose=VERBOSE):
+    # Sets level and returns logger
+    if is_kaggle():
+        for h in logging.root.handlers:
+            logging.root.removeHandler(h)  # remove all handlers associated with the root logger object
+    rank = int(os.getenv('RANK', -1))  # rank in world for Multi-GPU trainings
+    level = logging.INFO if verbose and rank in {-1, 0} else logging.WARNING
+    log = logging.getLogger(name)
+    log.setLevel(level)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    handler.setLevel(level)
+    log.addHandler(handler)
+
+set_logging()  # run before defining LOGGER
+
 LOGGER = logging.getLogger("yolov5")
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # YOLOv5 root directory
@@ -367,3 +383,17 @@ def is_kaggle():
         return True
     except AssertionError:
         return False
+
+def get_config(config_file=None):
+    return YamlParser(config_file=config_file)
+
+def check_img_size(imgsz, s=32, floor=0):
+    # Verify image size is a multiple of stride s in each dimension
+    if isinstance(imgsz, int):  # integer i.e. img_size=640
+        new_size = max(make_divisible(imgsz, int(s)), floor)
+    else:  # list i.e. img_size=[640, 480]
+        imgsz = list(imgsz)  # convert to list if tuple
+        new_size = [max(make_divisible(x, int(s)), floor) for x in imgsz]
+    if new_size != imgsz:
+        LOGGER.warning(f'WARNING: --img-size {imgsz} must be multiple of max stride {s}, updating to {new_size}')
+    return new_size
