@@ -20,13 +20,13 @@ import torch.backends.cudnn as cudnn
 import numpy as np
 
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.models.common import DetectMultiBackend
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, scale_coords, 
+from modules.targetAcquisition.personDetection.detectdependencies import (LOGGER, check_img_size, non_max_suppression, scale_coords, 
                                   check_imshow, xyxy2xywh, xywh2xyxy, increment_path, set_logging)
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.torch_utils import select_device, time_sync
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.plots import Annotator, colors
+from modules.targetAcquisition.personDetection.detectdependencies import Annotator, Colors
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.deep_sort.utils.parser import get_config
 from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.deep_sort.deep_sort import DeepSort
-from modules.targetAcquisition.Yolov5_DeepSort_Pytorch.yolov5.utils.augmentations import Albumentations, letterbox
+from modules.targetAcquisition.personDetection.detectdependencies import Albumentations, letterbox
 
 class Detection:
     def __init__(self):
