@@ -3,7 +3,7 @@ Beginning worker that counts up from a starting value.
 """
 import multiprocessing as mp
 
-import counter
+import countup
 # Import required beyond the current directory
 # pylint: disable=relative-beyond-top-level
 from ...utilities.manage_worker import ManageWorker
@@ -22,7 +22,7 @@ def countup_worker(start_thousands: int, max_iterations: int,
     output_queue is the data queue.
     """
     # Instantiate class object
-    countup_instance = counter.Countup(start_thousands, max_iterations)
+    countup_instance = countup.Countup(start_thousands, max_iterations)
 
     # Loop forever until exit has been requested
     while not main_control.is_exit_requested():

@@ -3,7 +3,7 @@ Ending worker that concatenates a prefix and suffix and then prints the result.
 """
 import multiprocessing as mp
 
-import printer
+import concatenator
 # Import required beyond the current directory
 # pylint: disable=relative-beyond-top-level
 from ...utilities.manage_worker import ManageWorker
@@ -20,7 +20,7 @@ def concatenator_worker(prefix: str, suffix: str,
     input_queue is the data queue.
     """
     # Instantiate class object
-    concatenator_instance = printer.Concatenator(prefix, suffix)
+    concatenator_instance = concatenator.Concatenator(prefix, suffix)
 
     # Loop forever until exit has been requested
     while not main_control.is_exit_requested():
