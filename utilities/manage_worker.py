@@ -58,7 +58,7 @@ class ManageWorker:
         return not self.__exit_queue.empty()
 
     @staticmethod
-    def fill_and_drain_queue(q: mp.Queue) -> None:
+    def fill_and_drain_queue(worker_queue: mp.Queue) -> None:
         """
         In case the processes are stuck on a queue.
 
@@ -72,14 +72,14 @@ class ManageWorker:
 
         This assumes that the queue maxsize is >= than the number of producers or consumers.
         """
-        for _ in range(0, q.maxsize):
+        for _ in range(0, worker_queue.maxsize):
             try:
-                q.put_nowait(None)
+                worker_queue.put_nowait(None)
             except queue.Full:
                 break
 
-        for _ in range(0, q.maxsize):
+        for _ in range(0, worker_queue.maxsize):
             try:
-                q.get_nowait()
+                worker_queue.get_nowait()
             except queue.Empty:
                 break

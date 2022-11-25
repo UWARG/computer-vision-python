@@ -7,7 +7,6 @@ import time
 import add_random_worker
 import concatenator_worker
 import countup_worker
-import intermediate_struct
 # Import required beyond the current directory
 # pylint: disable=relative-beyond-top-level
 from ...utilities.manage_worker import ManageWorker
