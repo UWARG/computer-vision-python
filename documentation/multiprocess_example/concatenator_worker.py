@@ -5,13 +5,13 @@ import multiprocessing as mp
 
 import concatenator
 # Import required beyond the current directory
-# pylint: disable=relative-beyond-top-level
-from ...utilities.manage_worker import ManageWorker
-# pylint: enable=relative-beyond-top-level
+# pylint: disable=import-error
+from utilities import manage_worker
+# pylint: enable=import-error
 
 
 def concatenator_worker(prefix: str, suffix: str,
-                        input_queue: mp.Queue, main_control: ManageWorker):
+                        input_queue: mp.Queue, main_control: manage_worker.ManageWorker):
     """
     Worker process.
 

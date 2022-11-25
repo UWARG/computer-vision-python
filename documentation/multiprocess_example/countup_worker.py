@@ -5,13 +5,13 @@ import multiprocessing as mp
 
 import countup
 # Import required beyond the current directory
-# pylint: disable=relative-beyond-top-level
-from ...utilities.manage_worker import ManageWorker
-# pylint: enable=relative-beyond-top-level
+# pylint: disable=import-error
+from utilities import manage_worker
+# pylint: enable=import-error
 
 
 def countup_worker(start_thousands: int, max_iterations: int,
-                   output_queue: mp.Queue, main_control: ManageWorker):
+                   output_queue: mp.Queue, main_control: manage_worker.ManageWorker):
     """
     Worker process.
 

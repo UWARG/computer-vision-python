@@ -8,9 +8,9 @@ import add_random_worker
 import concatenator_worker
 import countup_worker
 # Import required beyond the current directory
-# pylint: disable=relative-beyond-top-level
-from ...utilities.manage_worker import ManageWorker
-# pylint: enable=relative-beyond-top-level
+# pylint: disable=import-error
+from utilities import manage_worker
+# pylint: enable=import-error
 
 
 # Play with these numbers to see queue bottlenecks
@@ -21,7 +21,7 @@ ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 if __name__ == "__main__":
     # Main is managing all worker processes and
     # is responsible for creating supporting interprocess communication
-    main_control = ManageWorker()
+    main_control = manage_worker.ManageWorker()
     # Queue maxsize should always be >= the larger of producers/consumers count
     # Example: Producers 3, consumers 2, so queue maxsize minimum is 3
     countup_to_add_random_queue = mp.Queue(COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         mp.Process(target=concatenator_worker.concatenator_worker, args=(
             "Hello ", " world!", add_random_to_concatenator_queue, main_control
         )),
-        mp.Process(target=add_random_worker.add_random_worker, args=(
+        mp.Process(target=concatenator_worker.concatenator_worker, args=(
             "Example ", " code!", add_random_to_concatenator_queue, main_control
         )),
     ]
@@ -77,10 +77,22 @@ if __name__ == "__main__":
     main_control.request_exit()
 
     # Fill and drain queues from end to start
-    ManageWorker.fill_and_drain_queue(add_random_to_concatenator_queue)
-    ManageWorker.fill_and_drain_queue(countup_to_add_random_queue)
+    manage_worker.ManageWorker.fill_and_drain_queue(
+        add_random_to_concatenator_queue, ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE
+    )
+    manage_worker.ManageWorker.fill_and_drain_queue(
+        countup_to_add_random_queue, COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE
+    )
 
-    # We can reset the stop in case we want to reuse it
+    # Clean up worker processes
+    for worker in countup_workers:
+        worker.join()
+    for worker in add_random_workers:
+        worker.join()
+    for worker in concatenator_workers:
+        worker.join()
+
+    # We can reset main_control in case we want to reuse it
     # Alternatively, create a new ManageWorker instance
     main_control.clear_exit()
 

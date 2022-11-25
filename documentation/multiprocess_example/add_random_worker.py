@@ -5,15 +5,16 @@ import multiprocessing as mp
 
 import add_random
 # Import required beyond the current directory
-# pylint: disable=relative-beyond-top-level
-from ...utilities.manage_worker import ManageWorker
-# pylint: enable=relative-beyond-top-level
+# pylint: disable=import-error
+from utilities import manage_worker
+# pylint: enable=import-error
 
 
 # As kwargs is not being used, this function needs many parameters
 # pylint: disable=too-many-arguments
 def add_random_worker(seed: int, max_random_term: int, add_change_count: int,
-                      input_queue: mp.Queue, output_queue: mp.Queue, main_control: ManageWorker):
+                      input_queue: mp.Queue, output_queue: mp.Queue,
+                      main_control: manage_worker.ManageWorker):
     """
     Worker process.
 
