@@ -1,9 +1,10 @@
 """
 Contains the AddRandom class.
 """
-import random
 import time
 from typing import Tuple
+
+import random
 
 import intermediate_struct
 

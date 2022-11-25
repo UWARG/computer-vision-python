@@ -1,8 +1,9 @@
 """
 main process.
 """
-import multiprocessing as mp
 import time
+
+import multiprocessing as mp
 
 import add_random_worker
 import concatenator_worker
