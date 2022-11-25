@@ -1,42 +1,38 @@
+"""
+Contains the Countup class.
+"""
 import time
+from typing import Tuple
 
-"""
-This is an example of a multiprocessed producer
-A producer-consumer will have both an input and output, shouldn't be too hard
-"""
 
-class Counter:
+# This class does very little, but still has state
+# pylint: disable=too-few-public-methods
+class Countup:
     """
-    Increments its internal counter
-    Producer: Outputs current count
+    Increments its internal counter and outputs current counter.
     """
-
-    # They're all public in this example, but should probably be private
-    # Globals must be initialized here ("compile"-time)
-    # They could be initialized at runtime before starting the process but this is HIGHLY DISCOURAGED
-    maxCount = 999
-
-
-    def __init__(self, thousands):
-
-        self.numberToAdd = thousands * 1000
-        self.currentCount = self.numberToAdd
+    def __init__(self, start_thousands: int, max_iterations: int):
+        """
+        Constructor initializes the start and max points.
+        """
+        self.__start_count = start_thousands * 1000
+        self.__max_count = self.__start_count + max_iterations
+        self.__current_count = self.__start_count
 
 
-    # The working function
-    # If this was also a consumer then the function signature would include data input
-    def count_up(self):
+    def run_countup(self) -> Tuple[bool, int]:
+        """
+        Counts upward.
+        """
+        # Increment counter
+        self.__current_count += 1
+        if self.__current_count > self.__max_count:
+            self.__current_count = self.__start_count
 
-        # Pretending we are hard at work
+        # Pretending to be hard at work
         time.sleep(0.15)
 
-        # Increment counter
-        if (self.currentCount > self.maxCount + self.numberToAdd):
-            self.currentCount = self.numberToAdd
-        else:
-            self.currentCount += 1
+        # Function returns result and the output
+        return True, self.__current_count
 
-        # Outgoing data MUST be in this form
-        # so that bad data isn't going in the queue
-        # Data must be packed into one variable before going out to the wrapper function!
-        return True, self.currentCount
+# pylint: enable=too-few-public-methods
