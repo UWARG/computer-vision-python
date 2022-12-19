@@ -1,6 +1,6 @@
 # Coding Style Guide
 
-This is the style guide for CV, following [PEP 8](https://peps.python.org/pep-0008/) and [Pylint](https://pylint.org/). Follow this guide for all new code (you do not need to worry about old code). Use common sense and/or mention @Xierumeng on Discord if there is something missing.
+This is the style guide for CV, following [PEP 8](https://peps.python.org/pep-0008/) and [Pylint](https://pylint.org/). Follow this guide for all new code (you do not need to worry about old code). Use common sense and/or mention @Xierumeng on Discord if there is something that needs clarification.
 
 ## Pylint
 
@@ -9,32 +9,56 @@ Pylint can either be installed as a [Visual Studio Code extension](https://marke
 If a lint issue cannot be resolved by restructuring code, Pylint can be disabled for a specific line with:
 
 ```python
+# Explanation for disabling the linter
 # pylint: disable=[problem-code]
+stuff
+# pylint: enable=[problem-code]
 ```
 
-All Pylint disables MUST be accompanied by a comment explaining why this is necessary.
+Where `[problem-code]` is the descriptive version (e.g. use `import-error` rather than `E0401` ).
+
+All Pylint disables MUST be accompanied by a comment explaining why this is necessary. The disabled section must be as short as possible.
 
 ## Basics
 
-There is an example in [General](#general) below.
+Here are the basics, and there is an example in [General](#general) below.
 
 * `variable_names` in snake_case
+
 * `function_names()` in snake_case
+
 * `ClassNames` in PascalCase (UpperCamelCase)
+
 * `CONSTANT_NAMES` in CAPITAL_SNAKE_CASE
+
 * `file_names` in snake_case
-* Private members (functions and variables) should have two underscores to indicate them as such: `def __my_private_func():` , `__my_private_set = set()`
+
+* Private members (methods and attributes) have two underscores to indicate them as such:
+    * `def __my_private_func():` and `__my_private_set = set()`
+
 * Initialize any variables within class constructor to `None` or some other value
+    * Class members are ONLY be created in the constructor
+
 * Use constants for numbers that can be tweaked (e.g. pixel height/pixel width of an image, number of epochs in a model)
+
 * 4 spaces per level of indentation
-* There should be no space before an opening parantheses (`my_function(myVar)` NOT `my_function (myVar)` )
-* Only use parantheses when necessary (`while myInt < 3:` NOT `while (myInt < 3):` )
+
+* No space before an opening parantheses:
+    * Use `my_function(myVar)` NOT `my_function (myVar)`
+
+* Only use parantheses when necessary:
+    * `while myInt < 3:` NOT `while (myInt < 3):`
+
 * Operators:
-    * No spaces around `*` , `/` , `%` , `!` , `:` if it's used as a slicing operator
+    * No spaces around `*` , `/` , `%` , `!`
+    * No spaces around `:` if it's used as a slicing operator, otherwise use spaces:
+        * Slicing operator: `[1:]` and `[:, 2:4]`
     * One space on either side of `=`, `==`, `+`, `-`, `+=`, `-=`, etc
         * Except in named arguments of a function call (e.g. `np.sum(arr, axis=1)` )
     * One space after every comma: `my_func(var1, var2, var3)`
-* 160 character limit per line (not a hard limit, use common sense)
+        * Slicing: `[:3, :]`
+
+* 100 character limit per line
 
 ## Files
 
@@ -43,7 +67,7 @@ Module/file names are in snake_case: `geolocation_worker.py`
 File contents end with 1 blank line:
 
 ```python
-# Stuff
+stuff
 # Last blank line below, then end of file
 
 ```
@@ -52,7 +76,7 @@ Indents are 4 spaces long. Blank lines do not have any spaces. Strings are encod
 
 ## Imports
 
-Import system-level modules, then installed modules, then local (CV) modules. Separate each group with 1 blank line, with module names in alphabetical order within the group:
+Import system-level modules, then installed modules, then local modules. Separate each group with 1 blank line, with module names in alphabetical order within the group:
 
 ```python
 import os
@@ -64,18 +88,20 @@ import numpy as np
 import modules.geolocation
 ```
 
-Do not use wildcards (asterisk/star) in imports, except for the following modules:
+**No wildcards (asterisk/star) in `from` imports**. Explicitly state what needs to be imported.
 
 ```python
-from typing import *
+from typing import *  # NO
+from typing import Tuple  # Okay
 ```
 
-Do not call private functions from an imported module:
+Do not call private functions or variables from an imported module:
 
 ```python
 import some_cv_module
 
 some_cv_module.__some_private_function()  # NO
+some_cv_module.ClassName.__private_member  # NO
 ```
 
 ## General
@@ -85,10 +111,16 @@ It's easier to show by example for reference than giving a bunch of forgettable 
 ```python
 import os
 import sys
+import time
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 from math import pi
 import numpy as np
-from typing import *
+
+import geolocation
+import geolocation_worker
 
 
 # Top-level constants are in UPPER_SNAKE_CASE
@@ -101,7 +133,8 @@ GLOBAL_CONST = 5  # 2 spaces before an inline comment
 
 # Types from other modules include the prefix (e.g. `np.ndarray` ), except from the typing module
 # Containers (e.g. list, dict, tuple, set) include the type of the enclosed objects
-def get_coordinates(new_frame: np.ndarray=np.zeros((416, 416, 3))) -> Dict[yolov2_assets.utils.BoundBox, Tuple[int, int]]:
+def get_coordinates(new_frame: np.ndarray=np.zeros((416, 416, 3))) \
+                    -> Dict[yolov2_assets.utils.BoundBox, Tuple[int, int]]:
     """
     Function, method, and variable names are in snake_case.
     Function and method parameters have type hints where possible.
@@ -116,7 +149,8 @@ def get_coordinates(new_frame: np.ndarray=np.zeros((416, 416, 3))) -> Dict[yolov
 
     1. Description of what the function does.
 
-    2. A list of parameters, including name, type, whether it is optional, and a description of the parameter.
+    2. A list of parameters, including name, type, whether it is optional,
+    and a description of the parameter.
 
     3. The function's return type (if any), as well as a description of what it returns.
 
@@ -124,7 +158,7 @@ def get_coordinates(new_frame: np.ndarray=np.zeros((416, 416, 3))) -> Dict[yolov
     """
     # Example docstring:
     """
-    Returns a list of co-ordinates along a video frame where tents are located by running YOLOV2 model.
+    Returns list of coordinates along video frame where tents are located by running YOLOV2 model.
 
     Parameters
     ----------
@@ -147,6 +181,8 @@ def __some_private_function() -> float:
 
 
 # Class names are CamelCase
+# Unfortunately, when it comes to classes, the enable has to be done at the end of the block
+# pylint: disable=too-few-public-methods
 class VideoDecoder:
     """
     Decodes video into individual frames.
@@ -169,6 +205,8 @@ class VideoDecoder:
     __static_helper()
         There is nothing stopping you from copy-pasting the method description from its docstring.
     """
+    # All variables and constants must be initialized inside the constructor!
+    static_member = "NOT ALLOWED"
     # 1 blank line between class methods
 
     def __init__(self, encoding: str, quality: float):
@@ -182,15 +220,27 @@ class VideoDecoder:
         """
         self.encoding = encoding
         self.quality = quality
-        self.__effort = None  # Use None if you want to create this member but save initialization for later
-        self.__resolution = quality * 400
+        # Use None if you want to create this member but save initialization for later
+        self.__effort = None
 
+        # Constant within class does not follow Pylint naming
+        # pylint: disable=invalid-name
+        self.__FRAME_RESOLUTION = quality * 400
+        # pylint: enable=invalid-name
+        # Enable ASAP to minimize block size
+        # It's better to have a multiple disable-enable lines than everything together
+        # Constant within class does not follow Pylint naming
+        # pylint: disable=invalid-name
+        self.__SETTINGS = "4 4 2"
+        # pylint: enable=invalid-name
 
     def decode_frame(self, video: str) -> Tuple[bool, List[List[int]]]:
         """
-        The first parameter of class methods is `self` , all other parameters are after, except for static methods (see below).
+        The first parameter of class methods is `self` .
+        All other parameters are after, except for static methods (see below).
         """
-        # Prefer using explicit type construction over implicit (e.g. dict() over {} ), with the exception of lists (square brackets).
+        # Prefer using explicit type construction over implicit (e.g. dict() over {} ),
+        # with the exception of lists (square brackets) and returning tuples `return a, b`
         some_dictionary = dict()
         self.__h264_decode(some_dictionary)
         return True, [[0]]
@@ -204,13 +254,14 @@ class VideoDecoder:
     @staticmethod
     def __static_helper(dividend: int, divide_by_ten: bool) -> int:
         """
-        Static class methods are pure functions: They have an input, do something, and have an output.
+        Static class methods are pure functions:
+        They have an input, do something, and have an output.
         Pure functions do not save state, which is why the `self` parameter is omitted.
         In technical terms, this is described as having no side effects.
 
         Do not use static class members (for the same reason global variables are not allowed).
-        Static members appear as variables within the class but outside of any method (static or otherwise).
-        There are none in the VideoDecoder example class, so it's safe to use as a reference.
+        Static members appear as variables in the class outside of methods (static or otherwise).
+        See `static_member` above.
         """
         quotient = dividend
         # Conditionals and loops are not surrounded by parantheses
@@ -219,7 +270,9 @@ class VideoDecoder:
             # 1 blank line after the end of the block
 
         return quotient
-        # 1 blank line at end of file
+
+# pylint: enable=too-few-public-methods
+# 1 blank line at end of file
 
 ```
 
@@ -281,6 +334,7 @@ example1 = dict(
 )
 
 example2 = [
+    ["h"],
     [
         [0, 0],
         set("hi", "hie", "fie"),
@@ -288,7 +342,8 @@ example2 = [
             a = 1,
             b = 2
         )
-    ]
+    ],
+    []
 ]
 ```
 
@@ -311,8 +366,8 @@ def possibly_failing_function(num: int) -> Tuple[bool, int]:
 
 
 values = []
-for i in range(0, 10):
-    result, value = possibly_failing_function(3)
+for i in range(-5, 5 + 1):  # + 1 indicates end value of 5 is inclusive
+    result, value = possibly_failing_function(i)
     if not result:
         continue
 
