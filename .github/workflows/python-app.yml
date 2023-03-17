@@ -23,7 +23,7 @@ jobs:
     - name: Setup Submodules and their dependancies
       run: |
         git submodule update --init --recursive
-        cd modules/targetAcquisition/Yolov5_DeepSort_Pytorch
+        cd 2022/modules/targetAcquisition/Yolov5_DeepSort_Pytorch
         pip install -r requirements.txt
     - name: Install dependencies
       run: |
