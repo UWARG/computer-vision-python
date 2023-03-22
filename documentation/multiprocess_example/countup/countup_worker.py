@@ -3,11 +3,8 @@ Beginning worker that counts up from a starting value.
 """
 import multiprocessing as mp
 
-import countup
-# Import required beyond the current directory
-# pylint: disable=import-error
 from utilities import manage_worker
-# pylint: enable=import-error
+from . import countup
 
 
 def countup_worker(start_thousands: int, max_iterations: int,

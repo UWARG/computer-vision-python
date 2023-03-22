@@ -3,11 +3,8 @@ Intermediate worker that adds a random number to the input.
 """
 import multiprocessing as mp
 
-import add_random
-# Import required beyond the current directory
-# pylint: disable=import-error
 from utilities import manage_worker
-# pylint: enable=import-error
+from . import add_random
 
 
 # As kwargs is not being used, this function needs many parameters

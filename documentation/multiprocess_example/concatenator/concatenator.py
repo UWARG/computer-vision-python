@@ -2,9 +2,8 @@
 Contains the Concatenator class.
 """
 import time
-from typing import Tuple
 
-import intermediate_struct
+from .. import intermediate_struct
 
 
 # This class does very little, but still has state
@@ -22,7 +21,7 @@ class Concatenator:
 
 
     # The working function
-    def run_concatenation(self, middle: intermediate_struct.IntermediateStruct) -> Tuple[bool, str]:
+    def run_concatenation(self, middle: intermediate_struct.IntermediateStruct) -> "tuple[bool, str]":
         """
         Concatenate the prefix and suffix to the input.
         """

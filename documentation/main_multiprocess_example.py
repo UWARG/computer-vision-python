@@ -2,16 +2,12 @@
 main process.
 """
 import time
-
 import multiprocessing as mp
 
-import add_random_worker
-import concatenator_worker
-import countup_worker
-# Import required beyond the current directory
-# pylint: disable=import-error
+from documentation.multiprocess_example.add_random import add_random_worker
+from documentation.multiprocess_example.concatenator import concatenator_worker
+from documentation.multiprocess_example.countup import countup_worker
 from utilities import manage_worker
-# pylint: enable=import-error
 
 
 # Play with these numbers to see queue bottlenecks
@@ -19,6 +15,7 @@ COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5
 ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 
 
+# Command: python -m documentation.main_multiprocess_example
 if __name__ == "__main__":
     # Main is managing all worker processes and
     # is responsible for creating supporting interprocess communication

@@ -3,11 +3,8 @@ Ending worker that concatenates a prefix and suffix and then prints the result.
 """
 import multiprocessing as mp
 
-import concatenator
-# Import required beyond the current directory
-# pylint: disable=import-error
 from utilities import manage_worker
-# pylint: enable=import-error
+from . import concatenator
 
 
 def concatenator_worker(prefix: str, suffix: str,
