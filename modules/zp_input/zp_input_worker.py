@@ -13,7 +13,7 @@ from utilities import manage_worker
 
 def zp_input_worker(port: str, baudrate: int,
                     telemetry_output_queue: mp.Queue, request_output_queue: mp.Queue,
-                    main_control: manage_worker.ManageWorker):
+                    worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 
@@ -21,12 +21,12 @@ def zp_input_worker(port: str, baudrate: int,
     baudrate is UART baudrate.
     telemetry_output_queue is the telemetry queue.
     request_output_queue is the ZP request queue.
-    main_control is how the main process communicates to this worker process.
+    worker_manager is how the main process communicates to this worker process.
     """
     input_device = zp_input.ZpInput(port, baudrate)
 
-    while not main_control.is_exit_requested():
-        main_control.check_pause()
+    while not worker_manager.is_exit_requested():
+        worker_manager.check_pause()
 
         result, value = input_device.run()
         if not result:

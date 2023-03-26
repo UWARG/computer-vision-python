@@ -13,18 +13,18 @@ from utilities import manage_worker
 
 def video_input_worker(camera_name: "int | str",
                        output_queue: mp.Queue,
-                       main_control: manage_worker.ManageWorker):
+                       worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 
     camera_name is initial setting.
     output_queue is the data queue.
-    main_control is how the main process communicates to this worker process.
+    worker_manager is how the main process communicates to this worker process.
     """
     input_device = video_input.VideoInput(camera_name)
 
-    while not main_control.is_exit_requested():
-        main_control.check_pause()
+    while not worker_manager.is_exit_requested():
+        worker_manager.check_pause()
 
         result, value = input_device.run()
         if not result:

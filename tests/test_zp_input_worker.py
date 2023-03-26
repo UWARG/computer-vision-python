@@ -16,13 +16,13 @@ BAUDRATE=115_200
 
 if __name__ == "__main__":
     # Setup
-    process_manager = manage_worker.ManageWorker()
+    worker_manager = manage_worker.ManageWorker()
     telemetry_out_queue = mp.Queue()
     request_out_queue = mp.Queue()
 
     worker = mp.Process(
         target=zp_input_worker.zp_input_worker,
-        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, process_manager)
+        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, worker_manager)
     )
 
     # Run
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     time.sleep(3)
 
-    process_manager.request_exit()
+    worker_manager.request_exit()
 
     # Test
     while True:

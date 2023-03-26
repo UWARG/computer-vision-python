@@ -15,12 +15,12 @@ CAMERA=0
 
 if __name__ == "__main__":
     # Setup
-    process_manager = manage_worker.ManageWorker()
+    worker_manager = manage_worker.ManageWorker()
     out_queue = mp.Queue()
 
     worker = mp.Process(
         target=video_input_worker.video_input_worker,
-        args=(CAMERA, out_queue, process_manager)
+        args=(CAMERA, out_queue, worker_manager)
     )
 
     # Run
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     time.sleep(3)
 
-    process_manager.request_exit()
+    worker_manager.request_exit()
 
     # Test
     while True:
