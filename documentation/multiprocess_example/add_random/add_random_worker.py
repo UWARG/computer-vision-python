@@ -11,21 +11,21 @@ from . import add_random
 # pylint: disable=too-many-arguments
 def add_random_worker(seed: int, max_random_term: int, add_change_count: int,
                       input_queue: mp.Queue, output_queue: mp.Queue,
-                      main_control: manage_worker.ManageWorker):
+                      worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 
-    main_control is how the main process communicates to this worker process.
     seed, max_random_term, and add_change_count are initial settings.
     input_queue and output_queue are the data queues.
+    worker_manager is how the main process communicates to this worker process.
     """
     # Instantiate class object
     add_random_instance = add_random.AddRandom(seed, max_random_term, add_change_count)
 
     # Loop forever until exit has been requested
-    while not main_control.is_exit_requested():
+    while not worker_manager.is_exit_requested():
         # Method blocks worker if pause has been requested
-        main_control.check_pause()
+        worker_manager.check_pause()
 
         # Get an item from the queue
         # If the queue is empty, the worker process will block
@@ -42,10 +42,12 @@ def add_random_worker(seed: int, max_random_term: int, add_change_count: int,
         result, value = add_random_instance.run_add_random(term)
 
         # Check result
-        if result:
-            # Put an item into the queue
-            # If the queue is full, the worker process will block
-            # until the queue is non-empty
-            output_queue.put(value)
+        if not result:
+            continue
+
+        # Put an item into the queue
+        # If the queue is full, the worker process will block
+        # until the queue is non-empty
+        output_queue.put(value)
 
 # pylint: enable=too-many-arguments

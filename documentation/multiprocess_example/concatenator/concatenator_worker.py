@@ -8,21 +8,21 @@ from . import concatenator
 
 
 def concatenator_worker(prefix: str, suffix: str,
-                        input_queue: mp.Queue, main_control: manage_worker.ManageWorker):
+                        input_queue: mp.Queue, worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 
-    main_control is how the main process communicates to this worker process.
     prefix and suffix are initial settings.
     input_queue is the data queue.
+    worker_manager is how the main process communicates to this worker process.
     """
     # Instantiate class object
     concatenator_instance = concatenator.Concatenator(prefix, suffix)
 
     # Loop forever until exit has been requested
-    while not main_control.is_exit_requested():
+    while not worker_manager.is_exit_requested():
         # Method blocks worker if pause has been requested
-        main_control.check_pause()
+        worker_manager.check_pause()
 
         # Get an item from the queue
         # If the queue is empty, the worker process will block
@@ -39,6 +39,8 @@ def concatenator_worker(prefix: str, suffix: str,
         result, value = concatenator_instance.run_concatenation(input_data)
 
         # Check result
-        if result:
-            # Print the string
-            print(value)
+        if not result:
+            continue
+
+        # Print the string
+        print(value)
