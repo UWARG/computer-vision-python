@@ -3,14 +3,14 @@ Combines image and timestamp together
 """
 
 from ..common.comms.modules import generic_comms_device
-from .. import telemetry_and_time
+from .. import message_and_time
 
 
 # This is just an interface
 # pylint: disable=too-few-public-methods
-class TelemetryInput:
+class ZpInput:
     """
-    Combines telemetry and timestamp together
+    Combines ZP message and timestamp together
     """
 
     def __init__(self, port: str, baudrate: int):
@@ -20,10 +20,10 @@ class TelemetryInput:
         """
         Returns a possible FrameAndTime with current timestamp
         """
-        result, telemetry = self.device.receive()
+        result, message = self.device.receive()
         if not result:
             return False, None
 
-        return True, telemetry_and_time.TelemetryAndTime(telemetry)
+        return True, message_and_time.MessageAndTime(message)
 
 # pylint: enable=too-few-public-methods

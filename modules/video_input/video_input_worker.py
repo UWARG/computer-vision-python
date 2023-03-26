@@ -27,5 +27,7 @@ def video_input_worker(camera_name: "int | str",
         main_control.check_pause()
 
         result, value = input_device.run()
-        if result:
-            output_queue.put(value)
+        if not result:
+            continue
+
+        output_queue.put(value)

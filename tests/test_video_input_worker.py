@@ -7,6 +7,8 @@ import time
 
 from utilities import manage_worker
 from modules.video_input import video_input_worker
+from modules import frame_and_time
+
 
 CAMERA=0
 
@@ -31,8 +33,9 @@ if __name__ == "__main__":
     # Test
     while True:
         try:
-            input_data = out_queue.get_nowait()
+            input_data: frame_and_time.FrameAndTime = out_queue.get_nowait()
             assert str(type(input_data)) == "<class \'modules.frame_and_time.FrameAndTime\'>"
+            assert input_data.frame is not None
 
         except queue.Empty:
             break

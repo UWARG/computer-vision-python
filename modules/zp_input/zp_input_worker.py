@@ -12,21 +12,37 @@ from utilities import manage_worker
 
 
 def zp_input_worker(port: str, baudrate: int,
-                    output_queue: mp.Queue,
+                    telemetry_output_queue: mp.Queue, request_output_queue: mp.Queue,
                     main_control: manage_worker.ManageWorker):
     """
     Worker process.
 
     port is UART port.
     baudrate is UART baudrate.
-    output_queue is the data queue.
+    telemetry_output_queue is the telemetry queue.
+    request_output_queue is the ZP request queue.
     main_control is how the main process communicates to this worker process.
     """
-    input_device = zp_input.TelemetryInput(port, baudrate)
+    input_device = zp_input.ZpInput(port, baudrate)
 
     while not main_control.is_exit_requested():
         main_control.check_pause()
 
         result, value = input_device.run()
-        if result:
-            output_queue.put(value)
+        if not result:
+            continue
+
+        # Get Pylance to stop complaining
+        assert value is not None
+        assert value.message is not None
+
+        # Decide which worker to send to next depending on message type
+        if value.message.header.type == 0:
+            # Odometry
+            telemetry_output_queue.put(value)
+        elif value.message.header.type == 1:
+            # Request
+            request_output_queue.put(value)
+        else:
+            # TODO: Invalid type, log it?
+            pass

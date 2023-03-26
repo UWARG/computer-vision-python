@@ -1,21 +1,21 @@
 """
-Telemetry and timestamp
+ZP message and timestamp
 """
 import time
 
 
 # Basically a struct
 # pylint: disable=too-few-public-methods
-class TelemetryAndTime:
+class MessageAndTime:
     """
-    Contains telemetry and timestamp
+    Contains ZP message and timestamp
     """
-    def __init__(self, telemetry):
+    def __init__(self, message):
         """
         Constructor sets timestamp to current time
-        telemetry: 1 of TelemMessages
+        message: 1 of TelemMessages
         """
-        self.telemetry = telemetry
+        self.message = message
         self.timestamp = time.time()
 
 # pylint: enable=too-few-public-methods
