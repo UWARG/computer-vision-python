@@ -1,0 +1,4 @@
+# Packages listed in alphabetical order
+numpy
+pytest
+# pytorch special case, see requirements-pytorch.txt
