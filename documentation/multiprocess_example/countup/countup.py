@@ -2,7 +2,6 @@
 Contains the Countup class.
 """
 import time
-from typing import Tuple
 
 
 # This class does very little, but still has state
@@ -20,7 +19,7 @@ class Countup:
         self.__current_count = self.__start_count
 
 
-    def run_countup(self) -> Tuple[bool, int]:
+    def run_countup(self) -> "tuple[bool, int]":
         """
         Counts upward.
         """

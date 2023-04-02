@@ -2,11 +2,9 @@
 Contains the AddRandom class.
 """
 import time
-from typing import Tuple
-
 import random
 
-import intermediate_struct
+from .. import intermediate_struct
 
 
 # This class does very little, but still has state
@@ -45,7 +43,7 @@ class AddRandom:
         """
         return random.randrange(min_value, max_value + 1)
 
-    def run_add_random(self, term: int) -> Tuple[bool, intermediate_struct.IntermediateStruct]:
+    def run_add_random(self, term: int) -> "tuple[bool, intermediate_struct.IntermediateStruct]":
         """
         Adds a random number to the input and returns the sum.
         """
