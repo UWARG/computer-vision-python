@@ -1,7 +1,6 @@
 """
 Gets frames and adds a timestamp
 """
-
 import queue
 
 from utilities import manage_worker

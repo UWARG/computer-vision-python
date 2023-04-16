@@ -2,7 +2,6 @@
 Detects objects using the provided model
 """
 
-import cv2
 import numpy as np  # TODO: Remove
 import ultralytics
 
