@@ -20,10 +20,16 @@ if __name__ == "__main__":
     # Main is managing all worker processes and
     # is responsible for creating supporting interprocess communication
     worker_manager = manage_worker.ManageWorker()
+
+    # mp.Queue has possible race conditions in the same process
+    # caused by its implementation (background thread work)
+    # so a queue from a SyncManager is used instead
+    m = mp.Manager()
+
     # Queue maxsize should always be >= the larger of producers/consumers count
     # Example: Producers 3, consumers 2, so queue maxsize minimum is 3
-    countup_to_add_random_queue = mp.Queue(COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE)
-    add_random_to_concatenator_queue = mp.Queue(ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE)
+    countup_to_add_random_queue = m.Queue(COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE)
+    add_random_to_concatenator_queue = m.Queue(ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE)
 
     # Prepare processes
     # Play with these numbers to see process bottlenecks

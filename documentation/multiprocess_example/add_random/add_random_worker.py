@@ -1,7 +1,7 @@
 """
 Intermediate worker that adds a random number to the input.
 """
-import multiprocessing as mp
+import queue
 
 from utilities import manage_worker
 from . import add_random
@@ -10,7 +10,7 @@ from . import add_random
 # As kwargs is not being used, this function needs many parameters
 # pylint: disable=too-many-arguments
 def add_random_worker(seed: int, max_random_term: int, add_change_count: int,
-                      input_queue: mp.Queue, output_queue: mp.Queue,
+                      input_queue: queue.Queue, output_queue: queue.Queue,
                       worker_manager: manage_worker.ManageWorker):
     """
     Worker process.

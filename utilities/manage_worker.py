@@ -52,23 +52,22 @@ class ManageWorker:
     def is_exit_requested(self) -> bool:
         """
         Returns whether main has requested the worker process to exit.
-        There is a race condition, but it's fine
-        because the worker process will do at most 1 additional loop.
+        There is a race condition, but it's fine because the worker process
+        will do at most 1 additional loop.
         """
         return not self.__exit_queue.empty()
 
     @staticmethod
-    def fill_and_drain_queue(worker_queue: mp.Queue, worker_queue_max_size: int) -> None:
+    def fill_and_drain_queue(worker_queue: queue.Queue, worker_queue_max_size: int) -> None:
         """
         In case the processes are stuck on a queue.
 
         The maximum number of processes stuck on a single in or out queue
-        is the number of running processes (obviously).
-        They may all be waiting for data (stuck on empty queue),
-        so we push in that number of elements.
-        They may all be trying to output data (stuck on full queue),
-        so we pop that number of elements.
-        We don't really care about the data any more because the whole system is halting.
+        is the number of running processes (obviously). They may all be waiting
+        for data (stuck on empty queue), so we push in that number of elements.
+        They may all be trying to output data (stuck on full queue), so we pop
+        that number of elements. We don't really care about the data any more
+        because the whole system is halting.
 
         This assumes that the queue maxsize is >= than the number of producers or consumers.
         """
