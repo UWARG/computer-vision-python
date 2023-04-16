@@ -10,8 +10,8 @@ from modules.zp_input import zp_input_worker
 from modules import message_and_time
 
 
-PORT="/dev/ttyS0"
-BAUDRATE=115_200
+PORT = "/dev/ttyS0"
+BAUDRATE = 115_200
 
 
 if __name__ == "__main__":

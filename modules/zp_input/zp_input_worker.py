@@ -4,11 +4,8 @@ Gets frames and adds a timestamp
 
 import multiprocessing as mp
 
-from . import zp_input
-# Import required beyond the current directory
-# pylint: disable=import-error
 from utilities import manage_worker
-# pylint: enable=import-error
+from . import zp_input
 
 
 def zp_input_worker(port: str, baudrate: int,

@@ -16,7 +16,7 @@ class ZpInput:
     def __init__(self, port: str, baudrate: int):
         self.device = generic_comms_device.GenericCommsDevice(port, baudrate)
 
-    def run(self):
+    def run(self) -> "tuple[bool, message_and_time.MessageAndTime | None]":
         """
         Returns a possible FrameAndTime with current timestamp
         """

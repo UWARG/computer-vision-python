@@ -4,11 +4,8 @@ Gets frames and adds a timestamp
 
 import multiprocessing as mp
 
-from . import video_input
-# Import required beyond the current directory
-# pylint: disable=import-error
 from utilities import manage_worker
-# pylint: enable=import-error
+from . import video_input
 
 
 def video_input_worker(camera_name: "int | str",

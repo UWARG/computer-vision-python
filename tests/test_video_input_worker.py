@@ -10,7 +10,7 @@ from modules.video_input import video_input_worker
 from modules import frame_and_time
 
 
-CAMERA=0
+CAMERA = 0
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ class VideoInput:
     def __init__(self, camera_name: "int | str"):
         self.device = camera_device.CameraDevice(camera_name)
 
-    def run(self):
+    def run(self) -> "tuple[bool, frame_and_time.FrameAndTime | None]":
         """
         Returns a possible FrameAndTime with current timestamp
         """
