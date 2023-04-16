@@ -17,8 +17,10 @@ BAUDRATE = 115_200
 if __name__ == "__main__":
     # Setup
     worker_manager = manage_worker.ManageWorker()
-    telemetry_out_queue = mp.Queue()
-    request_out_queue = mp.Queue()
+
+    m = mp.Manager()
+    telemetry_out_queue = m.Queue()
+    request_out_queue = m.Queue()
 
     worker = mp.Process(
         target=zp_input_worker.zp_input_worker,

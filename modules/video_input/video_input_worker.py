@@ -2,14 +2,14 @@
 Gets frames and adds a timestamp
 """
 
-import multiprocessing as mp
+import queue
 
 from utilities import manage_worker
 from . import video_input
 
 
 def video_input_worker(camera_name: "int | str",
-                       output_queue: mp.Queue,
+                       output_queue: queue.Queue,
                        worker_manager: manage_worker.ManageWorker):
     """
     Worker process.

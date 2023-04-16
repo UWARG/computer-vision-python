@@ -16,7 +16,9 @@ CAMERA = 0
 if __name__ == "__main__":
     # Setup
     worker_manager = manage_worker.ManageWorker()
-    out_queue = mp.Queue()
+
+    m = mp.Manager()
+    out_queue = m.Queue()
 
     worker = mp.Process(
         target=video_input_worker.video_input_worker,

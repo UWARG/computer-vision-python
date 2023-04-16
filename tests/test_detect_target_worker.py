@@ -19,8 +19,13 @@ MODEL_PATH = "tests/model_example/yolov8s.pt"
 IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
 IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
 
+WORK_COUNT = 6
 
-def simulate_previous_worker(image_path: str, in_queue: mp.Queue):
+
+def simulate_previous_worker(image_path: str, in_queue: queue.Queue):
+    """
+    Place the image into the queue.
+    """
     image = cv2.imread(image_path)
     data = frame_and_time.FrameAndTime(image)
     in_queue.put(data)
@@ -29,8 +34,10 @@ def simulate_previous_worker(image_path: str, in_queue: mp.Queue):
 if __name__ == "__main__":
     # Setup
     worker_manager = manage_worker.ManageWorker()
-    image_in_queue = mp.Queue()
-    image_out_queue = mp.Queue()
+
+    m = mp.Manager()
+    image_in_queue = m.Queue()
+    image_out_queue = m.Queue()
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
@@ -40,20 +47,18 @@ if __name__ == "__main__":
     # Run
     worker.start()
 
-    for _ in range(0, 3):
+    for _ in range(0, int(WORK_COUNT / 2)):
         simulate_previous_worker(IMAGE_BUS_PATH, image_in_queue)
 
     time.sleep(1)
 
-    for _ in range(0, 3):
+    for _ in range(0, int(WORK_COUNT / 2)):
         simulate_previous_worker(IMAGE_ZIDANE_PATH, image_in_queue)
 
-
-    time.sleep(30)
+    # Takes some time for CUDA to warm up
+    time.sleep(20)
 
     worker_manager.request_exit()
-
-    print(image_out_queue.qsize())
 
     # Test
     i = 0
@@ -62,13 +67,16 @@ if __name__ == "__main__":
             input_data: np.ndarray = image_out_queue.get_nowait()
             assert input_data is not None
             i += 1
-            print(input_data.shape)
-            time.sleep(0.01)
 
         except queue.Empty:
             break
 
-    print(i)
-    assert i == 6
+    assert i == WORK_COUNT
+
+    # Teardown
+    manage_worker.ManageWorker.fill_and_drain_queue(
+        image_in_queue, 1
+    )
+    worker.join()
 
     print("Done!")

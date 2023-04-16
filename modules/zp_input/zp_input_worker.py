@@ -2,14 +2,14 @@
 Gets frames and adds a timestamp
 """
 
-import multiprocessing as mp
+import queue
 
 from utilities import manage_worker
 from . import zp_input
 
 
 def zp_input_worker(port: str, baudrate: int,
-                    telemetry_output_queue: mp.Queue, request_output_queue: mp.Queue,
+                    telemetry_output_queue: queue.Queue, request_output_queue: queue.Queue,
                     worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
