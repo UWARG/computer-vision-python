@@ -1,14 +1,14 @@
 """
 Ending worker that concatenates a prefix and suffix and then prints the result.
 """
-import multiprocessing as mp
+import queue
 
 from utilities import manage_worker
 from . import concatenator
 
 
 def concatenator_worker(prefix: str, suffix: str,
-                        input_queue: mp.Queue, worker_manager: manage_worker.ManageWorker):
+                        input_queue: queue.Queue, worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 

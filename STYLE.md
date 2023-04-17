@@ -76,7 +76,13 @@ Indents are 4 spaces long. Blank lines do not have any spaces. Strings are encod
 
 ## Imports
 
-Import system-level modules, then installed modules, then local modules. Separate each group with 1 blank line, with module names in alphabetical order within the group:
+Import order:
+
+1. System-level modules: Anything that comes with Python by default
+2. Installed modules: Anything that requires `pip install`
+3. Local modules: Anything written by/for WARG (including submodules)
+
+Separate each group of imports with 1 blank line, with module names in alphabetical order within the group:
 
 ```python
 import os
