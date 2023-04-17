@@ -6,7 +6,7 @@ import queue
 import time
 
 
-QUEUE_DELAY = 1  #seconds
+QUEUE_DELAY = 1  # seconds
 
 
 class ManageWorker:
