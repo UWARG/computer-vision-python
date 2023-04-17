@@ -17,13 +17,14 @@ ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 
 # Command: python -m documentation.main_multiprocess_example
 if __name__ == "__main__":
-    # Main is managing all worker processes and
-    # is responsible for creating supporting interprocess communication
+    # Main is managing all worker processes and is responsible
+    # for creating supporting interprocess communication
     worker_manager = manage_worker.ManageWorker()
 
     # mp.Queue has possible race conditions in the same process
     # caused by its implementation (background thread work)
     # so a queue from a SyncManager is used instead
+    # See 2nd note: https://docs.python.org/3/library/multiprocessing.html#pipes-and-queues
     m = mp.Manager()
 
     # Queue maxsize should always be >= the larger of producers/consumers count
