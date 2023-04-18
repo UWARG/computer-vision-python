@@ -1,3 +1,6 @@
 [submodule "2022/modules/targetAcquisition/Yolov5_DeepSort_Pytorch"]
 	path = 2022/modules/targetAcquisition/Yolov5_DeepSort_Pytorch
 	url = https://github.com/mikel-brostrom/Yolov5_DeepSort_Pytorch.git
+[submodule "modules/common"]
+	path = modules/common
+	url = https://github.com/UWARG/common.git

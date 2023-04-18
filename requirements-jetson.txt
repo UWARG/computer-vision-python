@@ -1,0 +1,7 @@
+# For Jetson
+# TODO: Test this
+--find-links https://developer.download.nvidia.com/compute/redist/jp/v461/pytorch/torch-1.11.0a0+17540c5+nv22.01-cp36-cp36m-linux_aarch64.whl
+pytorch==1.11.0a0+17540c5+nv22.01
+# torchvision 0.12.0 needs to be built from source:
+# https://forums.developer.nvidia.com/t/how-to-install-torchvision0-8-0-in-jetson-tx2-jetpack4-5-1-pytorch1-7-0/184414/3
+# https://pytorch.org/get-started/previous-versions/#linux-and-windows-9
