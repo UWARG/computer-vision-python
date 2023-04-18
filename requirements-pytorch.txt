@@ -1,5 +1,5 @@
 # For any non-Jetson computer (i.e. all developers)
---find-links https://download.pytorch.org/whl/cu113
-pytorch==1.11.0+cu113
+--extra-index-url https://download.pytorch.org/whl/cu113
+torch==1.11.0+cu113
 torchvision==0.12.0+cu113
 ultralytics
