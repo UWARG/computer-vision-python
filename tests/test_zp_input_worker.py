@@ -55,4 +55,7 @@ if __name__ == "__main__":
         except queue.Empty:
             break
 
+    # Teardown
+    worker.join()
+
     print("Done!")

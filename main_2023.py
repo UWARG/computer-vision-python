@@ -10,8 +10,10 @@ from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
 
-VIDEO_INPUT_WORKER_PERIOD = 1.0
+QUEUE_MAX_SIZE = 10
+
 CAMERA = 0
+VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 
 DETECT_TARGET_WORKER_COUNT = 1
 MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
@@ -50,8 +52,8 @@ if __name__ == "__main__":
     worker_manager = manage_worker.ManageWorker()
 
     m = mp.Manager()
-    video_input_to_detect_target_queue = m.Queue()
-    detect_target_to_main_queue = m.Queue()
+    video_input_to_detect_target_queue = m.Queue(QUEUE_MAX_SIZE)
+    detect_target_to_main_queue = m.Queue(QUEUE_MAX_SIZE)
 
     video_input_workers = create_workers(
         1,
@@ -83,11 +85,11 @@ if __name__ == "__main__":
     worker_manager.request_exit()
 
     manage_worker.ManageWorker.fill_and_drain_queue(
-        video_input_to_detect_target_queue, 1
+        video_input_to_detect_target_queue, QUEUE_MAX_SIZE
     )
 
     manage_worker.ManageWorker.fill_and_drain_queue(
-        detect_target_to_main_queue, 1
+        detect_target_to_main_queue, QUEUE_MAX_SIZE
     )
 
     join_workers(video_input_workers)

@@ -10,6 +10,7 @@ from modules.video_input import video_input_worker
 from modules import frame_and_time
 
 
+VIDEO_INPUT_WORKER_PERIOD = 1.0
 CAMERA = 0
 
 
@@ -22,7 +23,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=video_input_worker.video_input_worker,
-        args=(CAMERA, out_queue, worker_manager)
+        args=(CAMERA, VIDEO_INPUT_WORKER_PERIOD, out_queue, worker_manager)
     )
 
     # Run
@@ -41,5 +42,8 @@ if __name__ == "__main__":
 
         except queue.Empty:
             break
+
+    # Teardown
+    worker.join()
 
     print("Done!")
