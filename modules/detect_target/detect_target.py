@@ -24,14 +24,19 @@ class DetectTarget:
         TODO: Change to PointsAndTime
         """
         image = data.frame
-        predictions = self.model.predict(image, stream=False)
+        predictions = self.model.predict(
+            source=image,
+            save=True,
+            half=True,
+            stream=False
+        )
 
         if len(predictions) == 0:
             return False, None
 
         # TODO: Change this to image points for image and telemetry merge for 2024
         # (bounding box conversion code required)
-        image_annotated = predictions[0].plot(show_conf=True)
+        image_annotated = predictions[0].plot(conf=True)
 
         # TODO: Change this to PointsAndTime
         return True, image_annotated

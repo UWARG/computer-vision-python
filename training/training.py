@@ -14,11 +14,12 @@ if __name__ == "__main__":
     # Train
     # Configurations: https://docs.ultralytics.com/usage/cfg/
     model.train(
-        data="data/pad.yaml",
-        imgsz=(720,576),
+        data="training/2023_pad.yaml",
+        imgsz=720,
         save=True,
         save_period=10,
         device=0,
+        workers=4,
         verbose=True,
         resume=False,  # Change to True if interrupted
     )

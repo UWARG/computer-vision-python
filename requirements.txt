@@ -1,4 +1,5 @@
 # Packages listed in alphabetical order
 numpy
+opencv-python
 pytest
-# pytorch special case, see requirements-pytorch.txt
+# pytorch special case, see README.md and requirements-pytorch.txt
