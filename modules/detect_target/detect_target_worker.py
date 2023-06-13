@@ -9,7 +9,7 @@ from . import detect_target
 
 def detect_target_worker(model_path: str, save_name: str,
                          input_queue: queue.Queue, output_queue: queue.Queue,
-                         worker_manager: manage_worker.ManageWorker):
+                         worker_manager: manage_worker.ManageWorker,):
     """
     Worker process.
 

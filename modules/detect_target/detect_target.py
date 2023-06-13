@@ -33,7 +33,7 @@ class DetectTarget:
             source=image,
             half=True,
             device=0,
-            stream=False
+            stream=False,
         )
 
         if len(predictions) == 0:
