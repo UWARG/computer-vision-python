@@ -65,7 +65,12 @@ if __name__ == "__main__":
     detect_target_workers = create_workers(
         DETECT_TARGET_WORKER_COUNT,
         detect_target_worker.detect_target_worker,
-        (MODEL_PATH, SAVE_PREFIX, video_input_to_detect_target_queue, detect_target_to_main_queue, worker_manager)
+        (
+            MODEL_PATH,
+            SAVE_PREFIX,
+            video_input_to_detect_target_queue,
+            detect_target_to_main_queue, worker_manager
+        )
     )
 
     # Run
