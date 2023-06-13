@@ -39,7 +39,7 @@ class DetectTarget:
         if len(predictions) == 0:
             return False, None
 
-        # TODO: Change this to image points for image and telemetry merge for 2024
+        # TODO: Change this to DetectionsAndTime for image and telemetry merge for 2024
         image_annotated = predictions[0].plot(conf=True)
 
         # Processing object detection
@@ -56,14 +56,21 @@ class DetectTarget:
             detection = detections_and_time.Detection(bounds, label, confidence)
             detections.append(detection)
 
-        print(detections)
-
         # Logging
         if self.__filename_prefix != "":
-            cv2.imwrite(self.__filename_prefix + str(self.__counter) + ".png", image_annotated)
+            filename = self.__filename_prefix + str(self.__counter)
+
+            # Object detections
+            with open(filename + ".txt", "w") as file:
+                # Use internal string representation
+                file.write(repr(detections))
+
+            # Annotated image
+            cv2.imwrite(filename + ".png", image_annotated)
+
             self.__counter += 1
 
-        # TODO: Change this to PointsAndTime
+        # TODO: Change this to DetectionsAndTime
         return True, image_annotated
 
 # pylint: enable=too-few-public-methods
