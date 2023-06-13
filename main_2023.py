@@ -17,6 +17,7 @@ VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 
 DETECT_TARGET_WORKER_COUNT = 1
 MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
+SAVE_PREFIX = "log_comp"
 
 
 def create_workers(count: int, target, args: "tuple") -> "list[mp.Process]":
@@ -64,7 +65,7 @@ if __name__ == "__main__":
     detect_target_workers = create_workers(
         DETECT_TARGET_WORKER_COUNT,
         detect_target_worker.detect_target_worker,
-        (MODEL_PATH, video_input_to_detect_target_queue, detect_target_to_main_queue, worker_manager)
+        (MODEL_PATH, SAVE_PREFIX, video_input_to_detect_target_queue, detect_target_to_main_queue, worker_manager)
     )
 
     # Run
@@ -72,14 +73,13 @@ if __name__ == "__main__":
     start_workers(detect_target_workers)
 
     while True:
-        if cv2.waitKey(1) & 0xFF == ord(' '):
-            break
-
         image = detect_target_to_main_queue.get()
         if image is None:
             continue
 
         cv2.imshow("Landing Pad Detector", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     # Teardown
     worker_manager.request_exit()

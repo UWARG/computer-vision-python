@@ -2,6 +2,7 @@
 Detects objects using the provided model
 """
 
+import cv2
 import numpy as np  # TODO: Remove
 import ultralytics
 
@@ -15,8 +16,10 @@ class DetectTarget:
     Contains the YOLOv8 model for prediction
     """
 
-    def __init__(self, model_path: str):
-        self.model = ultralytics.YOLO(model_path)
+    def __init__(self, model_path: str, save_name: str=""):
+        self.__model = ultralytics.YOLO(model_path)
+        self.__counter = 0
+        self.__filename_prefix = save_name
 
     def run(self, data: frame_and_time.FrameAndTime) -> "tuple[bool, np.ndarray | None]":
         """
@@ -24,7 +27,7 @@ class DetectTarget:
         TODO: Change to PointsAndTime
         """
         image = data.frame
-        predictions = self.model.predict(
+        predictions = self.__model.predict(
             source=image,
             half=True,
             device=0,
@@ -36,6 +39,11 @@ class DetectTarget:
         # TODO: Change this to image points for image and telemetry merge for 2024
         # (bounding box conversion code required)
         image_annotated = predictions[0].plot(conf=True)
+
+        # Logging
+        if self.__filename_prefix != "":
+            cv2.imwrite(self.__filename_prefix + str(self.__counter) + ".png", image_annotated)
+            self.__counter += 1
 
         # TODO: Change this to PointsAndTime
         return True, image_annotated
