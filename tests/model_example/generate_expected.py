@@ -7,8 +7,12 @@ import cv2
 import ultralytics
 
 
+# Downloaded from: https://github.com/ultralytics/assets/releases
+MODEL_PATH = "tests/model_example/yolov8s_pretrained_default.pt"
+
+
 if __name__ == "__main__":
-    model = ultralytics.YOLO("tests/model_example/yolov8s_pretrained_default.pt")
+    model = ultralytics.YOLO(MODEL_PATH)
     image_bus = cv2.imread("tests/model_example/bus.jpg")
     image_zidane = cv2.imread("tests/model_example/zidane.jpg")
 
