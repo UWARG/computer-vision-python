@@ -11,7 +11,7 @@ class Detection:
     """
     A detected object
     """
-    def __init__(self, bounds: np.ndarray, label: int, confidence: float,):
+    def __init__(self, bounds: np.ndarray, label: int, confidence: float):
         """
         bounds are of form x1, y1, x2, y2
         """

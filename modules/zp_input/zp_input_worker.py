@@ -7,8 +7,10 @@ from utilities import manage_worker
 from . import zp_input
 
 
-def zp_input_worker(port: str, baudrate: int,
-                    telemetry_output_queue: queue.Queue, request_output_queue: queue.Queue,
+def zp_input_worker(port: str,
+                    baudrate: int,
+                    telemetry_output_queue: queue.Queue,
+                    request_output_queue: queue.Queue,
                     worker_manager: manage_worker.ManageWorker):
     """
     Worker process.

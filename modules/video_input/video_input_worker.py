@@ -9,7 +9,8 @@ from . import video_input
 
 
 def video_input_worker(camera_name: "int | str",
-                       period: float, output_queue: queue.Queue,
+                       period: float,
+                       output_queue: queue.Queue,
                        worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
@@ -19,6 +20,7 @@ def video_input_worker(camera_name: "int | str",
     output_queue is the data queue.
     worker_manager is how the main process communicates to this worker process.
     """
+    # TODO: Logging?
     input_device = video_input.VideoInput(camera_name)
 
     while not worker_manager.is_exit_requested():

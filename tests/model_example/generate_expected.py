@@ -17,8 +17,8 @@ if __name__ == "__main__":
     results_zidane = model.predict(image_zidane, save=False)
 
     # Generate image
-    image_bus_annotated = results_bus[0].plot(show_conf=True)
-    image_zidane_annotated = results_zidane[0].plot(show_conf=True)
+    image_bus_annotated = results_bus[0].plot(conf=True)
+    image_zidane_annotated = results_zidane[0].plot(conf=True)
 
     # Save image
     cv2.imwrite("tests/model_example/bus_annotated.png", image_bus_annotated)

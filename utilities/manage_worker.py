@@ -63,7 +63,7 @@ class ManageWorker:
         return not self.__exit_queue.empty()
 
     @staticmethod
-    def fill_and_drain_queue(worker_queue: queue.Queue, worker_queue_max_size: int=1) -> None:
+    def fill_and_drain_queue(worker_queue: queue.Queue, worker_queue_max_size: int = 1) -> None:
         """
         In case the processes are stuck on a queue.
 

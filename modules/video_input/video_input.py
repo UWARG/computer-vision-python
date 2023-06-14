@@ -14,6 +14,7 @@ class VideoInput:
     """
 
     def __init__(self, camera_name: "int | str"):
+        # TODO: Logging?
         self.device = camera_device.CameraDevice(camera_name)
 
     def run(self) -> "tuple[bool, frame_and_time.FrameAndTime | None]":

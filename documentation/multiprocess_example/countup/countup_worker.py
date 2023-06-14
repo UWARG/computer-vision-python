@@ -7,8 +7,10 @@ from utilities import manage_worker
 from . import countup
 
 
-def countup_worker(start_thousands: int, max_iterations: int,
-                   output_queue: queue.Queue, worker_manager: manage_worker.ManageWorker):
+def countup_worker(start_thousands:int,
+                   max_iterations: int,
+                   output_queue: queue.Queue,
+                   worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 
