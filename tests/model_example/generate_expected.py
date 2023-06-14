@@ -8,7 +8,7 @@ import ultralytics
 
 
 # Downloaded from: https://github.com/ultralytics/assets/releases
-MODEL_PATH = "tests/model_example/yolov8s_pretrained_default.pt"
+MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 
 
 if __name__ == "__main__":

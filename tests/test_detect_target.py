@@ -11,7 +11,7 @@ from modules.detect_target import detect_target
 from modules import frame_and_time
 
 
-MODEL_PATH =                    "tests/model_example/yolov8s_pretrained_default.pt"
+MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
