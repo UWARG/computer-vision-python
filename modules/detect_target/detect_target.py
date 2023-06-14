@@ -5,6 +5,7 @@ import time
 
 import cv2
 import numpy as np  # TODO: Remove
+import torch
 import ultralytics
 
 from .. import frame_and_time
@@ -20,6 +21,7 @@ class DetectTarget:
 
     def __init__(self, model_path: str, save_name: str = ""):
         self.__model = ultralytics.YOLO(model_path)
+        self.__device = 0 if torch.cuda.is_available() else "cpu"
         self.__counter = 0
         self.__filename_prefix = ""
         if save_name != "":
@@ -34,7 +36,7 @@ class DetectTarget:
         predictions = self.__model.predict(
             source=image,
             half=True,
-            device=0,
+            device=self.__device,
             stream=False,
         )
 
