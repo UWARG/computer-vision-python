@@ -8,13 +8,22 @@ import ultralytics
 
 
 if __name__ == "__main__":
-    model = ultralytics.YOLO("tests/model_example/yolov8s.pt")
+    model = ultralytics.YOLO("tests/model_example/yolov8s_pretrained_default.pt")
     image_bus = cv2.imread("tests/model_example/bus.jpg")
     image_zidane = cv2.imread("tests/model_example/zidane.jpg")
 
     # ultralytics saves as .jpg , bad for testing reproducibility
-    results_bus = model.predict(image_bus, save=False)
-    results_zidane = model.predict(image_zidane, save=False)
+    results_bus = model.predict(
+            source=image_bus,
+            half=True,
+            stream=False,
+    )
+
+    results_zidane = model.predict(
+            source=image_zidane,
+            half=True,
+            stream=False,
+    )
 
     # Generate image
     image_bus_annotated = results_bus[0].plot(conf=True)
