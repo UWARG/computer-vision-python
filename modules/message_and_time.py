@@ -13,7 +13,7 @@ class MessageAndTime:
     def __init__(self, message):
         """
         Constructor sets timestamp to current time
-        message: 1 of TelemMessages
+        message: 1 of TelemMessages. No type annotation due to several possible types
         """
         self.message = message
         self.timestamp = time.time()

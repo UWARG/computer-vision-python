@@ -9,8 +9,11 @@ from . import add_random
 
 # As kwargs is not being used, this function needs many parameters
 # pylint: disable=too-many-arguments
-def add_random_worker(seed: int, max_random_term: int, add_change_count: int,
-                      input_queue: queue.Queue, output_queue: queue.Queue,
+def add_random_worker(seed: int,
+                      max_random_term: int,
+                      add_change_count: int,
+                      input_queue: queue.Queue,
+                      output_queue: queue.Queue,
                       worker_manager: manage_worker.ManageWorker):
     """
     Worker process.

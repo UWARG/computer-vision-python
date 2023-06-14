@@ -15,7 +15,7 @@ from modules import frame_and_time
 # from modules import points_and_time
 
 
-MODEL_PATH = "tests/model_example/yolov8s.pt"
+MODEL_PATH = "tests/model_example/yolov8s_pretrained_default.pt"
 IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
 IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
-        args=(MODEL_PATH, image_in_queue, image_out_queue, worker_manager)
+        args=(MODEL_PATH, image_in_queue, image_out_queue, worker_manager),
     )
 
     # Run

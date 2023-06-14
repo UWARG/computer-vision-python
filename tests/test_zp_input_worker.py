@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=zp_input_worker.zp_input_worker,
-        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, worker_manager)
+        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, worker_manager),
     )
 
     # Run

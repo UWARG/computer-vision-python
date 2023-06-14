@@ -18,10 +18,12 @@ class DetectTarget:
     Contains the YOLOv8 model for prediction
     """
 
-    def __init__(self, model_path: str, save_name: str=""):
+    def __init__(self, model_path: str, save_name: str = ""):
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
+        self.__filename_prefix = ""
+        if save_name != "":
+            self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
     def run(self, data: frame_and_time.FrameAndTime) -> "tuple[bool, np.ndarray | None]":
         """

@@ -7,8 +7,10 @@ from utilities import manage_worker
 from . import concatenator
 
 
-def concatenator_worker(prefix: str, suffix: str,
-                        input_queue: queue.Queue, worker_manager: manage_worker.ManageWorker):
+def concatenator_worker(prefix: str,
+                        suffix: str,
+                        input_queue: queue.Queue,
+                        worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 

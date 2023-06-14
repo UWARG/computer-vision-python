@@ -16,7 +16,7 @@ VIDEO_INPUT_CAMERA_NAME = 0
 VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 
 DETECT_TARGET_WORKER_COUNT = 1
-DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
+DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
 DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
 

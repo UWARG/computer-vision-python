@@ -21,7 +21,8 @@ class Concatenator:
 
 
     # The working function
-    def run_concatenation(self, middle: intermediate_struct.IntermediateStruct) -> "tuple[bool, str]":
+    def run_concatenation(self,
+                          middle: intermediate_struct.IntermediateStruct) -> "tuple[bool, str]":
         """
         Concatenate the prefix and suffix to the input.
         """

@@ -11,7 +11,7 @@ from modules.detect_target import detect_target
 from modules import frame_and_time
 
 
-MODEL_PATH =                    "tests/model_example/yolov8s.pt"
+MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
@@ -57,7 +57,7 @@ class TestDetector:
         # Test
         assert result
         assert actual is not None
-        assert actual.shape == expected.shape
+        np.testing.assert_array_equal(actual, expected)
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
@@ -75,7 +75,7 @@ class TestDetector:
         # Test
         assert result
         assert actual is not None
-        assert actual.shape == expected.shape
+        np.testing.assert_array_equal(actual, expected)
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
@@ -106,4 +106,4 @@ class TestDetector:
             result, actual = output
             assert result
             assert actual is not None
-            assert actual.shape == expected.shape
+            np.testing.assert_array_equal(actual, expected)
