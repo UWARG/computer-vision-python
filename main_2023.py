@@ -12,11 +12,12 @@ from modules.video_input import video_input_worker
 
 QUEUE_MAX_SIZE = 10
 
-CAMERA = 0
+VIDEO_INPUT_CAMERA_NAME = 0
 VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 
 DETECT_TARGET_WORKER_COUNT = 1
-MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
+DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
+DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
 
 def create_workers(count: int, target, args: "tuple") -> "list[mp.Process]":
@@ -58,13 +59,24 @@ if __name__ == "__main__":
     video_input_workers = create_workers(
         1,
         video_input_worker.video_input_worker,
-        (CAMERA, VIDEO_INPUT_WORKER_PERIOD, video_input_to_detect_target_queue, worker_manager)
+        (
+            VIDEO_INPUT_CAMERA_NAME,
+            VIDEO_INPUT_WORKER_PERIOD,
+            video_input_to_detect_target_queue,
+            worker_manager,
+        ),
     )
 
     detect_target_workers = create_workers(
         DETECT_TARGET_WORKER_COUNT,
         detect_target_worker.detect_target_worker,
-        (MODEL_PATH, video_input_to_detect_target_queue, detect_target_to_main_queue, worker_manager)
+        (
+            DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_SAVE_PREFIX,
+            video_input_to_detect_target_queue,
+            detect_target_to_main_queue,
+            worker_manager,
+        ),
     )
 
     # Run
@@ -72,24 +84,25 @@ if __name__ == "__main__":
     start_workers(detect_target_workers)
 
     while True:
-        if cv2.waitKey(1) & 0xFF == ord(' '):
-            break
-
         image = detect_target_to_main_queue.get()
         if image is None:
             continue
 
         cv2.imshow("Landing Pad Detector", image)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     # Teardown
     worker_manager.request_exit()
 
     manage_worker.ManageWorker.fill_and_drain_queue(
-        video_input_to_detect_target_queue, QUEUE_MAX_SIZE
+        video_input_to_detect_target_queue,
+        QUEUE_MAX_SIZE,
     )
 
     manage_worker.ManageWorker.fill_and_drain_queue(
-        detect_target_to_main_queue, QUEUE_MAX_SIZE
+        detect_target_to_main_queue,
+        QUEUE_MAX_SIZE,
     )
 
     join_workers(video_input_workers)

@@ -1,11 +1,14 @@
 """
 Detects objects using the provided model
 """
+import time
 
+import cv2
 import numpy as np  # TODO: Remove
 import ultralytics
 
 from .. import frame_and_time
+from .. import detections_and_time
 
 
 # This is just an interface
@@ -15,25 +18,59 @@ class DetectTarget:
     Contains the YOLOv8 model for prediction
     """
 
-    def __init__(self, model_path: str):
-        self.model = ultralytics.YOLO(model_path)
+    def __init__(self, model_path: str, save_name: str=""):
+        self.__model = ultralytics.YOLO(model_path)
+        self.__counter = 0
+        self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
     def run(self, data: frame_and_time.FrameAndTime) -> "tuple[bool, np.ndarray | None]":
         """
         Returns annotated image
-        TODO: Change to PointsAndTime
+        TODO: Change to DetectionsAndTime
         """
         image = data.frame
-        predictions = self.model.predict(image, stream=False)
+        predictions = self.__model.predict(
+            source=image,
+            half=True,
+            device=0,
+            stream=False,
+        )
 
         if len(predictions) == 0:
             return False, None
 
-        # TODO: Change this to image points for image and telemetry merge for 2024
-        # (bounding box conversion code required)
-        image_annotated = predictions[0].plot(show_conf=True)
+        # TODO: Change this to DetectionsAndTime for image and telemetry merge for 2024
+        image_annotated = predictions[0].plot(conf=True)
 
-        # TODO: Change this to PointsAndTime
+        # Processing object detection
+        boxes = predictions[0].boxes
+        if boxes.shape[0] == 0:
+            return False, None
+
+        objects_bounds = boxes.xyxy.detach().cpu().numpy()
+        detections = detections_and_time.DetectionsAndTime(data.timestamp)
+        for i in range(0, boxes.shape[0]):
+            bounds = objects_bounds[i]
+            label = int(boxes.cls[i])
+            confidence = float(boxes.conf[i])
+            detection = detections_and_time.Detection(bounds, label, confidence)
+            detections.append(detection)
+
+        # Logging
+        if self.__filename_prefix != "":
+            filename = self.__filename_prefix + str(self.__counter)
+
+            # Object detections
+            with open(filename + ".txt", "w") as file:
+                # Use internal string representation
+                file.write(repr(detections))
+
+            # Annotated image
+            cv2.imwrite(filename + ".png", image_annotated)
+
+            self.__counter += 1
+
+        # TODO: Change this to DetectionsAndTime
         return True, image_annotated
 
 # pylint: enable=too-few-public-methods

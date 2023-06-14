@@ -7,17 +7,17 @@ from utilities import manage_worker
 from . import detect_target
 
 
-def detect_target_worker(model_path: str,
+def detect_target_worker(model_path: str, save_name: str,
                          input_queue: queue.Queue, output_queue: queue.Queue,
-                         worker_manager: manage_worker.ManageWorker):
+                         worker_manager: manage_worker.ManageWorker,):
     """
     Worker process.
 
-    model_path is initial setting.
+    model_path and save_name are initial settings.
     input_queue and output_queue are data queues.
     worker_manager is how the main process communicates to this worker process.
     """
-    detector = detect_target.DetectTarget(model_path)
+    detector = detect_target.DetectTarget(model_path, save_name)
 
     while not worker_manager.is_exit_requested():
         worker_manager.check_pause()
