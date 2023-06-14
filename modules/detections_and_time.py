@@ -16,14 +16,18 @@ class Detection:
         bounds are of form x1, y1, x2, y2
         """
         assert bounds.shape[0] == 4
+        # Assert every element in bounds is >= 0.0
+        assert np.greater_equal(bounds, 0).all()
+        assert label >= 0
         assert confidence >= 0.0
         assert confidence <= 1.0
+
         self.bounds = bounds
         self.label = label
         self.confidence = confidence
 
     def __repr__(self) -> str:
-        return "cls: " + str(self.label) + ", conf: " + str(self.confidence) + ", bounds: " + self.bounds.__repr__()
+        return "cls: " + str(self.label) + ", conf: " + str(self.confidence) + ", bounds: " + repr(self.bounds)
 
 # pylint: enable=too-few-public-methods
 
@@ -40,7 +44,7 @@ class DetectionsAndTime:
 
     def __repr__(self) -> str:
         representation = str(self.__class__) + ", time: " + str(int(self.timestamp)) + ", size: " + str(self.size())
-        representation += "\n" + self.detections.__repr__()
+        representation += "\n" + repr(self.detections)
         return representation
 
     def append(self, detection: Detection):

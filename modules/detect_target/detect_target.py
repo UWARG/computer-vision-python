@@ -26,7 +26,7 @@ class DetectTarget:
     def run(self, data: frame_and_time.FrameAndTime) -> "tuple[bool, np.ndarray | None]":
         """
         Returns annotated image
-        TODO: Change to PointsAndTime
+        TODO: Change to DetectionsAndTime
         """
         image = data.frame
         predictions = self.__model.predict(

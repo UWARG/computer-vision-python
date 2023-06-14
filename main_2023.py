@@ -12,12 +12,12 @@ from modules.video_input import video_input_worker
 
 QUEUE_MAX_SIZE = 10
 
-CAMERA = 0
+VIDEO_INPUT_CAMERA_NAME = 0
 VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 
 DETECT_TARGET_WORKER_COUNT = 1
-MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
-SAVE_PREFIX = "log_comp"
+DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s.pt"  # TODO: Update
+DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
 
 def create_workers(count: int, target, args: "tuple") -> "list[mp.Process]":
@@ -59,15 +59,20 @@ if __name__ == "__main__":
     video_input_workers = create_workers(
         1,
         video_input_worker.video_input_worker,
-        (CAMERA, VIDEO_INPUT_WORKER_PERIOD, video_input_to_detect_target_queue, worker_manager),
+        (
+            VIDEO_INPUT_CAMERA_NAME,
+            VIDEO_INPUT_WORKER_PERIOD,
+            video_input_to_detect_target_queue,
+            worker_manager,
+        ),
     )
 
     detect_target_workers = create_workers(
         DETECT_TARGET_WORKER_COUNT,
         detect_target_worker.detect_target_worker,
         (
-            MODEL_PATH,
-            SAVE_PREFIX,
+            DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
             worker_manager,
