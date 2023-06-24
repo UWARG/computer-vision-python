@@ -29,6 +29,14 @@ class Detection:
     def __repr__(self) -> str:
         return "cls: " + str(self.label) + ", conf: " + str(self.confidence) + ", bounds: " + repr(self.bounds)
 
+    def get_centre(self) -> "tuple[float, float]":
+        """
+        Gets the xy centre of the bounding box
+        """
+        centre_x = self.bounds[0] + self.bounds[2]
+        centre_y = self.bounds[1] + self.bounds[3]
+        return centre_x, centre_y
+
 # pylint: enable=too-few-public-methods
 
 
@@ -47,16 +55,16 @@ class DetectionsAndTime:
         representation += "\n" + repr(self.detections)
         return representation
 
+    def __len__(self) -> int:
+        """
+        Gets the number of detected objects
+        """
+        return len(self.detections)
+
     def append(self, detection: Detection):
         """
         Appends a detected object
         """
         self.detections.append(detection)
-
-    def size(self) -> int:
-        """
-        Gets the number of detected objects
-        """
-        return len(self.detections)
 
 # pylint: enable=too-few-public-methods
