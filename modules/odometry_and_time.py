@@ -1,6 +1,7 @@
 """
 Drone odometry and timestamp
 """
+import math
 import time
 
 
@@ -24,17 +25,16 @@ class PositionWorld:
 # pylint: disable=too-few-public-methods
 class OrientationWorld:
     """
-    Yaw Pitch Roll following NED system (x forward, y right, z down)
+    Yaw, pitch, roll in radians following NED system (x forward, y right, z down)
     Specifically, intrinsic (Tait-Bryan) rotations in the zyx/3-2-1 order
     """
     def __init__(self, yaw: float, pitch: float, roll: float):
-        # TODO: Verify bounds
-        assert yaw >= -180.0
-        assert yaw <= 180.0
-        assert pitch >= -180.0
-        assert pitch <= 180.0
-        assert roll >= -180.0
-        assert roll <= 180.0
+        assert yaw >= -math.pi
+        assert yaw <= math.pi
+        assert pitch >= -math.pi
+        assert pitch <= math.pi
+        assert roll >= -math.pi
+        assert roll <= math.pi
 
         self.yaw = yaw
         self.pitch = pitch
