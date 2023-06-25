@@ -4,6 +4,7 @@ For 2022-2023 UAS competition.
 import multiprocessing as mp
 
 import cv2
+import torch
 
 from utilities import manage_worker
 from modules.detect_target import detect_target_worker
@@ -49,6 +50,9 @@ def join_workers(workers: "list[mp.Process]"):
 
 
 if __name__ == "__main__":
+    # CUDA check, comment out if testing on a computer without CUDA
+    assert torch.cuda.is_available()
+
     # Setup
     worker_manager = manage_worker.ManageWorker()
 
