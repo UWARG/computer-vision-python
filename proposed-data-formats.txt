@@ -1,0 +1,34 @@
+zp_input_worker - UART Decoder - Can ZP team take care of?
+zp_input = {
+    bool message_type // 0 - Message Type 0 Odometry / 1 - Message Type 1 Movement Request
+    int longitude  // Longitude
+    int latitude // Latitude
+    int height // Height
+    int pitch //Pitch
+    int roll //Roll
+    int yaw // Yaw
+}
+
+Units - use int, so need be sub-metre Units
+Use decimal degrees for long/lat? - Easier
+"Six (6) decimal places precision in coordinates using decimal degrees notation is at a 10 cm (or 0.1 meters) resolution."
+10^-7 for centimetre precision - int should suffice?
++-2,147,483,647*10^-7 = +-214.748365 degrees limit before integer overflow
+Longitude ranges from -180 to 180 degrees
+Latitude ranges from -90 to 90
+
+
+Use radians for pitch/roll/yaw?
+
+For bool - need worry about interference? Or is that handled by the hardware?
+
+
+zp_output = {
+    bool message_type // 0 - Message Type 2 Movement Command / 1 - Message Type 3 Landing Initiation Command
+    int x // Movement forward/backwards
+    int y //Movement right/left
+    int z //Movement up/down
+}
+All movement relative to drone?
+
+Need figure out ZP-Jetson communication frequency (or if async)

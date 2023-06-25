@@ -1,0 +1,34 @@
+GMM Seems to have difficulty limiting the number of detected clusters with a low standard deviation
+-Consider checking detected clusters for presence of points within certain radius (size of landing pad * 1.5 or *2?)
+    >If must return all landing pad locations -> gg, try blowing up the data or some shit idk, rework parameters
+    >If only need return single landing pad location -> return one with most points within radius
+    >If must return multiple but not all -> return ones with points above certain threshold
+        >Can consider this even if minimum 1 - drone flying efficiency
+        >Average
+        >67%
+
+
+Run tests on better representative data
+-Manually spread out by cluster
+-Units of metres
+
+
+500x500m area?
+Landing pad radius =  0.4064m
+
+
+Leave mean prior sample alone ig
+
+
+Use vstack to do the funny landing pad simulation separation thing
+
+
+
+Cleaning/determine:
+iterate through points
+    iterate through clusters
+        if outside of any landing pad radius * 3 centred on clusters, remove data point (consider false positive)
+        if inside of any landing pad radius * 0.75, attach to cluster
+
+return cluster with highest number of attached points
+consider running VGMM again on attached points
