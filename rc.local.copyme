@@ -1,0 +1,9 @@
+#!/bin/bash
+# Copy the following contents to the end of rc.local:
+
+# Airside System
+TIME="$(date +%s)"
+touch /home/warg/record_$TIME.log  # To confirm script has run
+cd /home/warg/computer-vision-python/
+source venv/bin/activate
+python -m main_2023
