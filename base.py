@@ -29,9 +29,6 @@ while i < len(bgm_means):
         j += 1
     i += 1
 
-
-print(bgm_means)
-
 points_per_mean = [0]*len(bgm_means)
 #Landing pad radius -> diameter = 32in -> rad = 16in = 0.4064m
 lp_radius = 0.4064
@@ -67,6 +64,12 @@ while i < len(bgm_means):
         i -= 1
     i += 1
 
+# -1, -1 if no landing spots found
+optimal_point = [-1, -1]
+if(len(bgm_means) > 0):
+    optimal_point = bgm_means[np.argmax(points_per_mean)]
+
+print(optimal_point)
 
 colors = ["red", "blue", "green", "orange", "darkblue", "purple", "black"]
 for k, col in enumerate(colors):
