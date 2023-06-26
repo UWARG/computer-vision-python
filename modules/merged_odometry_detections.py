@@ -2,8 +2,8 @@
 Drone odometry and object detections
 """
 
-from modules import odometry_and_time
 from . import detections_and_time
+from . import odometry_and_time
 
 
 # Basically a struct
