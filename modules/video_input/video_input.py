@@ -25,6 +25,6 @@ class VideoInput:
         if not result:
             return False, None
 
-        return True, frame_and_time.FrameAndTime(image)
+        return frame_and_time.FrameAndTime.create(image)
 
 # pylint: enable=too-few-public-methods

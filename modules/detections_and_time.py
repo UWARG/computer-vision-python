@@ -11,16 +11,30 @@ class Detection:
     """
     A detected object
     """
-    def __init__(self, bounds: np.ndarray, label: int, confidence: float):
+    __create_key = object()
+
+    @classmethod
+    def create(cls, bounds: np.ndarray, label: int, confidence: float) -> "tuple[bool, Detection | None]":
         """
         bounds are of form x1, y1, x2, y2
         """
-        assert bounds.shape[0] == 4
-        # Assert every element in bounds is >= 0.0
-        assert np.greater_equal(bounds, 0).all()
-        assert label >= 0
-        assert confidence >= 0.0
-        assert confidence <= 1.0
+        # Check every element in bounds is >= 0.0
+        if bounds.shape[0] != 4 or not np.greater_equal(bounds, 0.0).all():
+            return False, None
+
+        if label < 0:
+            return False, None
+
+        if confidence < 0.0 or confidence > 1.0:
+            return False, None
+
+        return True, Detection(cls.__create_key, bounds, label, confidence)
+
+    def __init__(self, class_private_create_key, bounds: np.ndarray, label: int, confidence: float):
+        """
+        Private constructor, use create() method
+        """
+        assert class_private_create_key is Detection.__create_key, "Use create() method"
 
         self.bounds = bounds
         self.label = label
@@ -51,7 +65,7 @@ class DetectionsAndTime:
         self.timestamp = timestamp
 
     def __repr__(self) -> str:
-        representation = str(self.__class__) + ", time: " + str(int(self.timestamp)) + ", size: " + str(self.size())
+        representation = str(self.__class__) + ", time: " + str(int(self.timestamp)) + ", size: " + str(len(self))
         representation += "\n" + repr(self.detections)
         return representation
 

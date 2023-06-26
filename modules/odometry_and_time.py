@@ -9,10 +9,26 @@ import time
 # pylint: disable=too-few-public-methods
 class PositionWorld:
     """
-    WGS 84 following ISO 6709
+    WGS 84 following ISO 6709 (latitude before longitude)
     """
-    def __init__(self, latitude: float, longitude: float, altitude: float):
-        assert altitude >= 0
+    __create_key = object()
+
+    @classmethod
+    def create(cls, latitude: float, longitude: float, altitude: float) -> "tuple[bool, PositionWorld | None]":
+        """
+        latitude, longitude in decimal degrees
+        altitude in metres
+        """
+        if altitude <= 0.0:
+            return False, None
+
+        return True, PositionWorld(cls.__create_key, latitude, longitude, altitude)
+
+    def __init__(self, class_private_create_key, latitude: float, longitude: float, altitude: float):
+        """
+        Private constructor, use create() method
+        """
+        assert class_private_create_key is PositionWorld.__create_key, "Use create() method"
 
         self.latitude = latitude
         self.longitude = longitude
@@ -25,16 +41,32 @@ class PositionWorld:
 # pylint: disable=too-few-public-methods
 class OrientationWorld:
     """
-    Yaw, pitch, roll in radians following NED system (x forward, y right, z down)
+    Yaw, pitch, roll following NED system (x forward, y right, z down)
     Specifically, intrinsic (Tait-Bryan) rotations in the zyx/3-2-1 order
     """
-    def __init__(self, yaw: float, pitch: float, roll: float):
-        assert yaw >= -math.pi
-        assert yaw <= math.pi
-        assert pitch >= -math.pi
-        assert pitch <= math.pi
-        assert roll >= -math.pi
-        assert roll <= math.pi
+    __create_key = object()
+
+    @classmethod
+    def create(cls, yaw: float, pitch: float, roll: float) -> "tuple[bool, OrientationWorld | None]":
+        """
+        yaw, pitch, roll in radians
+        """
+        if yaw < -math.pi or yaw > math.pi:
+            return False, None
+
+        if pitch < -math.pi or pitch > math.pi:
+            return False, None
+
+        if roll < -math.pi or roll > math.pi:
+            return False, None
+
+        return True, OrientationWorld(cls.__create_key, yaw, pitch, roll)
+
+    def __init__(self, class_private_create_key, yaw: float, pitch: float, roll: float):
+        """
+        Private constructor, use create() method
+        """
+        assert class_private_create_key is OrientationWorld.__create_key, "Use create() method"
 
         self.yaw = yaw
         self.pitch = pitch
