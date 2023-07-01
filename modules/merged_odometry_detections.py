@@ -13,14 +13,14 @@ class MergedOdometryDetections:
     Contains odometry/telemetry and detections merged by closest timestamp
     """
     def __init__(self,
-                 position: odometry_and_time.PositionWorld,
-                 orientation: odometry_and_time.OrientationWorld,
+                 drone_position: odometry_and_time.DronePosition,
+                 drone_orientation: odometry_and_time.DroneOrientation,
                  detections: "list[detections_and_time.Detection]"):
         """
         Required for separation
         """
-        self.position = position
-        self.orientation = orientation
+        self.drone_position = drone_position
+        self.drone_orientation = drone_orientation
         self.detections = detections
 
 # pylint: enable=too-few-public-methods

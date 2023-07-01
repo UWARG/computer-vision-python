@@ -7,14 +7,14 @@ import time
 
 # Basically a struct
 # pylint: disable=too-few-public-methods
-class PositionWorld:
+class DronePosition:
     """
     WGS 84 following ISO 6709 (latitude before longitude)
     """
     __create_key = object()
 
     @classmethod
-    def create(cls, latitude: float, longitude: float, altitude: float) -> "tuple[bool, PositionWorld | None]":
+    def create(cls, latitude: float, longitude: float, altitude: float) -> "tuple[bool, DronePosition | None]":
         """
         latitude, longitude in decimal degrees
         altitude in metres
@@ -22,13 +22,13 @@ class PositionWorld:
         if altitude <= 0.0:
             return False, None
 
-        return True, PositionWorld(cls.__create_key, latitude, longitude, altitude)
+        return True, DronePosition(cls.__create_key, latitude, longitude, altitude)
 
     def __init__(self, class_private_create_key, latitude: float, longitude: float, altitude: float):
         """
         Private constructor, use create() method
         """
-        assert class_private_create_key is PositionWorld.__create_key, "Use create() method"
+        assert class_private_create_key is DronePosition.__create_key, "Use create() method"
 
         self.latitude = latitude
         self.longitude = longitude
@@ -39,7 +39,7 @@ class PositionWorld:
 
 # Basically a struct
 # pylint: disable=too-few-public-methods
-class OrientationWorld:
+class DroneOrientation:
     """
     Yaw, pitch, roll following NED system (x forward, y right, z down)
     Specifically, intrinsic (Tait-Bryan) rotations in the zyx/3-2-1 order
@@ -47,7 +47,7 @@ class OrientationWorld:
     __create_key = object()
 
     @classmethod
-    def create(cls, yaw: float, pitch: float, roll: float) -> "tuple[bool, OrientationWorld | None]":
+    def create(cls, yaw: float, pitch: float, roll: float) -> "tuple[bool, DroneOrientation | None]":
         """
         yaw, pitch, roll in radians
         """
@@ -60,13 +60,13 @@ class OrientationWorld:
         if roll < -math.pi or roll > math.pi:
             return False, None
 
-        return True, OrientationWorld(cls.__create_key, yaw, pitch, roll)
+        return True, DroneOrientation(cls.__create_key, yaw, pitch, roll)
 
     def __init__(self, class_private_create_key, yaw: float, pitch: float, roll: float):
         """
         Private constructor, use create() method
         """
-        assert class_private_create_key is OrientationWorld.__create_key, "Use create() method"
+        assert class_private_create_key is DroneOrientation.__create_key, "Use create() method"
 
         self.yaw = yaw
         self.pitch = pitch
@@ -81,7 +81,7 @@ class OdometryAndTime:
     """
     Contains odometry/telemetry and timestamp
     """
-    def __init__(self, position: PositionWorld, orientation: OrientationWorld):
+    def __init__(self, position: DronePosition, orientation: DroneOrientation):
         """
         Constructor sets timestamp to current time
         message: 1 of TelemMessages. No type annotation due to several possible types
