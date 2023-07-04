@@ -4,12 +4,13 @@ TODO: Write description
 
 import sklearn
 import numpy as np
+
 # Parent directory import not working
 from modules.object_in_world import ObjectInWorld
 
 # Placeholder:
-from detection_in_world import DetectionInWorld
-
+from modules.cluster_estimation.detection_in_world import DetectionInWorld
+ 
 class ClusterEstimation:
     """
     TODO: Write description
@@ -40,8 +41,7 @@ class ClusterEstimation:
 
         if not run_override and not self.decide_to_run(detections):
             return False, None
-
-        # TODO: Implementation
+        
         self.__vgmm_model = self.__vgmm_model.fit(self.__all_points)
         clusters = self.__vgmm_model.means_
         covariances = self.__vgmm_model.covariances_
