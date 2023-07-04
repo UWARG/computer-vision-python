@@ -1,8 +1,9 @@
 """
 TODO: Write description
 """
-# TODO: imports
-
+from position_object import PositionObject
+# Placeholder:
+from detection_in_world import DetectionInWorld
 
 class ClusterEstimation:
     """
@@ -11,7 +12,7 @@ class ClusterEstimation:
     def __init__(self):
         # TODO: Settings etc.
         raise NotImplementedError
-
+        
     def run(self, detections: "list[DetectionInWorld]", run_override:  bool) -> "tuple[bool, list[PositionObject | None]]":
         """
         TODO: Write description
@@ -23,8 +24,9 @@ class ClusterEstimation:
         raise NotImplementedError
 
     def decide_to_run(self, detections: "list[DetectionInWorld]") -> bool:
-        """
-        TODO: Write description
-        """
-        # TODO: Implementation
-        raise NotImplementedError
+        # Minimum detections to run
+        min_to_run = 50
+        if(len(detections) > min_to_run):
+            return True
+        else:
+            return False
