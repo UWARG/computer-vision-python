@@ -4,12 +4,13 @@ TODO: Write description
 
 import sklearn
 import numpy as np
+
 # Parent directory import not working
-from object_in_world import ObjectInWorld
+from modules.object_in_world import ObjectInWorld
 
 # Placeholder:
-from detection_in_world import DetectionInWorld
-
+from modules.cluster_estimation.detection_in_world import DetectionInWorld
+ 
 class ClusterEstimation:
     """
     TODO: Write description
@@ -40,8 +41,7 @@ class ClusterEstimation:
 
         if not run_override and not self.decide_to_run(detections):
             return False, None
-
-        # TODO: Implementation
+        
         self.__vgmm_model = self.__vgmm_model.fit(self.__all_points)
         clusters = self.__vgmm_model.means_
         covariances = self.__vgmm_model.covariances_
@@ -60,7 +60,9 @@ class ClusterEstimation:
                 break
             # Append new ObjectInWorld to output list
             # TODO: Verify if current indexing is correct 
-            objects_in_world.append(ObjectInWorld(clusters[num_viable_clusters][0].items(), clusters[num_viable_clusters][1].items(), covariances[num_viable_clusters]))
+            objects_in_world.append(ObjectInWorld(clusters[num_viable_clusters][0].items(), 
+                                                  clusters[num_viable_clusters][1].items(), 
+                                                  covariances[num_viable_clusters]))
             num_viable_clusters += 1
         # TODO: Decide when to not return any cluster centers
         return True, objects_in_world
