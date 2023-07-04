@@ -1,5 +1,8 @@
 """
-TODO: Write description
+Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
+Returns an array of classes, each containing the x coordinate, y coordinate, and spherical covariance
+of each landing pad estimation. Whether or not a landing pad estimation is returned depends on the
+drop of its mean compared to the next greatest mean.
 """
 
 import sklearn
@@ -12,7 +15,7 @@ from modules.cluster_estimation.detection_in_world import DetectionInWorld
  
 class ClusterEstimation:
     """
-    TODO: Write description
+    Estimate landing pad locations based on bounding box coordinates
     """
     def __init__(self, co_type="spherical", components=10, rand_state=0, weight_conc_prior=100, mean_precision_prior=1E-6,
                  min_points=100, new_points_per_run=10):
