@@ -55,8 +55,10 @@ class DetectTarget:
             bounds = objects_bounds[i]
             label = int(boxes.cls[i])
             confidence = float(boxes.conf[i])
-            detection = detections_and_time.Detection(bounds, label, confidence)
-            detections.append(detection)
+            result, detection = detections_and_time.Detection.create(bounds, label, confidence)
+            if result:
+                assert detection is not None
+                detections.append(detection)
 
         # Logging
         if self.__filename_prefix != "":
