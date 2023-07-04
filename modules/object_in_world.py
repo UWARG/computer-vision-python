@@ -12,7 +12,7 @@ class ObjectInWorld:
     __create_key = object()
 
     @classmethod
-    def create(cls, position_x: float, position_y: float, spherical_variance: float) -> "tuple[bool, FrameAndTime | None]":
+    def create(cls, position_x: float, position_y: float, spherical_variance: float) -> "tuple[bool, ObjectInWorld | None]":
         """
         Position in local coordinates
         """
