@@ -5,7 +5,7 @@ TODO: Write description
 import sklearn
 import numpy as np
 # Parent directory import not working
-from object_in_world import ObjectInWorld
+from modules.object_in_world import ObjectInWorld
 
 # Placeholder:
 from detection_in_world import DetectionInWorld
@@ -45,7 +45,30 @@ class ClusterEstimation:
         self.__vgmm_model = self.__vgmm_model.fit(self.__all_points)
         clusters = self.__vgmm_model.means_
         covariances = self.__vgmm_model.covariances_
-        weights = self.__vgmm_model.means_
+        weights = self.__vgmm_model.weights_
+
+
+        i = 0
+        while i < len(clusters):
+            nearby_point = False
+            j = 0
+            while j < len(self.__all_points):
+                # Remove cluster if nothing within 2 metres
+                if self.get_distance(clusters[i], self.__all_points[j]) < 2:
+                    nearby_point = True
+                    break
+                j += 1
+            if not nearby_point:
+                weights = np.delete(weights, i, 0)
+                clusters = np.delete(clusters, i, 0)
+            else:
+                i += 1
+
+
+
+        indices = np.argsort(weights)[::-1]
+        weights = np.sort(weights)[::-1]
+
 
         # Loop through each cluster
         # clusters is a list of centers ordered by weights
@@ -60,7 +83,13 @@ class ClusterEstimation:
                 break
             # Append new ObjectInWorld to output list
             # TODO: Verify if current indexing is correct 
-            objects_in_world.append(ObjectInWorld(clusters[num_viable_clusters][0].items(), clusters[num_viable_clusters][1].items(), covariances[num_viable_clusters]))
+            object_created, object_to_add = ObjectInWorld.create(
+                clusters[indices[num_viable_clusters]][0].items(), 
+                clusters[indices[num_viable_clusters]][1].items(), 
+                covariances[indices[num_viable_clusters]]
+                )
+            if object_created:
+                objects_in_world.append(object_to_add)
             num_viable_clusters += 1
         # TODO: Decide when to not return any cluster centers
         return True, objects_in_world
@@ -81,7 +110,8 @@ class ClusterEstimation:
         self.__current_bucket = 0
         return True
         
-        
+    def get_distance(cluster, point) -> float:
+        return np.sqrt(np.square(cluster[0]-point[0])+np.square(cluster[1]-point[1]))
 
 
 # Debug
