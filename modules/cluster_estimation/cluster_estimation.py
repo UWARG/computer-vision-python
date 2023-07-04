@@ -4,7 +4,6 @@ TODO: Write description
 
 import sklearn
 import numpy as np
-
 # Parent directory import not working
 from modules.object_in_world import ObjectInWorld
 
