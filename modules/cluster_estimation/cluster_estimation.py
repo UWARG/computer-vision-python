@@ -9,11 +9,10 @@ import sklearn
 import sklearn.datasets
 import sklearn.mixture
 import numpy as np
-# Parent directory import not working
-from object_in_world import ObjectInWorld
+from ..object_in_world import ObjectInWorld
 
 # Placeholder:
-from detection_in_world import DetectionInWorld
+from ..cluster_estimation.detection_in_world import DetectionInWorld
  
 class ClusterEstimation:
     """
@@ -131,12 +130,3 @@ class ClusterEstimation:
         return np.sqrt(np.square(cluster[0]-point[0])+np.square(cluster[1]-point[1]))
 
 
-# Debug
-if __name__ == "__main__":
-    simulated_detections, y = sklearn.datasets.make_blobs(n_samples=150, centers=4, n_features=2, cluster_std=0.1, center_box=(0,500))
-    clusest = ClusterEstimation()
-    ret_bool, ret_list = clusest.run(np.ndarray.tolist(simulated_detections), False)
-    print(ret_bool)
-    print(len(ret_list))
-    for i in ret_list:
-        print("x: %f, y: %f, var: %f" % (i.position_x, i.position_y, i.spherical_variance))
