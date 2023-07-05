@@ -11,7 +11,7 @@ import sklearn.mixture
 import numpy as np
 from ..object_in_world import ObjectInWorld
 
-# Placeholder:
+# Placeholder pending finalisation of geolocation output format:
 from ..cluster_estimation.detection_in_world import DetectionInWorld
  
 class ClusterEstimation:
@@ -50,9 +50,55 @@ class ClusterEstimation:
         covariances = self.__vgmm_model.covariances_
         weights = self.__vgmm_model.weights_
 
+        # print("Initial:")
+        # print(weights)
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
 
-        print(weights)
 
+
+        # Sort weights from largest to smallest, along with corresponding covariances and means
+        indices = np.argsort(weights)[::-1]
+        weights = np.sort(weights)[::-1]
+        temp_arr = np.array(covariances)
+        for i in range(len(indices)):
+            covariances[i] = temp_arr[indices[i]]
+        temp_arr = np.array(clusters)
+        for i in range(len(indices)):
+            clusters[i] = temp_arr[indices[i]]
+
+        # print("Sorted:")
+        # print(weights)
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
+
+        # Loop through each cluster
+        # clusters is a list of centers ordered by weights
+        # most likely cluster listed first in descending weights order
+        objects_in_world = []
+        total_clusters = clusters.shape[0]
+        num_viable_clusters = 1
+        # Drop all clusters after a 50% drop in weight occurs
+        while num_viable_clusters < total_clusters:
+            if (weights[num_viable_clusters-1] / weights[num_viable_clusters]) > 2:
+                weights = weights[:num_viable_clusters]
+                clusters = clusters[:num_viable_clusters]
+                covariances = covariances[:num_viable_clusters]
+                break
+            num_viable_clusters += 1
+
+        # print("Weight-filtered:")
+        # print(weights)
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
+
+
+
+
+        # Bad detection removal
         i = 0
         while i < len(clusters):
             nearby_point = False
@@ -64,50 +110,28 @@ class ClusterEstimation:
                     break
                 j += 1
             if not nearby_point:
-                weights = np.delete(weights, i, 0)
                 clusters = np.delete(clusters, i, 0)
+                covariances = np.delete(covariances, i, 0)
             else:
                 i += 1
 
 
-        print(weights)
-        indices = np.argsort(weights)[::-1]
-        weights = np.sort(weights)[::-1]
-        print(weights)
-        print(indices)
-        print(clusters)
+        # print("Bad clusters removed:")
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
 
-        # Loop through each cluster
-        # clusters is a list of centers ordered by weights
-        # most likely cluster listed first in descending weights order
-        
-
-        objects_in_world = []
-        # Return, at the very least, the cluster with the highest mean
-        object_created, object_to_add = ObjectInWorld.create(
-            clusters[indices[0]][0], 
-            clusters[indices[0]][1], 
-            covariances[indices[0]]
-            )
-        if object_created:
-            objects_in_world.append(object_to_add)
-        
-        total_clusters = clusters.shape[0]
-        num_viable_clusters = 1
-        # Drop all clusters after a 50% drop in weight occurs
-        while num_viable_clusters < total_clusters:
-            if (weights[num_viable_clusters] / weights[num_viable_clusters-1]) > 2:
-                break
-            # Append new ObjectInWorld to output list
-            # TODO: Verify if current indexing is correct 
+        for i in range(len(clusters)):
             object_created, object_to_add = ObjectInWorld.create(
-                clusters[indices[num_viable_clusters]][0], 
-                clusters[indices[num_viable_clusters]][1], 
-                covariances[indices[num_viable_clusters]]
+                clusters[i][0], 
+                clusters[i][1], 
+                covariances[i]
                 )
             if object_created:
                 objects_in_world.append(object_to_add)
-            num_viable_clusters += 1
+
+
+
         return True, objects_in_world
 
     def decide_to_run(self, detections: "list[DetectionInWorld]") -> bool:
