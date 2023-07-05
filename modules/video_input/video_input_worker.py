@@ -1,18 +1,18 @@
 """
-Gets frames and adds a timestamp
+Gets frames from the camera
 """
-import queue
 import time
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import video_input
 
 
 def video_input_worker(camera_name: "int | str",
                        period: float,
                        save_name: str,
-                       output_queue: queue.Queue,
-                       worker_manager: manage_worker.ManageWorker):
+                       output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                       controller: worker_controller.WorkerController):
     """
     Worker process.
 
@@ -20,12 +20,12 @@ def video_input_worker(camera_name: "int | str",
     period is minimum period between loops.
     save_name is path for logging.
     output_queue is the data queue.
-    worker_manager is how the main process communicates to this worker process.
+    controller is how the main process communicates to this worker process.
     """
     input_device = video_input.VideoInput(camera_name, save_name)
 
-    while not worker_manager.is_exit_requested():
-        worker_manager.check_pause()
+    while not controller.is_exit_requested():
+        controller.check_pause()
 
         time.sleep(period)
 
@@ -33,4 +33,4 @@ def video_input_worker(camera_name: "int | str",
         if not result:
             continue
 
-        output_queue.put(value)
+        output_queue.queue.put(value)
