@@ -1,16 +1,16 @@
 """
 Beginning worker that counts up from a starting value.
 """
-import queue
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import countup
 
 
 def countup_worker(start_thousands:int,
                    max_iterations: int,
-                   output_queue: queue.Queue,
-                   worker_manager: manage_worker.ManageWorker):
+                   output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                   controller: worker_controller.WorkerController):
     """
     Worker process.
 
@@ -23,10 +23,10 @@ def countup_worker(start_thousands:int,
     # Instantiate class object
     countup_instance = countup.Countup(start_thousands, max_iterations)
 
-    # Loop forever until exit has been requested
-    while not worker_manager.is_exit_requested():
+    # Loop forever until exit has been requested (producer)
+    while not controller.is_exit_requested():
         # Method blocks worker if pause has been requested
-        worker_manager.check_pause()
+        controller.check_pause()
 
         # All of the work should be done within the class
         # Getting the output is as easy as calling a single method
@@ -39,4 +39,4 @@ def countup_worker(start_thousands:int,
         # Put an item into the queue
         # If the queue is full, the worker process will block
         # until the queue is non-empty
-        output_queue.put(value)
+        output_queue.queue.put(value)

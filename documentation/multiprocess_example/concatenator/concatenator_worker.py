@@ -1,39 +1,39 @@
 """
 Ending worker that concatenates a prefix and suffix and then prints the result.
 """
-import queue
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import concatenator
 
 
 def concatenator_worker(prefix: str,
                         suffix: str,
-                        input_queue: queue.Queue,
-                        worker_manager: manage_worker.ManageWorker):
+                        input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                        controller: worker_controller.WorkerController):
     """
     Worker process.
 
     prefix and suffix are initial settings.
     input_queue is the data queue.
-    worker_manager is how the main process communicates to this worker process.
+    controller is how the main process communicates to this worker process.
     """
     # Instantiate class object
     concatenator_instance = concatenator.Concatenator(prefix, suffix)
 
-    # Loop forever until exit has been requested
-    while not worker_manager.is_exit_requested():
+    # Loop forever until sentinel value (consumer)
+    while True:
         # Method blocks worker if pause has been requested
-        worker_manager.check_pause()
+        controller.check_pause()
 
         # Get an item from the queue
         # If the queue is empty, the worker process will block
         # until the queue is non-empty
-        input_data = input_queue.get()
+        input_data = input_queue.queue.get()
 
-        # When everything is exiting, the queue will be filled with None objects
+        # Exit on sentinel
         if input_data is None:
-            continue
+            break
 
         # All of the work should be done within the class
         # Getting the output is as easy as calling a single method
