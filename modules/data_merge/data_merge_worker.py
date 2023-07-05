@@ -9,7 +9,7 @@ from .. import merged_odometry_detections
 from .. import odometry_and_time
 
 
-def data_merge_worker(detection_input_queue: queue.Queue,
+def data_merge_worker(detections_input_queue: queue.Queue,
                       odometry_input_queue: queue.Queue,
                       output_queue: queue.Queue,
                       worker_manager: manage_worker.ManageWorker):
@@ -21,6 +21,7 @@ def data_merge_worker(detection_input_queue: queue.Queue,
     worker_manager is how the main process communicates to this worker process.
     """
     # TODO: Logging?
+
     # Mitigate potential deadlock caused by early program exit
     try:
         previous_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.get(timeout=10)
@@ -31,7 +32,9 @@ def data_merge_worker(detection_input_queue: queue.Queue,
     while not worker_manager.is_exit_requested():
         worker_manager.check_pause()
 
-        detections: detections_and_time.DetectionsAndTime = detection_input_queue.get()
+        detections: detections_and_time.DetectionsAndTime = detections_input_queue.get()
+        if detections is None:
+            continue
 
         # For initial odometry
         if detections.timestamp < previous_odometry.timestamp:
@@ -41,6 +44,11 @@ def data_merge_worker(detection_input_queue: queue.Queue,
         while current_odometry.timestamp < detections.timestamp:
             previous_odometry = current_odometry
             current_odometry = odometry_input_queue.get()
+            if current_odometry is None:
+                break
+
+        if current_odometry is None:
+            continue
 
         # Merge with closest timestamp
         if detections.timestamp - previous_odometry.timestamp < current_odometry.timestamp - detections.timestamp:
