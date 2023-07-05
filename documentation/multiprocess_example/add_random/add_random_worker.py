@@ -25,8 +25,8 @@ def add_random_worker(seed: int,
     # Instantiate class object
     add_random_instance = add_random.AddRandom(seed, max_random_term, add_change_count)
 
-    # Loop forever until sentinel value (consumer)
-    while True:
+    # Loop forever until exit has been requested or sentinel value (consumer)
+    while not controller.is_exit_requested():
         # Method blocks worker if pause has been requested
         controller.check_pause()
 

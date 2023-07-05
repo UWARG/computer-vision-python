@@ -21,8 +21,8 @@ def concatenator_worker(prefix: str,
     # Instantiate class object
     concatenator_instance = concatenator.Concatenator(prefix, suffix)
 
-    # Loop forever until sentinel value (consumer)
-    while True:
+    # Loop forever until exit has been requested or sentinel value (consumer)
+    while not controller.is_exit_requested():
         # Method blocks worker if pause has been requested
         controller.check_pause()
 
