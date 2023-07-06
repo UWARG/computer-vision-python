@@ -21,7 +21,8 @@ class QueueProxyWrapper:
         """
         Fills the queue with sentinel (None ).
         """
-        for _ in range(0, self.maxsize):
+        self.queue.put(None)
+        for _ in range(1, self.maxsize):
             self.queue.put(None)
 
     def drain_queue(self, timeout: float = 0.0):
