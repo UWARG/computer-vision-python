@@ -19,7 +19,8 @@ ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 
 # Command: python -m documentation.main_multiprocess_example
 if __name__ == "__main__":
-    # Main is managing all worker processes
+    # Main is managing all worker processes and is responsible
+    # for creating supporting interprocess communication
     controller = worker_controller.WorkerController()
 
     # mp.Queue has possible race conditions in the same process
