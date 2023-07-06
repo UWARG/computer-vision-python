@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=video_input_worker.video_input_worker,
-        args=(CAMERA, VIDEO_INPUT_WORKER_PERIOD, out_queue, controller),
+        args=(CAMERA, VIDEO_INPUT_WORKER_PERIOD, "", out_queue, controller),
     )
 
     # Run
