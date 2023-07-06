@@ -15,6 +15,7 @@ QUEUE_MAX_SIZE = 10
 
 VIDEO_INPUT_CAMERA_NAME = 0
 VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
+VIDEO_INPUT_SAVE_PREFIX = "log_image"
 
 DETECT_TARGET_WORKER_COUNT = 1
 DETECT_TARGET_DEVICE = 0 if torch.cuda.is_available() else "cpu"
@@ -67,6 +68,7 @@ if __name__ == "__main__":
         (
             VIDEO_INPUT_CAMERA_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
+            VIDEO_INPUT_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             worker_manager,
         ),

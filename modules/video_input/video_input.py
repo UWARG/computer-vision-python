@@ -12,10 +12,8 @@ class VideoInput:
     """
     Combines image and timestamp together
     """
-
-    def __init__(self, camera_name: "int | str"):
-        # TODO: Logging?
-        self.device = camera_device.CameraDevice(camera_name)
+    def __init__(self, camera_name: "int | str", save_name: str = ""):
+        self.device = camera_device.CameraDevice(camera_name, 1, save_name)
 
     def run(self) -> "tuple[bool, frame_and_time.FrameAndTime | None]":
         """
