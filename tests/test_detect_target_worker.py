@@ -3,80 +3,77 @@ Tests process
 TODO: PointsAndTime
 """
 import multiprocessing as mp
-import queue
 import time
 
 import cv2
 import numpy as np
+import torch
 
-from utilities import manage_worker
 from modules.detect_target import detect_target_worker
 from modules import frame_and_time
 # from modules import points_and_time
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 
 
-MODEL_PATH = "tests/model_example/yolov8s_pretrained_default.pt"
+MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
 IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
 
-WORK_COUNT = 6
+WORK_COUNT = 3
 
 
-def simulate_previous_worker(image_path: str, in_queue: queue.Queue):
+def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     """
     Place the image into the queue.
     """
     image = cv2.imread(image_path)
-    data = frame_and_time.FrameAndTime(image)
-    in_queue.put(data)
+    result, value = frame_and_time.FrameAndTime.create(image)
+    assert result
+    assert value is not None
+    in_queue.queue.put(value)
 
 
 if __name__ == "__main__":
     # Setup
-    worker_manager = manage_worker.ManageWorker()
+    device = 0 if torch.cuda.is_available() else "cpu"
+    controller = worker_controller.WorkerController()
 
-    m = mp.Manager()
-    image_in_queue = m.Queue()
-    image_out_queue = m.Queue()
+    mp_manager = mp.Manager()
+
+    image_in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    image_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
-        args=(MODEL_PATH, image_in_queue, image_out_queue, worker_manager),
+        args=(device, MODEL_PATH, "", image_in_queue, image_out_queue, controller),
     )
 
     # Run
     worker.start()
 
-    for _ in range(0, int(WORK_COUNT / 2)):
+    for _ in range(0, WORK_COUNT):
         simulate_previous_worker(IMAGE_BUS_PATH, image_in_queue)
 
     time.sleep(1)
 
-    for _ in range(0, int(WORK_COUNT / 2)):
+    for _ in range(0, WORK_COUNT):
         simulate_previous_worker(IMAGE_ZIDANE_PATH, image_in_queue)
 
     # Takes some time for CUDA to warm up
     time.sleep(20)
 
-    worker_manager.request_exit()
+    controller.request_exit()
 
     # Test
-    i = 0
-    while not image_out_queue.empty():
-        try:
-            input_data: np.ndarray = image_out_queue.get_nowait()
-            assert input_data is not None
-            i += 1
+    for _ in range(0, WORK_COUNT * 2):
+        input_data: np.ndarray = image_out_queue.queue.get_nowait()
+        assert input_data is not None
 
-        except queue.Empty:
-            break
-
-    assert i == WORK_COUNT
+    assert image_out_queue.queue.empty()
 
     # Teardown
-    manage_worker.ManageWorker.fill_and_drain_queue(
-        image_in_queue, 1
-    )
+    image_in_queue.fill_and_drain_queue()
     worker.join()
 
     print("Done!")

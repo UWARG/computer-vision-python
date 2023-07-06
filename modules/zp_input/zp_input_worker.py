@@ -1,17 +1,17 @@
 """
-Gets frames and adds a timestamp
+Gets data from ZeroPilot
 """
-import queue
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import zp_input
 
 
 def zp_input_worker(port: str,
                     baudrate: int,
-                    telemetry_output_queue: queue.Queue,
-                    request_output_queue: queue.Queue,
-                    worker_manager: manage_worker.ManageWorker):
+                    telemetry_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                    request_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                    controller: worker_controller.WorkerController):
     """
     Worker process.
 
@@ -19,12 +19,12 @@ def zp_input_worker(port: str,
     baudrate is UART baudrate.
     telemetry_output_queue is the telemetry queue.
     request_output_queue is the ZP request queue.
-    worker_manager is how the main process communicates to this worker process.
+    controller is how the main process communicates to this worker process.
     """
     input_device = zp_input.ZpInput(port, baudrate)
 
-    while not worker_manager.is_exit_requested():
-        worker_manager.check_pause()
+    while not controller.is_exit_requested():
+        controller.check_pause()
 
         result, value = input_device.run()
         if not result:
@@ -37,10 +37,10 @@ def zp_input_worker(port: str,
         # Decide which worker to send to next depending on message type
         if value.message.header.type == 0:
             # Odometry
-            telemetry_output_queue.put(value)
+            telemetry_output_queue.queue.put(value)
         elif value.message.header.type == 1:
             # Request
-            request_output_queue.put(value)
+            request_output_queue.queue.put(value)
         else:
             # TODO: Invalid type, log it?
             pass
