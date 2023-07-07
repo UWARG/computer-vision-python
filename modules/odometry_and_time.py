@@ -84,7 +84,6 @@ class OdometryAndTime:
     def __init__(self, position: DronePosition, orientation: DroneOrientation):
         """
         Constructor sets timestamp to current time
-        message: 1 of TelemMessages. No type annotation due to several possible types
         """
         self.position = position
         self.orientation = orientation
