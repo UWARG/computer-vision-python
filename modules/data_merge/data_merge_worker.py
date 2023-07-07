@@ -20,6 +20,9 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
 
     detection_input_queue, odometry_input_queue, output_queue are data queues.
     controller is how the main process communicates to this worker process.
+
+    Merge work is done in the worker process as the queues and control mechanisms
+    are naturally available.
     """
     # TODO: Logging?
 
@@ -35,7 +38,7 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
 
         detections: detections_and_time.DetectionsAndTime = detections_input_queue.queue.get()
         if detections is None:
-            continue
+            break
 
         # For initial odometry
         if detections.timestamp < previous_odometry.timestamp:
@@ -49,7 +52,7 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
                 break
 
         if current_odometry is None:
-            continue
+            break
 
         # Merge with closest timestamp
         if detections.timestamp - previous_odometry.timestamp < current_odometry.timestamp - detections.timestamp:
