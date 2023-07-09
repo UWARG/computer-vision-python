@@ -17,27 +17,28 @@ class WorldModelTracking:
     def __similar(self,
                   detection1: object_in_world.ObjectInWorld,
                   detection2: object_in_world.ObjectInWorld) \
-            -> bool:
+                -> bool:
         """
         returns whether detection1 and detection2 are close enough
-        to be considered the same landing
+        to be considered the same landing pad
         """
 
-        DISTANCE_THRESHOLD = 0.2
+        DISTANCE_THRESHOLD = 2
         distance = (detection2.position_x - detection1.position_x) ** 2 \
-            + (detection2.position_y - detection1.position_y) ** 2
+                 + (detection2.position_y - detection1.position_y) ** 2
         return distance < DISTANCE_THRESHOLD
 
-    def mark_false_positive(self, detection: object_in_world.ObjectInWorld) \
-                            -> object_in_world.ObjectInWorld:
+    def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
         """
-        marks a detection as false positive
+        marks a detection as false positive and removes similar landing
+        pads from the list of unconfirmed positives
         """
 
         self.__false_positives += [detection]
         for landing_pad in self.__unconfirmed_positives:
             if self.__similar(landing_pad, detection):
-                self.__unconfirmed_positives.remove(detection)
+                self.__unconfirmed_positives.remove(landing_pad)
+                break
         return detection
 
     def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) \
@@ -54,15 +55,17 @@ class WorldModelTracking:
         updates the list of unconfirmed positives and returns the
         detection with the lowest variance
         """
-        
+
         for detection in detections:
             match_found = False
+            # if detection matches a false positive, don't add it
             for false_positive in self.__false_positives:
                 if self.__similar(detection, false_positive):
                     match_found = True
                     break
             if match_found:
                 continue
+            # if detection matches an unconfirmed positive, replace old detection
             for i, landing_pad in enumerate(self.__unconfirmed_positives):
                 if self.__similar(detection, landing_pad):
                     match_found = True
@@ -70,8 +73,14 @@ class WorldModelTracking:
                     break
             if match_found:
                 continue
+            # if new landing pad, add to list of unconfirmed positives
             self.__unconfirmed_positives.append(detection)
 
+        # if the list is empty, all landing pads have been visited, none are viable
+        if len(self.__unconfirmed_positives) == 0:
+            return False, None
+        
+        # sort list by variance
         self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
-
-        return self.__unconfirmed_positives[0]
+        # return detection with lowest variance
+        return True, self.__unconfirmed_positives[0]
