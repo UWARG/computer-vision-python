@@ -12,22 +12,23 @@ class WorldModelTracking:
     keeps track of the real world location of landing pads that
     are to be visited or have already been vsisited
     """
-
-    def __init__(self):
+    
+    def __init__(self, distance_threshold: int):
         self.__unconfirmed_positives = []
         self.__false_positives = []
         self.confirmed_positives = []
 
-    @staticmethod
-    def __similar(detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
+        #Landing pads within the square root of this distance are considered the same landing pad
+        self.DISTANCE_THRESHOLD = distance_threshold
+
+    def __similar(self, detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
         """
         returns whether detection1 and detection2 are close enough
         to be considered the same landing pad
         """
 
-        DISTANCE_THRESHOLD = 2
-        distance = (detection2.position_x - detection1.position_x) ** 2 + (detection2.position_y - detection1.position_y) ** 2
-        return distance < DISTANCE_THRESHOLD
+        distance_squared = (detection2.position_x - detection1.position_x) ** 2 + (detection2.position_y - detection1.position_y) ** 2
+        return distance_squared < self.DISTANCE_THRESHOLD
 
     def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
         """
