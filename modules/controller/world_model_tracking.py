@@ -18,7 +18,8 @@ class WorldModelTracking:
         self.__false_positives = []
         self.confirmed_positives = []
 
-    def __similar(self, detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
+    @staticmethod
+    def __similar(detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
         """
         returns whether detection1 and detection2 are close enough
         to be considered the same landing pad
