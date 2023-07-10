@@ -4,7 +4,7 @@ keeps track of detected and visited landing pads
 
 import numpy as np
 
-from .. import object_in_world
+from .. import object_in_world  #Edit name when finalized
 
 
 class WorldModelTracking:
