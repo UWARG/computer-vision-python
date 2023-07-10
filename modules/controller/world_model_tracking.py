@@ -16,7 +16,7 @@ class WorldModelTracking:
     def __init__(self):
         self.__unconfirmed_positives = []
         self.__false_positives = []
-        self.confirmed_positive = None
+        self.confirmed_positives = []
 
     def __similar(self, detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
         """
@@ -34,20 +34,19 @@ class WorldModelTracking:
         pads from the list of unconfirmed positives
         """
 
-        self.__false_positives += [detection]
+        self.__false_positives.append(detection)
         for landing_pad in self.__unconfirmed_positives:
             if self.__similar(landing_pad, detection):
                 self.__unconfirmed_positives.remove(landing_pad)
-                break
-        return detection
+        return True
 
     def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) -> object_in_world.ObjectInWorld:
         """
         marks a detection as a confimred positive for future use
         """
 
-        self.confirmed_positive = detection
-        return self.confirmed_positive
+        self.confirmed_positives.append(detection)
+        return True
 
     def run(self, detections: np.ndarray):
         """
