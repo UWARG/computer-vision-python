@@ -12,23 +12,23 @@ class LandingPadTracking:
     keeps track of the real world location of landing pads that
     are to be visited or have already been vsisited
     """
-    
-    def __init__(self, distance_threshold: int):
+    def __init__(self, distance_threshold: float):
         self.__unconfirmed_positives = []
         self.__false_positives = []
         self.confirmed_positives = []
 
-        #Landing pads within the square root of this distance are considered the same landing pad
-        self.DISTANCE_THRESHOLD = distance_threshold
+        # Landing pads within the square root of this distance are considered the same landing pad
+        self.__distance_threshold = distance_threshold
 
-    def __similar(self, detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld) -> bool:
+    @staticmethod
+    def __similar(detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld, distance_squared_threshold: float) -> bool:
         """
         returns whether detection1 and detection2 are close enough
         to be considered the same landing pad
         """
 
         distance_squared = (detection2.position_x - detection1.position_x) ** 2 + (detection2.position_y - detection1.position_y) ** 2
-        return distance_squared < self.DISTANCE_THRESHOLD
+        return distance_squared < distance_squared_threshold
 
     def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
         """
@@ -38,9 +38,8 @@ class LandingPadTracking:
 
         self.__false_positives.append(detection)
         for landing_pad in self.__unconfirmed_positives:
-            if self.__similar(landing_pad, detection):
+            if self.__similar(landing_pad, detection, self.__distance_threshold):
                 self.__unconfirmed_positives.remove(landing_pad)
-        return True
 
     def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) -> object_in_world.ObjectInWorld:
         """
@@ -48,8 +47,7 @@ class LandingPadTracking:
         """
 
         self.confirmed_positives.append(detection)
-        return True
-
+        
     def run(self, detections: np.ndarray):
         """
         updates the list of unconfirmed positives and returns the
@@ -60,7 +58,7 @@ class LandingPadTracking:
 
             # if detection matches a false positive, don't add it
             for false_positive in self.__false_positives:
-                if self.__similar(detection, false_positive):
+                if self.__similar(detection, false_positive, self.__distance_threshold):
                     match_found = True
                     break
             if match_found:
@@ -68,7 +66,7 @@ class LandingPadTracking:
 
             # if detection matches an unconfirmed positive, replace old detection
             for i, landing_pad in enumerate(self.__unconfirmed_positives):
-                if self.__similar(detection, landing_pad):
+                if self.__similar(detection, landing_pad, self.__distance_threshold):
                     match_found = True
                     self.__unconfirmed_positives[i] = detection
                     break
