@@ -7,7 +7,7 @@ import numpy as np
 from .. import object_in_world  #Edit name when finalized
 
 
-class WorldModelTracking:
+class LandingPadTracking:
     """
     keeps track of the real world location of landing pads that
     are to be visited or have already been vsisited
