@@ -76,16 +76,16 @@ class LandingPadTracking:
             # if new landing pad, add to list of unconfirmed positives
             self.__unconfirmed_positives.append(detection)
 
+        # there are confirmed positives, return the first one
+        if len(self.__confirmed_positives) > 0:
+            return True, self.__confirmed_positives[0]
+
         # if the list is empty, all landing pads have been visited, none are viable
         if len(self.__unconfirmed_positives) == 0:
             return False, None
         
         # sort list by variance in ascending order
         self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
-
-        # there are confirmed positives, return the first one
-        if len(self.__confirmed_positives) > 0:
-            return True, self.__confirmed_positives[0]
 
         # return detection with lowest variance
         return True, self.__unconfirmed_positives[0]
