@@ -15,7 +15,7 @@ class LandingPadTracking:
     def __init__(self, distance_threshold: float):
         self.__unconfirmed_positives = []
         self.__false_positives = []
-        self.confirmed_positives = []
+        self.__confirmed_positives = []
 
         # Landing pads within the square root of this distance are considered the same landing pad
         self.__distance_threshold = distance_threshold
@@ -46,7 +46,7 @@ class LandingPadTracking:
         marks a detection as a confimred positive for future use
         """
 
-        self.confirmed_positives.append(detection)
+        self.__confirmed_positives.append(detection)
         
     def run(self, detections: np.ndarray):
         """
@@ -84,8 +84,8 @@ class LandingPadTracking:
         self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
 
         # there are confirmed positives, return the first one
-        if len(self.confirmed_positives) > 0:
-            return True, self.confirmed_positives[0]
+        if len(self.__confirmed_positives) > 0:
+            return True, self.__confirmed_positives[0]
 
         # return detection with lowest variance
         return True, self.__unconfirmed_positives[0]
