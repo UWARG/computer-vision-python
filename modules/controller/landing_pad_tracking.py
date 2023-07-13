@@ -44,7 +44,8 @@ class LandingPadTracking:
         
     def run(self, detections: "list[object_in_world.ObjectInWorld]"):
         """
-        Updates the list of unconfirmed positives and returns the detection with the lowest variance
+        Updates the list of unconfirmed positives and returns the a first confirmed positive if one exists,
+        else the unconfirmed positive with the lowest variance
         """
         for detection in detections:
             match_found = False
