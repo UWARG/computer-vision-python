@@ -34,7 +34,7 @@ class ClusterEstimation:
         # Requirements to decide to run
         self.__min_points = min_points
         self.__points_per_run = new_points_per_run
-        self.__no_points_count = 0
+        self.__has_ran_once = False
        
     def run(self, detections: "list[DetectionInWorld]", run_override:  bool) -> "tuple[bool, list[ObjectInWorld | None]]":
         """
@@ -105,7 +105,7 @@ class ClusterEstimation:
             j = 0
             while j < len(self.__all_points):
                 # Remove cluster if nothing within 2 metres
-                if self.get_distance(clusters[i], self.__all_points[j]) < 2:
+                if self.get_distance(clusters[i], self.__all_points[j]) < 10:
                     nearby_point = True
                     break
                 j += 1
@@ -138,19 +138,27 @@ class ClusterEstimation:
         """
         Decide when to run cluster estimation model 
         """
-        self.__current_bucket += detections
+        self.__current_bucket += self.convert_detections_to_point(detections)
         # Don't run if total points under minimum requirement
         if len(self.__all_points) + len(self.__current_bucket) < self.__min_points:
             return False
         # Don't run if not enough new points
-        if len(self.__current_bucket) < self.__points_per_run:
+        if len(self.__current_bucket) < self.__points_per_run and self.__has_ran_once == True:
             return False
-        # Both requirements met, empty bucket and run
+        # Requirements met, empty bucket and run
         self.__all_points += self.__current_bucket
-        self.__current_bucket = 0
+        self.__current_bucket = []
+        self.__has_ran_once = True
+
         return True
         
     def get_distance(self, cluster, point) -> float:
         return np.sqrt(np.square(cluster[0]-point[0])+np.square(cluster[1]-point[1]))
 
+    def convert_detections_to_point(self, detections: "list[DetectionInWorld]") -> list[float, float]:
+        points = []
+        for detection in detections:
+            points.append([detection.location_x, detection.location_y])
+
+        return points
 
