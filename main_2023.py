@@ -4,7 +4,6 @@ For 2022-2023 UAS competition.
 import multiprocessing as mp
 
 import cv2
-import torch
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -20,15 +19,12 @@ VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
 VIDEO_INPUT_SAVE_PREFIX = "log_image"
 
 DETECT_TARGET_WORKER_COUNT = 1
-DETECT_TARGET_DEVICE = 0 if torch.cuda.is_available() else "cpu"
+DETECT_TARGET_DEVICE = 0  # Use "cpu" if no CUDA
 DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
 DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
 
 if __name__ == "__main__":
-    # CUDA check, comment out if testing on a computer without CUDA
-    assert torch.cuda.is_available()
-
     # Setup
     controller = worker_controller.WorkerController()
 

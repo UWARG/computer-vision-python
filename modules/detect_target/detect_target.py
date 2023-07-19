@@ -17,7 +17,6 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction
     """
-
     def __init__(self, device: "str | int", model_path: str, save_name: str = ""):
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
