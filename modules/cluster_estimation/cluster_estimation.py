@@ -19,7 +19,7 @@ class ClusterEstimation:
     Estimate landing pad locations based on bounding box coordinates
     """
     def __init__(self, co_type="spherical", components=10, rand_state=0, weight_conc_prior=100, mean_precision_prior=1E-6,
-                 min_points=100, new_points_per_run=10):
+                 min_points=100, new_points_per_run=10, weight_drop_threshold = 0.9):
         # Initalizes VMGMM model 
         self.__vgmm_model = sklearn.mixture.BayesianGaussianMixture(
             covariance_type = co_type, 
@@ -28,6 +28,8 @@ class ClusterEstimation:
             weight_concentration_prior = weight_conc_prior, 
             init_params = 'k-means++', 
             mean_precision_prior = mean_precision_prior)
+        # Filter parameters
+        self.__weight_drop_threshold = weight_drop_threshold
         # Points storage 
         self.__all_points = []
         self.__current_bucket = []
@@ -68,11 +70,11 @@ class ClusterEstimation:
         for i in range(len(indices)):
             clusters[i] = temp_arr[indices[i]]
 
-        # print("Sorted:")
-        # print(weights)
-        # print(covariances)
-        # print(clusters)
-        # print("-----------------------------------------------")
+        print("Sorted:")
+        print(weights)
+        print(covariances)
+        print(clusters)
+        print("-----------------------------------------------")
 
         # Loop through each cluster
         # clusters is a list of centers ordered by weights
@@ -80,23 +82,20 @@ class ClusterEstimation:
         objects_in_world = []
         total_clusters = clusters.shape[0]
         num_viable_clusters = 1
-        # Drop all clusters after a 50% drop in weight occurs
+        # Drop all clusters after a weight_drop_threshold drop in weight occured
         while num_viable_clusters < total_clusters:
-            if (weights[num_viable_clusters-1] / weights[num_viable_clusters]) > 2:
+            if (weights[num_viable_clusters-1] / weights[num_viable_clusters]) > (1 / self.__weight_drop_threshold):
                 weights = weights[:num_viable_clusters]
                 clusters = clusters[:num_viable_clusters]
                 covariances = covariances[:num_viable_clusters]
                 break
             num_viable_clusters += 1
 
-        # print("Weight-filtered:")
-        # print(weights)
-        # print(covariances)
-        # print(clusters)
-        # print("-----------------------------------------------")
-
-
-
+        print("Weight-filtered:")
+        print(weights)
+        print(covariances)
+        print(clusters)
+        print("-----------------------------------------------")
 
         # Bad detection removal
         i = 0
@@ -116,10 +115,13 @@ class ClusterEstimation:
                 i += 1
 
 
-        # print("Bad clusters removed:")
-        # print(covariances)
-        # print(clusters)
-        # print("-----------------------------------------------")
+        print("Bad clusters removed:")
+        print(weights)
+        print(covariances)
+        print(clusters)
+        print("-----------------------------------------------")
+        print()
+        print()
 
         for i in range(len(clusters)):
             object_created, object_to_add = ObjectInWorld.create(

@@ -14,6 +14,10 @@ def cluster_model():
     model = ClusterEstimation()
     return model
 
+def unique_cluster_model():
+    model = ClusterEstimation()
+    return model
+
 def cluster_data(n_samples:list, cluster_standard_deviation=1):
     X, y = sklearn.datasets.make_blobs(n_samples=n_samples, 
                                        n_features=2, 
@@ -104,7 +108,7 @@ def test_detect_correct_amount_clusters(cluster_model):
     """
     Model detects correct number of clusters according to input data.
     Input 2 - 10 actual clusters
-    Average standard deviation, same for all cluster: CENTER_BOX_SIZE / 100
+    Average standard deviation, same for all cluster: CENTER_BOX_SIZE / 500
     """
 
     # Setup
@@ -114,8 +118,7 @@ def test_detect_correct_amount_clusters(cluster_model):
     for i in range(MAX_NUM_CLUSTERS):
         data_generator_input_list.append([])
         for k in range(i+1):
-            data_generator_input_list[i].append(MIN_TOTAL_POINTS_THRESHOLD+1)
-    
+            data_generator_input_list[i].append(MIN_TOTAL_POINTS_THRESHOLD)
     # Run
     model_runs:list[bool] = []
     list_detections_in_world:list[list[DetectionInWorld]] = []
@@ -123,7 +126,8 @@ def test_detect_correct_amount_clusters(cluster_model):
     for data in data_generator_input_list:
         # Generate data & run model 
         X, y = cluster_data(data)
-        model = cluster_model
+        model = unique_cluster_model()
+        print(model)
         run_status, detections_in_world = model.run(X, False)
         # Store results 
         model_runs.append(run_status)
@@ -145,14 +149,13 @@ def test_detect_correct_amount_clusters_large_STDDEV(cluster_model):
 
     # Setup
     MAX_NUM_CLUSTERS = 10
-    STD_DEV = CENTER_BOX_SIZE / 100  # standard deviation ~5m (which is much larger than real life hopefully LMAO)
-
+    STD_DEV = CENTER_BOX_SIZE / 100  # standard deviation ~5m (which is much larger than real life hopefully LMAO or im gonna hang myself)
+    
     data_generator_input_list = []  # create list for blob generator corresponding to 1 -> 10 clusters
     for i in range(MAX_NUM_CLUSTERS):
         data_generator_input_list.append([])
         for k in range(i+1):
-            data_generator_input_list[i].append(MIN_TOTAL_POINTS_THRESHOLD+1)
-    
+            data_generator_input_list[i].append(MIN_TOTAL_POINTS_THRESHOLD)
     # Run
     model_runs:list[bool] = []
     list_detections_in_world:list[list[DetectionInWorld]] = []
@@ -160,7 +163,7 @@ def test_detect_correct_amount_clusters_large_STDDEV(cluster_model):
     for data in data_generator_input_list:
         # Generate data & run model 
         X, y = cluster_data(data, STD_DEV)
-        model = cluster_model
+        model = model = unique_cluster_model()
         run_status, detections_in_world = model.run(X, False)
         # Store results 
         model_runs.append(run_status)
@@ -172,6 +175,48 @@ def test_detect_correct_amount_clusters_large_STDDEV(cluster_model):
         # print(f"{i+1} number of real clusters: {len(list_detections_in_world[i])} number of detected clusters")
         # Same number of detections from model as cluster in world
         assert(len(list_detections_in_world[i]) == i + 1)
+
+def test_skewed_data(cluster_model):
+    """
+    Model should detect correct number of clusters according to input data.
+    Input: 1 cluster with 5 points, rest of clusters have high number of points (101)
+    Average standard deviation, same for all cluster: CENTER_BOX_SIZE / 500
+    """
+
+    # Setup
+    MAX_NUM_CLUSTERS = 10
+    STD_DEV = CENTER_BOX_SIZE / 500  
+    
+    data_generator_input_list = []  # create list for blob generator corresponding to 1 -> 10 clusters
+    for i in range(MAX_NUM_CLUSTERS):
+        data_generator_input_list.append([])
+        for k in range(i+1):
+            if k == 0:
+                data_generator_input_list[i].append(5)
+            else:
+                data_generator_input_list[i].append(MIN_TOTAL_POINTS_THRESHOLD)
+
+    # Run
+    model_runs:list[bool] = []
+    list_detections_in_world:list[list[DetectionInWorld]] = []
+
+    for data in data_generator_input_list:
+        # Generate data & run model 
+        X, y = cluster_data(data, STD_DEV)
+        model = model = unique_cluster_model()
+        run_status, detections_in_world = model.run(X, False)
+        # Store results 
+        model_runs.append(run_status)
+        list_detections_in_world.append(detections_in_world)
+    
+    # Test
+    assert(all(model_runs[1:]) == True)
+    for i in range(MAX_NUM_CLUSTERS):
+        # print(f"{i+1} number of real clusters: {len(list_detections_in_world[i])} number of detected clusters")
+        # Same number of detections from model as cluster in world
+        if i != 0: 
+            assert(len(list_detections_in_world[i]) == i + 1)
+
 
 # def test_cluster_estimation_worker_speed(): 
 #     total = 0
