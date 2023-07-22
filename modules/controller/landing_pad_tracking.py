@@ -33,7 +33,6 @@ class LandingPadTracking:
         """
         self.__false_positives.append(detection)
         for landing_pad in self.__unconfirmed_positives:
-            print(landing_pad.spherical_variance, detection.spherical_variance)
             if self.__is_similar(landing_pad, detection, self.__distance_squared_threshold):
                 self.__unconfirmed_positives.remove(landing_pad)
 
