@@ -130,7 +130,14 @@ class TestLandingPadTracking:
         tracker.run(detections2)
         tracker.mark_false_positive(false_positive)
         assert tracker._LandingPadTracking__false_positives[0] == false_positive
-        for i in tracker._LandingPadTracking__unconfirmed_positives:
-            print(i.spherical_variance)
-        print(tracker._LandingPadTracking__is_similar(false_positive, detections2[1], DISTANCE_SQUARED_THRESHOLD))
+        assert tracker._LandingPadTracking__unconfirmed_positives == [detections2[3], detections2[2], detections2[4]]
+    
+    def test_run_with_false_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections2: "list[object_in_world.ObjectInWorld]"):
+        """
+        Test to see if run function doesn't add landing pads that are similar to false positives
+        """
+        false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        tracker.mark_false_positive(false_positive)
+        tracker.run(detections2)
+        assert tracker._LandingPadTracking__false_positives[0] == false_positive
         assert tracker._LandingPadTracking__unconfirmed_positives == [detections2[3], detections2[2], detections2[4]]
