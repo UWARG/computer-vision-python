@@ -50,6 +50,9 @@ class TestLandingPadTracking:
     """
     # pylint: disable=protected-access
     def test_is_similar(self):
+        """
+        Test if similar function correctly determines if 2 landing pads are close enough to be considered similar
+        """
         obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
         obj2 = object_in_world.ObjectInWorld.create(-1,-1,0)[1]
         assert not landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
