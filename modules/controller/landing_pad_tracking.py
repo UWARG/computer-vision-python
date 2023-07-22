@@ -33,10 +33,11 @@ class LandingPadTracking:
         """
         self.__false_positives.append(detection)
         for landing_pad in self.__unconfirmed_positives:
+            print(landing_pad.spherical_variance, detection.spherical_variance)
             if self.__is_similar(landing_pad, detection, self.__distance_squared_threshold):
                 self.__unconfirmed_positives.remove(landing_pad)
 
-    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) -> object_in_world.ObjectInWorld:
+    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld):
         """
         Marks a detection as a confimred positive for future use
         """
