@@ -110,3 +110,27 @@ class TestLandingPadTracking:
         assert success_flag
         assert result == detections2[0]
         assert tracker._LandingPadTracking__unconfirmed_positives == [detections2[0], detections1[2], detections2[1], detections2[3], detections1[4], detections2[2], detections2[4], detections1[3]]
+
+    def test_run_with_confirmed_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections1: "list[object_in_world.ObjectInWorld]"):
+        """
+        Test run when there is a confirmed positive
+        """
+        confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        tracker.mark_confirmed_positive(confirmed_positive)
+        assert tracker._LandingPadTracking__confirmed_positives[0] == confirmed_positive
+        success_flag, result = tracker.run(detections1)
+        assert success_flag
+        assert result == confirmed_positive
+    
+    def test_mark_false_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections2: "list[object_in_world.ObjectInWorld]"):
+        """
+        Test if marking false positives removes similar landing pads
+        """
+        false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        tracker.run(detections2)
+        tracker.mark_false_positive(false_positive)
+        assert tracker._LandingPadTracking__false_positives[0] == false_positive
+        for i in tracker._LandingPadTracking__unconfirmed_positives:
+            print(i.spherical_variance)
+        print(tracker._LandingPadTracking__is_similar(false_positive, detections2[1], DISTANCE_SQUARED_THRESHOLD))
+        assert tracker._LandingPadTracking__unconfirmed_positives == [detections2[3], detections2[2], detections2[4]]
