@@ -30,6 +30,31 @@ def cluster_data(n_samples:list, cluster_standard_deviation=1):
         detections.append(DetectionInWorld(pair[0], pair[1]))
     return detections, y
 
+def test_filter_by_points_ownership():
+    """
+    Test filtering by points ownership
+    """
+    # Setup
+    weights = np.array([8.24927030e-01, 8.29623811e-02, 8.25596577e-02, 4.85827147e-03,
+       8.01693884e-04, 7.93756321e-04, 7.85897347e-04, 7.78116185e-04,
+       7.70412065e-04, 7.62784223e-04])
+    
+    covariances = np.array([  2.65098783,  17.6815593 ,  17.58032972, 243.93659808,
+       851.98519218, 851.98519218, 851.98519218, 851.98519218,
+       851.98519218, 851.98519218])
+    
+    clusters = np.array([[218.76667282, 445.88192477],
+       [274.36365232, 357.70294735],
+       [301.21728607, 272.34458143],
+       [211.86007248, 323.06428146],
+       [230.19424563, 423.65310983],
+       [230.19424563, 423.65310983],
+       [230.19424563, 423.65310983],
+       [230.19424563, 423.65310983],
+       [230.19424563, 423.65310983],
+       [230.19424563, 423.65310983]])
+    
+
 
 def test_no_run_too_few_total_points(cluster_model):
     """
@@ -46,7 +71,6 @@ def test_no_run_too_few_total_points(cluster_model):
     # Test
     assert(model_ran == False)
     assert(detections_in_world == None)
-
 
 def test_no_run_too_few_new_points(cluster_model):
     """

@@ -37,7 +37,29 @@ class ClusterEstimation:
         self.__min_points = min_points
         self.__points_per_run = new_points_per_run
         self.__has_ran_once = False
-       
+    
+    # TRYING OUT PREDICTIONS
+    def filter_by_points_ownership(self, weights, covariances, clusters):
+        results = self.__vgmm_model.predict(self.__all_points)
+
+        # Filtering by each cluster's point ownership
+        cluster_with_points, points_per_cluster = np.unique(results, return_counts=True)
+        points_filtered_cluster = np.array([])
+        points_filtered_weights = np.array([])
+        points_filtered_covariances = np.array([])
+
+        for idx in cluster_with_points:
+            points_filtered_cluster = np.stack((points_filtered_cluster, clusters[idx]))
+            points_filtered_weights = np.stack((points_filtered_cluster, clusters[idx]))
+            points_filtered_covariances = np.stack((points_filtered_cluster, clusters[idx]))
+        
+        print("Ownership clustering")
+        print(weights)
+        print(covariances)
+        print(clusters)
+        print("-----------------------------------------------")
+
+
     def run(self, detections: "list[DetectionInWorld]", run_override:  bool) -> "tuple[bool, list[ObjectInWorld | None]]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
@@ -58,8 +80,6 @@ class ClusterEstimation:
         # print(clusters)
         # print("-----------------------------------------------")
 
-
-
         # Sort weights from largest to smallest, along with corresponding covariances and means
         indices = np.argsort(weights)[::-1]
         weights = np.sort(weights)[::-1]
@@ -76,6 +96,8 @@ class ClusterEstimation:
         print(clusters)
         print("-----------------------------------------------")
 
+        
+        
         # Loop through each cluster
         # clusters is a list of centers ordered by weights
         # most likely cluster listed first in descending weights order
@@ -91,11 +113,15 @@ class ClusterEstimation:
                 break
             num_viable_clusters += 1
 
-        print("Weight-filtered:")
-        print(weights)
-        print(covariances)
-        print(clusters)
-        print("-----------------------------------------------")
+        # print("Weight-filtered:")
+        # print(weights)
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
+
+        
+
+
 
         # Bad detection removal
         i = 0
