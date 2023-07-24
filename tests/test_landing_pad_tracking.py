@@ -65,7 +65,8 @@ class TestSimilar:
     """
     Test if similar function correctly determines if 2 landing pads are close enough to be considered similar
     """
-
+    # Required for testing
+    # pylint: disable=protected-access
     def test_is_similar_positive_equal_to_threshold(self):
         """
         Test case where the second landing pad has positive coordinates and the distance between them is equal to the distance threshold
@@ -138,6 +139,49 @@ class TestSimilar:
 
         assert actual == expected
 
+    # pylint: enable=protected-access
+
+class TestMarkFalsePositive:
+    """
+    Test if landing pad tracking correctly marks a detection as a false positive
+    """
+    # Required for testing
+    # pylint: disable=protected-access
+    def test_mark_false_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections2: "list[object_in_world.ObjectInWorld]"):
+        """
+        Test if marking false positive adds detection to list of false positives and removes similar landing pads
+        """
+        false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        tracker._LandingPadTracking__unconfirmed_positives = detections2
+        expected = false_positive
+        expected_unconfirmed_positives = [detections2[2], detections2[3], detections2[4]]
+        
+        tracker.mark_false_positive(false_positive)
+
+        assert tracker._LandingPadTracking__false_positives[0] == expected
+        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
+    
+    # pylint: enable=protected-access
+
+class TestMarkConfirmedPositive:
+    """
+    Test if landing pad tracking correctly marks a detection as a confirmed positive
+    """
+    # Required for testing
+    # pylint: disable=protected-access
+    def test_mark_confirmed_positive(self, tracker:landing_pad_tracking.LandingPadTracking):
+        """
+        Test if marking confirmed positive adds detection to list of confirmed positives
+        """
+        confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        expected = confirmed_positive
+        
+        tracker.mark_confirmed_positive(confirmed_positive)
+
+        assert tracker._LandingPadTracking__confirmed_positives[0] == expected
+
+    # pylint: enable=protected-access
+
 class TestLandingPadTracking:
     """
     Test landing pad tracking run function
@@ -198,42 +242,24 @@ class TestLandingPadTracking:
         Test run when there is a confirmed positive
         """
         confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        tracker._LandingPadTracking__confirmed_positives.append(confirmed_positive)
         expected = confirmed_positive
 
-        tracker.mark_confirmed_positive(confirmed_positive)
         result, actual = tracker.run(detections1)
         
         assert result
-        assert tracker._LandingPadTracking__confirmed_positives[0] == expected
         assert actual == expected
-    
-    def test_mark_false_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections2: "list[object_in_world.ObjectInWorld]"):
-        """
-        Test if marking false positive adds detection to list of false positives removes similar landing pads
-        """
-        false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
-        expected = false_positive
-        expected_unconfirmed_positives = [detections2[3], detections2[2], detections2[4]]
-        
-        tracker.run(detections2)
-        tracker.mark_false_positive(false_positive)
-        
-        assert tracker._LandingPadTracking__false_positives[0] == expected
-        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
     
     def test_run_with_false_positive(self, tracker:landing_pad_tracking.LandingPadTracking, detections2: "list[object_in_world.ObjectInWorld]"):
         """
         Test to see if run function doesn't add landing pads that are similar to false positives
         """
-        false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
-        expected = false_positive
+        tracker._LandingPadTracking__false_positives.append(object_in_world.ObjectInWorld.create(1, 1, 1)[1])
         expected_unconfirmed_positives = [detections2[3], detections2[2], detections2[4]]
 
-        
-        tracker.mark_false_positive(false_positive)
         tracker.run(detections2)
         
-        assert tracker._LandingPadTracking__false_positives[0] == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
 
     # pylint: enable=protected-access
+
