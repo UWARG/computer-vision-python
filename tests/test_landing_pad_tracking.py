@@ -61,35 +61,89 @@ def detections3():
     detections3 = [obj1, obj2, obj3, obj4, obj5]
     yield detections3
 
+class TestSimilar:
+    """
+    Test if similar function correctly determines if 2 landing pads are close enough to be considered similar
+    """
+
+    def test_is_similar_positive_equal_to_threshold(self):
+        """
+        Test case where the second landing pad has positive coordinates and the distance between them is equal to the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(1, 1, 0)[1]
+        expected = False
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
+    def test_is_similar_negative_equal_to_threshold(self):
+        """
+        Test case where the second landing pad has negative coordinates and the distance between them is equal to the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(-1, -1, 0)[1]
+        expected = False
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
+    def test_is_similar_positive_less_than_threshold(self):
+        """
+        Test case where the second landing pad has positive coordinates and the distance between them is less than the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(0.5, 0.5, 0)[1]
+        expected = True
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
+    def test_is_similar_negative_less_than_threshold(self):
+        """
+        Test case where the second landing pad has negative coordinates and the distance between them is less than the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(-0.5, -0.5, 0)[1]
+        expected = True
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
+    def test_is_similar_positive_more_than_threshold(self):
+        """
+        Test case where the second landing pad has positive coordinates and the distance between them is more than the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(2, 2, 0)[1]
+        expected = False
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
+    def test_is_similar_negative_more_than_threshold(self):
+        """
+        Test case where the second landing pad has negative coordinates and the distance between them is more than the distance threshold
+        """
+        obj1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        obj2 = object_in_world.ObjectInWorld.create(-2, -2, 0)[1]
+        expected = False
+
+        actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
+
+        assert actual == expected
+
 class TestLandingPadTracking:
     """
     Test landing pad tracking run function
     """
     # Required for testing
     # pylint: disable=protected-access
-    def test_is_similar(self):
-        """
-        Test if similar function correctly determines if 2 landing pads are close enough to be considered similar
-        """
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(-1,-1,0)[1]
-        assert not landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(1,1,0)[1]
-        assert not landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(0.5,0.5,0)[1]
-        assert landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(-0.5,-0.5,0)[1]
-        assert landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(2,2,0)[1]
-        assert not landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-        obj1 = object_in_world.ObjectInWorld.create(0,0,0)[1]
-        obj2 = object_in_world.ObjectInWorld.create(-2,-2,0)[1]
-        assert not landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(obj1, obj2, DISTANCE_SQUARED_THRESHOLD)
-
     def test_run_with_empty_detections_list(self, tracker: landing_pad_tracking.LandingPadTracking):
         """
         Test run method with empty detections list
