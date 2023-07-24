@@ -8,7 +8,7 @@ from modules import object_in_world
 from modules.controller import landing_pad_tracking
 
 
-DISTANCE_SQUARED_THRESHOLD = 2          # Actual distance threshold is sqrt(2)
+DISTANCE_SQUARED_THRESHOLD = 2  # Actual distance threshold is sqrt(2)
 
 
 @pytest.fixture()
@@ -176,6 +176,23 @@ class TestMarkFalsePositive:
         assert tracker._LandingPadTracking__false_positives == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
     
+    def test_mark_multiple_false_positive(self, tracker: landing_pad_tracking.LandingPadTracking, detections1: "list[object_in_world.ObjectInWorld]"):
+        """
+        Test if marking false positive adds detection to list of false positives
+        """
+        false_positive1 = object_in_world.ObjectInWorld.create(20, 20, 1)[1]
+        false_positive2 = object_in_world.ObjectInWorld.create(40, 40, 1)[1]
+        tracker._LandingPadTracking__unconfirmed_positives = detections1
+        expected = [false_positive1, false_positive2]
+        expected_unconfirmed_positives = [detections1[0], detections1[1], detections1[2], detections1[3], detections1[4]]
+        
+        tracker.mark_false_positive(false_positive1)
+        tracker.mark_false_positive(false_positive2)
+
+        assert tracker._LandingPadTracking__false_positives == expected
+        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
+
+
     # pylint: enable=protected-access
 
 
@@ -193,6 +210,19 @@ class TestMarkConfirmedPositive:
         expected = [confirmed_positive]
         
         tracker.mark_confirmed_positive(confirmed_positive)
+
+        assert tracker._LandingPadTracking__confirmed_positives == expected
+    
+    def test_mark_multiple_confirmed_positives(self, tracker: landing_pad_tracking.LandingPadTracking):
+        """
+        Test if marking confirmed positive adds detection to list of confirmed positives
+        """
+        confirmed_positive1 = object_in_world.ObjectInWorld.create(1, 1, 1)[1]
+        confirmed_positive2 = object_in_world.ObjectInWorld.create(2, 2, 1)[1]
+        expected = [confirmed_positive1, confirmed_positive2]
+        
+        tracker.mark_confirmed_positive(confirmed_positive1)
+        tracker.mark_confirmed_positive(confirmed_positive2)
 
         assert tracker._LandingPadTracking__confirmed_positives == expected
 
