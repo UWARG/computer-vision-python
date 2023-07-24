@@ -32,8 +32,10 @@ class LandingPadTracking:
         Marks a detection as false positive and removes similar landing pads from the list of unconfirmed positives
         """
         self.__false_positives.append(detection)
-        self.__unconfirmed_positives = [landing_pad for landing_pad in self.__unconfirmed_positives
-                                        if not self.__is_similar(landing_pad, detection, self.__distance_squared_threshold)]
+        self.__unconfirmed_positives = [
+            landing_pad for landing_pad in self.__unconfirmed_positives
+            if not self.__is_similar(landing_pad, detection, self.__distance_squared_threshold)
+        ]
 
     def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld):
         """
