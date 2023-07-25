@@ -180,11 +180,11 @@ class TestMarkFalsePositive:
         """
         Test if marking false positive adds detection to list of false positives
         """
-        false_positive1 = object_in_world.ObjectInWorld.create(20, 20, 1)[1]
-        false_positive2 = object_in_world.ObjectInWorld.create(40, 40, 1)[1]
+        false_positive1 = object_in_world.ObjectInWorld.create(0, 0, 1)[1]
+        false_positive2 = object_in_world.ObjectInWorld.create(2, 2, 1)[1]
         tracker._LandingPadTracking__unconfirmed_positives = detections1
         expected = [false_positive1, false_positive2]
-        expected_unconfirmed_positives = [detections1[0], detections1[1], detections1[2], detections1[3], detections1[4]]
+        expected_unconfirmed_positives = [detections1[2], detections1[3], detections1[4]]
         
         tracker.mark_false_positive(false_positive1)
         tracker.mark_false_positive(false_positive2)
