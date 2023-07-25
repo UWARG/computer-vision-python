@@ -12,7 +12,7 @@ CENTER_BOX_SIZE = 500
 @pytest.fixture()
 def cluster_model():
     model = ClusterEstimation()
-    return model
+    yield model
 
 def unique_cluster_model():
     model = ClusterEstimation()
@@ -151,7 +151,7 @@ def test_detect_correct_amount_clusters(cluster_model):
         # Generate data & run model 
         X, y = cluster_data(data)
         model = unique_cluster_model()
-        print(model)
+        #print(model)
         run_status, detections_in_world = model.run(X, False)
         # Store results 
         model_runs.append(run_status)
@@ -166,14 +166,13 @@ def test_detect_correct_amount_clusters(cluster_model):
 
 def test_detect_correct_amount_clusters_large_STDDEV(cluster_model):
     """
-    Model should detect correct number of clusters according to input data.
-    Input 2 - 10 actual clusters
+    2 - 10 actual clusters
     Average standard deviation, same for all cluster: CENTER_BOX_SIZE / 100
     """
 
     # Setup
     MAX_NUM_CLUSTERS = 10
-    STD_DEV = CENTER_BOX_SIZE / 100  # standard deviation ~5m (which is much larger than real life hopefully LMAO or im gonna hang myself)
+    STD_DEV = CENTER_BOX_SIZE / 100  # standard deviation ~5m (which is max size in real life hopefully)
     
     data_generator_input_list = []  # create list for blob generator corresponding to 1 -> 10 clusters
     for i in range(MAX_NUM_CLUSTERS):
@@ -185,11 +184,11 @@ def test_detect_correct_amount_clusters_large_STDDEV(cluster_model):
     list_detections_in_world:list[list[DetectionInWorld]] = []
 
     for data in data_generator_input_list:
-        # Generate data & run model 
+        # Generate data & run model
         X, y = cluster_data(data, STD_DEV)
         model = model = unique_cluster_model()
         run_status, detections_in_world = model.run(X, False)
-        # Store results 
+        # Store results
         model_runs.append(run_status)
         list_detections_in_world.append(detections_in_world)
     

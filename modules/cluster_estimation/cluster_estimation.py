@@ -38,7 +38,7 @@ class ClusterEstimation:
         self.__points_per_run = new_points_per_run
         self.__has_ran_once = False
     
-    # TRYING OUT PREDICTIONS
+    # EXPERIMENTAL: USING PREDICTIONS TO CHECK VALID CLUSTERS
     def filter_by_points_ownership(self, weights, covariances, clusters):
         results = self.__vgmm_model.predict(self.__all_points)
 
@@ -66,9 +66,11 @@ class ClusterEstimation:
         if number of detections is sufficient, or if manually forced to run. 
         """
 
+        # Decide to run
         if not run_override and not self.decide_to_run(detections):
             return False, None
         
+        # Fit points and get cluster data 
         self.__vgmm_model = self.__vgmm_model.fit(self.__all_points)
         clusters = self.__vgmm_model.means_
         covariances = self.__vgmm_model.covariances_
@@ -90,14 +92,12 @@ class ClusterEstimation:
         for i in range(len(indices)):
             clusters[i] = temp_arr[indices[i]]
 
-        print("Sorted:")
-        print(weights)
-        print(covariances)
-        print(clusters)
-        print("-----------------------------------------------")
+        # print("Sorted:")
+        # print(weights)
+        # print(covariances)
+        # print(clusters)
+        # print("-----------------------------------------------")
 
-        
-        
         # Loop through each cluster
         # clusters is a list of centers ordered by weights
         # most likely cluster listed first in descending weights order
@@ -118,10 +118,6 @@ class ClusterEstimation:
         # print(covariances)
         # print(clusters)
         # print("-----------------------------------------------")
-
-        
-
-
 
         # Bad detection removal
         i = 0
@@ -149,6 +145,7 @@ class ClusterEstimation:
         print()
         print()
 
+        # Create output list of remaining (valid) clusters 
         for i in range(len(clusters)):
             object_created, object_to_add = ObjectInWorld.create(
                 clusters[i][0], 
@@ -181,9 +178,15 @@ class ClusterEstimation:
         return True
         
     def get_distance(self, cluster, point) -> float:
+        """
+        Get distance between a point and a cluster center
+        """
         return np.sqrt(np.square(cluster[0]-point[0])+np.square(cluster[1]-point[1]))
 
     def convert_detections_to_point(self, detections: "list[DetectionInWorld]") -> list[float, float]:
+        """
+        Convert DetectionInWorld input object to a [x,y] position to store 
+        """
         points = []
         for detection in detections:
             points.append([detection.location_x, detection.location_y])
