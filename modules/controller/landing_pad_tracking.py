@@ -9,7 +9,8 @@ from .. import object_in_world
 
 class LandingPadTracking:
     """
-    Keeps track of the real world location of landing pads that are to be visited or have already been vsisited
+    Keeps track of the real world location of landing pads that are to be visited or have already
+    been vsisited
     """
     def __init__(self, distance_squared_threshold: float):
         self.__unconfirmed_positives = []
@@ -20,16 +21,21 @@ class LandingPadTracking:
         self.__distance_squared_threshold = distance_squared_threshold
 
     @staticmethod
-    def __is_similar(detection1: object_in_world.ObjectInWorld, detection2: object_in_world.ObjectInWorld, distance_squared_threshold: float) -> bool:
+    def __is_similar(detection1: object_in_world.ObjectInWorld,
+                     detection2: object_in_world.ObjectInWorld,
+                     distance_squared_threshold: float) -> bool:
         """
-        Returns whether detection1 and detection2 are close enough to be considered the same landing pad
+        Returns whether detection1 and detection2 are close enough to be considered the same
+        landing pad
         """
-        distance_squared = (detection2.position_x - detection1.position_x) ** 2 + (detection2.position_y - detection1.position_y) ** 2
+        distance_squared = (detection2.position_x - detection1.position_x) ** 2 \
+                           + (detection2.position_y - detection1.position_y) ** 2
         return distance_squared < distance_squared_threshold
 
     def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
         """
-        Marks a detection as false positive and removes similar landing pads from the list of unconfirmed positives
+        Marks a detection as false positive and removes similar landing pads from the list of
+        unconfirmed positives
         """
         self.__false_positives.append(detection)
         self.__unconfirmed_positives = [
@@ -45,8 +51,8 @@ class LandingPadTracking:
         
     def run(self, detections: "list[object_in_world.ObjectInWorld]"):
         """
-        Updates the list of unconfirmed positives and returns the a first confirmed positive if one exists,
-        else the unconfirmed positive with the lowest variance
+        Updates the list of unconfirmed positives and returns the a first confirmed positive if
+        one exists, else the unconfirmed positive with the lowest variance
         """
         for detection in detections:
             match_found = False
