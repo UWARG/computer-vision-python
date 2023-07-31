@@ -38,6 +38,20 @@ class ClusterEstimation:
         self.__points_per_run = new_points_per_run
         self.__has_ran_once = False
     
+    def clear_all_data(self):
+        """
+        Deletes all current points stored and emptys the current bucket
+        """
+        self.__all_points = []
+        self.__current_bucket = []
+        self.__has_ran_once = False
+
+    def reset_model(self):
+        """
+        Resets model back to original initalization, before any data has been fitted
+        """
+        self.__vgmm_model = sklearn.base.clone(self.__vgmm_model)
+
     # EXPERIMENTAL: USING PREDICTIONS TO CHECK VALID CLUSTERS
     def filter_by_points_ownership(self, weights, covariances, clusters):
         results = self.__vgmm_model.predict(self.__all_points)
