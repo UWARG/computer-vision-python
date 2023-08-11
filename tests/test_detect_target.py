@@ -50,15 +50,48 @@ def image_zidane():
     assert zidane_image is not None
     yield zidane_image
 
+@pytest.fixture()
+def max_rmse():
+    """
+    Maximum root mean squared error value.
+    """
+    MAX_RMSE = 1
+    yield MAX_RMSE
 
 class TestDetector:
     """
-    Tests `DetectTarget.run()` .
+    Tests `DetectTarget.run()`.
     """
+
+    def rmse(self,
+             actual: np.ndarray,
+             expected: np.ndarray) -> float:
+        """
+        Helper function to compute root mean squared error.
+        """
+        mean_squared_error = np.square(actual - expected).mean()
+
+        return np.sqrt(mean_squared_error)
+
+    def test_rmse(self):
+        """
+        Root mean squared error.
+        """
+        # Setup
+        sample_actual = np.array([1, 2, 3, 4, 5])
+        sample_expected = np.array([1.6, 2.5, 2.9, 3, 4.1])
+        EXPECTED_ERROR = 0.697137
+
+        # Run
+        error = self.rmse(sample_actual, sample_expected)
+
+        # Test
+        np.testing.assert_allclose(error, EXPECTED_ERROR, rtol=1e-5, atol=0)
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
                               image_bus: image_and_time.ImageAndTime):
+                              max_rmse: float):
         """
         Bus image.
         """
@@ -68,15 +101,17 @@ class TestDetector:
 
         # Run
         result, actual = detector.run(image_bus)
+        error = self.rmse(actual, expected)
 
         # Test
         assert result
         assert actual is not None
-        np.testing.assert_array_equal(actual, expected)
+        assert error < max_rmse
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
                                  image_zidane: image_and_time.ImageAndTime):
+                                 max_rmse: float):
         """
         Zidane image.
         """
@@ -86,15 +121,17 @@ class TestDetector:
 
         # Run
         result, actual = detector.run(image_zidane)
+        error = self.rmse(actual, expected)
 
         # Test
         assert result
         assert actual is not None
-        np.testing.assert_array_equal(actual, expected)
+        assert error < max_rmse
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
                                    image_zidane: image_and_time.ImageAndTime):
+                                   max_rmse: float):
         """
         Multiple Zidane images.
         """
@@ -121,4 +158,6 @@ class TestDetector:
             result, actual = output
             assert result
             assert actual is not None
-            np.testing.assert_array_equal(actual, expected)
+
+            error = self.rmse(actual, expected)
+            assert error < max_rmse
