@@ -11,17 +11,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       # Checkout repository
       - uses: actions/checkout@v3
 
       # Set Python version
-      - name: Set up Python 3.8.10
+      - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8.10
+          python-version: 3.8
 
       # Set up submodules and submodule dependencies
       - name: Set up submodule and submodule dependencies
