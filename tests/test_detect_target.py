@@ -11,6 +11,8 @@ import torch
 from modules.detect_target import detect_target
 from modules import image_and_time
 
+if not torch.cuda.is_available():
+    pytest.skip("Tests require CUDA to be enabled", allow_module_level=True)
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
@@ -18,7 +20,6 @@ IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
 IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
-
 
 @pytest.fixture()
 def detector():
