@@ -14,7 +14,7 @@ def is_vector_r3(vec: np.ndarray) -> bool:
 
 def is_matrix_r3x3(matrix: np.ndarray) -> bool:
     """
-    Checks if the numpy array is a matrix in R^3x3
+    Checks if the numpy array is a matrix in R^{3x3} .
     """
     return matrix.shape == (3, 3)
 
@@ -155,7 +155,7 @@ class CameraIntrinsics:
             return False, None
 
         # Scaling factor with translation: 2 * p / r - 1 == (2 * p - r) / r
-        # Codomain is [-1, 1]
+        # Codomain is from -1 to 1 inclusive
         scaling = float(2 * pixel - resolution) / float(resolution)
 
         vec_pixel = scaling * vec_base
@@ -239,7 +239,8 @@ class CameraDroneExtrinsics:
             return False, None
 
         return True, CameraDroneExtrinsics(
-            cls.__create_key, vec_camera_on_drone_position,
+            cls.__create_key,
+            vec_camera_on_drone_position,
             camera_to_drone_rotation_matrix,
         )
 
