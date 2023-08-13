@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 
 from .. import detection_in_world
+from .. import detections_and_time
 from .. import merged_odometry_detections
 
 
@@ -401,7 +402,6 @@ class Geolocation:
         # Get the image to ground mapping
         src = np.array(self.__perspective_transform_sources, dtype=np.float32)
         dst = np.array(ground_points, dtype=np.float32)
-        print(src)
         try:
             # Pylint does not like the OpenCV module
             # pylint: disable=no-member
@@ -419,6 +419,64 @@ class Geolocation:
 
         return True, matrix
 
+    @staticmethod
+    def __convert_detection_to_world_from_image(detection: detections_and_time.Detection,
+                                                perspective_transform_matrix: np.ndarray) \
+            -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
+        """
+        Applies the transform matrix to the detection.
+        """
+        if not Geolocation.is_matrix_r3x3(perspective_transform_matrix):
+            return False, None
+
+        centre = detection.get_centre()
+        top_left, top_right, bottom_left, bottom_right = detection.get_corners()
+
+        input_centre = np.array([centre[0], centre[1], 1.0], dtype=np.float32)
+        # More efficient to multiply a matrix than looping over the points
+        # Transpose to columns from rowss
+        input_vertices = np.array(
+            [
+                [top_left[0], top_left[1], 1.0],
+                [top_right[0], top_right[1], 1.0],
+                [bottom_left[0], bottom_left[1], 1.0],
+                [bottom_right[0], bottom_right[1], 1.0],
+            ],
+            dtype=np.float32,
+        ).T
+
+        # Single row/column does not need transpose
+        output_centre = perspective_transform_matrix @ input_centre
+        # Transpose back to rows from columns
+        output_vertices = (perspective_transform_matrix @ input_vertices).T
+
+        ground_centre = np.array(
+            [
+                output_centre[0] / output_centre[2],
+                output_centre[1] / output_centre[2],
+            ],
+            dtype=np.float32,
+        )
+
+        # Normalize each row by its last element
+        # Slice to get the last element of each row
+        vec_last_element = output_vertices[:, 2]
+        # Divide each row by vector element
+        output_normalized = output_vertices / vec_last_element[:,None]
+        # Slice to remove the last element of each row
+        ground_vertices = output_normalized[:, :2]
+
+        result, detection_world = detection_in_world.DetectionInWorld.create(
+            ground_vertices,
+            ground_centre,
+            detection.label,
+            detection.confidence,
+        )
+        if not result:
+            return False, None
+
+        return True, detection_world
+
     def run(self,
             detections: merged_odometry_detections.MergedOdometryDetections) \
         -> "tuple[bool, list[detection_in_world.DetectionInWorld] | None]":
@@ -426,6 +484,48 @@ class Geolocation:
         Returns detections in world space.
         """
         # Generate projective perspective matrix
-        drone_position = detections.drone_position
+        # Camera rotation in world
+        result, drone_rotation_matrix = self.create_rotation_matrix_from_orientation(
+            detections.drone_orientation.yaw,
+            detections.drone_orientation.pitch,
+            detections.drone_orientation.roll,
+        )
+        if not result:
+            return False, None
 
-        raise NotImplementedError
+        # Get Pylance to stop complaining
+        assert drone_rotation_matrix is not None
+
+        # Camera position in world
+        # Convert to NED system
+        drone_position_ned = np.array(
+            [
+                detections.drone_position.position_x,
+                detections.drone_position.position_y,
+                -detections.drone_position.altitude,
+            ],
+            dtype=np.float32,
+        )
+
+        result, perspective_transform_matrix = self.__get_perspective_transform_matrix(
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert perspective_transform_matrix is not None
+
+        detections_in_world = []
+        for detection in detections.detections:
+            result, detection_world = self.__convert_detection_to_world_from_image(
+                detection,
+                perspective_transform_matrix,
+            )
+            # Partial data not allowed
+            if not result:
+                return False, None
+            detections_in_world.append(detection_world)
+
+        return True, detections_in_world
