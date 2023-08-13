@@ -20,14 +20,14 @@ class DetectionInWorld:
                label: int,
                confidence: float) -> "tuple[bool, DetectionInWorld | None]":
         """
-        vertices is a quadrilateral of 4 points
-        centre is a point
-        A point is an xy coordinate (index 0 and 1 respectively)
+        vertices is a quadrilateral of 4 points.
+        centre is a point.
+        A point is an xy coordinate (index 0 and 1 respectively).
         """
         if vertices.shape != (4, 2):
             return False, None
 
-        if centre.shape[0] != 2:
+        if centre.shape != (2,):
             return False, None
 
         if label < 0:
@@ -45,7 +45,7 @@ class DetectionInWorld:
                  label: int,
                  confidence: float):
         """
-        Private constructor, use create() method
+        Private constructor, use create() method.
         """
         assert class_private_create_key is DetectionInWorld.__create_key, "Use create() method"
 

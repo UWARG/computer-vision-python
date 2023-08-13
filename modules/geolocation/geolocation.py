@@ -35,10 +35,10 @@ class CameraIntrinsics:
         if resolution_y < 0:
             return False, None
 
-        if fov_x <= 0.0:
+        if fov_x <= 0.0 or fov_x >= np.pi:
             return False, None
 
-        if fov_y <= 0.0:
+        if fov_y <= 0.0 or fov_y >= np.pi:
             return False, None
 
         u_scalar = np.tan(fov_x / 2)
@@ -49,7 +49,13 @@ class CameraIntrinsics:
         if not np.isfinite(v_scalar):
             return False, None
 
-        return True, CameraIntrinsics(cls.__create_key, resolution_x, resolution_y, fov_x, fov_y)
+        return True, CameraIntrinsics(
+            cls.__create_key,
+            resolution_x,
+            resolution_y,
+            u_scalar,
+            v_scalar,
+        )
 
     def __init__(self,
                  class_private_create_key,
@@ -71,8 +77,8 @@ class CameraIntrinsics:
 
     @staticmethod
     def __pixel_vector_from_image_space(pixel: int,
-                                         resolution: int,
-                                         vec_base: np.ndarray) -> "tuple[bool, np.ndarray | None]":
+                                        resolution: int,
+                                        vec_base: np.ndarray) -> "tuple[bool, np.ndarray | None]":
         """
         Get u or v vector from pixel coordinate.
         """
@@ -141,24 +147,28 @@ class CameraDroneExtrinsics:
 
     @classmethod
     def create(cls,
-               camera_x: float,
-               camera_y: float,
-               camera_z: float,
-               camera_yaw: float,
-               camera_pitch: float,
-               camera_roll: float) -> "tuple[bool, CameraDroneExtrinsics | None]":
+               camera_position_xyz: "tuple[float, float, float]",
+               camera_orientation_ypr: "tuple[float, float, float]") \
+            -> "tuple[bool, CameraDroneExtrinsics | None]":
         """
-        Camera position is in NED system (x forward, y right, z down).
-        Camera rotation is in NED system (x forward, y right, z down).
+        camera_position_xyz: Camera position is x, y, z.
+        camera_orientation_ypr: Camera orientation is yaw, pitch, roll.
+
+        Both are relative to drone in NED system (x forward, y right, z down).
         Specifically, intrinsic (Tait-Bryan) rotations in the zyx/3-2-1 order.
         """
-        vec_camera_position = np.array([camera_x, camera_y, camera_z], dtype=np.float32)
+        # Unpack parameters
+        camera_x, camera_y, camera_z = camera_position_xyz
+        camera_yaw, camera_pitch, camera_roll = camera_orientation_ypr
 
-        result, camera_to_drone_rotation_matrix = Geolocation.create_rotation_matrix_from_orientation(
-            camera_yaw,
-            camera_pitch,
-            camera_roll,
-        )
+        vec_camera_on_drone_position = np.array([camera_x, camera_y, camera_z], dtype=np.float32)
+
+        result, camera_to_drone_rotation_matrix = \
+            Geolocation.create_rotation_matrix_from_orientation(
+                camera_yaw,
+                camera_pitch,
+                camera_roll,
+            )
         if not result:
             return False, None
 
@@ -168,18 +178,21 @@ class CameraDroneExtrinsics:
         if not Geolocation.is_matrix_r3x3(camera_to_drone_rotation_matrix):
             return False, None
 
-        return True, CameraDroneExtrinsics(cls.__create_key, vec_camera_position, camera_to_drone_rotation_matrix)
+        return True, CameraDroneExtrinsics(
+            cls.__create_key, vec_camera_on_drone_position,
+            camera_to_drone_rotation_matrix,
+        )
 
     def __init__(self,
                  class_private_create_key,
-                 vec_camera_position: np.ndarray,
+                 vec_camera_on_drone_position: np.ndarray,
                  camera_to_drone_rotation_matrix: np.ndarray):
         """
         Private constructor, use create() method
         """
         assert class_private_create_key is CameraDroneExtrinsics.__create_key, "Use create() method"
 
-        self.vec_camera_position = vec_camera_position
+        self.vec_camera_on_drone_position = vec_camera_on_drone_position
         self.camera_to_drone_rotation_matrix = camera_to_drone_rotation_matrix
 
 
@@ -200,6 +213,7 @@ class Geolocation:
         camera_drone_extrinsics: Camera information related to the drone without any world space.
         """
         # Centre of each edge
+        # list[list[float]] required for OpenCV
         perspective_transform_sources = [
             [camera_intrinsics.resolution_x / 2, 0],
             [camera_intrinsics.resolution_x / 2, camera_intrinsics.resolution_y],
@@ -219,7 +233,7 @@ class Geolocation:
             assert value is not None
 
             # Camera space to world space (orientation only)
-            vec_rotated_source = camera_drone_extrinsics @ value
+            vec_rotated_source = camera_drone_extrinsics.camera_to_drone_rotation_matrix @ value
             rotated_source_vectors.append(vec_rotated_source)
 
         return True, Geolocation(
@@ -251,7 +265,7 @@ class Geolocation:
         """
         Checks if the numpy array is a vector in R^3 .
         """
-        return vec.shape == (3)
+        return vec.shape == (3,)
 
     @staticmethod
     def is_matrix_r3x3(matrix: np.ndarray) -> bool:
@@ -312,41 +326,98 @@ class Geolocation:
         return True, rotation_matrix
 
     @staticmethod
-    def ground_intersection_from_vector(vec_drone_position: np.ndarray,
-                                        vec_camera_on_drone_position: np.ndarray,
-                                        vec_down: np.ndarray) -> "tuple[bool, np.ndarray | None]":
+    def __ground_intersection_from_vector(vec_camera_in_world_position: np.ndarray,
+                                          vec_down: np.ndarray) \
+            -> "tuple[bool, np.ndarray | None]":
         """
         Get 2D coordinates of where the downwards pointing vector intersects the ground.
         """
-        if not Geolocation.is_vector_r3(vec_drone_position):
-            return False, None
-
-        if not Geolocation.is_vector_r3(vec_camera_on_drone_position):
+        if not Geolocation.is_vector_r3(vec_camera_in_world_position):
             return False, None
 
         if not Geolocation.is_vector_r3(vec_down):
             return False, None
 
-        vec_camera_position = vec_drone_position + vec_camera_on_drone_position
-        if vec_camera_position[2] < 0.0:
+        # Check camera above ground
+        if vec_camera_in_world_position[2] > 0.0:
             return False, None
 
         # Ensure vector is pointing down by checking angle
         # cos(angle) = a dot b / (||a|| * ||b||)
-        vec_negative_z = np.array([0.0, 0.0, -1.0], dtype=np.float32)
-        cos_angle = np.dot(vec_down, vec_negative_z) / np.linalg.norm(vec_down)
+        vec_z = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+        cos_angle = np.dot(vec_down, vec_z) / np.linalg.norm(vec_down)
         if cos_angle < Geolocation.__MIN_DOWN_COS_ANGLE:
             return False, None
 
         # Find scalar multiple for the vector to touch the ground (z/3rd component is 0)
         # Solve for s: o3 + s * d3 = 0
-        scaling = -vec_camera_position[2] / vec_down[2]
+        scaling = -vec_camera_in_world_position[2] / vec_down[2]
         if scaling < 0.0:
             return False, None
 
-        vec_ground = vec_camera_position + scaling * vec_down
+        vec_ground = vec_camera_in_world_position + scaling * vec_down
 
         return True, vec_ground[:2]
+
+    def __get_perspective_transform_matrix(self,
+                                           drone_rotation_matrix: np.ndarray,
+                                           drone_position_ned: np.ndarray) \
+            -> "tuple[bool, np.ndarray | None]":
+        """
+        Calculates the destination points, then uses OpenCV to get the matrix.
+        """
+        if not self.is_matrix_r3x3(drone_rotation_matrix):
+            return False, None
+
+        if not self.is_vector_r3(drone_position_ned):
+            return False, None
+
+        # Get the vectors in world space
+        camera_overall_rotation_matrix = \
+            drone_rotation_matrix @ self.__camera_drone_extrinsics.camera_to_drone_rotation_matrix
+
+        vec_downs = []
+        for vector in self.__rotated_source_vectors:
+            vec_down = camera_overall_rotation_matrix @ vector
+            vec_downs.append(vec_down)
+
+        # Get the camera position in world space
+        vec_camera_position = \
+              drone_position_ned \
+            + drone_rotation_matrix @ self.__camera_drone_extrinsics.vec_camera_on_drone_position
+
+        # Find the points on the ground
+        ground_points = []
+        for vec_down in vec_downs:
+            result, ground_point = self.__ground_intersection_from_vector(
+                vec_camera_position,
+                vec_down,
+            )
+            if not result:
+                return False, None
+
+            ground_points.append(ground_point)
+
+        # Get the image to ground mapping
+        src = np.array(self.__perspective_transform_sources, dtype=np.float32)
+        dst = np.array(ground_points, dtype=np.float32)
+        print(src)
+        try:
+            # Pylint does not like the OpenCV module
+            # pylint: disable=no-member
+            matrix = cv2.getPerspectiveTransform(
+                src,
+                dst,
+            )
+            # pylint: enable=no-member
+        # All exceptions must be caught and logged as early as possible
+        # pylint: disable=bare-except
+        except:
+            # TODO: Logging
+            return False, None
+        # pylint: enable=bare-except
+
+        return True, matrix
 
     def run(self,
             detections: merged_odometry_detections.MergedOdometryDetections) \
