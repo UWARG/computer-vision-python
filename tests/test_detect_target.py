@@ -11,9 +11,6 @@ import torch
 from modules.detect_target import detect_target
 from modules import image_and_time
 
-if not torch.cuda.is_available():
-    pytest.skip("Tests require CUDA to be enabled", allow_module_level=True)
-
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
@@ -51,22 +48,8 @@ def image_zidane():
     assert zidane_image is not None
     yield zidane_image
 
-@pytest.fixture()
-def max_rmse():
-    """
-    Maximum root mean squared error value.
-    """
-    MAX_RMSE = 1
-    yield MAX_RMSE
-
-class TestDetector:
-    """
-    Tests `DetectTarget.run()`.
-    """
-
-    def rmse(self,
-             actual: np.ndarray,
-             expected: np.ndarray) -> float:
+def rmse(actual: np.ndarray,
+         expected: np.ndarray) -> float:
         """
         Helper function to compute root mean squared error.
         """
@@ -74,7 +57,7 @@ class TestDetector:
 
         return np.sqrt(mean_squared_error)
 
-    def test_rmse(self):
+def test_rmse():
         """
         Root mean squared error.
         """
@@ -84,10 +67,17 @@ class TestDetector:
         EXPECTED_ERROR = 0.697137
 
         # Run
-        error = self.rmse(sample_actual, sample_expected)
+        actual_error = rmse(sample_actual, sample_expected)
 
         # Test
-        np.testing.assert_allclose(error, EXPECTED_ERROR, rtol=1e-5, atol=0)
+        np.testing.assert_allclose(actual_error, EXPECTED_ERROR)
+
+class TestDetector:
+    """
+    Tests `DetectTarget.run()` .
+    """
+
+    TOLERANCE = 1
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
@@ -101,13 +91,13 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, actual = detector.run(image_bus)
-        error = self.rmse(actual, expected)
+        result, actual = detector.run(image_bus, False)
 
         # Test
+        error = rmse(actual, expected)
         assert result
         assert actual is not None
-        assert error < max_rmse
+        assert error < self.TOLERANCE
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
@@ -121,13 +111,13 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, actual = detector.run(image_zidane)
-        error = self.rmse(actual, expected)
+        result, actual = detector.run(image_zidane, False)
 
         # Test
+        error = rmse(actual, expected)
         assert result
         assert actual is not None
-        assert error < max_rmse
+        assert error < self.TOLERANCE
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
@@ -150,7 +140,7 @@ class TestDetector:
         # Run
         outputs = []
         for i in range(0, IMAGE_COUNT):
-            output = detector.run(input_images[i])
+            output = detector.run(input_images[i], False)
             outputs.append(output)
 
         # Test
@@ -160,5 +150,5 @@ class TestDetector:
             assert result
             assert actual is not None
 
-            error = self.rmse(actual, expected)
-            assert error < max_rmse
+            error = rmse(actual, expected)
+            assert error < self.TOLERANCE
