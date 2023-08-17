@@ -9,8 +9,8 @@ from .. import object_in_world
 
 class LandingPadTracking:
     """
-    Keeps track of the real world location of landing pads that are to be visited or have already
-    been vsisited
+    Tracks the real world location of detected landing pads, labelling them as either confirmed
+    positive, unconfirmed positive, or false positive
     """
     def __init__(self, distance_squared_threshold: float):
         self.__unconfirmed_positives = []

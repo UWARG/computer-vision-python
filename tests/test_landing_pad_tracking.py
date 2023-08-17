@@ -22,7 +22,7 @@ def tracker():
 @pytest.fixture
 def detections1():
     """
-    Sample instances of 'object_in_world.ObjectInWorld' for testing
+    Sample instances of ObjectInWorld for testing
     """
     result1, obj1 = object_in_world.ObjectInWorld.create(0,0,8)
     result2, obj2 = object_in_world.ObjectInWorld.create(2,2,4)
@@ -36,7 +36,7 @@ def detections1():
 @pytest.fixture
 def detections2():
     """
-    Sample instances of 'object_in_world.ObjectInWorld' for testing
+    Sample instances of ObjectInWorld for testing
     """
     result1, obj1 = object_in_world.ObjectInWorld.create(0.5,0.5,1)
     result2, obj2 = object_in_world.ObjectInWorld.create(1.5,1.5,3)
@@ -50,7 +50,7 @@ def detections2():
 @pytest.fixture
 def detections3():
     """
-    Sample instances of 'object_in_world.ObjectInWorld' for testing
+    Sample instances of ObjectInWorld for testing
     """
     result1, obj1 = object_in_world.ObjectInWorld.create(0,0,8)
     result2, obj2 = object_in_world.ObjectInWorld.create(0.5,0.5,4)
@@ -79,7 +79,9 @@ class TestSimilar:
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
         )
 
         assert actual == expected
@@ -94,7 +96,9 @@ class TestSimilar:
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
         )
 
         assert actual == expected
@@ -109,7 +113,9 @@ class TestSimilar:
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
         )
 
         assert actual == expected
@@ -124,8 +130,10 @@ class TestSimilar:
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
-            )
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
+        )
 
         assert actual == expected
 
@@ -139,8 +147,10 @@ class TestSimilar:
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
-            )
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
+        )
 
         assert actual == expected
 
@@ -154,7 +164,9 @@ class TestSimilar:
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(
-            obj1, obj2, DISTANCE_SQUARED_THRESHOLD
+            obj1,
+            obj2,
+            DISTANCE_SQUARED_THRESHOLD,
         )
 
         assert actual == expected
@@ -181,7 +193,7 @@ class TestMarkFalsePositive:
             detections1[1],
             detections1[2],
             detections1[3],
-            detections1[4]
+            detections1[4],
         ]
         
         tracker.mark_false_positive(false_positive)
@@ -189,9 +201,10 @@ class TestMarkFalsePositive:
         assert tracker._LandingPadTracking__false_positives == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
 
-    def test_mark_false_positive_with_similar(self,
-                                              tracker: landing_pad_tracking.LandingPadTracking,
-                                              detections2: "list[object_in_world.ObjectInWorld]"):
+    def test_mark_false_positive_with_similar(
+        self,
+        tracker: landing_pad_tracking.LandingPadTracking,
+        detections2: "list[object_in_world.ObjectInWorld]"):
         """
         Test if marking false positive adds detection to list of false positives and removes
         similar landing pads
@@ -206,9 +219,10 @@ class TestMarkFalsePositive:
         assert tracker._LandingPadTracking__false_positives == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
     
-    def test_mark_multiple_false_positive(self,
-                                          tracker: landing_pad_tracking.LandingPadTracking,
-                                          detections1: "list[object_in_world.ObjectInWorld]"):
+    def test_mark_multiple_false_positive(
+        self,
+        tracker: landing_pad_tracking.LandingPadTracking,
+        detections1: "list[object_in_world.ObjectInWorld]"):
         """
         Test if marking false positive adds detection to list of false positives
         """
@@ -287,7 +301,7 @@ class TestLandingPadTracking:
             detections1[1],
             detections1[4],
             detections1[0],
-            detections1[3]
+            detections1[3],
         ]
         
         result, actual = tracker.run(detections1)
@@ -307,7 +321,7 @@ class TestLandingPadTracking:
             detections3[2],
             detections3[1],
             detections3[4],
-            detections3[3]
+            detections3[3],
         ]
         
         result, actual = tracker.run(detections3)
@@ -332,7 +346,7 @@ class TestLandingPadTracking:
             detections1[4],
             detections2[2],
             detections2[4],
-            detections1[3]
+            detections1[3],
         ]
 
         tracker.run(detections1)
