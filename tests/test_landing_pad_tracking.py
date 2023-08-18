@@ -19,6 +19,7 @@ def tracker():
     tracker = landing_pad_tracking.LandingPadTracking(DISTANCE_SQUARED_THRESHOLD)
     yield tracker
 
+
 @pytest.fixture
 def detections1():
     """
@@ -33,6 +34,7 @@ def detections1():
     detections1 = [obj1, obj2, obj3, obj4, obj5]
     yield detections1
 
+
 @pytest.fixture
 def detections2():
     """
@@ -46,6 +48,7 @@ def detections2():
     assert result1 and result2 and result3 and result4 and result5
     detections2 = [obj1, obj2, obj3, obj4, obj5]
     yield detections2
+
 
 @pytest.fixture
 def detections3():
@@ -201,10 +204,9 @@ class TestMarkFalsePositive:
         assert tracker._LandingPadTracking__false_positives == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
 
-    def test_mark_false_positive_with_similar(
-        self,
-        tracker: landing_pad_tracking.LandingPadTracking,
-        detections2: "list[object_in_world.ObjectInWorld]"):
+    def test_mark_false_positive_with_similar(self,
+                                              tracker: landing_pad_tracking.LandingPadTracking,
+                                              detections2: "list[object_in_world.ObjectInWorld]"):
         """
         Test if marking false positive adds detection to list of false positives and removes
         similar landing pads
@@ -219,10 +221,9 @@ class TestMarkFalsePositive:
         assert tracker._LandingPadTracking__false_positives == expected
         assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives
     
-    def test_mark_multiple_false_positive(
-        self,
-        tracker: landing_pad_tracking.LandingPadTracking,
-        detections1: "list[object_in_world.ObjectInWorld]"):
+    def test_mark_multiple_false_positive(self,
+                                          tracker: landing_pad_tracking.LandingPadTracking,
+                                          detections1: "list[object_in_world.ObjectInWorld]"):
         """
         Test if marking false positive adds detection to list of false positives
         """
@@ -290,8 +291,8 @@ class TestLandingPadTracking:
         assert actual is None
 
     def test_run_one_input(self,
-                              tracker: landing_pad_tracking.LandingPadTracking,
-                              detections1: "list[object_in_world.ObjectInWorld]"):
+                           tracker: landing_pad_tracking.LandingPadTracking,
+                           detections1: "list[object_in_world.ObjectInWorld]"):
         """
         Test run with only 1 input
         """
