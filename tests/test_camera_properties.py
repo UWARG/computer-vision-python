@@ -661,7 +661,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -688,7 +688,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -715,7 +715,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -742,7 +742,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -767,7 +767,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -791,7 +791,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -815,7 +815,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -839,7 +839,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_base,
@@ -863,7 +863,7 @@ class TestImagePixelToVector:
         # Access required for test
         # pylint: disable=protected-access
         result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(
+            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
                 pixel,
                 resolution,
                 vec_r2,

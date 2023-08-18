@@ -11,6 +11,9 @@ from .. import detections_and_time
 from .. import merged_odometry_detections
 
 
+FLOAT_PRECISION_ABS_TOLERANCE = 1E-3
+
+
 class Geolocation:
     """
     Converts image space into world space.
@@ -121,12 +124,9 @@ class Geolocation:
             return False, None
 
         # Get the vectors in world space
-        camera_overall_rotation_matrix = \
-            drone_rotation_matrix @ self.__camera_drone_extrinsics.camera_to_drone_rotation_matrix
-
         vec_downs = []
         for vector in self.__rotated_source_vectors:
-            vec_down = camera_overall_rotation_matrix @ vector
+            vec_down = drone_rotation_matrix @ vector
             vec_downs.append(vec_down)
 
         # Get the camera position in world space
@@ -172,8 +172,17 @@ class Geolocation:
             -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
         """
         Applies the transform matrix to the detection.
+        perspective_transform_matrix: Must be affine.
         """
         if not camera_properties.is_matrix_r3x3(perspective_transform_matrix):
+            return False, None
+
+        if not np.allclose(
+            perspective_transform_matrix[2, :],
+            np.array([0.0, 0.0, 1.0], dtype=np.float32),
+            atol=FLOAT_PRECISION_ABS_TOLERANCE,
+        ):
+            # Last row must be 0, 0, 1 for matrix to be affine
             return False, None
 
         centre = detection.get_centre()
@@ -210,7 +219,9 @@ class Geolocation:
         vec_last_element = output_vertices[:, 2]
         # Divide each row by vector element:
         # https://www.w3resource.com/python-exercises/numpy/python-numpy-exercise-96.php
-        output_normalized = output_vertices / vec_last_element[:,None]
+        output_normalized = output_vertices / vec_last_element[:, None]
+        if not np.isfinite(output_normalized).all():
+            return False, None
         # Slice to remove the last element of each row
         ground_vertices = output_normalized[:, :2]
 
