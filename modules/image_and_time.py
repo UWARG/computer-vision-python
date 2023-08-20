@@ -1,5 +1,5 @@
 """
-Image frame and timestamp
+Image and timestamp.
 """
 import time
 
@@ -8,33 +8,33 @@ import numpy as np
 
 # Basically a struct
 # pylint: disable=too-few-public-methods
-class FrameAndTime:
+class ImageAndTime:
     """
-    Contains image frame and timestamp
+    Contains image and timestamp.
     """
     __create_key = object()
 
     @classmethod
-    def create(cls, frame: np.ndarray) -> "tuple[bool, FrameAndTime | None]":
+    def create(cls, image: np.ndarray) -> "tuple[bool, ImageAndTime | None]":
         """
-        frame is a 2D image in RGB format
+        image: 2D image in RGB format.
         """
-        if len(frame.shape) != 3:
+        if len(image.shape) != 3:
             return False, None
 
-        if frame.shape[2] != 3:
+        if image.shape[2] != 3:
             return False, None
 
-        return True, FrameAndTime(cls.__create_key, frame)
+        return True, ImageAndTime(cls.__create_key, image)
 
-    def __init__(self, class_private_create_key, frame: np.ndarray):
+    def __init__(self, class_private_create_key, image: np.ndarray):
         """
-        Private constructor, use create() method
-        Constructor sets timestamp to current time
+        Private constructor, use create() method.
+        Constructor sets timestamp to current time.
         """
-        assert class_private_create_key is FrameAndTime.__create_key, "Use create() method"
+        assert class_private_create_key is ImageAndTime.__create_key, "Use create() method"
 
-        self.frame = frame
+        self.image = image
         self.timestamp = time.time()
 
 # pylint: enable=too-few-public-methods

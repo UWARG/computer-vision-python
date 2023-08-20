@@ -1,5 +1,5 @@
 """
-Tests process
+Test worker process.
 TODO: PointsAndTime
 """
 import multiprocessing as mp
@@ -10,7 +10,7 @@ import numpy as np
 import torch
 
 from modules.detect_target import detect_target_worker
-from modules import frame_and_time
+from modules import image_and_time
 # from modules import points_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -28,7 +28,7 @@ def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.Queu
     Place the image into the queue.
     """
     image = cv2.imread(image_path)
-    result, value = frame_and_time.FrameAndTime.create(image)
+    result, value = image_and_time.ImageAndTime.create(image)
     assert result
     assert value is not None
     in_queue.queue.put(value)

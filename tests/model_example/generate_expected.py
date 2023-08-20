@@ -1,5 +1,5 @@
 """
-Generates expected output using pretrained default model and images
+Generates expected output using pretrained default model and images.
 TODO: PointsAndTime
 """
 

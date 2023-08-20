@@ -1,5 +1,5 @@
 """
-Gets frames and outputs detections in image space
+Gets frames and outputs detections in image space.
 """
 
 from utilities.workers import queue_proxy_wrapper

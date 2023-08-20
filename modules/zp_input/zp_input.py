@@ -1,5 +1,5 @@
 """
-Combines image and timestamp together
+Combines image and timestamp together.
 """
 
 from ..common.comms.modules import generic_comms_device
@@ -10,7 +10,7 @@ from .. import message_and_time
 # pylint: disable=too-few-public-methods
 class ZpInput:
     """
-    Combines ZP message and timestamp together
+    Combines ZP message and timestamp together.
     """
 
     def __init__(self, port: str, baudrate: int):
@@ -18,7 +18,7 @@ class ZpInput:
 
     def run(self) -> "tuple[bool, message_and_time.MessageAndTime | None]":
         """
-        Returns a possible FrameAndTime with current timestamp
+        Returns a possible MessageAndTime with current timestamp.
         """
         result, message = self.device.receive()
         if not result:

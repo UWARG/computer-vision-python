@@ -1,5 +1,5 @@
 """
-Gets frames from the camera
+Gets images from the camera.
 """
 import time
 

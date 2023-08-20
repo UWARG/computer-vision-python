@@ -1,5 +1,5 @@
 """
-Tests process
+Test worker process.
 """
 import multiprocessing as mp
 import queue

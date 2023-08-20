@@ -1,5 +1,5 @@
 """
-TODO: PointsAndTime
+TODO: PointsAndTime.
 """
 import copy
 
@@ -9,7 +9,7 @@ import pytest
 import torch
 
 from modules.detect_target import detect_target
-from modules import frame_and_time
+from modules import image_and_time
 
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
@@ -34,7 +34,7 @@ def image_bus():
     Load bus image.
     """
     image = cv2.imread(IMAGE_BUS_PATH)
-    result, bus_image = frame_and_time.FrameAndTime.create(image)
+    result, bus_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert bus_image is not None
     yield bus_image
@@ -45,7 +45,7 @@ def image_zidane():
     Load Zidane image.
     """
     image = cv2.imread(IMAGE_ZIDANE_PATH)
-    result, zidane_image = frame_and_time.FrameAndTime.create(image)
+    result, zidane_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert zidane_image is not None
     yield zidane_image
@@ -58,7 +58,7 @@ class TestDetector:
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
-                              image_bus: frame_and_time.FrameAndTime):
+                              image_bus: image_and_time.ImageAndTime):
         """
         Bus image.
         """
@@ -76,7 +76,7 @@ class TestDetector:
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
-                                 image_zidane: frame_and_time.FrameAndTime):
+                                 image_zidane: image_and_time.ImageAndTime):
         """
         Zidane image.
         """
@@ -94,7 +94,7 @@ class TestDetector:
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
-                                   image_zidane: frame_and_time.FrameAndTime):
+                                   image_zidane: image_and_time.ImageAndTime):
         """
         Multiple Zidane images.
         """
