@@ -1,9 +1,10 @@
 """
-Tests process
+Test worker process.
 """
 import multiprocessing as mp
 import time
 
+from modules.common.mavlink.modules import drone_odometry
 from modules.data_merge import data_merge_worker
 from modules import detections_and_time
 from modules import merged_odometry_detections
@@ -26,10 +27,13 @@ def simulate_flight_input_worker(timestamp: float,
     Place the odometry into the queue.
     """
     # Timestamp is stored in latitude
-    result, position = odometry_and_time.DronePosition.create(timestamp, 0.0, 1.0)
-    assert result and position is not None
-    result, orientation = odometry_and_time.DroneOrientation.create(0.0, 0.0, 0.0)
-    assert result and orientation is not None
+    result, position = drone_odometry.DronePosition.create(timestamp, 0.0, 1.0)
+    assert result
+    assert position is not None
+
+    result, orientation = drone_odometry.DroneOrientation.create(0.0, 0.0, 0.0)
+    assert result
+    assert orientation is not None
 
     odometry = odometry_and_time.OdometryAndTime(position, orientation)
     odometry.timestamp = timestamp
@@ -84,7 +88,8 @@ if __name__ == "__main__":
 
     # Test
     for expected_time in expected_times:
-        merged: merged_odometry_detections.MergedOdometryDetections = merged_out_queue.queue.get_nowait()
+        merged: merged_odometry_detections.MergedOdometryDetections = \
+            merged_out_queue.queue.get_nowait()
         assert int(merged.drone_position.latitude) == expected_time
 
     assert merged_out_queue.queue.empty()

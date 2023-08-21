@@ -1,5 +1,5 @@
 """
-Merges detections and telemetry by time
+Merges detections and telemetry by time.
 """
 import queue
 
@@ -28,8 +28,10 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
 
     # Mitigate potential deadlock caused by early program exit
     try:
-        previous_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(timeout=10)
-        current_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(timeout=10)
+        previous_odometry: odometry_and_time.OdometryAndTime = \
+            odometry_input_queue.queue.get(timeout=10)
+        current_odometry: odometry_and_time.OdometryAndTime = \
+            odometry_input_queue.queue.get(timeout=10)
     except queue.Empty:
         return
 
@@ -55,7 +57,9 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
             break
 
         # Merge with closest timestamp
-        if detections.timestamp - previous_odometry.timestamp < current_odometry.timestamp - detections.timestamp:
+        if ((detections.timestamp - previous_odometry.timestamp)
+            < (current_odometry.timestamp - detections.timestamp)):
+            # Required for separation
             value = merged_odometry_detections.MergedOdometryDetections(
                 previous_odometry.position,
                 previous_odometry.orientation,

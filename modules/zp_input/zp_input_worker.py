@@ -1,5 +1,5 @@
 """
-Gets data from ZeroPilot
+Gets data from ZeroPilot.
 """
 
 from utilities.workers import queue_proxy_wrapper
@@ -42,5 +42,5 @@ def zp_input_worker(port: str,
             # Request
             request_output_queue.queue.put(value)
         else:
-            # TODO: Invalid type, log it?
+            # TODO: Invalid type, logging?
             pass

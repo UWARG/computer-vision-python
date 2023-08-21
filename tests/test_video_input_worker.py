@@ -1,12 +1,12 @@
 """
-Tests process
+Test worker process.
 """
 import multiprocessing as mp
 import queue
 import time
 
 from modules.video_input import video_input_worker
-from modules import frame_and_time
+from modules import image_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
@@ -38,9 +38,9 @@ if __name__ == "__main__":
     # Test
     while True:
         try:
-            input_data: frame_and_time.FrameAndTime = out_queue.queue.get_nowait()
-            assert str(type(input_data)) == "<class \'modules.frame_and_time.FrameAndTime\'>"
-            assert input_data.frame is not None
+            input_data: image_and_time.ImageAndTime = out_queue.queue.get_nowait()
+            assert str(type(input_data)) == "<class \'modules.image_and_time.ImageAndTime\'>"
+            assert input_data.image is not None
 
         except queue.Empty:
             break
