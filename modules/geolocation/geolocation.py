@@ -4,11 +4,13 @@ Converts image space into world space.
 
 import cv2
 import numpy as np
+import pymap3d as pm
 
 from . import camera_properties
 from .. import detection_in_world
 from .. import detections_and_time
 from .. import merged_odometry_detections
+from ..common.mavlink.modules import drone_odometry
 
 
 FLOAT_PRECISION_ABS_TOLERANCE = 1E-3
@@ -25,7 +27,8 @@ class Geolocation:
     @classmethod
     def create(cls,
                camera_intrinsics: camera_properties.CameraIntrinsics,
-               camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics) \
+               camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+               home_location: drone_odometry.DronePosition) \
             -> "tuple[bool, Geolocation | None]":
         """
         camera_intrinsics: Camera information without any outside space.
@@ -60,13 +63,15 @@ class Geolocation:
             camera_drone_extrinsics,
             perspective_transform_sources,
             rotated_source_vectors,
+            home_location,
         )
 
     def __init__(self,
                  class_private_create_key,
                  camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
                  perspective_transform_sources: "list[list[float]]",
-                 rotated_source_vectors: "list[np.ndarray]"):
+                 rotated_source_vectors: "list[np.ndarray]",
+                 home_location: drone_odometry.DronePosition):
         """
         Private constructor, use create() method
         """
@@ -75,6 +80,7 @@ class Geolocation:
         self.__camera_drone_extrinsics = camera_drone_extrinsics
         self.__perspective_transform_sources = perspective_transform_sources
         self.__rotated_source_vectors = rotated_source_vectors
+        self.__home_location = home_location
 
     @staticmethod
     def __ground_intersection_from_vector(vec_camera_in_world_position: np.ndarray,
@@ -236,9 +242,32 @@ class Geolocation:
 
         return True, detection_world
 
+    @staticmethod
+    def drone_position_local_from_global(home_location: drone_odometry.DronePosition,
+                                         drone_position: drone_odometry.DronePosition) \
+            -> "tuple[bool, tuple[float, float, float] | None]":
+        """
+        Global coordinates to relative coordinates.
+        Return: x, y, z relative to home location (NED coordinate system).
+        """
+        north, east, down = pm.geodetic2ned(
+            drone_position.latitude,
+            drone_position.longitude,
+            drone_position.altitude,
+            home_location.latitude,
+            home_location.longitude,
+            home_location.altitude,
+        )
+
+        # Cannot be underground
+        if down > 0.0:
+            return False, None
+
+        return True, (north, east, down)
+
     def run(self,
             detections: merged_odometry_detections.MergedOdometryDetections) \
-        -> "tuple[bool, list[detection_in_world.DetectionInWorld] | None]":
+            -> "tuple[bool, list[detection_in_world.DetectionInWorld] | None]":
         """
         Returns detections in world space.
         """
@@ -257,11 +286,22 @@ class Geolocation:
 
         # Camera position in world
         # Convert to NED system
+        result, local_position = self.drone_position_local_from_global(
+            self.__home_location,
+            detections.drone_position,
+        )
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert local_position is not None
+
+        north, east, down = local_position
         drone_position_ned = np.array(
             [
-                detections.drone_position.position_x,
-                detections.drone_position.position_y,
-                -detections.drone_position.altitude,
+                north,
+                east,
+                down,
             ],
             dtype=np.float32,
         )
