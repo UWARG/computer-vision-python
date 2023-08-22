@@ -26,7 +26,7 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: image_and_time.ImageAndTime, enable_half: bool = True) -> "tuple[bool, np.ndarray | None]":
+    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, np.ndarray | None]":
         """
         Returns annotated image.
         TODO: Change to DetectionsAndTime
