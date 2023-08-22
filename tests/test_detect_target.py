@@ -29,6 +29,7 @@ def detector():
     detection = detect_target.DetectTarget(DEVICE, MODEL_PATH, ENABLE_HALF)
     yield detection
 
+
 @pytest.fixture()
 def image_bus():
     """
@@ -39,6 +40,7 @@ def image_bus():
     assert result
     assert bus_image is not None
     yield bus_image
+
 
 @pytest.fixture()
 def image_zidane():
@@ -51,6 +53,7 @@ def image_zidane():
     assert zidane_image is not None
     yield zidane_image
 
+
 def rmse(actual: np.ndarray,
          expected: np.ndarray) -> float:
         """
@@ -59,6 +62,7 @@ def rmse(actual: np.ndarray,
         mean_squared_error = np.square(actual - expected).mean()
 
         return np.sqrt(mean_squared_error)
+
 
 def test_rmse():
         """
