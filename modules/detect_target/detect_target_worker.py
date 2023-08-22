@@ -11,6 +11,7 @@ from . import detect_target
 # pylint: disable=too-many-arguments
 def detect_target_worker(device: "str | int",
                          model_path: str,
+                         enable_half: bool,
                          save_name: str,
                          input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                          output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -18,11 +19,11 @@ def detect_target_worker(device: "str | int",
     """
     Worker process.
 
-    model_path and save_name are initial settings.
+    model_path, enable_half, and save_name are initial settings.
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    detector = detect_target.DetectTarget(device, model_path, save_name)
+    detector = detect_target.DetectTarget(device, model_path, enable_half, save_name)
 
     while not controller.is_exit_requested():
         controller.check_pause()

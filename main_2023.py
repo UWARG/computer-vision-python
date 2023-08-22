@@ -91,6 +91,7 @@ def main() -> int:
         (
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_ENABLE_HALF,
             DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
