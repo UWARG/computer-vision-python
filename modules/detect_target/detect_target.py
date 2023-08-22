@@ -17,11 +17,11 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, enable_half: bool, save_name: str = ""):
+    def __init__(self, device: "str | int", model_path: str, enable_half_precision: bool, save_name: str = ""):
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half = enable_half
+        self.__enable_half_precision = enable_half_precision
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
@@ -34,7 +34,7 @@ class DetectTarget:
         image = data.image
         predictions = self.__model.predict(
             source=image,
-            half=self.__enable_half,
+            half=self.__enable_half_precision,
             device=self.__device,
             stream=False,
         )
