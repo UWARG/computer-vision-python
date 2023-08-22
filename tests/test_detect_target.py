@@ -11,19 +11,22 @@ import torch
 from modules.detect_target import detect_target
 from modules import image_and_time
 
+
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
+ENABLE_HALF =                   False
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
 IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
+
 
 @pytest.fixture()
 def detector():
     """
     Construct DetectTarget.
     """
-    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH)
+    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH, ENABLE_HALF)
     yield detection
 
 @pytest.fixture()
@@ -70,19 +73,19 @@ def test_rmse():
         actual_error = rmse(sample_actual, sample_expected)
 
         # Test
-        np.testing.assert_allclose(actual_error, EXPECTED_ERROR)
+        np.testing.assert_almost_equal(actual_error, EXPECTED_ERROR)
+
 
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
     """
 
-    TOLERANCE = 1
+    __IMAGE_DIFFERENCE_TOLERANCE = 1
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
                               image_bus: image_and_time.ImageAndTime):
-                              max_rmse: float):
         """
         Bus image.
         """
@@ -91,18 +94,18 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, actual = detector.run(image_bus, False)
+        result, actual = detector.run(image_bus)
 
         # Test
-        error = rmse(actual, expected)
         assert result
         assert actual is not None
-        assert error < self.TOLERANCE
+    
+        error = rmse(actual, expected)
+        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
                                  image_zidane: image_and_time.ImageAndTime):
-                                 max_rmse: float):
         """
         Zidane image.
         """
@@ -111,18 +114,18 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, actual = detector.run(image_zidane, False)
+        result, actual = detector.run(image_zidane)
 
         # Test
-        error = rmse(actual, expected)
         assert result
         assert actual is not None
-        assert error < self.TOLERANCE
+
+        error = rmse(actual, expected)
+        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
                                    image_zidane: image_and_time.ImageAndTime):
-                                   max_rmse: float):
         """
         Multiple Zidane images.
         """
@@ -140,7 +143,7 @@ class TestDetector:
         # Run
         outputs = []
         for i in range(0, IMAGE_COUNT):
-            output = detector.run(input_images[i], False)
+            output = detector.run(input_images[i])
             outputs.append(output)
 
         # Test
@@ -151,4 +154,4 @@ class TestDetector:
             assert actual is not None
 
             error = rmse(actual, expected)
-            assert error < self.TOLERANCE
+            assert error < self.__IMAGE_DIFFERENCE_TOLERANCE

@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
-        args=(device, MODEL_PATH, "", image_in_queue, image_out_queue, controller),
+        args=(device, MODEL_PATH, False, "", image_in_queue, image_out_queue, controller),
     )
 
     # Run
