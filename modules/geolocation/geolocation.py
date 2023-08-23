@@ -13,9 +13,6 @@ from .. import merged_odometry_detections
 from ..common.mavlink.modules import drone_odometry
 
 
-FLOAT_PRECISION_ABS_TOLERANCE = 1E-3
-
-
 class Geolocation:
     """
     Converts image space into world space.
@@ -178,17 +175,12 @@ class Geolocation:
             -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
         """
         Applies the transform matrix to the detection.
-        perspective_transform_matrix: Must be affine.
+        perspective_transform_matrix: Element in last row and column must be 1 .
         """
         if not camera_properties.is_matrix_r3x3(perspective_transform_matrix):
             return False, None
 
-        if not np.allclose(
-            perspective_transform_matrix[2, :],
-            np.array([0.0, 0.0, 1.0], dtype=np.float32),
-            atol=FLOAT_PRECISION_ABS_TOLERANCE,
-        ):
-            # Last row must be 0, 0, 1 for matrix to be affine
+        if not np.allclose(perspective_transform_matrix[2][2], 1.0):
             return False, None
 
         centre = detection.get_centre()
@@ -196,7 +188,7 @@ class Geolocation:
 
         input_centre = np.array([centre[0], centre[1], 1.0], dtype=np.float32)
         # More efficient to multiply a matrix than looping over the points
-        # Transpose to columns from rowss
+        # Transpose to columns from rows
         input_vertices = np.array(
             [
                 [top_left[0], top_left[1], 1.0],
@@ -212,6 +204,9 @@ class Geolocation:
         # Transpose back to rows from columns
         output_vertices = (perspective_transform_matrix @ input_vertices).T
 
+        # Normalize by last element
+        # Homogeneous/perspective divide:
+        # https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
         ground_centre = np.array(
             [
                 output_centre[0] / output_centre[2],

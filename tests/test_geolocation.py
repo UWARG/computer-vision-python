@@ -748,26 +748,6 @@ class TestGeolocationConvertDetection:
         assert actual.label == expected.label
         np.testing.assert_almost_equal(actual.confidence, expected.confidence)
 
-    def test_bad_not_homogeneous(self, detection1: detections_and_time.Detection, non_affine_matrix: np.ndarray):
-        """
-        Nonhomogeneous matrix.
-        """
-        # Setup
-
-        # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
-                detection1,
-                non_affine_matrix,
-            )
-        # pylint: enable=protected-access
-
-        # Test
-        assert not result
-        assert actual is None
-
 
 class TestGeolocationRun:
     """
@@ -871,6 +851,9 @@ class TestGeolocationRun:
                       advanced_locator: geolocation.Geolocation,
                       detection_bottom_right_point: detections_and_time.Detection,
                       detection_centre_left_point: detections_and_time.Detection):
+        """
+        2 point detections.
+        """
         # Setup
         result, drone_position = \
             drone_odometry.DronePosition.create(
