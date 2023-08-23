@@ -19,7 +19,7 @@ class Detection:
                label: int,
                confidence: float) -> "tuple[bool, Detection | None]":
         """
-        bounds are of form x1, y1, x2, y2.
+        bounds are of form x1, y1, x2, y2 .
         """
         # Check every element in bounds is >= 0.0
         if bounds.shape != (4,) or not np.greater_equal(bounds, 0.0).all():
