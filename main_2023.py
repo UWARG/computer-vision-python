@@ -9,6 +9,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
+from modules.flight_input import flight_input_worker
 from modules.video_input import video_input_worker
 
 
@@ -23,6 +24,9 @@ DETECT_TARGET_DEVICE = 0  # Use "cpu" if no CUDA
 DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
 DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
+FLIGHT_INPUT_ADDRESS = "tcp:127.0.0.1:14550"
+FLIGHT_INPUT_WORKER_PERIOD = 1.0 #seconds (placeholder value)
+
 
 if __name__ == "__main__":
     # Setup
@@ -34,6 +38,10 @@ if __name__ == "__main__":
         QUEUE_MAX_SIZE,
     )
     detect_target_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    flight_target_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -65,9 +73,22 @@ if __name__ == "__main__":
         ),
     )
 
+    flight_input_manager = worker_manager.WorkerManager()
+    flight_input_manager.create_workers(
+        1, #not sure if there will be multiple.
+        flight_input_worker.flight_input_worker,
+        (
+            FLIGHT_INPUT_ADDRESS,
+            FLIGHT_INPUT_WORKER_PERIOD,
+            flight_target_to_main_queue,
+            controller,
+        ),
+    )
+
     # Run
     video_input_manager.start_workers()
     detect_target_manager.start_workers()
+    flight_input_manager.start_workers()
 
     while True:
         image = detect_target_to_main_queue.queue.get()
@@ -83,8 +104,10 @@ if __name__ == "__main__":
 
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_main_queue.fill_and_drain_queue()
+    flight_target_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
+    flight_input_manager.join_workers()
 
     print("Done!")
