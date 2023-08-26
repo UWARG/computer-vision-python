@@ -9,6 +9,7 @@ def flight_input_worker(address: str,
                         output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                         controller: worker_controller.WorkerController):
     """
+    TODO: is save_name required for this worker?
     Worker process. 
 
     address is initial setting.

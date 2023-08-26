@@ -25,7 +25,7 @@ DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_d
 DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
 FLIGHT_INPUT_ADDRESS = "tcp:127.0.0.1:14550"
-FLIGHT_INPUT_WORKER_PERIOD = 1.0 #seconds (placeholder value)
+FLIGHT_INPUT_WORKER_PERIOD = 1.0 #seconds TODO: Update
 
 
 if __name__ == "__main__":
