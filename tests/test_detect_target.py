@@ -1,16 +1,18 @@
 """
-TODO: PointsAndTime
+TODO: PointsAndTime.
 """
 import copy
 
 import cv2
 import numpy as np
 import pytest
+import torch
 
 from modules.detect_target import detect_target
-from modules import frame_and_time
+from modules import image_and_time
 
 
+DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
@@ -20,32 +22,45 @@ IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
 
 @pytest.fixture()
 def detector():
-    detector = detect_target.DetectTarget(MODEL_PATH)
-    yield detector
+    """
+    Construct DetectTarget.
+    """
+    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH)
+    yield detection
 
 @pytest.fixture()
 def image_bus():
+    """
+    Load bus image.
+    """
     image = cv2.imread(IMAGE_BUS_PATH)
-    image_bus = frame_and_time.FrameAndTime(image)
-    yield image_bus
+    result, bus_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert bus_image is not None
+    yield bus_image
 
 @pytest.fixture()
 def image_zidane():
+    """
+    Load Zidane image.
+    """
     image = cv2.imread(IMAGE_ZIDANE_PATH)
-    image_zidane = frame_and_time.FrameAndTime(image)
-    yield image_zidane
+    result, zidane_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert zidane_image is not None
+    yield zidane_image
 
 
 class TestDetector:
     """
-    Tests DetectTarget.run()
+    Tests `DetectTarget.run()` .
     """
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
-                              image_bus: frame_and_time.FrameAndTime):
+                              image_bus: image_and_time.ImageAndTime):
         """
-        Bus image
+        Bus image.
         """
         # Setup
         expected = cv2.imread(IMAGE_BUS_ANNOTATED_PATH)
@@ -61,9 +76,9 @@ class TestDetector:
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
-                                 image_zidane: frame_and_time.FrameAndTime):
+                                 image_zidane: image_and_time.ImageAndTime):
         """
-        Zidane image
+        Zidane image.
         """
         # Setup
         expected = cv2.imread(IMAGE_ZIDANE_ANNOTATED_PATH)
@@ -79,9 +94,9 @@ class TestDetector:
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
-                                   image_zidane: frame_and_time.FrameAndTime):
+                                   image_zidane: image_and_time.ImageAndTime):
         """
-        Multiple Zidane images
+        Multiple Zidane images.
         """
         IMAGE_COUNT = 4
 

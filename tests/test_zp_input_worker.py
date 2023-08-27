@@ -1,13 +1,14 @@
 """
-Tests process
+Test worker process.
 """
 import multiprocessing as mp
 import queue
 import time
 
-from utilities import manage_worker
 from modules.zp_input import zp_input_worker
 from modules import message_and_time
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 
 
 PORT = "/dev/ttyS0"
@@ -16,15 +17,15 @@ BAUDRATE = 115_200
 
 if __name__ == "__main__":
     # Setup
-    worker_manager = manage_worker.ManageWorker()
+    controller = worker_controller.WorkerController()
 
-    m = mp.Manager()
-    telemetry_out_queue = m.Queue()
-    request_out_queue = m.Queue()
+    mp_manager = mp.Manager()
+    telemetry_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    request_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=zp_input_worker.zp_input_worker,
-        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, worker_manager),
+        args=(PORT, BAUDRATE, telemetry_out_queue, request_out_queue, controller),
     )
 
     # Run
@@ -32,12 +33,12 @@ if __name__ == "__main__":
 
     time.sleep(3)
 
-    worker_manager.request_exit()
+    controller.request_exit()
 
     # Test
     while True:
         try:
-            input_data: message_and_time.MessageAndTime = telemetry_out_queue.get_nowait()
+            input_data: message_and_time.MessageAndTime = telemetry_out_queue.queue.get_nowait()
             assert str(type(input_data)) == \
                 "<class \'modules.message_and_time.MessageAndTime\'>"
             assert input_data.message.header.type == 0
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
     while True:
         try:
-            input_data: message_and_time.MessageAndTime = request_out_queue.get_nowait()
+            input_data: message_and_time.MessageAndTime = request_out_queue.queue.get_nowait()
             assert str(type(input_data)) == \
                 "<class \'modules.message_and_time.MessageAndTime\'>"
             assert input_data.message.header.type == 1

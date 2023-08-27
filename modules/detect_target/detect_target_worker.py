@@ -1,35 +1,40 @@
 """
-Gets frames and adds a timestamp
+Gets frames and outputs detections in image space.
 """
-import queue
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import detect_target
 
 
-def detect_target_worker(model_path: str,
+# Extra parameters required for worker communication
+# pylint: disable=too-many-arguments
+def detect_target_worker(device: "str | int",
+                         model_path: str,
                          save_name: str,
-                         input_queue: queue.Queue,
-                         output_queue: queue.Queue,
-                         worker_manager: manage_worker.ManageWorker):
+                         input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                         output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                         controller: worker_controller.WorkerController):
     """
     Worker process.
 
     model_path and save_name are initial settings.
     input_queue and output_queue are data queues.
-    worker_manager is how the main process communicates to this worker process.
+    controller is how the main process communicates to this worker process.
     """
-    detector = detect_target.DetectTarget(model_path, save_name)
+    detector = detect_target.DetectTarget(device, model_path, save_name)
 
-    while not worker_manager.is_exit_requested():
-        worker_manager.check_pause()
+    while not controller.is_exit_requested():
+        controller.check_pause()
 
-        input_data = input_queue.get()
+        input_data = input_queue.queue.get()
         if input_data is None:
-            continue
+            break
 
         result, value = detector.run(input_data)
         if not result:
             continue
 
-        output_queue.put(value)
+        output_queue.queue.put(value)
+
+# pylint: enable=too-many-arguments

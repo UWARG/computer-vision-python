@@ -1,5 +1,5 @@
 """
-Detects objects using the provided model
+Detects objects using the provided model.
 """
 import time
 
@@ -7,7 +7,7 @@ import cv2
 import numpy as np  # TODO: Remove
 import ultralytics
 
-from .. import frame_and_time
+from .. import image_and_time
 from .. import detections_and_time
 
 
@@ -15,26 +15,26 @@ from .. import detections_and_time
 # pylint: disable=too-few-public-methods
 class DetectTarget:
     """
-    Contains the YOLOv8 model for prediction
+    Contains the YOLOv8 model for prediction.
     """
-
-    def __init__(self, model_path: str, save_name: str = ""):
+    def __init__(self, device: "str | int", model_path: str, save_name: str = ""):
+        self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: frame_and_time.FrameAndTime) -> "tuple[bool, np.ndarray | None]":
+    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, np.ndarray | None]":
         """
-        Returns annotated image
+        Returns annotated image.
         TODO: Change to DetectionsAndTime
         """
-        image = data.frame
+        image = data.image
         predictions = self.__model.predict(
             source=image,
             half=True,
-            device=0,
+            device=self.__device,
             stream=False,
         )
 
@@ -49,14 +49,17 @@ class DetectTarget:
         if boxes.shape[0] == 0:
             return False, None
 
+        # Make a copy of bounding boxes in CPU space
         objects_bounds = boxes.xyxy.detach().cpu().numpy()
         detections = detections_and_time.DetectionsAndTime(data.timestamp)
         for i in range(0, boxes.shape[0]):
             bounds = objects_bounds[i]
             label = int(boxes.cls[i])
             confidence = float(boxes.conf[i])
-            detection = detections_and_time.Detection(bounds, label, confidence)
-            detections.append(detection)
+            result, detection = detections_and_time.Detection.create(bounds, label, confidence)
+            if result:
+                assert detection is not None
+                detections.append(detection)
 
         # Logging
         if self.__filename_prefix != "":
