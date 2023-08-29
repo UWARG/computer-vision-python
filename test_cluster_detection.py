@@ -1,7 +1,7 @@
 from timeit import default_timer as timer
 import sklearn.datasets
 from modules.cluster_estimation.cluster_estimation import ClusterEstimation
-from modules.cluster_estimation.detection_in_world import DetectionInWorld
+from modules.detection_in_world import DetectionInWorld
 import numpy as np
 import pytest
 
@@ -14,7 +14,7 @@ def cluster_model():
     model = ClusterEstimation()
     yield model
 
-def cluster_data(n_samples:list[int], cluster_standard_deviation:int=1) -> list[DetectionInWorld]:
+def generate_cluster_data(n_samples:list[int], cluster_standard_deviation:int=1) -> list[DetectionInWorld]:
     """
     Returns a list of points (DetectionInWorld objects) with specified points per cluster
     and standard deviation 
@@ -45,7 +45,19 @@ def cluster_data(n_samples:list[int], cluster_standard_deviation:int=1) -> list[
                                        random_state=0)
     detections = []
     for point in generated_points:
-        detections.append(DetectionInWorld(point[0], point[1]))
+        # Placeholder variables to create DetectionInWorld objects
+        placeholder_verticies = np.array([[0,0],[0,0],[0,0],[0,0]])
+        placeholder_label = 1
+        placeholder_confidence = 0.5
+
+        detection_created, detection_to_add = DetectionInWorld.create(placeholder_verticies,
+                                                                      point,
+                                                                      placeholder_label,
+                                                                      placeholder_confidence)
+        
+        if (detection_created):
+            detections.append(detection_to_add)
+            
     return detections, labels
 
 class TestModelExecutionCondition():
@@ -59,7 +71,7 @@ class TestModelExecutionCondition():
         """
         # Setup 
         TOTAL_NUM_DETECTIONS = MIN_TOTAL_POINTS_THRESHOLD - 1  # less than min threshold (100)
-        generated_detections, labels = cluster_data([TOTAL_NUM_DETECTIONS])
+        generated_detections, labels = generate_cluster_data([TOTAL_NUM_DETECTIONS])
 
         # Run
         cluster_model.clear_all_data()
@@ -78,8 +90,8 @@ class TestModelExecutionCondition():
         NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD - 1  # should not run the first time
         NEW_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD - 1 # under 10 new points 
         
-        generated_detections, y = cluster_data([NUM_DATA_POINTS])
-        generated_detections_2, y_2 = cluster_data([NEW_DATA_POINTS])
+        generated_detections, y = generate_cluster_data([NUM_DATA_POINTS])
+        generated_detections_2, y_2 = generate_cluster_data([NEW_DATA_POINTS])
 
         # Run
         cluster_model.clear_all_data()
@@ -98,8 +110,8 @@ class TestModelExecutionCondition():
         NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD + 10  # should run the first time
         NEW_DATA_POINTS = MIN_NEW_POINTS_THRESHOLD - 1 # under 10 new points 
 
-        generated_detections, y = cluster_data([NUM_DATA_POINTS])
-        generated_detections_2, y_2 = cluster_data([NEW_DATA_POINTS])
+        generated_detections, y = generate_cluster_data([NUM_DATA_POINTS])
+        generated_detections_2, y_2 = generate_cluster_data([NEW_DATA_POINTS])
 
         # Run
         model = cluster_model
@@ -116,7 +128,7 @@ class TestModelExecutionCondition():
         All conditions met should run
         """
         EXPECTED_CLUSTER_COUNT = MIN_TOTAL_POINTS_THRESHOLD + 1  # more than min total threshold should run 
-        generated_detections, y = cluster_data([EXPECTED_CLUSTER_COUNT])
+        generated_detections, y = generate_cluster_data([EXPECTED_CLUSTER_COUNT])
         model = cluster_model
     
         # Run
@@ -142,7 +154,7 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_REGULAR = CENTER_BOX_SIZE / 500
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [100, 100, 100, 100, 100]
-        generated_detections, y = cluster_data(DATA, STD_DEV_REGULAR)
+        generated_detections, y = generate_cluster_data(DATA, STD_DEV_REGULAR)
 
         # Run
         model = cluster_model
@@ -163,7 +175,7 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_LARGE = CENTER_BOX_SIZE / 100
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [100, 100, 100, 100, 100]
-        generated_detections, y = cluster_data(DATA, STD_DEV_LARGE)
+        generated_detections, y = generate_cluster_data(DATA, STD_DEV_LARGE)
 
         # Run
         model = cluster_model
@@ -184,7 +196,7 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_REGULAR = CENTER_BOX_SIZE / 500
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [5, 100, 100, 100, 100]
-        generated_detections, y = cluster_data(DATA, STD_DEV_REGULAR)
+        generated_detections, y = generate_cluster_data(DATA, STD_DEV_REGULAR)
 
         # Run
         model = cluster_model
