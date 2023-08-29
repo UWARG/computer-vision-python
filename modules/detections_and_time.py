@@ -90,9 +90,24 @@ class Detection:
 # pylint: disable=too-few-public-methods
 class DetectionsAndTime:
     """
-    Contains detected object and timestamp.
+    Contains detected object and timestamp
     """
-    def __init__(self,  timestamp: float):
+    __create_key = object()
+
+    @classmethod
+    def create(cls, timestamp) -> "tuple[bool, DetectionsAndTime | None]":
+        """
+        Sets timestamp to current time
+        """
+
+        return True, DetectionsAndTime(cls.__create_key, timestamp)
+    
+    def __init__(self, class_private_create_key,  timestamp: float):
+        """
+        Private constructor, use create() method
+        """
+        assert class_private_create_key is DetectionsAndTime.__create_key, "Use create() method"
+
         self.detections = []
         self.timestamp = timestamp
 
