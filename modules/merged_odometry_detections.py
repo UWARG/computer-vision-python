@@ -19,7 +19,10 @@ class MergedOdometryDetections:
     __create_key = object()
 
     @classmethod
-    def create(cls, drone_position, drone_orientation, detections) -> "tuple[bool, MergedOdometryDetections | None]":
+    def create(cls, 
+               drone_position: drone_odometry.DronePosition, 
+               drone_orientation: drone_odometry.DroneOrientation, 
+               detections: "list[detections_and_time.Detection]") -> "tuple[bool, MergedOdometryDetections | None]":
         """
         detections: list of Detections from detections_and_time
         """
