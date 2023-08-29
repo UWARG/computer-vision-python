@@ -90,7 +90,7 @@ class TestModelExecutionCondition():
         NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD - 1  # should not run the first time
         NEW_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD - 1 # under 10 new points 
         
-        generated_detections, y = generate_cluster_data([NUM_DATA_POINTS])
+        generated_detections, labels = generate_cluster_data([NUM_DATA_POINTS])
         generated_detections_2, y_2 = generate_cluster_data([NEW_DATA_POINTS])
 
         # Run
@@ -110,14 +110,13 @@ class TestModelExecutionCondition():
         NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD + 10  # should run the first time
         NEW_DATA_POINTS = MIN_NEW_POINTS_THRESHOLD - 1 # under 10 new points 
 
-        generated_detections, y = generate_cluster_data([NUM_DATA_POINTS])
+        generated_detections, labels = generate_cluster_data([NUM_DATA_POINTS])
         generated_detections_2, y_2 = generate_cluster_data([NEW_DATA_POINTS])
 
         # Run
-        model = cluster_model
-        model.clear_all_data()
-        model_ran, detections_in_world = model.run(generated_detections, False)
-        model_ran, detections_in_world = model.run(generated_detections_2, False)
+        cluster_model.clear_all_data()
+        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        model_ran, detections_in_world = cluster_model.run(generated_detections_2, False)
 
         # Test
         assert(not model_ran)
@@ -128,17 +127,15 @@ class TestModelExecutionCondition():
         All conditions met should run
         """
         EXPECTED_CLUSTER_COUNT = MIN_TOTAL_POINTS_THRESHOLD + 1  # more than min total threshold should run 
-        generated_detections, y = generate_cluster_data([EXPECTED_CLUSTER_COUNT])
-        model = cluster_model
+        generated_detections, labels = generate_cluster_data([EXPECTED_CLUSTER_COUNT])
     
         # Run
-        model = cluster_model
-        model.clear_all_data()
-        model_ran, detections_in_world = model.run(generated_detections, False)
+        cluster_model.clear_all_data()
+        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
         
         # Test
-        assert(model_ran == True)
-        assert(detections_in_world != None)
+        assert(model_ran)
+        assert(detections_in_world is not None)
     
 
 class TestCorrectNumberClusterOutputs():
@@ -154,17 +151,16 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_REGULAR = CENTER_BOX_SIZE / 500
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [100, 100, 100, 100, 100]
-        generated_detections, y = generate_cluster_data(DATA, STD_DEV_REGULAR)
+        generated_detections, labels= generate_cluster_data(DATA, STD_DEV_REGULAR)
 
         # Run
-        model = cluster_model
-        model.clear_all_data()
-        model.reset_model()
-        model_ran, detections_in_world = model.run(generated_detections, False)
+        cluster_model.clear_all_data()
+        cluster_model.reset_model()
+        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
         
         # Test
-        assert(model_ran == True)
-        assert(detections_in_world != None)
+        assert(model_ran)
+        assert(detections_in_world is not None)
         assert(len(detections_in_world) == EXPECTED_CLUSTER_COUNT)
 
     def test_detect_large_std_dev(self, cluster_model: ClusterEstimation):
@@ -175,17 +171,16 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_LARGE = CENTER_BOX_SIZE / 100
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [100, 100, 100, 100, 100]
-        generated_detections, y = generate_cluster_data(DATA, STD_DEV_LARGE)
+        generated_detections, labels= generate_cluster_data(DATA, STD_DEV_LARGE)
 
         # Run
-        model = cluster_model
-        model.clear_all_data()
-        model.reset_model()
-        model_ran, detections_in_world = model.run(generated_detections, False)
+        cluster_model.clear_all_data()
+        cluster_model.reset_model()
+        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
         
         # Test
-        assert(model_ran == True)
-        assert(detections_in_world != None)
+        assert(model_ran)
+        assert(detections_in_world is not None)
         assert(len(detections_in_world) == EXPECTED_CLUSTER_COUNT)
 
     def test_detect_skewed_data(self, cluster_model: ClusterEstimation):
@@ -196,15 +191,14 @@ class TestCorrectNumberClusterOutputs():
         STD_DEV_REGULAR = CENTER_BOX_SIZE / 500
         EXPECTED_CLUSTER_COUNT = 5
         DATA = [5, 100, 100, 100, 100]
-        generated_detections, y = generate_cluster_data(DATA, STD_DEV_REGULAR)
+        generated_detections, labels= generate_cluster_data(DATA, STD_DEV_REGULAR)
 
         # Run
-        model = cluster_model
-        model.clear_all_data()
-        model.reset_model()
-        model_ran, detections_in_world = model.run(generated_detections, False)
+        cluster_model.clear_all_data()
+        cluster_model.reset_model()
+        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
         
         # Test
-        assert(model_ran == True)
-        assert(detections_in_world != None)
+        assert(model_ran)
+        assert(detections_in_world is not None)
         assert(len(detections_in_world) == EXPECTED_CLUSTER_COUNT)
