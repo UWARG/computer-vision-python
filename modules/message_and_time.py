@@ -1,5 +1,5 @@
 """
-ZP message and timestamp.
+ZP message and timestamp
 """
 import time
 
@@ -8,13 +8,27 @@ import time
 # pylint: disable=too-few-public-methods
 class MessageAndTime:
     """
-    Contains ZP message and timestamp.
+    Contains ZP message and timestamp
     """
-    def __init__(self, message):
+    __create_key = object()
+
+    @classmethod
+    def create(cls, message) -> "tuple[bool, MessageAndTime | None]":
         """
-        Constructor sets timestamp to current time.
-        message: 1 of TelemMessages. No type annotation due to several possible types.
+        message: 1 of TelemMessages. No type annotation due to several possible types
         """
+        if len(message) == 0:
+            return False, None
+
+        return True, MessageAndTime(cls.__create_key, message)
+    
+    def __init__(self, class_private_create_key, message):
+        """
+        Private constructor, use create() method
+        Constructor sets timestamp to current time
+        """
+        assert class_private_create_key is MessageAndTime.__create_key, "Use create() method"
+
         self.message = message
         self.timestamp = time.time()
 
