@@ -95,7 +95,7 @@ class DetectionsAndTime:
     __create_key = object()
 
     @classmethod
-    def create(cls, timestamp) -> "tuple[bool, DetectionsAndTime | None]":
+    def create(cls, timestamp: float) -> "tuple[bool, DetectionsAndTime | None]":
         """
         Sets timestamp to current time
         """
