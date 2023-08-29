@@ -1,8 +1,7 @@
 """
 Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
-Returns an array of classes, each containing the x coordinate, y coordinate, and spherical covariance
-of each landing pad estimation. Whether or not a landing pad estimation is returned depends on the
-drop of its mean compared to the next greatest mean.
+Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
+covariance of each landing pad estimation.
 """
 
 import sklearn
@@ -12,10 +11,8 @@ import numpy as np
 
 
 from ..object_in_world import ObjectInWorld
-
-
-# Placeholder pending finalisation of geolocation output format:
 from ..detection_in_world import DetectionInWorld
+
 
 class ClusterEstimation:
     """
@@ -39,20 +36,29 @@ class ClusterEstimation:
     METHODS
     -------
     __init__()
+        Sets cluster model run conditions and random state
 
     clear_all_data()
+        Clears all past accumulated data
 
     reset_model()
+        unfits the model of any data
 
     run()
+        Take in list of landing pad detections and return list of estimated landing pad locations
+        if number of detections is sufficient, or if manually forced to run.
 
     __decide_to_run()
+        Decide when to run cluster estimation model
 
     __convert_detections_to_point()
-
-    __filter_by_points_ownership()
+        Convert DetectionInWorld input object to a [x,y] position to store
     
     __sort_by_weights()
+        Sort input model output list by weights in descending order
+
+    __get_distance()
+        Calculates distance between a point and a cluster center
     """
     # Vgmm Model Hyperparams 
     __MODEL_INIT_PARAM = "k-means++"
@@ -101,25 +107,6 @@ class ClusterEstimation:
         """
         self.__vgmm_model = sklearn.base.clone(self.__vgmm_model)
 
-    # TODO: Passing points into the model and calling .predict() to obtain point ownership
-    # may potentially be faster than the current method of looping through and checking
-    # distance between each cluster and all points
-    def __filter_by_points_ownership(self, weights, covariances, clusters):
-        results = self.__vgmm_model.predict(self.__all_points)
-
-        # Filtering by each cluster's point ownership
-        cluster_with_points, points_per_cluster = np.unique(results, return_counts=True)
-        points_filtered_cluster = np.array([])
-        points_filtered_weights = np.array([])
-        points_filtered_covariances = np.array([])
-
-        for idx in cluster_with_points:
-            points_filtered_cluster = np.stack((points_filtered_cluster, clusters[idx]))
-            points_filtered_weights = np.stack((points_filtered_cluster, clusters[idx]))
-            points_filtered_covariances = np.stack((points_filtered_cluster, clusters[idx]))
-        
-        raise NotImplementedError
-
     def run(self, detections: "list[DetectionInWorld]", run_override: bool) -> "tuple[bool, list[ObjectInWorld | None]]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
@@ -146,7 +133,7 @@ class ClusterEstimation:
         self.__current_bucket += self.__convert_detections_to_point(detections)
 
         # Decide to run
-        if not run_override and not self.__decide_to_run(detections):
+        if not run_override and not self.__decide_to_run():
             return False, None
         
         # Fit points and get cluster data
@@ -205,7 +192,7 @@ class ClusterEstimation:
 
         return True, detections_in_world
 
-    def __decide_to_run(self, detections: "list[DetectionInWorld]") -> bool:
+    def __decide_to_run(self) -> bool:
         """
         Decide when to run cluster estimation model
         """
@@ -249,3 +236,22 @@ class ClusterEstimation:
             points.append(tuple([detection.centre[0], detection.centre[1]]))
 
         return points
+    
+    # TODO: Passing points into the model and calling .predict() to obtain point ownership
+    # may be faster than the current method of looping through and checking distance
+    # between each cluster and all points
+    def __filter_by_points_ownership(self, weights, covariances, clusters):
+        results = self.__vgmm_model.predict(self.__all_points)
+
+        # Filtering by each cluster's point ownership
+        cluster_with_points, points_per_cluster = np.unique(results, return_counts=True)
+        points_filtered_cluster = np.array([])
+        points_filtered_weights = np.array([])
+        points_filtered_covariances = np.array([])
+
+        for idx in cluster_with_points:
+            points_filtered_cluster = np.stack((points_filtered_cluster, clusters[idx]))
+            points_filtered_weights = np.stack((points_filtered_cluster, clusters[idx]))
+            points_filtered_covariances = np.stack((points_filtered_cluster, clusters[idx]))
+        
+        raise NotImplementedError
