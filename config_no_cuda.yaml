@@ -1,0 +1,14 @@
+# Global constants for main with cuda
+
+queue_max_size: 10
+
+video_input:
+  camera_name: 0
+  worker_period: 1.0  # seconds
+  save_prefix: "log_image"
+
+detect_target:
+  worker_count: 1
+  target_device: "cpu"
+  model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
+  save_prefix: "log_comp"
