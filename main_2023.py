@@ -13,7 +13,7 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
-
+# select config file from command line
 parser = argparse.ArgumentParser()
 parser.add_argument("--config", choices=["cuda", "cpu"], required=True, help="Select configuration file")
 args = parser.parse_args()
@@ -30,7 +30,7 @@ VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
 DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
 DETECT_TARGET_DEVICE = config["detect_target"]["device"]
-DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
+DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]        # TODO: update in config files
 DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
 
 
