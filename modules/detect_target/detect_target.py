@@ -18,6 +18,12 @@ class DetectTarget:
     Contains the YOLOv8 model for prediction.
     """
     def __init__(self, device: "str | int", model_path: str, enable_half_precision: bool, save_name: str = ""):
+        """
+        device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
+        model_path: path to the YOLOv8 model.
+        enable_half_precision: enable half precision when running inference.
+        save_name: filename prefix for logging detections and annotated images.
+        """
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
