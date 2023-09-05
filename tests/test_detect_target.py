@@ -14,7 +14,7 @@ from modules import image_and_time
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
-ENABLE_HALF_PRECISION =         False
+ENABLE_HALF_PRECISION =         False  # Github CI does not run on CUDA hardware so half precision is disabled.
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
