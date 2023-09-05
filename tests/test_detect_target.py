@@ -71,7 +71,7 @@ def test_rmse():
         # Setup
         sample_actual = np.array([1, 2, 3, 4, 5])
         sample_expected = np.array([1.6, 2.5, 2.9, 3, 4.1])
-        EXPECTED_ERROR = 0.697137
+        EXPECTED_ERROR = np.sqrt(0.486)
 
         # Run
         actual_error = rmse(sample_actual, sample_expected)
