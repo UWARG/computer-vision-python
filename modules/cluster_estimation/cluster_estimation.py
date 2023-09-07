@@ -69,7 +69,7 @@ class ClusterEstimation:
 
     # Hyperparams to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
-    __MAX_CLUSTER_SIZE = 2
+    __MAX_COVARIANCE_THRESHOLD = 10
 
     # Real-world scenario hyperparams
     __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
@@ -144,15 +144,13 @@ class ClusterEstimation:
         model_output:list[np.array, float, float] = list(zip(self.__vgmm_model.means_,
                                                             self.__vgmm_model.weights_,
                                                             self.__vgmm_model.covariances_))
+        # Empty cluster removal
+        model_output = self.__filter_by_points_ownership(model_output)
 
         # Sort weights from largest to smallest, along with corresponding covariances and means
         # TODO: Tuple should come already sorted if model converges, but appears to not come sort in one
         # of the tests, hence sorting is done every call. Investigate behaviour exactly to only sort when
         # necessary
-
-        # Bad detection removal
-        model_output = self.__filter_by_points_ownership(model_output)
-
         model_output = self.__sort_by_weights(model_output)
 
         # Loop through each cluster and drop all clusters after a __WEIGHT_DROP_THRESHOLD drop in weight occured
@@ -167,8 +165,9 @@ class ClusterEstimation:
                 weight_drop_thresh_reached = True
 
             num_viable_clusters += 1
-
         
+        # Remove clusters with covariances too large
+        model_output = self.__filter_by_covariances(model_output)
 
         # Iterate through model_output for each cluster center
         # i = 0
@@ -217,13 +216,13 @@ class ClusterEstimation:
 
         return True
     
-    def __sort_by_weights(self, cluster_weight_covariances:list[np.ndarray,
+    def __sort_by_weights(self, model_output:list[np.ndarray,
                                                                 np.float64,
                                                                 np.float64]) -> list[np.ndarray, np.float64, np.float64]:
         """
         Sort input model output list by weights in descending order
         """
-        return sorted(cluster_weight_covariances, key = lambda x:x[1], reverse=True)
+        return sorted(model_output, key = lambda x:x[1], reverse=True)
     
     def __get_distance(self, point, cluster):
         """
@@ -245,12 +244,12 @@ class ClusterEstimation:
 
         return points
     
-    # TODO: Passing points into the model and calling .predict() to obtain point ownership
-    # may be faster than the current method of looping through and checking distance
-    # between each cluster and all points
-    def __filter_by_points_ownership(self, cluster_weight_coveriances:list[np.ndarray,
-                                                                           np.float64,
-                                                                           np.float64]) -> list[np.ndarray, np.float64, np.float64]:
+    def __filter_by_points_ownership(self, 
+                                     model_output:list[np.ndarray,
+                                                       np.float64,
+                                                       np.float64]) -> list[np.ndarray,
+                                                                            np.float64,
+                                                                            np.float64]:
         """
         Removes any clusters that don't have any points belonging to it.
 
@@ -266,7 +265,7 @@ class ClusterEstimation:
 
         print(f'Before removal:')
 
-        for item in cluster_weight_coveriances:
+        for item in model_output:
             print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
 
         
@@ -274,17 +273,54 @@ class ClusterEstimation:
         unique_clusters, num_points_per_cluster = np.unique(results, return_counts=True)
         # Remove empty clusters
         i = 0
-        for i in range(len(cluster_weight_coveriances)):
+        for i in range(len(model_output)):
             if (i in unique_clusters):
-                valid_clusters.append(cluster_weight_coveriances[i])
+                valid_clusters.append(model_output[i])
 
-        print(f'Removed: {len(cluster_weight_coveriances)- len(valid_clusters)} clusters')
+        print(f'Removed: {len(model_output)- len(valid_clusters)} clusters')
         print(f'Unique Clusters: {unique_clusters}')
         print(f'Unique Points: {num_points_per_cluster}')
 
-        print(f'After removal:')
+        print("After removal:")
 
         for item in valid_clusters:
             print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
 
         return valid_clusters
+
+    def __filter_by_covariances(self,
+                                model_output:list[np.ndarray,
+                                                  np.float64,
+                                                  np.float64]) -> list[np.ndarray,
+                                                                       np.float64,
+                                                                       np.float64]:
+        """
+        Removes any cluster with covariances much higher than lowest covariance value
+        """
+        # python list and not np array, need to loop through manually
+        min_covariance = 1E6
+        for item in model_output:
+            if (min_covariance > item[2]):
+                min_covariance = item[2]
+        max_covariance_threshold = min_covariance * self.__MAX_COVARIANCE_THRESHOLD
+
+        print()
+        print(max_covariance_threshold)
+        print("Before covariance filtering: ")
+        for item in model_output:
+            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
+
+        # Iterate through model_output for each cluster center
+        i = 0
+        while i < len(model_output):
+            valid_cluster = False
+            if model_output[i][2] > max_covariance_threshold:
+                model_output.pop(i)
+            else:
+                i += 1
+
+        print("After covariance filtering: ")
+        for item in model_output:
+            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
+        
+        return model_output
