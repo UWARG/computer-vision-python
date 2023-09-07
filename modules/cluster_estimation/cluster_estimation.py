@@ -65,6 +65,7 @@ class ClusterEstimation:
     __COVAR_TYPE = "spherical"
     __WEIGHT_CONC_PRIOR = 100
     __MEAN_PRECISION_PRIOR = 1E-6
+    __MAX_MODEL_ITERATIONS = 1000
 
     # Hyperparams to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
@@ -82,7 +83,8 @@ class ClusterEstimation:
             random_state = random_state,
             weight_concentration_prior = self.__WEIGHT_CONC_PRIOR,
             init_params = self.__MODEL_INIT_PARAM,
-            mean_precision_prior = self.__MEAN_PRECISION_PRIOR)
+            mean_precision_prior = self.__MEAN_PRECISION_PRIOR,
+            max_iter=self.__MAX_MODEL_ITERATIONS)
 
         # Points storage
         self.__all_points = []
@@ -148,6 +150,9 @@ class ClusterEstimation:
         # of the tests, hence sorting is done every call. Investigate behaviour exactly to only sort when
         # necessary
 
+        # Bad detection removal
+        model_output = self.__filter_by_points_ownership(model_output)
+
         model_output = self.__sort_by_weights(model_output)
 
         # Loop through each cluster and drop all clusters after a __WEIGHT_DROP_THRESHOLD drop in weight occured
@@ -163,23 +168,24 @@ class ClusterEstimation:
 
             num_viable_clusters += 1
 
-        # Bad detection removal
-        # Iterate through model_output for each cluster center
-        i = 0
-        while i < len(model_output):
-            valid_point = False
-            j = 0
-            while j < len(self.__all_points):
-                # Cluster only valid if at least 1 point falls within 5m
-                if (self.__get_distance(model_output[i][0], self.__all_points[j]) < self.__MAX_CLUSTER_SIZE):
-                    valid_point = True
-                j += 1
+        
 
-            # remove point if not valid
-            if not valid_point:
-                model_output.pop(i)
-            else:
-                i += 1
+        # Iterate through model_output for each cluster center
+        # i = 0
+        # while i < len(model_output):
+        #     valid_point = False
+        #     j = 0
+        #     while j < len(self.__all_points):
+        #         # Cluster only valid if at least 1 point falls within 5m
+        #         if (self.__get_distance(model_output[i][0], self.__all_points[j]) < self.__MAX_CLUSTER_SIZE):
+        #             valid_point = True
+        #         j += 1
+
+        #     # remove point if not valid
+        #     if not valid_point:
+        #         model_output.pop(i)
+        #     else:
+        #         i += 1
 
         # Create output list of remaining valid clusters
         detections_in_world = []
@@ -211,7 +217,9 @@ class ClusterEstimation:
 
         return True
     
-    def __sort_by_weights(self, cluster_weight_covariances:list[np.ndarray, np.float64, np.float64]) -> list[np.ndarray, np.float64, np.float64]:
+    def __sort_by_weights(self, cluster_weight_covariances:list[np.ndarray,
+                                                                np.float64,
+                                                                np.float64]) -> list[np.ndarray, np.float64, np.float64]:
         """
         Sort input model output list by weights in descending order
         """
@@ -240,18 +248,43 @@ class ClusterEstimation:
     # TODO: Passing points into the model and calling .predict() to obtain point ownership
     # may be faster than the current method of looping through and checking distance
     # between each cluster and all points
-    def __filter_by_points_ownership(self, weights, covariances, clusters):
-        results = self.__vgmm_model.predict(self.__all_points)
+    def __filter_by_points_ownership(self, cluster_weight_coveriances:list[np.ndarray,
+                                                                           np.float64,
+                                                                           np.float64]) -> list[np.ndarray, np.float64, np.float64]:
+        """
+        Removes any clusters that don't have any points belonging to it.
 
-        # Filtering by each cluster's point ownership
-        cluster_with_points, points_per_cluster = np.unique(results, return_counts=True)
-        points_filtered_cluster = np.array([])
-        points_filtered_weights = np.array([])
-        points_filtered_covariances = np.array([])
+        PARAMETERS
+        ----------
 
-        for idx in cluster_with_points:
-            points_filtered_cluster = np.stack((points_filtered_cluster, clusters[idx]))
-            points_filtered_weights = np.stack((points_filtered_cluster, clusters[idx]))
-            points_filtered_covariances = np.stack((points_filtered_cluster, clusters[idx]))
+        RETURNS
+        -------
+        """
         
-        raise NotImplementedError
+        results = self.__vgmm_model.predict(self.__all_points)
+        valid_clusters = []
+
+        print(f'Before removal:')
+
+        for item in cluster_weight_coveriances:
+            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
+
+        
+        # Filtering by each cluster's point ownership
+        unique_clusters, num_points_per_cluster = np.unique(results, return_counts=True)
+        # Remove empty clusters
+        i = 0
+        for i in range(len(cluster_weight_coveriances)):
+            if (i in unique_clusters):
+                valid_clusters.append(cluster_weight_coveriances[i])
+
+        print(f'Removed: {len(cluster_weight_coveriances)- len(valid_clusters)} clusters')
+        print(f'Unique Clusters: {unique_clusters}')
+        print(f'Unique Points: {num_points_per_cluster}')
+
+        print(f'After removal:')
+
+        for item in valid_clusters:
+            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
+
+        return valid_clusters

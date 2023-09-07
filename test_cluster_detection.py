@@ -1,9 +1,10 @@
-from timeit import default_timer as timer
+import pytest
+import numpy as np
 import sklearn.datasets
+
+
 from modules.cluster_estimation.cluster_estimation import ClusterEstimation
 from modules.detection_in_world import DetectionInWorld
-import numpy as np
-import pytest
 
 MIN_TOTAL_POINTS_THRESHOLD = 100
 MIN_NEW_POINTS_THRESHOLD = 10
@@ -190,7 +191,7 @@ class TestCorrectNumberClusterOutputs():
         # Setup
         STD_DEV_REGULAR = CENTER_BOX_SIZE / 500
         EXPECTED_CLUSTER_COUNT = 5
-        DATA = [5, 100, 100, 100, 100]
+        DATA = [1, 1, 1, 1, 20, 100, 100, 100, 100]
         generated_detections, labels= generate_cluster_data(DATA, STD_DEV_REGULAR)
 
         # Run
