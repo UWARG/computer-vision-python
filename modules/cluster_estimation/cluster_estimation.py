@@ -139,6 +139,7 @@ class ClusterEstimation:
             return False, None
         
         # Fit points and get cluster data
+        self.reset_model() 
         self.__vgmm_model = self.__vgmm_model.fit(self.__all_points)
 
         model_output:list[np.array, float, float] = list(zip(self.__vgmm_model.means_,
@@ -263,11 +264,6 @@ class ClusterEstimation:
         results = self.__vgmm_model.predict(self.__all_points)
         valid_clusters = []
 
-        print(f'Before removal:')
-
-        for item in model_output:
-            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
-
         
         # Filtering by each cluster's point ownership
         unique_clusters, num_points_per_cluster = np.unique(results, return_counts=True)
@@ -277,14 +273,6 @@ class ClusterEstimation:
             if (i in unique_clusters):
                 valid_clusters.append(model_output[i])
 
-        print(f'Removed: {len(model_output)- len(valid_clusters)} clusters')
-        print(f'Unique Clusters: {unique_clusters}')
-        print(f'Unique Points: {num_points_per_cluster}')
-
-        print("After removal:")
-
-        for item in valid_clusters:
-            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
 
         return valid_clusters
 
@@ -304,12 +292,6 @@ class ClusterEstimation:
                 min_covariance = item[2]
         max_covariance_threshold = min_covariance * self.__MAX_COVARIANCE_THRESHOLD
 
-        print()
-        print(max_covariance_threshold)
-        print("Before covariance filtering: ")
-        for item in model_output:
-            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
-
         # Iterate through model_output for each cluster center
         i = 0
         while i < len(model_output):
@@ -319,8 +301,4 @@ class ClusterEstimation:
             else:
                 i += 1
 
-        print("After covariance filtering: ")
-        for item in model_output:
-            print(f'{item[0]}  |  {item[1]}  |  {item[2]}')
-        
         return model_output
