@@ -6,13 +6,16 @@ import sklearn.datasets
 from modules.cluster_estimation.cluster_estimation import ClusterEstimation
 from modules.detection_in_world import DetectionInWorld
 
+
 MIN_TOTAL_POINTS_THRESHOLD = 100
-MIN_NEW_POINTS_THRESHOLD = 10
+MIN_NEW_POINTS_TO_RUN = 10
 CENTER_BOX_SIZE = 500
+RANDOM_STATE = 0
 
 @pytest.fixture()
 def cluster_model():
-    model = ClusterEstimation()
+    model_created, model = ClusterEstimation.create(MIN_NEW_POINTS_TO_RUN, MIN_NEW_POINTS_TO_RUN, RANDOM_STATE)
+    assert model_created
     yield model
 
 def generate_cluster_data(n_samples:list[int], cluster_standard_deviation:int=1) -> list[DetectionInWorld]:
@@ -110,7 +113,7 @@ class TestModelExecutionCondition():
         """
         # Setup
         NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD + 10  # should run the first time
-        NEW_DATA_POINTS = MIN_NEW_POINTS_THRESHOLD - 1 # under 10 new points 
+        NEW_DATA_POINTS = MIN_NEW_POINTS_TO_RUN - 1 # under 10 new points 
 
         generated_detections, labels, cluster_positions= generate_cluster_data([NUM_DATA_POINTS])
         generated_detections_2, labels_2, cluster_positions_2 = generate_cluster_data([NEW_DATA_POINTS])

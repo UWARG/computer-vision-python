@@ -1,15 +1,15 @@
 """
 Gets detections in world space and outputs estimations of objects
 """
-import queue
+from queue import Queue
 
 from utilities import manage_worker
 from . import cluster_estimation
 
 
 def cluster_estimation_worker(# TODO: Initialization variables
-                              input_queue: queue.Queue,
-                              output_queue: queue.Queue,
+                              input_queue: Queue,
+                              output_queue: Queue,
                               worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
@@ -18,7 +18,13 @@ def cluster_estimation_worker(# TODO: Initialization variables
     input_queue and output_queue are data queues.
     worker_manager is how the main process communicates to this worker process.
     """
-    estimator = cluster_estimation.ClusterEstimation()  # TODO: Initialization variables
+    MIN_ACTIVATION_THRESHOLD = 100
+    MIN_POINTS_PER_RUN = 10
+    RANDOM_STATE = 0
+
+    estimator_created, estimator = cluster_estimation.ClusterEstimation.create(MIN_ACTIVATION_THRESHOLD,
+                                                                               MIN_POINTS_PER_RUN,
+                                                                               RANDOM_STATE) 
 
     while not worker_manager.is_exit_requested():
         worker_manager.check_pause()
