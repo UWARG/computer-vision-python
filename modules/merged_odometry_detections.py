@@ -14,7 +14,7 @@ from . import odometry_and_time
 # pylint: disable=too-few-public-methods
 class MergedOdometryDetections:
     """
-    Contains odometry/telemetry and detections merged by closest timestamp
+    Contains odometry/telemetry and detections merged by closest timestamp.
     """
     __create_key = object()
 
@@ -24,7 +24,7 @@ class MergedOdometryDetections:
                drone_orientation: drone_odometry.DroneOrientation, 
                detections: "list[detections_and_time.Detection]") -> "tuple[bool, MergedOdometryDetections | None]":
         """
-        detections: list of Detections from detections_and_time
+        detections: List of Detections from detections_and_time.
         """
         if len(detections) == 0:
             return False, None
@@ -41,8 +41,7 @@ class MergedOdometryDetections:
 >>>>>>> bd110f8 (Update merged_odometry_detections.py)
                  detections: "list[detections_and_time.Detection]"):
         """
-        Private constructor, use create() method
-        Required for separation
+        Private constructor, use create() method.
         """
 <<<<<<< HEAD
         self.odometry_local = odometry_local
