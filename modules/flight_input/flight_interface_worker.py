@@ -1,15 +1,17 @@
+"""
+Gets odometry information from drone.
+"""
 import time
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-from . import flight_input
+from flight_interface import FlightInterface
 
 def flight_input_worker(address: str,
                         period: float,
                         output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                         controller: worker_controller.WorkerController):
     """
-    TODO: is save_name required for this worker?
     Worker process. 
 
     address is initial setting.
@@ -17,7 +19,7 @@ def flight_input_worker(address: str,
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    input_device = flight_input.FlightInput(address)
+    input_device = FlightInterface(address)
 
     while not controller.is_exit_requested():
         controller.check_pause()

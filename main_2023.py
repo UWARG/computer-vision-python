@@ -9,7 +9,6 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
-from modules.flight_input import flight_input_worker
 from modules.video_input import video_input_worker
 
 
@@ -73,22 +72,9 @@ if __name__ == "__main__":
         ),
     )
 
-    flight_input_manager = worker_manager.WorkerManager()
-    flight_input_manager.create_workers(
-        1, #not sure if there will be multiple.
-        flight_input_worker.flight_input_worker,
-        (
-            FLIGHT_INPUT_ADDRESS,
-            FLIGHT_INPUT_WORKER_PERIOD,
-            flight_target_to_main_queue,
-            controller,
-        ),
-    )
-
     # Run
     video_input_manager.start_workers()
     detect_target_manager.start_workers()
-    flight_input_manager.start_workers()
 
     while True:
         image = detect_target_to_main_queue.queue.get()
@@ -108,6 +94,5 @@ if __name__ == "__main__":
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
-    flight_input_manager.join_workers()
 
     print("Done!")

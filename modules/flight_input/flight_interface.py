@@ -6,13 +6,29 @@ from modules.common.mavlink.modules import flight_controller
 from modules import odometry_and_time
 
 
-#This is just an interface
-#pylint: disable=too-few-public-methods
-class FlightInput:
+# This is just an interface
+# pylint: disable=too-few-public-methods
+class FlightInterface:
     """
     Create flight controller and combines odometry data and timestamp.
     """
-    def __init__(self, address: str, save_name: str = ""):
+    __create_key = object()
+
+    @classmethod
+    def create(cls, address: str) -> "tuple[bool, FlightInterface | None]":
+        """
+        address, TCP or UDP string.
+        """ 
+        if address == "":
+            return False, None
+        
+        return True, FlightInterface(cls.__create_key, address)
+
+    def __init__(self, class_private_create_key, address: str):
+        """
+        Private constructor, use create() method.
+        """
+        assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
         self.result, self.controller = flight_controller.FlightController.create(address)
     
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime]":
@@ -25,4 +41,4 @@ class FlightInput:
         
         return odometry_and_time.OdometryAndTime.create(data)
     
-    # pylint: enable=too-few-public-methods
+# pylint: enable=too-few-public-methods
