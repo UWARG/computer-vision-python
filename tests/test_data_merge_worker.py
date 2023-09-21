@@ -21,7 +21,7 @@ def simulate_detect_target_worker(timestamp: float,
     """
     Place the detection into the queue.
     """
-    detections = detections_and_time.DetectionsAndTime(timestamp)
+    detections = detections_and_time.DetectionsAndTime.create(timestamp)
     detections_queue.queue.put(detections)
 
 def simulate_flight_input_worker(timestamp: float,
