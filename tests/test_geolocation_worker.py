@@ -53,8 +53,14 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     assert result_simulate
     assert detection is not None
 
+<<<<<<< HEAD
     value = merged_odometry_detections.MergedOdometryDetections(
         drone_odometry,
+=======
+    value = merged_odometry_detections.MergedOdometryDetections.create(
+        drone_position,
+        drone_orientation,
+>>>>>>> 86c216f (Update test_geolocation_worker.py)
         [detection],
     )
 
