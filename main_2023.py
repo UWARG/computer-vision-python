@@ -23,9 +23,6 @@ DETECT_TARGET_DEVICE = 0  # Use "cpu" if no CUDA
 DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
 DETECT_TARGET_SAVE_PREFIX = "log_comp"
 
-FLIGHT_INPUT_ADDRESS = "tcp:127.0.0.1:14550"
-FLIGHT_INPUT_WORKER_PERIOD = 1.0 #seconds TODO: Update
-
 
 if __name__ == "__main__":
     # Setup
@@ -37,10 +34,6 @@ if __name__ == "__main__":
         QUEUE_MAX_SIZE,
     )
     detect_target_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
-        mp_manager,
-        QUEUE_MAX_SIZE,
-    )
-    flight_target_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -90,7 +83,6 @@ if __name__ == "__main__":
 
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_main_queue.fill_and_drain_queue()
-    flight_target_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()

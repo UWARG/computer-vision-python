@@ -22,13 +22,14 @@ class FlightInterface:
         if address == "":
             return False, None
         
-        return True, FlightInterface(cls.__create_key, address)
+        assert cls.__create_key is FlightInterface.__create_key, "Use create() method"
+        
+        return True, FlightInterface(address)
 
-    def __init__(self, class_private_create_key, address: str):
+    def __init__(self, address: str):
         """
         Private constructor, use create() method.
         """
-        assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
         self.result, self.controller = flight_controller.FlightController.create(address)
     
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime]":

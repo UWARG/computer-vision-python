@@ -5,7 +5,8 @@ import time
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-from flight_interface import FlightInterface
+from . import flight_interface
+
 
 def flight_input_worker(address: str,
                         period: float,
@@ -19,14 +20,17 @@ def flight_input_worker(address: str,
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    input_device = FlightInterface(address)
+    result, flight_interface = flight_interface.FlightInterface(address)
+
+    if not result:
+        return
 
     while not controller.is_exit_requested():
         controller.check_pause()
 
         time.sleep(period)
 
-        result, value = input_device.run()
+        result, value = flight_interface.run()
         if not result:
             continue
 
