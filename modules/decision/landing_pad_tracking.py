@@ -19,15 +19,15 @@ class LandingPadTracking:
         self.__distance_squared_threshold = distance_squared_threshold
 
     @staticmethod
-    def __is_similar(detection1: object_in_world.ObjectInWorld,
-                     detection2: object_in_world.ObjectInWorld,
+    def __is_similar(detection_1: object_in_world.ObjectInWorld,
+                     detection_2: object_in_world.ObjectInWorld,
                      distance_squared_threshold: float) -> bool:
         """
-        Returns whether detection1 and detection2 are close enough to be considered the same
+        Returns whether detection_1 and detection_2 are close enough to be considered the same
         landing pad
         """
-        distance_squared = (detection2.position_x - detection1.position_x) ** 2 \
-                           + (detection2.position_y - detection1.position_y) ** 2
+        distance_squared = (detection_2.position_x - detection_1.position_x) ** 2 \
+                           + (detection_2.position_y - detection_1.position_y) ** 2
         return distance_squared < distance_squared_threshold
 
     def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
