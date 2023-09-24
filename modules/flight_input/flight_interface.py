@@ -19,19 +19,24 @@ class FlightInterface:
         """
         address, TCP or UDP string.
         """ 
-        if address == "":
-            return False, None
-        
-        assert cls.__create_key is FlightInterface.__create_key, "Use create() method"
-        
-        return True, FlightInterface(address)
+        result, controller = flight_controller.FlightController.create(address)
 
-    def __init__(self, address: str):
+        if result == False: 
+            return False, None
+
+        return True, FlightInterface(cls.__create_key, controller)
+
+    def __init__(self, class_private_create_key, controller):
         """
         Private constructor, use create() method.
         """
-        self.result, self.controller = flight_controller.FlightController.create(address)
-    
+        if controller is None:
+            return False, None
+
+        assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
+
+        self.controller = controller
+
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime]":
         """
         Returns a possible OdometryAndTime with current timestamp.

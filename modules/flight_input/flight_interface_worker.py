@@ -20,7 +20,7 @@ def flight_input_worker(address: str,
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    result, flight_interface = flight_interface.FlightInterface(address)
+    result, interface = flight_interface.FlightInterface(address)
 
     if not result:
         return
@@ -30,7 +30,7 @@ def flight_input_worker(address: str,
 
         time.sleep(period)
 
-        result, value = flight_interface.run()
+        result, value = interface.run()
         if not result:
             continue
 
