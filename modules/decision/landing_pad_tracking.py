@@ -1,8 +1,6 @@
 """
-Keeps track of detected and visited landing pads
+Keeps track of detected and visited landing pads.
 """
-
-import numpy as np
 
 from .. import object_in_world
 
@@ -10,7 +8,7 @@ from .. import object_in_world
 class LandingPadTracking:
     """
     Tracks the real world location of detected landing pads, labelling them as either confirmed
-    positive, unconfirmed positive, or false positive
+    positive, unconfirmed positive, or false positive.
     """
     def __init__(self, distance_squared_threshold: float):
         self.__unconfirmed_positives = []
@@ -48,7 +46,7 @@ class LandingPadTracking:
         Marks a detection as a confimred positive for future use
         """
         self.__confirmed_positives.append(detection)
-        
+
     def run(self, detections: "list[object_in_world.ObjectInWorld]"):
         """
         Updates the list of unconfirmed positives and returns the a first confirmed positive if
@@ -84,7 +82,7 @@ class LandingPadTracking:
         # If the list is empty, all landing pads have been visited, none are viable
         if len(self.__unconfirmed_positives) == 0:
             return False, None
-                
+
         # Sort list by variance in ascending order
         self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
 
