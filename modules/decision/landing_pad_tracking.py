@@ -24,7 +24,7 @@ class LandingPadTracking:
                      distance_squared_threshold: float) -> bool:
         """
         Returns whether detection_1 and detection_2 are close enough to be considered the same
-        landing pad
+        landing pad.
         """
         distance_squared = (detection_2.position_x - detection_1.position_x) ** 2 \
                            + (detection_2.position_y - detection_1.position_y) ** 2
@@ -33,7 +33,7 @@ class LandingPadTracking:
     def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
         """
         Marks a detection as false positive and removes similar landing pads from the list of
-        unconfirmed positives
+        unconfirmed positives.
         """
         self.__false_positives.append(detection)
         self.__unconfirmed_positives = [
@@ -43,14 +43,14 @@ class LandingPadTracking:
 
     def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld):
         """
-        Marks a detection as a confimred positive for future use
+        Marks a detection as a confimred positive for future use.
         """
         self.__confirmed_positives.append(detection)
 
     def run(self, detections: "list[object_in_world.ObjectInWorld]"):
         """
         Updates the list of unconfirmed positives and returns the a first confirmed positive if
-        one exists, else the unconfirmed positive with the lowest variance
+        one exists, else the unconfirmed positive with the lowest variance.
         """
         for detection in detections:
             match_found = False

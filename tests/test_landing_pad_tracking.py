@@ -1,5 +1,5 @@
 """
-Test landing pad tracking
+Test landing pad tracking.
 """
 
 import pytest
@@ -14,7 +14,7 @@ DISTANCE_SQUARED_THRESHOLD = 2  # Actual distance threshold is sqrt(2)
 @pytest.fixture()
 def tracker():
     """
-    Instantiates model tracking
+    Instantiates model tracking.
     """
     tracking = landing_pad_tracking.LandingPadTracking(DISTANCE_SQUARED_THRESHOLD)
     yield tracking
@@ -23,7 +23,7 @@ def tracker():
 @pytest.fixture
 def detections_1():
     """
-    Sample instances of ObjectInWorld for testing
+    Sample instances of ObjectInWorld for testing.
     """
     _, obj_1 = object_in_world.ObjectInWorld.create(0,0,8)
     _, obj_2 = object_in_world.ObjectInWorld.create(2,2,4)
@@ -39,7 +39,7 @@ def detections_1():
 @pytest.fixture
 def detections_2():
     """
-    Sample instances of ObjectInWorld for testing
+    Sample instances of ObjectInWorld for testing.
     """
     _, obj_1 = object_in_world.ObjectInWorld.create(0.5,0.5,1)
     _, obj_2 = object_in_world.ObjectInWorld.create(1.5,1.5,3)
@@ -55,7 +55,7 @@ def detections_2():
 @pytest.fixture
 def detections_3():
     """
-    Sample instances of ObjectInWorld for testing
+    Sample instances of ObjectInWorld for testing.
     """
     _, obj_1 = object_in_world.ObjectInWorld.create(0,0,8)
     _, obj_2 = object_in_world.ObjectInWorld.create(0.5,0.5,4)
@@ -71,14 +71,14 @@ def detections_3():
 class TestSimilar:
     """
     Test if similar function correctly determines if 2 landing pads are close enough to be
-    considered similar
+    considered similar.
     """
     # Required for testing
     # pylint: disable=protected-access
     def test_is_similar_positive_equal_to_threshold(self):
         """
         Test case where the second landing pad has positive coordinates and the distance between
-        them is equal to the distance threshold
+        them is equal to the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(1, 1, 0)[1]
@@ -95,7 +95,7 @@ class TestSimilar:
     def test_is_similar_negative_equal_to_threshold(self):
         """
         Test case where the second landing pad has negative coordinates and the distance between
-        them is equal to the distance threshold
+        them is equal to the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(-1, -1, 0)[1]
@@ -112,7 +112,7 @@ class TestSimilar:
     def test_is_similar_positive_less_than_threshold(self):
         """
         Test case where the second landing pad has positive coordinates and the distance between
-        them is less than the distance threshold
+        them is less than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(0.5, 0.5, 0)[1]
@@ -129,7 +129,7 @@ class TestSimilar:
     def test_is_similar_negative_less_than_threshold(self):
         """
         Test case where the second landing pad has negative coordinates and the distance between
-        them is less than the distance threshold
+        them is less than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(-0.5, -0.5, 0)[1]
@@ -146,7 +146,7 @@ class TestSimilar:
     def test_is_similar_positive_more_than_threshold(self):
         """
         Test case where the second landing pad has positive coordinates and the distance between
-        them is more than the distance threshold
+        them is more than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(2, 2, 0)[1]
@@ -163,7 +163,7 @@ class TestSimilar:
     def test_is_similar_negative_more_than_threshold(self):
         """
         Test case where the second landing pad has negative coordinates and the distance between
-        them is more than the distance threshold
+        them is more than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
         obj_2 = object_in_world.ObjectInWorld.create(-2, -2, 0)[1]
@@ -181,7 +181,7 @@ class TestSimilar:
 
 class TestMarkFalsePositive:
     """
-    Test if landing pad tracking correctly marks a detection as a false positive
+    Test if landing pad tracking correctly marks a detection as a false positive.
     """
     # Required for testing
     # pylint: disable=protected-access
@@ -189,7 +189,7 @@ class TestMarkFalsePositive:
                                             tracker: landing_pad_tracking.LandingPadTracking,
                                             detections_1: "list[object_in_world.ObjectInWorld]"):
         """
-        Test if marking false positive adds detection to list of false positives
+        Test if marking false positive adds detection to list of false positives.
         """
         _, false_positive = object_in_world.ObjectInWorld.create(20, 20, 20)
         assert false_positive is not None
@@ -213,7 +213,7 @@ class TestMarkFalsePositive:
                                               tracker: landing_pad_tracking.LandingPadTracking,
                                               detections_2: "list[object_in_world.ObjectInWorld]"):
         """
-        Test if marking false positive adds detection to list of false positives and removes
+        Test if marking false positive adds detection to list of false positives and removes.
         similar landing pads
         """
         _, false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
@@ -232,7 +232,7 @@ class TestMarkFalsePositive:
                                           tracker: landing_pad_tracking.LandingPadTracking,
                                           detections_1: "list[object_in_world.ObjectInWorld]"):
         """
-        Test if marking false positive adds detection to list of false positives
+        Test if marking false positive adds detection to list of false positives.
         """
         _, false_positive_1 = object_in_world.ObjectInWorld.create(0, 0, 1)
         assert false_positive_1 is not None
@@ -255,13 +255,13 @@ class TestMarkFalsePositive:
 
 class TestMarkConfirmedPositive:
     """
-    Test if landing pad tracking correctly marks a detection as a confirmed positive
+    Test if landing pad tracking correctly marks a detection as a confirmed positive.
     """
     # Required for testing
     # pylint: disable=protected-access
     def test_mark_confirmed_positive(self, tracker: landing_pad_tracking.LandingPadTracking):
         """
-        Test if marking confirmed positive adds detection to list of confirmed positives
+        Test if marking confirmed positive adds detection to list of confirmed positives.
         """
         _, confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
         assert confirmed_positive is not None
@@ -275,7 +275,7 @@ class TestMarkConfirmedPositive:
     def test_mark_multiple_confirmed_positives(self,
                                                tracker: landing_pad_tracking.LandingPadTracking):
         """
-        Test if marking confirmed positive adds detection to list of confirmed positives
+        Test if marking confirmed positive adds detection to list of confirmed positives.
         """
         _, confirmed_positive_1 = object_in_world.ObjectInWorld.create(1, 1, 1)
         assert confirmed_positive_1 is not None
@@ -295,13 +295,13 @@ class TestMarkConfirmedPositive:
 
 class TestLandingPadTracking:
     """
-    Test landing pad tracking run function
+    Test landing pad tracking run function.
     """
     # Required for testing
     # pylint: disable=protected-access
     def test_run_with_empty_detections_list(self, tracker: landing_pad_tracking.LandingPadTracking):
         """
-        Test run method with empty detections list
+        Test run method with empty detections list.
         """
         result, actual = tracker.run([])
         assert not result
@@ -311,7 +311,7 @@ class TestLandingPadTracking:
                            tracker: landing_pad_tracking.LandingPadTracking,
                            detections_1: "list[object_in_world.ObjectInWorld]"):
         """
-        Test run with only 1 input
+        Test run with only 1 input.
         """
         expected_output = detections_1[2]
         expected_unconfirmed_positives = [
@@ -332,7 +332,7 @@ class TestLandingPadTracking:
                                               tracker: landing_pad_tracking.LandingPadTracking,
                                               detections_3: "list[object_in_world.ObjectInWorld]"):
         """
-        Test run with only 1 input where 2 landing pads are similar
+        Test run with only 1 input where 2 landing pads are similar.
         """
         expected_output = detections_3[2]
         expected_unconfirmed_positives = [
@@ -353,7 +353,7 @@ class TestLandingPadTracking:
                                  detections_1: "list[object_in_world.ObjectInWorld]",
                                  detections_2: "list[object_in_world.ObjectInWorld]"):
         """
-        Test run with 2 inputs where some landing pads are similar
+        Test run with 2 inputs where some landing pads are similar.
         """
         expected_output = detections_2[0]
         expected_unconfirmed_positives = [
@@ -378,7 +378,7 @@ class TestLandingPadTracking:
                                          tracker: landing_pad_tracking.LandingPadTracking,
                                          detections_1: "list[object_in_world.ObjectInWorld]"):
         """
-        Test run when there is a confirmed positive
+        Test run when there is a confirmed positive.
         """
         _, confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
         assert confirmed_positive is not None
@@ -395,7 +395,7 @@ class TestLandingPadTracking:
                                      tracker: landing_pad_tracking.LandingPadTracking,
                                      detections_2: "list[object_in_world.ObjectInWorld]"):
         """
-        Test to see if run function doesn't add landing pads that are similar to false positives
+        Test to see if run function doesn't add landing pads that are similar to false positives.
         """
         _, false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
         assert false_positive is not None
