@@ -26,7 +26,7 @@ class FlightInterface:
 
         return True, FlightInterface(cls.__create_key, controller)
 
-    def __init__(self, class_private_create_key, controller):
+    def __init__(self, class_private_create_key, controller: flight_controller.FlightController):
         """
         Private constructor, use create() method.
         """
