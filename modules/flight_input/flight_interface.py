@@ -17,11 +17,11 @@ class FlightInterface:
     @classmethod
     def create(cls, address: str) -> "tuple[bool, FlightInterface | None]":
         """
-        address, TCP or UDP string.
-        """ 
+        address: TCP or port.
+        """
         result, controller = flight_controller.FlightController.create(address)
 
-        if result == False: 
+        if not result:
             return False, None
 
         return True, FlightInterface(cls.__create_key, controller)
@@ -30,9 +30,6 @@ class FlightInterface:
         """
         Private constructor, use create() method.
         """
-        if controller is None:
-            return False, None
-
         assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
 
         self.controller = controller
@@ -42,9 +39,10 @@ class FlightInterface:
         Returns a possible OdometryAndTime with current timestamp.
         """
         result, data = self.controller.get_odometry()
+
         if not result:
             return False, None
-        
+
         return odometry_and_time.OdometryAndTime.create(data)
-    
+
 # pylint: enable=too-few-public-methods
