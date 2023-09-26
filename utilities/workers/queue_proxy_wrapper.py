@@ -17,19 +17,27 @@ class QueueProxyWrapper:
         self.queue = mp_manager.Queue(maxsize)
         self.maxsize = maxsize
 
-    def fill_queue_with_sentinel(self):
+    def fill_queue_with_sentinel(self, timeout: float = 0.0):
         """
         Fills the queue with sentinel (None ).
+
+        timeout: Time waiting before giving up, must be greater than 0 .
         """
-        self.queue.put(None)
-        for _ in range(1, self.maxsize):
-            self.queue.put(None)
+        if timeout <= 0.0:
+            timeout = self.__QUEUE_TIMEOUT
+
+        try:
+            self.queue.put(None, timeout=timeout)
+            for _ in range(1, self.maxsize):
+                self.queue.put(None, timeout=timeout)
+        except queue.Full:
+            return
 
     def drain_queue(self, timeout: float = 0.0):
         """
         Drains the queue.
 
-        timeout: Time waiting before giving up, must be greater than 0.
+        timeout: Time waiting before giving up, must be greater than 0 .
         """
         if timeout <= 0.0:
             timeout = self.__QUEUE_TIMEOUT
@@ -37,7 +45,7 @@ class QueueProxyWrapper:
         try:
             self.queue.get(timeout=timeout)
         except queue.Empty:
-            pass
+            return
 
     def fill_and_drain_queue(self):
         """
