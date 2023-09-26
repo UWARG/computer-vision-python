@@ -16,19 +16,24 @@ from modules.video_input import video_input_worker
 
 CONFIG_FILE_PATH = pathlib.Path("./config.yaml")
 
-if __name__ == "__main__":
-
+def main() -> int:
+    """
+    Main function for airside code
+    """
     # Open config file
     try:
         with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
             try:
                 config = yaml.safe_load(file)
-            except yaml.YAMLError as e:
-                print(f"Error parsing YAML file: {e}")
+            except yaml.YAMLError as exc:
+                print(f"Error parsing YAML file: {exc}")
+                return -1
     except FileNotFoundError:
-        print(f"File not found {CONFIG_FILE_PATH}")
-    except IOError as e:
-        print(f"Error when opening file: {e}")
+        print(f"File not found: {CONFIG_FILE_PATH}")
+        return -1
+    except IOError as exc:
+        print(f"Error when opening file: {exc}")
+        return -1
 
     # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
@@ -49,6 +54,7 @@ if __name__ == "__main__":
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
     except KeyError:
         print("Config key(s) not found")
+        return -1
 
     # Setup
     controller = worker_controller.WorkerController()
@@ -113,3 +119,12 @@ if __name__ == "__main__":
     detect_target_manager.join_workers()
 
     print("Done!")
+
+
+if __name__ == "__main__":
+    result_run = main()
+    if result_run < 0:
+        print(f"ERROR: Status code: {result_run}")
+
+    print("Done!")
+    
