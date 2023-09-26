@@ -3,7 +3,7 @@ For 2022-2023 UAS competition.
 """
 import argparse
 import multiprocessing as mp
-from pathlib import Path
+import pathlib
 
 import cv2
 import yaml
@@ -14,13 +14,13 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
-CONFIG_FILE_PATH = Path("./config.yaml")
+CONFIG_FILE_PATH = pathlib.Path("./config.yaml")
 
 if __name__ == "__main__":
 
     # Open config file
     try:
-        with open(CONFIG_FILE_PATH, "r", encoding="utf8") as file:
+        with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
             try:
                 config = yaml.safe_load(file)
             except yaml.YAMLError as e:
