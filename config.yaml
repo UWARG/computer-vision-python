@@ -4,11 +4,11 @@ queue_max_size: 10
 
 video_input:
   camera_name: 0
-  worker_period: 1.0  # seconds
+  worker_period: 1.0 # seconds
   save_prefix: "log_image"
 
 detect_target:
   worker_count: 1
   device: 0
-  model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
+  model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt" # TODO: update
   save_prefix: "log_comp"
