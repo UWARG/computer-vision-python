@@ -3,6 +3,7 @@ For 2022-2023 UAS competition.
 """
 import argparse
 import multiprocessing as mp
+from pathlib import Path
 
 import cv2
 import yaml
@@ -13,27 +14,41 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
+CONFIG_FILE_PATH = Path("./config.yaml")
+
 if __name__ == "__main__":
 
-    # open command file
-    with open("config.yaml", 'r', encoding="utf8") as file:
-        config = yaml.safe_load(file)
+    # Open config file
+    try:
+        with open(CONFIG_FILE_PATH, "r", encoding="utf8") as file:
+            try:
+                config = yaml.safe_load(file)
+            except yaml.YAMLError as e:
+                print(f"Error parsing YAML file: {e}")
+    except FileNotFoundError:
+        print(f"File not found {CONFIG_FILE_PATH}")
+    except IOError as e:
+        print(f"Error when opening file: {e}")
 
-    # parse whether or not to force cpu from command line
+    # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
     args = parser.parse_args()
 
-    QUEUE_MAX_SIZE = config["queue_max_size"]
+    # Set constants
+    try:
+        QUEUE_MAX_SIZE = config["queue_max_size"]
 
-    VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
-    VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-    VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
+        VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
+        VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
+        VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
-    DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-    DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
-    DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]   # TODO: update in config file
-    DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
+        DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
+        DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
+        DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
+        DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
+    except KeyError:
+        print("Config key(s) not found")
 
     # Setup
     controller = worker_controller.WorkerController()
