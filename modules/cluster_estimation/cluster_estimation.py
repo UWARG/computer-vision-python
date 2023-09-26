@@ -9,8 +9,8 @@ import sklearn
 import sklearn.datasets
 import sklearn.mixture
 
-from ..object_in_world import ObjectInWorld
-from ..detection_in_world import DetectionInWorld
+from modules import object_in_world
+from modules import detection_in_world
 
 
 class ClusterEstimation:
@@ -91,7 +91,11 @@ class ClusterEstimation:
         if min_activation_threshold < 0 or min_new_points_to_run < 0 or random_state < 0:
             return False, None
 
-        return True, ClusterEstimation(cls.__create_key, min_activation_threshold, min_new_points_to_run, random_state)
+        return True, ClusterEstimation(cls.__create_key,
+            min_activation_threshold,
+            min_new_points_to_run,
+            random_state,
+        )
 
     def __init__(self,
                  class_private_create_key: object,
@@ -111,7 +115,8 @@ class ClusterEstimation:
             weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             init_params=self.__MODEL_INIT_PARAM,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
-            max_iter=self.__MAX_MODEL_ITERATIONS)
+            max_iter=self.__MAX_MODEL_ITERATIONS,
+            )
 
         # Points storage
         self.__all_points = []
@@ -122,21 +127,7 @@ class ClusterEstimation:
         self.__min_new_points_to_run = min_new_points_to_run
         self.__has_ran_once = False
 
-    def clear_all_data(self):
-        """
-        Deletes all current points stored and empties the current bucket.
-        """
-        self.__all_points = []
-        self.__current_bucket = []
-        self.__has_ran_once = False
-
-    def reset_model(self):
-        """
-        Resets model back to original initialization, before any data has been fitted.
-        """
-        self.__vgmm = sklearn.base.clone(self.__vgmm)
-
-    def run(self, detections: "list[DetectionInWorld]", run_override: bool) \
+    def run(self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool) \
         -> "tuple[bool, list[ObjectInWorld] | None]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
@@ -171,16 +162,18 @@ class ClusterEstimation:
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
 
-        model_output: list[np.array, float, float] = list(zip(self.__vgmm.means_,
-                                                              self.__vgmm.weights_,
-                                                              self.__vgmm.covariances_))
+        model_output: list[np.array, float, float] = list(zip(
+            self.__vgmm.means_,
+            self.__vgmm.weights_,
+            self.__vgmm.covariances_,
+        ))
         # Empty cluster removal
         model_output = self.__filter_by_points_ownership(model_output)
 
         # Sort weights from largest to smallest, along with corresponding covariances and means
         model_output = self.__sort_by_weights(model_output)
 
-        # Loop through each cluster and drop all clusters after a __WEIGHT_DROP_THRESHOLD drop
+        # Loop through each cluster and drop remaining clusters after a __WEIGHT_DROP_THRESHOLD drop
         # in weight occurs
         viable_cluster_counts = 1
         weight_drop_thresh_reached = False
@@ -199,12 +192,15 @@ class ClusterEstimation:
 
         # Create output list of remaining valid clusters
         detections_in_world = []
-        for i in range(len(model_output)):
-            result_created, result_to_add = ObjectInWorld.create(model_output[i][0][0],
-                                                                 model_output[i][0][1],
-                                                                 model_output[i][2])
-            if result_created:
-                detections_in_world.append(result_to_add)
+        for cluster in model_output:
+            result, landing_pad = object_in_world.ObjectInWorld.create(
+                cluster[0][0],
+                cluster[0][1],
+                cluster[2],
+            )
+
+            if result:
+                detections_in_world.append(landing_pad)
 
         return True, detections_in_world
 
@@ -217,7 +213,7 @@ class ClusterEstimation:
             return False
 
         # Don't run if not enough new points
-        if len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once == True:
+        if len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
             return False
 
         # Requirements met, empty bucket and run
@@ -237,7 +233,7 @@ class ClusterEstimation:
         ----------
         model_output: list[np.ndarray, float, float]
             List containing predicted cluster centers, with each element having the format
-            [(x position, y position), weight, covariance)]
+            [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
@@ -246,7 +242,8 @@ class ClusterEstimation:
         """
         return sorted(model_output, key=lambda x: x[1], reverse=True)
 
-    def __get_distance(self, point, cluster):
+    @staticmethod
+    def __get_distance(point, cluster):
         """
         Calculates distance between a point and a cluster center.
         """
@@ -255,7 +252,7 @@ class ClusterEstimation:
         return np.linalg.norm(diff_vector)
 
     @staticmethod
-    def __convert_detections_to_point(detections: "list[DetectionInWorld]") \
+    def __convert_detections_to_point(detections: "list[detection_in_world.DetectionInWorld]") \
         -> "list[tuple[float, float]]":
         """
         Convert DetectionInWorld input object to a list of points- (x,y) positions, to store.
@@ -264,12 +261,12 @@ class ClusterEstimation:
         ----------
         detections: list[DetectionInWorld]
             List of DetectionInWorld intermediate objects, the data structure that is passed to the
-            worker
+            worker.
 
         RETURNS
         -------
         points: list[tuple[float, float]]
-            List of points (x,y)
+            List of points (x,y).
         -------
         """
         points = []
@@ -280,8 +277,8 @@ class ClusterEstimation:
         return points
 
     def __filter_by_points_ownership(self,
-                                     model_output: "list[np.ndarray, float, float]") \
-        -> "list[np.ndarray, float, float]":
+                                     model_output: "list[tuple[np.ndarray, float, float]]") \
+        -> "list[tuple[np.ndarray, float, float]]":
         """
         Removes any clusters that don't have any points belonging to it.
 
@@ -303,15 +300,14 @@ class ClusterEstimation:
         # Filtering by each cluster's point ownership
         unique_clusters, num_points_per_cluster = np.unique(results, return_counts=True)
         # Remove empty clusters
-        i = 0
         for i in range(len(model_output)):
             if i in unique_clusters:
                 filtered_output.append(model_output[i])
 
         return filtered_output
 
-    def __filter_by_covariances(self, model_output: list[np.ndarray, float, float]) \
-        -> "list[np.ndarray, float, float]":
+    def __filter_by_covariances(self, model_output: "list[tuple[np.ndarray, float, float]]") \
+        -> "list[tuple[np.ndarray, float, float]]":
         """
         Removes any cluster with covariances much higher than the lowest covariance value.
 
