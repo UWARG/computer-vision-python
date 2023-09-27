@@ -14,7 +14,7 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
-CONFIG_FILE_PATH = pathlib.Path("./config.yaml")
+CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 def main() -> int:
     """
@@ -118,8 +118,7 @@ def main() -> int:
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
 
-    print("Done!")
-
+    return 0
 
 if __name__ == "__main__":
     result_run = main()
@@ -127,4 +126,3 @@ if __name__ == "__main__":
         print(f"ERROR: Status code: {result_run}")
 
     print("Done!")
-    
