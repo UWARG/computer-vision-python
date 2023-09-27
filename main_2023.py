@@ -14,7 +14,9 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
+
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
+
 
 def main() -> int:
     """
@@ -119,6 +121,7 @@ def main() -> int:
     detect_target_manager.join_workers()
 
     return 0
+
 
 if __name__ == "__main__":
     result_run = main()
