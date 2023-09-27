@@ -1,9 +1,12 @@
 """
 For 2022-2023 UAS competition.
 """
+import argparse
 import multiprocessing as mp
+import pathlib
 
 import cv2
+import yaml
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -12,19 +15,49 @@ from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
 
 
-QUEUE_MAX_SIZE = 10
-
-VIDEO_INPUT_CAMERA_NAME = 0
-VIDEO_INPUT_WORKER_PERIOD = 1.0  # seconds
-VIDEO_INPUT_SAVE_PREFIX = "log_image"
-
-DETECT_TARGET_WORKER_COUNT = 1
-DETECT_TARGET_DEVICE = 0  # Use "cpu" if no CUDA
-DETECT_TARGET_MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: Update
-DETECT_TARGET_SAVE_PREFIX = "log_comp"
+CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function for airside code
+    """
+    # Open config file
+    try:
+        with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
+            try:
+                config = yaml.safe_load(file)
+            except yaml.YAMLError as exc:
+                print(f"Error parsing YAML file: {exc}")
+                return -1
+    except FileNotFoundError:
+        print(f"File not found: {CONFIG_FILE_PATH}")
+        return -1
+    except IOError as exc:
+        print(f"Error when opening file: {exc}")
+        return -1
+
+    # Parse whether or not to force cpu from command line
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--cpu", action="store_true", help="option to force cpu")
+    args = parser.parse_args()
+
+    # Set constants
+    try:
+        QUEUE_MAX_SIZE = config["queue_max_size"]
+
+        VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
+        VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
+        VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
+
+        DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
+        DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
+        DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
+        DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
+    except KeyError:
+        print("Config key(s) not found")
+        return -1
+
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -86,5 +119,13 @@ if __name__ == "__main__":
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_run = main()
+    if result_run < 0:
+        print(f"ERROR: Status code: {result_run}")
 
     print("Done!")

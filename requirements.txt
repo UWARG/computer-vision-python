@@ -3,4 +3,5 @@ numpy
 opencv-python
 pymap3d
 pytest
+pyyaml
 # pytorch special case, see requirements-pytorch.txt
