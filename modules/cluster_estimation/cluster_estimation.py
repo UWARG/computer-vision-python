@@ -155,7 +155,7 @@ class ClusterEstimation:
 
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
-        model_output: list[np.array, float, float] = list(
+        model_output: "list[np.array, float, float]" = list(
             zip(
                 self.__vgmm.means_,
                 self.__vgmm.weights_,
@@ -169,23 +169,13 @@ class ClusterEstimation:
         # Sort weights from largest to smallest, along with corresponding covariances and means
         model_output = self.__sort_by_weights(model_output)
 
-        # Loop through each cluster and drop remaining clusters after a __WEIGHT_DROP_THRESHOLD drop
-        # in weight occurs
-        prev_cluster = None
-        for i, cluster in enumerate(model_output):
-
-            if not prev_cluster:
-                continue
-
-            # Check if weight dropped occurred between previous cluster and current cluster
-            print(cluster[1])
-            print(prev_cluster[1])
-            if cluster[1] / prev_cluster[1] < self.__WEIGHT_DROP_THRESHOLD:
-                model_output = model_output[:i]
+        # Filter out all clusters after __WEIGHT_DROP_THRESHOLD weight drop occurs
+        viable_clusters = [model_output[0]]
+        for i in range(1, len(model_output)):
+            if model_output[i][1] / model_output[i - 1][1] < self.__WEIGHT_DROP_THRESHOLD:
                 break
 
-            # Update previous cluster for comparison
-            prev_cluster = cluster
+            viable_clusters.append(model_output[i])
 
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)

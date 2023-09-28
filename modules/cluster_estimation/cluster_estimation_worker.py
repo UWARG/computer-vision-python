@@ -1,18 +1,18 @@
 """
 Gets detections in world space and outputs estimations of objects.
 """
-from queue import Queue
 
-from utilities import manage_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import cluster_estimation
 
 
 def cluster_estimation_worker(min_activation_threshold: int,
                               min_points_per_run: int,
                               random_state: int,
-                              input_queue: Queue,
-                              output_queue: Queue,
-                              worker_manager: manage_worker.ManageWorker):
+                              input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                              output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+                              worker_controller: worker_controller.WorkerController):
     """
     Worker process.
 
@@ -25,10 +25,10 @@ def cluster_estimation_worker(min_activation_threshold: int,
         min_points_per_run,
         random_state)
 
-    while not worker_manager.is_exit_requested():
-        worker_manager.check_pause()
+    while not worker_controller.is_exit_requested():
+        worker_controller.check_pause()
 
-        input_data = input_queue.get()
+        input_data = input_queue.queue.get()
         if input_data is None:
             continue
 
@@ -37,4 +37,4 @@ def cluster_estimation_worker(min_activation_threshold: int,
         if not result:
             continue
 
-        output_queue.put(value)
+        output_queue.queue.put(value)

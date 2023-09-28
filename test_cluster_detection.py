@@ -121,7 +121,7 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
     rng = np.random.default_rng(seed=RANDOM_STATE)
 
     while len(detections) < num_points_to_generate:
-        # Generate random co-ordinates
+        # Generate random coordinates
         x_pos = rng.uniform(0, CENTER_BOX_SIZE)
         y_post = rng.uniform(0, CENTER_BOX_SIZE)
         valid = True
