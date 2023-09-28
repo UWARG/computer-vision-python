@@ -57,8 +57,8 @@ def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_d
     """
     # .make_blobs() is a sklearn library function that returns a tuple of two values
     # first value is ndarray of shape (2, total # of samples) that gives the (x,y) 
-    # coordinate of generated data points
-    # second value is the integer labels for cluster membership of each generated point.
+    # coordinate of generated data points.
+    # Second value is the integer labels for cluster membership of each generated point.
 
     generated_points, labels, cluster_positions = sklearn.datasets.make_blobs(
         n_samples=n_samples_per_cluster,
@@ -117,7 +117,6 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
     detections = []
 
     # Initialize random generator
-
     rng = np.random.default_rng(seed=RANDOM_STATE)
 
     while len(detections) < num_points_to_generate:
@@ -437,7 +436,7 @@ class TestCorrectClusterPositionOutput:
     Tests if cluster estimation output falls within acceptable distance to
     input cluster positions.
     """
-    STD_DEV_REG = 1  # regular standard deviation is 1m
+    STD_DEV_REG = 1  # Regular standard deviation is 1m
     MAX_POSITION_TOLERANCE = 1
 
     def test_position_regular_data(self, cluster_model: cluster_estimation.ClusterEstimation):

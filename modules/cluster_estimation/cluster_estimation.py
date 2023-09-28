@@ -155,7 +155,7 @@ class ClusterEstimation:
 
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
-        model_output: "list[np.array, float, float]" = list(
+        model_output: "list[np.ndarray, float, float]" = list(
             zip(
                 self.__vgmm.means_,
                 self.__vgmm.weights_,
@@ -239,10 +239,10 @@ class ClusterEstimation:
 
         PARAMETERS
         ----------
-        point: np.array
+        point: np.ndarray
             Coordinate position of point [x position, y position].
 
-        cluster: np.array
+        cluster: np.ndarray
             Coordinate position of cluster [x position, y position].
 
         RETURNS
@@ -274,7 +274,7 @@ class ClusterEstimation:
         """
         points = []
         for detection in detections:
-            # attribute centre holds positioning data
+            # 'centre' attribute holds positioning data
             points.append(tuple([detection.centre[0], detection.centre[1]]))
 
         return points
@@ -325,7 +325,7 @@ class ClusterEstimation:
         list[np.ndarray, float, float]
             List containing predicted cluster centers after filtering by covariance.
         """
-        # python list and not np array, need to loop through manually
+        # Python list and not np array, need to loop through manually
         min_covariance = float("inf")
         for item in model_output:
             if item[2] < min_covariance:
