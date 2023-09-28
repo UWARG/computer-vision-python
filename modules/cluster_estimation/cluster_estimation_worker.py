@@ -7,12 +7,12 @@ from utilities import manage_worker
 from . import cluster_estimation
 
 
-def cluster_estimation_worker(input_queue: Queue,
-                              output_queue: Queue,
-                              worker_manager: manage_worker.ManageWorker,
-                              min_activation_threshold: int,
+def cluster_estimation_worker(min_activation_threshold: int,
                               min_points_per_run: int,
-                              random_state):
+                              random_state: int,
+                              input_queue: Queue,
+                              output_queue: Queue,
+                              worker_manager: manage_worker.ManageWorker):
     """
     Worker process.
 

@@ -9,8 +9,8 @@ import sklearn
 import sklearn.datasets
 import sklearn.mixture
 
-from modules import object_in_world
-from modules import detection_in_world
+from .. import object_in_world
+from .. import detection_in_world
 
 
 class ClusterEstimation:
@@ -33,12 +33,6 @@ class ClusterEstimation:
 
     METHODS
     -------
-    __init__()
-        Sets cluster model run conditions and random state.
-
-    clear_all_data()
-        Clears all past accumulated data.
-
     reset_model()
         Unfits the model of any data.
 
@@ -84,7 +78,7 @@ class ClusterEstimation:
     def create(cls,
                min_activation_threshold: int,
                min_new_points_to_run: int,
-               random_state: int):
+               random_state: int) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation worker to run.
         """
@@ -116,7 +110,7 @@ class ClusterEstimation:
             init_params=self.__MODEL_INIT_PARAM,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
             max_iter=self.__MAX_MODEL_ITERATIONS,
-            )
+        )
 
         # Points storage
         self.__all_points = []
@@ -161,12 +155,14 @@ class ClusterEstimation:
 
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
+        model_output: list[np.array, float, float] = list(
+            zip(
+                self.__vgmm.means_,
+                self.__vgmm.weights_,
+                self.__vgmm.covariances_,
+            )
+        )
 
-        model_output: list[np.array, float, float] = list(zip(
-            self.__vgmm.means_,
-            self.__vgmm.weights_,
-            self.__vgmm.covariances_,
-        ))
         # Empty cluster removal
         model_output = self.__filter_by_points_ownership(model_output)
 
@@ -175,17 +171,21 @@ class ClusterEstimation:
 
         # Loop through each cluster and drop remaining clusters after a __WEIGHT_DROP_THRESHOLD drop
         # in weight occurs
-        viable_cluster_counts = 1
-        weight_drop_thresh_reached = False
-        while viable_cluster_counts < len(model_output) and not weight_drop_thresh_reached:
-            # Check if weight dropped occurred between previous cluster and current cluster
-            # index [1] after to access weights values
-            if (model_output[viable_cluster_counts][1] / model_output[viable_cluster_counts - 1][1]
-                    < self.__WEIGHT_DROP_THRESHOLD):
-                model_output = model_output[:viable_cluster_counts]
-                weight_drop_thresh_reached = True
+        prev_cluster = None
+        for i, cluster in enumerate(model_output):
 
-            viable_cluster_counts += 1
+            if not prev_cluster:
+                continue
+
+            # Check if weight dropped occurred between previous cluster and current cluster
+            print(cluster[1])
+            print(prev_cluster[1])
+            if cluster[1] / prev_cluster[1] < self.__WEIGHT_DROP_THRESHOLD:
+                model_output = model_output[:i]
+                break
+
+            # Update previous cluster for comparison
+            prev_cluster = cluster
 
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
@@ -225,7 +225,7 @@ class ClusterEstimation:
 
     @staticmethod
     def __sort_by_weights(model_output: "list[np.ndarray, float, float]") \
-        -> "list[np.ndarray, float, float]":
+        -> "list[tuple[np.ndarray, float, float]]":
         """
         Sort input model output list by weights in descending order.
 
@@ -246,6 +246,19 @@ class ClusterEstimation:
     def __get_distance(point, cluster):
         """
         Calculates distance between a point and a cluster center.
+
+        PARAMETERS
+        ----------
+        point: np.array
+            Coordinate position of point [x position, y position].
+
+        cluster: np.array
+            Coordinate position of cluster [x position, y position].
+
+        RETURNS
+        -------
+        distance: float
+            Distance between the point and cluster.
         """
         diff_vector = [point[0] - cluster[0], point[1] - cluster[1]]
 
@@ -323,10 +336,11 @@ class ClusterEstimation:
             List containing predicted cluster centers after filtering by covariance.
         """
         # python list and not np array, need to loop through manually
-        min_covariance = float("inf") 
+        min_covariance = float("inf")
         for item in model_output:
             if item[2] < min_covariance:
                 min_covariance = item[2]
+
         max_covariance_threshold = min_covariance * self.__MAX_COVARIANCE_THRESHOLD
 
         # Filter
