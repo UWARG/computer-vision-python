@@ -168,7 +168,7 @@ class TestModelExecutionCondition:
         """
         # Setup 
         TOTAL_NUM_DETECTIONS = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
-        generated_detections, _, _ = __generate_cluster_data([TOTAL_NUM_DETECTIONS], self.STD_DEV_REG)
+        generated_detections, _, _ = generate_cluster_data([TOTAL_NUM_DETECTIONS], self.STD_DEV_REG)
 
         # Run
         model_ran, detections_in_world = cluster_model.run(generated_detections, False)
