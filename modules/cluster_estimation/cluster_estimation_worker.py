@@ -8,22 +8,39 @@ from . import cluster_estimation
 
 
 def cluster_estimation_worker(min_activation_threshold: int,
-                              min_points_per_run: int,
+                              min_new_points_to_run: int,
                               random_state: int,
                               input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                               output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                               worker_controller: worker_controller.WorkerController):
     """
-    Worker process.
+    Estimation worker process.
 
-    model_path and save_name are initial settings.
-    input_queue and output_queue are data queues.
-    worker_manager is how the main process communicates to this worker process.
+    PARAMETERS
+    ----------
+    min_activation_threshold: int
+        Minimum total data points before model runs.
+
+    min_new_points_to_run: int
+        Minimum number of new data points that must be collected before running model.
+
+    random_state: int
+        Seed for randomizer, to get consistent results.
+
+    input_queue: queue_proxy_wrapper.QueuePRoxyWrapper
+        Data queue.
+
+    output_queue: queue_proxy_wrapper.QueuePRoxyWrapper
+        Data queue.
+
+    worker_controller: worker_controller.WorkerController
+        How the main process communicates to this worker process.
     """
     estimator_created, estimator = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
-        min_points_per_run,
-        random_state)
+        min_new_points_to_run,
+        random_state,
+    )
 
     while not worker_controller.is_exit_requested():
         worker_controller.check_pause()
