@@ -16,26 +16,22 @@ from .. import detection_in_world
 class ClusterEstimation:
     """
     Estimate landing pad locations based on landing pad ground detection. Estimation
-    works by predicting 'cluster centers' from groups of closely placed landing pad
+    works by predicting 'cluster centres' from groups of closely placed landing pad
     detections.
 
     ATTRIBUTES
     ----------
-    random_state: int
-        Seed for randomizer, to get consistent results.
-    
     min_activation_threshold: int
         Minimum total data points before model runs.
 
-    new_points_per_run: int
-        Minimum number of new data points that must be collected
-        before running model.
+    min_new_points_to_run: int
+        Minimum number of new data points that must be collected before running model.
+
+    random_state: int
+        Seed for randomizer, to get consistent results.
 
     METHODS
     -------
-    reset_model()
-        Unfits the model of any data.
-
     run()
         Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
@@ -47,7 +43,7 @@ class ClusterEstimation:
         Sort input model output list by weights in descending order.
 
     __get_distance()
-        Calculates distance between a point and a cluster center.
+        Calculates distance between a point and a cluster centre.
 
     __convert_detections_to_point()
         Convert DetectionInWorld input object to a [x,y] position to store.
@@ -61,18 +57,19 @@ class ClusterEstimation:
     __create_key = object()
 
     # VGMM Hyperparameters
-    __MODEL_INIT_PARAM = "k-means++"
     __COVAR_TYPE = "spherical"
+    __MODEL_INIT_PARAM = "k-means++"
     __WEIGHT_CONCENTRATION_PRIOR = 100
     __MEAN_PRECISION_PRIOR = 1E-6
     __MAX_MODEL_ITERATIONS = 1000
+
+    # Real-world scenario Hyperparameters
+    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
 
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
 
-    # Real-world scenario Hyperparameters
-    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
 
     @classmethod
     def create(cls,
@@ -80,9 +77,14 @@ class ClusterEstimation:
                min_new_points_to_run: int,
                random_state: int) -> "tuple[bool, ClusterEstimation | None]":
         """
-        Data requirement conditions for estimation worker to run.
+        Data requirement conditions for estimation model to run.
         """
-        if min_activation_threshold < 0 or min_new_points_to_run < 0 or random_state < 0:
+        # These parameters must be positive
+        if min_new_points_to_run < 0 or random_state < 0:
+            return False, None
+
+        # At least 1 point for model to fit
+        if min_activation_threshold < 1:
             return False, None
 
         return True, ClusterEstimation(cls.__create_key,
@@ -105,11 +107,11 @@ class ClusterEstimation:
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
             covariance_type=self.__COVAR_TYPE,
             n_components=self.__MAX_NUM_COMPONENTS,
-            random_state=random_state,
-            weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             init_params=self.__MODEL_INIT_PARAM,
+            weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
             max_iter=self.__MAX_MODEL_ITERATIONS,
+            random_state=random_state,
         )
 
         # Points storage
@@ -122,7 +124,7 @@ class ClusterEstimation:
         self.__has_ran_once = False
 
     def run(self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool) \
-        -> "tuple[bool, list[ObjectInWorld] | None]":
+        -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
@@ -130,17 +132,17 @@ class ClusterEstimation:
         PARAMETERS
         ----------
         detections: list[DetectionInWorld]
-            List containing DetectionInWorld objects containing real-world positioning data to run
+            List containing DetectionInWorld objects which holds real-world positioning data to run
             clustering on.
         
         run_override: bool
-            Forces ClusterEstimation worker to run and output predictions regardless of other
-            conditions.
+            Forces ClusterEstimation to predict if data is available, regardless of any other
+            requirements.
 
         RETURNS
         -------
         model_ran: bool
-            True if ClusterEstimation worker ran its estimation model.
+            True if ClusterEstimation object ran its estimation model.
 
         objects_in_world: list[ObjectInWorld] or None.
             List containing ObjectInWorld objects, containing position and covariance value.
@@ -150,12 +152,12 @@ class ClusterEstimation:
         self.__current_bucket += self.__convert_detections_to_point(detections)
 
         # Decide to run
-        if not run_override and not self.__decide_to_run():
+        if not self.__decide_to_run(run_override):
             return False, None
 
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
-        model_output: "list[np.ndarray, float, float]" = list(
+        model_output: "list[tuple[np.ndarray, float, float]]" = list(
             zip(
                 self.__vgmm.means_,
                 self.__vgmm.weights_,
@@ -194,16 +196,31 @@ class ClusterEstimation:
 
         return True, detections_in_world
 
-    def __decide_to_run(self) -> bool:
+    def __decide_to_run(self, run_override: bool) -> bool:
         """
         Decide when to run cluster estimation model.
+
+        PARAMETERS
+        ----------
+        run_override: bool
+            Forces ClusterEstimation to predict if data is available, regardless of any other
+            requirements.
+
+        RETURNS
+        -------
+        bool
+            Whether or not estimation will be run on the stored data.
         """
+        # Override to run if data is available
+        if run_override and len(self.__all_points):
+            pass
+
         # Don't run if total points under minimum requirement
-        if len(self.__all_points) + len(self.__current_bucket) < self.__min_activation_threshold:
+        elif len(self.__all_points) + len(self.__current_bucket) < self.__min_activation_threshold:
             return False
 
         # Don't run if not enough new points
-        if len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
+        elif len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
             return False
 
         # Requirements met, empty bucket and run
@@ -214,7 +231,7 @@ class ClusterEstimation:
         return True
 
     @staticmethod
-    def __sort_by_weights(model_output: "list[np.ndarray, float, float]") \
+    def __sort_by_weights(model_output: "list[tuple[np.ndarray, float, float]]") \
         -> "list[tuple[np.ndarray, float, float]]":
         """
         Sort input model output list by weights in descending order.
@@ -222,20 +239,20 @@ class ClusterEstimation:
         PARAMETERS
         ----------
         model_output: list[np.ndarray, float, float]
-            List containing predicted cluster centers, with each element having the format
+            List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
         list[np.ndarray, float, float]
-            List containing predicted cluster centers sorted by weights in descending order.
+            List containing predicted cluster centres sorted by weights in descending order.
         """
         return sorted(model_output, key=lambda x: x[1], reverse=True)
 
     @staticmethod
-    def __get_distance(point, cluster):
+    def __get_distance(point: np.ndarray, cluster:np.ndarray) -> float:
         """
-        Calculates distance between a point and a cluster center.
+        Calculates distance between a point and a cluster centre.
 
         PARAMETERS
         ----------
@@ -273,8 +290,14 @@ class ClusterEstimation:
         -------
         """
         points = []
+
+        # Input detections list is empty
+        if len(detections) == 0:
+            return points
+
+        # Convert DetectionInWorld objects
         for detection in detections:
-            # 'centre' attribute holds positioning data
+            # `centre` attribute holds positioning data
             points.append(tuple([detection.centre[0], detection.centre[1]]))
 
         return points
@@ -288,13 +311,13 @@ class ClusterEstimation:
         PARAMETERS
         ----------
         model_output: list[np.ndarray, float, float]
-            List containing predicted cluster centers, with each element having the format
+            List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
         filtered_output: list[np.ndarray, float, float]
-            List containing predicted cluster centers after filtering.
+            List containing predicted cluster centres after filtering.
         """
 
         results = self.__vgmm.predict(self.__all_points)
@@ -317,13 +340,13 @@ class ClusterEstimation:
         PARAMETERS
         ----------
         model_output: list[np.ndarray, float, float]
-            List containing predicted cluster centers, with each element having the format
+            List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
         list[np.ndarray, float, float]
-            List containing predicted cluster centers after filtering by covariance.
+            List containing predicted cluster centres after filtering by covariance.
         """
         # Python list and not np array, need to loop through manually
         min_covariance = float("inf")
