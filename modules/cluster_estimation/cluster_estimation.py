@@ -42,9 +42,6 @@ class ClusterEstimation:
     __sort_by_weights()
         Sort input model output list by weights in descending order.
 
-    __get_distance()
-        Calculates distance between a point and a cluster centre.
-
     __convert_detections_to_point()
         Convert DetectionInWorld input object to a [x,y] position to store.
 
@@ -69,7 +66,6 @@ class ClusterEstimation:
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
-
 
     @classmethod
     def create(cls,
@@ -101,7 +97,7 @@ class ClusterEstimation:
         """
         Private constructor, use create() method.
         """
-        assert (class_private_create_key is ClusterEstimation.__create_key), "Use create() method"
+        assert class_private_create_key is ClusterEstimation.__create_key, "Use create() method"
 
         # Initializes VGMM
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
@@ -179,6 +175,11 @@ class ClusterEstimation:
 
             viable_clusters.append(model_output[i])
 
+        print(len(model_output))
+        print(len(viable_clusters))
+
+        model_output = viable_clusters
+
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
 
@@ -211,16 +212,17 @@ class ClusterEstimation:
         bool
             Whether or not estimation will be run on the stored data.
         """
-        # Override to run if data is available
-        if run_override and len(self.__all_points):
-            pass
+        if not run_override:
+            # Don't run if total points under minimum requirement
+            if len(self.__all_points) + len(self.__current_bucket) < self.__min_activation_threshold:
+                return False
 
-        # Don't run if total points under minimum requirement
-        elif len(self.__all_points) + len(self.__current_bucket) < self.__min_activation_threshold:
-            return False
+            # Don't run if not enough new points
+            if len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
+                return False
 
-        # Don't run if not enough new points
-        elif len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
+        # No data can not run
+        if len(self.__all_points) + len(self.__current_bucket) == 0:
             return False
 
         # Requirements met, empty bucket and run
@@ -238,38 +240,17 @@ class ClusterEstimation:
 
         PARAMETERS
         ----------
-        model_output: list[np.ndarray, float, float]
+        model_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
-        list[np.ndarray, float, float]
+        list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres sorted by weights in descending order.
         """
         return sorted(model_output, key=lambda x: x[1], reverse=True)
 
-    @staticmethod
-    def __get_distance(point: np.ndarray, cluster:np.ndarray) -> float:
-        """
-        Calculates distance between a point and a cluster centre.
-
-        PARAMETERS
-        ----------
-        point: np.ndarray
-            Coordinate position of point [x position, y position].
-
-        cluster: np.ndarray
-            Coordinate position of cluster [x position, y position].
-
-        RETURNS
-        -------
-        distance: float
-            Distance between the point and cluster.
-        """
-        diff_vector = [point[0] - cluster[0], point[1] - cluster[1]]
-
-        return np.linalg.norm(diff_vector)
 
     @staticmethod
     def __convert_detections_to_point(detections: "list[detection_in_world.DetectionInWorld]") \
@@ -310,13 +291,13 @@ class ClusterEstimation:
 
         PARAMETERS
         ----------
-        model_output: list[np.ndarray, float, float]
+        model_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
-        filtered_output: list[np.ndarray, float, float]
+        filtered_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres after filtering.
         """
 
@@ -339,13 +320,13 @@ class ClusterEstimation:
 
         PARAMETERS
         ----------
-        model_output: list[np.ndarray, float, float]
+        model_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres, with each element having the format
             [(x position, y position), weight, covariance)].
 
         RETURNS
         -------
-        list[np.ndarray, float, float]
+        list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres after filtering by covariance.
         """
         # Python list and not np array, need to loop through manually
