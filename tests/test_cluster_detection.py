@@ -89,7 +89,7 @@ def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_d
 
 
 def generate_points_away_from_cluster(num_points_to_generate: int,
-                                      distance_from_cluster: float,
+                                      minimum_distance_from_cluster: float,
                                       cluster_positions: "list[np.ndarray]") \
     -> "list[detection_in_world.DetectionInWorld]":
     """
@@ -101,7 +101,7 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
     num_points_to_generate: int
         Number of points to generate.
 
-    distance_from_cluster: float
+    minimum_distance_from_cluster: float
         Distance each generated point has to be from cluster centre.
 
     cluster_positions: list[np.ndarray]
@@ -124,7 +124,7 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
 
         # Check if outside minimum distance to cluster centres
         for cluster in cluster_positions:
-            if np.linalg.norm(point - cluster) < distance_from_cluster:
+            if np.linalg.norm(point - cluster) < minimum_distance_from_cluster:
                 valid = False
                 break
 
@@ -437,10 +437,15 @@ class TestCorrectClusterPositionOutput:
         for detection in detections_in_world:
             has_match = False
             for position in cluster_positions:
-                if np.linalg.norm([
+
+                # Get distance between predicted cluster and actual cluster
+                distance = np.linalg.norm(
                     detection.position_x - position[0],
-                    detection.position_y - position[1]]) \
-                        < self.MAX_POSITION_TOLERANCE:
+                    detection.position_y - position[1],
+                )
+
+                # Check tolerance
+                if distance < self.MAX_POSITION_TOLERANCE:
                     has_match = True
                     break
 
