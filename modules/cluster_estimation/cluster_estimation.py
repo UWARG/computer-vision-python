@@ -142,8 +142,7 @@ class ClusterEstimation:
 
         objects_in_world: list[ObjectInWorld] or None.
             List containing ObjectInWorld objects, containing position and covariance value.
-            None if conditions not met and model not ran or model failed to converge after
-            __MAX_MODEL_ITERATIONS number of iterations.
+            None if conditions not met and model not ran or model failed to converge.
         """
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
@@ -155,7 +154,7 @@ class ClusterEstimation:
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
 
-        # Check convergence, if fails to converge early exit
+        # Check convergence
         if not self.__vgmm.converged_:
             return False, None
 
