@@ -12,14 +12,28 @@ class OdometryAndTime:
     """
     Contains odometry/telemetry and timestamp.
     """
-    def __init__(self,
-                 position: drone_odometry.DronePosition,
-                 orientation: drone_odometry.DroneOrientation):
+    __create_key = object()
+
+    @classmethod
+    def create(cls, odometry_data: drone_odometry.DroneOdometry) -> "tuple[bool, OdometryAndTime | None]":
         """
-        Constructor sets timestamp to current time.
+        Timestamps the odometry with the current time.
+        odometry_data: Drone odometry data.
         """
-        self.position = position
-        self.orientation = orientation
-        self.timestamp = time.time()
+        if odometry_data is None:
+            return False, None
+        
+        timestamp = time.time()
+
+        return True, OdometryAndTime(cls.__create_key, odometry_data, timestamp)
+
+    def __init__(self, class_private_create_key, odometry_data: drone_odometry.DroneOdometry, timestamp: float):
+        """
+        Private constructor, use create() method.
+        """
+        assert class_private_create_key is OdometryAndTime.__create_key, "Use create() method"
+        
+        self.odometry_data = odometry_data
+        self.timestamp = timestamp
 
 # pylint: enable=too-few-public-methods

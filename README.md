@@ -2,4 +2,4 @@
 
 A new computer vision system written in Python.
 
-Follow the [instructions](https://uwarg-docs.atlassian.net/l/cp/8FnU7F9S).
+Follow the [instructions](https://uwarg-docs.atlassian.net/l/cp/3G39FAKw).
