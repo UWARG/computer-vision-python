@@ -3,6 +3,6 @@ numpy
 opencv-python
 pymap3d
 pytest
-scikit-learn
 pyyaml
+scikit-learn
 # pytorch special case, see requirements-pytorch.txt
