@@ -138,11 +138,12 @@ class ClusterEstimation:
         RETURNS
         -------
         model_ran: bool
-            True if ClusterEstimation object ran its estimation model.
+            True if ClusterEstimation object successfully ran its estimation model, False otherwise.
 
         objects_in_world: list[ObjectInWorld] or None.
             List containing ObjectInWorld objects, containing position and covariance value.
-            None if conditions not met and model not ran.
+            None if conditions not met and model not ran or model failed to converge after
+            __MAX_MODEL_ITERATIONS number of iterations.
         """
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
@@ -153,6 +154,12 @@ class ClusterEstimation:
 
         # Fit points and get cluster data
         self.__vgmm = self.__vgmm.fit(self.__all_points)
+
+        # Check convergence, if fails to converge early exit
+        if not self.__vgmm.converged_:
+            return False, None
+
+        # Get predictions from cluster model
         model_output: "list[tuple[np.ndarray, float, float]]" = list(
             zip(
                 self.__vgmm.means_,
@@ -174,9 +181,6 @@ class ClusterEstimation:
                 break
 
             viable_clusters.append(model_output[i])
-
-        print(len(model_output))
-        print(len(viable_clusters))
 
         model_output = viable_clusters
 
@@ -210,7 +214,7 @@ class ClusterEstimation:
         RETURNS
         -------
         bool
-            Whether or not estimation will be run on the stored data.
+            True if estimation model will be run, False otherwise.
         """
         if not run_override:
             # Don't run if total points under minimum requirement

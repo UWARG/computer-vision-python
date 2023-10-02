@@ -440,8 +440,8 @@ class TestCorrectClusterPositionOutput:
 
                 # Get distance between predicted cluster and actual cluster
                 distance = np.linalg.norm(
-                    detection.position_x - position[0],
-                    detection.position_y - position[1],
+                    [detection.position_x - position[0],
+                     detection.position_y - position[1]]
                 )
 
                 # Check tolerance
