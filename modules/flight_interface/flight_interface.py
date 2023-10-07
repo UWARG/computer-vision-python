@@ -2,8 +2,8 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
-from modules.common.mavlink.modules import flight_controller
-from modules import odometry_and_time
+from .. import odometry_and_time
+from ..common.mavlink.modules import flight_controller
 
 
 # This is just an interface
@@ -20,9 +20,11 @@ class FlightInterface:
         address: TCP or port.
         """
         result, controller = flight_controller.FlightController.create(address)
-
         if not result:
             return False, None
+
+        # Get Pylance to stop complaining
+        assert controller is not None
 
         return True, FlightInterface(cls.__create_key, controller)
 
@@ -34,15 +36,17 @@ class FlightInterface:
 
         self.controller = controller
 
-    def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime]":
+    def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
         Returns a possible OdometryAndTime with current timestamp.
         """
-        result, data = self.controller.get_odometry()
-
+        result, odometry = self.controller.get_odometry()
         if not result:
             return False, None
 
-        return odometry_and_time.OdometryAndTime.create(data)
+        # Get Pylance to stop complaining
+        assert odometry is not None
+
+        return odometry_and_time.OdometryAndTime.create(odometry)
 
 # pylint: enable=too-few-public-methods
