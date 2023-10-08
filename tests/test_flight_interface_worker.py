@@ -11,7 +11,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
-MAVLINK_ADDRESS = "tcp:localhost:14550"
+MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1
 
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
-        args=(MAVLINK_ADDRESS, FLIGHT_INTERFACE_WORKER_PERIOD, out_queue, controller),
+        args=(MAVLINK_CONNECTION_ADDRESS, FLIGHT_INTERFACE_WORKER_PERIOD, out_queue, controller),
     )
 
     # Run
