@@ -40,6 +40,7 @@ def main() -> int:
     # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
+    parser.add_argument("--full", action="store_true", help="option to force full precision")
     args = parser.parse_args()
 
     # Set constants
@@ -53,6 +54,8 @@ def main() -> int:
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
+        DETECT_TARGET_ENABLE_HALF_PRECISION = False if (args.cpu or args.full) \
+            else config["detect_target"]["cuda_available"]
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
     except KeyError:
         print("Config key(s) not found")
