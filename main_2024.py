@@ -22,7 +22,7 @@ CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 def main() -> int:
     """
-    Main function for airside code
+    Main function for airside code.
     """
     # Open config file
     try:
