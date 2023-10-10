@@ -127,18 +127,17 @@ def main() -> int:
         image = detect_target_to_main_queue.queue.get()
         odometry_and_time = flight_interface_to_data_merge_queue.queue.get()
 
-        if (odometry_and_time):
-            print("timestamp: " + str(odometry_and_time.timestamp))
-            print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
-            print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
-            print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
-            print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
-            print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
-            print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
-            print("")
-
-        if image is None:
+        if image is None or odometry_and_time is None:
             continue
+
+        print("timestamp: " + str(odometry_and_time.timestamp))
+        print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
+        print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
+        print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
+        print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
+        print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
+        print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
+        print("")
 
         cv2.imshow("Landing Pad Detector", image)
 
