@@ -12,7 +12,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
-from modules.flight_input import flight_interface_worker
+from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 
 
@@ -74,7 +74,7 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    flight_interface_to_data_merge_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    flight_interface_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE
     )
@@ -109,12 +109,12 @@ def main() -> int:
     flight_interface_manager = worker_manager.WorkerManager()
     flight_interface_manager.create_workers(
         1,
-        flight_interface_worker.flight_input_worker,
+        flight_interface_worker.flight_interface_worker,
         (
             FLIGHT_INTERFACE_ADDRESS,
             FLIGHT_INTERFACE_WORKER_PERIOD,
-            flight_interface_to_data_merge_queue,
-            controller
+            flight_interface_to_main_queue,
+            controller,
         ),
     )
 
@@ -124,20 +124,25 @@ def main() -> int:
     flight_interface_manager.start_workers()
 
     while True:
-        image = detect_target_to_main_queue.queue.get()
-        odometry_and_time = flight_interface_to_data_merge_queue.queue.get()
+        try:
+            image = detect_target_to_main_queue.queue.get_nowait()
+        except:
+            image = None
 
-        if image is None or odometry_and_time is None:
+        odometry_and_time = flight_interface_to_main_queue.queue.get()
+
+        if odometry_and_time:
+            print("timestamp: " + str(odometry_and_time.timestamp))
+            print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
+            print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
+            print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
+            print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
+            print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
+            print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
+            print("")
+
+        if image is None:
             continue
-
-        print("timestamp: " + str(odometry_and_time.timestamp))
-        print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
-        print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
-        print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
-        print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
-        print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
-        print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
-        print("")
 
         cv2.imshow("Landing Pad Detector", image)
 
@@ -149,7 +154,7 @@ def main() -> int:
 
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_main_queue.fill_and_drain_queue()
-    flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()

@@ -15,4 +15,4 @@ detect_target:
 
 flight_interface:
   address: "tcp:127.0.0.1:14550"
-  worker_period: 0.1 # seconds?
+  worker_period: 0.1 # seconds
