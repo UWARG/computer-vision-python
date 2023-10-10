@@ -19,7 +19,7 @@ def detect_target_worker(device: "str | int",
     """
     Worker process.
 
-    model_path, enable_half, and save_name are initial settings.
+    device, model_path, enable_half, and save_name are initial settings.
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
