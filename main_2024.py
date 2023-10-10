@@ -4,6 +4,7 @@ For 2023-2024 UAS competition.
 import argparse
 import multiprocessing as mp
 import pathlib
+import queue
 
 import cv2
 import yaml
@@ -126,12 +127,12 @@ def main() -> int:
     while True:
         try:
             image = detect_target_to_main_queue.queue.get_nowait()
-        except:
+        except queue.Empty:
             image = None
 
         odometry_and_time = flight_interface_to_main_queue.queue.get()
 
-        if odometry_and_time:
+        if odometry_and_time is not None:
             print("timestamp: " + str(odometry_and_time.timestamp))
             print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
             print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
