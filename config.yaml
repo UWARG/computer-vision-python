@@ -12,3 +12,7 @@ detect_target:
   device: 0
   model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
   save_prefix: "log_comp"
+
+flight_interface:
+  address: "tcp:127.0.0.1:14550"
+  worker_period: 0.1 # seconds
