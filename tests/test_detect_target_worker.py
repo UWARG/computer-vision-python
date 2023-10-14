@@ -21,7 +21,7 @@ IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
 IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
 
 WORK_COUNT = 3
-ENABLE_HALF = False
+OVERRIDE_FULL = False
 
 
 def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.QueueProxyWrapper):
@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
-        args=(device, MODEL_PATH, ENABLE_HALF, "", image_in_queue, image_out_queue, controller),
+        args=(device, MODEL_PATH, OVERRIDE_FULL, "", image_in_queue, image_out_queue, controller),
     )
 
     # Run

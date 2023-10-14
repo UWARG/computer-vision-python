@@ -17,17 +17,19 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, enable_half_precision: bool, save_name: str = ""):
+    def __init__(self, device: "str | int", model_path: str, override_full: bool, save_name: str = ""):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
-        enable_half_precision: Half precision floating point calculations.
+        override_full: Full precision floating point calculations.
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half_precision = enable_half_precision
+        self.__enable_half_precision = False if self.__device == "cpu" else True
+        if override_full:
+            self.__enable_half_precision = False
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"

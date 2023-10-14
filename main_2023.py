@@ -54,8 +54,7 @@ def main() -> int:
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
-        DETECT_TARGET_ENABLE_HALF_PRECISION = False if (args.cpu or args.full) \
-            else config["detect_target"]["cuda_available"]
+        DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
     except KeyError:
         print("Config key(s) not found")
@@ -94,7 +93,7 @@ def main() -> int:
         (
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_ENABLE_HALF_PRECISION,
+            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
