@@ -21,7 +21,7 @@ class DetectTarget:
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
-        override_full: Full precision floating point calculations.
+        override_full: Force full precision floating point calculations.
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = device
