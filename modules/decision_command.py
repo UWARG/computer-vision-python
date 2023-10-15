@@ -21,7 +21,8 @@ class Command:
     @classmethod
     def create_relative_movement_command(cls,
                                          relative_x: float,
-                                         relative_y: float) -> "Command":
+                                         relative_y: float,
+                                         relative_z: float) -> "Command":
         """
         Command for drone movement relative to current position.
         """
@@ -30,12 +31,14 @@ class Command:
             Command.CommandType.MOVE_RELATIVE,
             relative_x,
             relative_y,
+            relative_z
         )
 
     @classmethod
     def create_absolute_movement_command(cls,
                                         absolute_x: float,
-                                        absolute_y: float) -> "Command":
+                                        absolute_y: float,
+                                        absolute_z: float) -> "Command":
         """
         Command to set drone destination.
         Drone must be in halted state.
@@ -46,6 +49,7 @@ class Command:
             Command.CommandType.MOVE_ABSOLUTE,
             absolute_x,
             absolute_y,
+            absolute_z
         )
 
     @classmethod
@@ -58,12 +62,14 @@ class Command:
             Command.CommandType.LAND_IMMEDIATE,
             0.0,
             0.0,
+            0.0
         )
 
     @classmethod
     def create_land_at_position_command(cls, 
                                         x: float, 
-                                        y: float) -> "Command":
+                                        y: float,
+                                        z: float) -> "Command":
         """
         Command to land the drone.
         Drone must be in halted state.
@@ -73,13 +79,15 @@ class Command:
             Command.CommandType.LAND_AT_POSITION,
             x,
             y,
+            z
         )
 
     def __init__(self,
                  class_private_create_key,
                  command_type: CommandType,
                  command_x: float,
-                 command_y: float):
+                 command_y: float,
+                 command_z: float):
         """
         Private constructor, use create() method.
         """
@@ -88,6 +96,7 @@ class Command:
         self.__command_type = command_type
         self.__command_x = command_x
         self.__command_y = command_y
+        self.__command_z = command_z
 
     def get_command_type(self) -> CommandType:
         """
@@ -95,11 +104,11 @@ class Command:
         """
         return self.__command_type
 
-    def get_command_position(self) -> "tuple[float, float]":
+    def get_command_position(self) -> "tuple[float, float, float]":
         """
         Getter.
         """
-        return self.__command_x, self.__command_y
+        return self.__command_x, self.__command_y, self.__command_z
 
     def __repr__(self) -> str:
         """
