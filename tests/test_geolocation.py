@@ -38,14 +38,9 @@ def basic_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -75,14 +70,9 @@ def intermediate_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -113,14 +103,9 @@ def advanced_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -249,14 +234,9 @@ class TestGeolocationCreate:
         assert result
         assert camera_extrinsics is not None
 
-        result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-        assert result
-        assert home_location is not None
-
         result, locator = geolocation.Geolocation.create(
             camera_intrinsics,
             camera_extrinsics,
-            home_location,
         )
         assert result
         assert locator is not None
@@ -763,9 +743,9 @@ class TestGeolocationRun:
         # Setup
         result, drone_position = \
             drone_odometry.DronePosition.create(
-                43.472978,
-                -80.540103,
-                336.0 + 100.0,  # 100m above ground
+                0.0,
+                0.0,
+                100.0,
             )
         assert result
         assert drone_position is not None
@@ -857,9 +837,9 @@ class TestGeolocationRun:
         # Setup
         result, drone_position = \
             drone_odometry.DronePosition.create(
-                43.473059309,  # Camera at 10m north, drone at relative: 10.0 - np.cos(-np.pi / 12)
-                -80.540103,
-                336.0 + 100.0 + np.sin(-np.pi / 12),  # Camera at 100m above ground
+                10.0 - np.cos(-np.pi / 12),  # Camera at 10m north, drone at relative: 
+                0.0,
+                100.0 + np.sin(-np.pi / 12),  # Camera at 100m above ground
             )
         assert result
         assert drone_position is not None

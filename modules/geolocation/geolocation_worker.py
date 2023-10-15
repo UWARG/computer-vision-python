@@ -1,21 +1,17 @@
 """
 Convert bounding box data into ground data.
 """
-import queue
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import camera_properties
 from . import geolocation
-from ..common.mavlink.modules import drone_odometry
 
 
 # Extra parameters required for worker communication
 # pylint: disable=too-many-arguments
 def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
                        camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
-                       home_location_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                       startup_timeout: float,
                        input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                        output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                        controller: worker_controller.WorkerController):
@@ -29,17 +25,9 @@ def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
     # TODO: Logging?
     # TODO: Handle errors better
 
-    # Mitigate potential deadlock caused by early program exit
-    try:
-        home_location: drone_odometry.DronePosition = \
-            home_location_queue.queue.get(timeout=startup_timeout)
-    except queue.Empty:
-        return
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_drone_extrinsics,
-        home_location,
     )
     if not result:
         return

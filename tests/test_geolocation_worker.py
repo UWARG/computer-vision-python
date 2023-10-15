@@ -15,7 +15,6 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
-STARTUP_TIMEOUT = 10.0  # seconds
 WORK_COUNT = 3
 
 
@@ -25,9 +24,9 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     """
     result_simulate, drone_position = \
         drone_odometry.DronePosition.create(
-            43.472978,
-            -80.540103,
-            336.0 + 100.0,  # 100m above ground
+            0.0,
+            0.0,
+            100.0,
         )
     assert result_simulate
     assert drone_position is not None
@@ -84,7 +83,6 @@ if __name__ == "__main__":
 
     mp_manager = mp.Manager()
 
-    home_location_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     detection_in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     detection_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
@@ -93,8 +91,6 @@ if __name__ == "__main__":
         args=(
             camera_intrinsics,
             camera_extrinsics,
-            home_location_queue,
-            STARTUP_TIMEOUT,
             detection_in_queue,
             detection_out_queue,
             controller,
@@ -103,8 +99,6 @@ if __name__ == "__main__":
 
     # Run
     worker.start()
-
-    home_location_queue.queue.put(home_location)
 
     for _ in range(0, WORK_COUNT):
         simulate_previous_worker(detection_in_queue)
