@@ -6,15 +6,20 @@ class Command:
     Command struct for the decisions module.
     The following constructors are available for different command types:
 
+    * Command.create_relative_movement_command()
+    * Command.create_absolute_movement_command()
+    * Command.create_land_immediate_command()
+    * Command.create_land_at_position_command()
+
     """
     class CommandType(enum.Enum):
         """
         Different types of commands.
         """
         MOVE_RELATIVE    = 0  # Move relative to current position
-        MOVE_ABSOLUTE    = 1  # Move to absolute position
+        MOVE_ABSOLUTE    = 1  # Move to absolute position within local space
         LAND_IMMEDIATE   = 2  # Stop the drone at current position
-        LAND_AT_POSITION = 3  # Stop the drone at position
+        LAND_AT_POSITION = 3  # Stop the drone at position within local space
 
     __create_key = object()
 
@@ -40,9 +45,7 @@ class Command:
                                         absolute_y: float,
                                         absolute_z: float) -> "Command":
         """
-        Command to set drone destination.
-        Drone must be in halted state.
-        relative is distance from current position of the drone in metres.
+        Command for drone movement to absolute position within local space.
         """
         return Command(
             cls.__create_key,
@@ -55,7 +58,7 @@ class Command:
     @classmethod
     def create_land_immediate_command(cls) -> "Command":
         """
-        Command to halt the drone.
+        Command for landing at current position.
         """
         return Command(
             cls.__create_key,
@@ -71,8 +74,7 @@ class Command:
                                         y: float,
                                         z: float) -> "Command":
         """
-        Command to land the drone.
-        Drone must be in halted state.
+        Command to land the drone at an absolute position within local space.
         """
         return Command(
             cls.__create_key,
