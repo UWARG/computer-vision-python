@@ -42,6 +42,7 @@ def main() -> int:
     # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
+    parser.add_argument("--full", action="store_true", help="option to force full precision")
     args = parser.parse_args()
 
     # Set constants
@@ -55,6 +56,7 @@ def main() -> int:
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
+        DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
@@ -100,6 +102,7 @@ def main() -> int:
         (
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
