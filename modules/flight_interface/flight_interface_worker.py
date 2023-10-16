@@ -21,8 +21,12 @@ def flight_interface_worker(address: str,
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
+    # TODO: Error handling
+    # TODO: Logging
+
     result, interface = flight_interface.FlightInterface.create(address, timeout_home)
     if not result:
+        print("ERROR: flight_interface_worker could not create interface")
         return
 
     # Get Pylance to stop complaining
