@@ -7,8 +7,8 @@ import time
 import numpy as np
 
 from modules import detections_and_time
+from modules import drone_odometry_local
 from modules import merged_odometry_detections
-from modules.common.mavlink.modules import drone_odometry
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation_worker
 from utilities.workers import queue_proxy_wrapper
@@ -22,23 +22,28 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     """
     Place the image into the queue.
     """
-    result_simulate, drone_position = \
-        drone_odometry.DronePosition.create(
-            0.0,
-            0.0,
-            100.0,
-        )
+    result_simulate, drone_position = drone_odometry_local.DronePositionLocal.create(
+        0.0,
+        0.0,
+        -100.0,
+    )
     assert result_simulate
     assert drone_position is not None
 
-    result_simulate, drone_orientation = \
-        drone_odometry.DroneOrientation.create(
-            0.0,
-            -np.pi / 2,
-            0.0,
-        )
+    result_simulate, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+        0.0,
+        -np.pi / 2,
+        0.0,
+    )
     assert result_simulate
     assert drone_orientation is not None
+
+    result_simulate, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
+        drone_position,
+        drone_orientation,
+    )
+    assert result_simulate
+    assert drone_odometry is not None
 
     result_simulate, detection = detections_and_time.Detection.create(
         np.array([0.0, 0.0, 2000.0, 2000.0], dtype=np.float32),
@@ -49,8 +54,7 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     assert detection is not None
 
     value = merged_odometry_detections.MergedOdometryDetections(
-        drone_position,
-        drone_orientation,
+        drone_odometry,
         [detection],
     )
 
@@ -74,10 +78,6 @@ if __name__ == "__main__":
     )
     assert result
     assert camera_extrinsics is not None
-
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
 
     controller = worker_controller.WorkerController()
 

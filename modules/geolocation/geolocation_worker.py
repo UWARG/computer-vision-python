@@ -18,7 +18,6 @@ def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
     """
     Worker process.
 
-    startup_timeout: Seconds before timeout on startup.
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """

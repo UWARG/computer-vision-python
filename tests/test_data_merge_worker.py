@@ -4,13 +4,16 @@ Test worker process.
 import multiprocessing as mp
 import time
 
-from modules.common.mavlink.modules import drone_odometry
-from modules.data_merge import data_merge_worker
+from modules import drone_odometry_local
 from modules import detections_and_time
 from modules import merged_odometry_detections
 from modules import odometry_and_time
+from modules.data_merge import data_merge_worker
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
+
+
+DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 
 def simulate_detect_target_worker(timestamp: float,
@@ -27,18 +30,25 @@ def simulate_flight_input_worker(timestamp: float,
     Place the odometry into the queue.
     """
     # Timestamp is stored in latitude
-    result, position = drone_odometry.DronePosition.create(timestamp, 0.0, 1.0)
+    result, position = drone_odometry_local.DronePositionLocal.create(timestamp, 0.0, -1.0)
     assert result
     assert position is not None
 
-    result, orientation = drone_odometry.DroneOrientation.create(0.0, 0.0, 0.0)
+    result, orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)
     assert result
     assert orientation is not None
 
-    odometry = odometry_and_time.OdometryAndTime(position, orientation)
-    odometry.timestamp = timestamp
+    result, odometry = drone_odometry_local.DroneOdometryLocal.create(position, orientation)
+    assert result
+    assert odometry is not None
 
-    odometry_queue.queue.put(odometry)
+    result, odometry_time = odometry_and_time.OdometryAndTime.create(odometry)
+    assert result
+    assert odometry_time is not None
+
+    odometry_time.timestamp = timestamp
+
+    odometry_queue.queue.put(odometry_time)
 
 
 if __name__ == "__main__":
@@ -52,7 +62,13 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=data_merge_worker.data_merge_worker,
-        args=(detections_in_queue, odometry_in_queue, merged_out_queue, controller),
+        args=(
+            DATA_MERGE_WORKER_TIMEOUT,
+            detections_in_queue,
+            odometry_in_queue,
+            merged_out_queue,
+            controller,
+        ),
     )
 
     # Odometry
@@ -90,7 +106,7 @@ if __name__ == "__main__":
     for expected_time in expected_times:
         merged: merged_odometry_detections.MergedOdometryDetections = \
             merged_out_queue.queue.get_nowait()
-        assert int(merged.drone_position.latitude) == expected_time
+        assert int(merged.odometry_local.position.north) == expected_time
 
     assert merged_out_queue.queue.empty()
 

@@ -23,7 +23,7 @@ class Geolocation:
     def create(cls,
                camera_intrinsics: camera_properties.CameraIntrinsics,
                camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics) \
-            -> "tuple[bool, Geolocation | None]":
+        -> "tuple[bool, Geolocation | None]":
         """
         camera_intrinsics: Camera information without any outside space.
         camera_drone_extrinsics: Camera information related to the drone without any world space.
@@ -76,7 +76,7 @@ class Geolocation:
     @staticmethod
     def __ground_intersection_from_vector(vec_camera_in_world_position: np.ndarray,
                                           vec_down: np.ndarray) \
-            -> "tuple[bool, np.ndarray | None]":
+        -> "tuple[bool, np.ndarray | None]":
         """
         Get 2D coordinates of where the downwards pointing vector intersects the ground.
         """
@@ -110,7 +110,7 @@ class Geolocation:
     def __get_perspective_transform_matrix(self,
                                            drone_rotation_matrix: np.ndarray,
                                            drone_position_ned: np.ndarray) \
-            -> "tuple[bool, np.ndarray | None]":
+        -> "tuple[bool, np.ndarray | None]":
         """
         Calculates the destination points, then uses OpenCV to get the matrix.
         """
@@ -167,7 +167,7 @@ class Geolocation:
     # pylint: disable-next=too-many-locals
     def __convert_detection_to_world_from_image(detection: detections_and_time.Detection,
                                                 perspective_transform_matrix: np.ndarray) \
-            -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
+        -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
         """
         Applies the transform matrix to the detection.
         perspective_transform_matrix: Element in last row and column must be 1 .
@@ -244,9 +244,9 @@ class Geolocation:
         # Generate projective perspective matrix
         # Camera rotation in world
         result, drone_rotation_matrix = camera_properties.create_rotation_matrix_from_orientation(
-            detections.drone_orientation.yaw,
-            detections.drone_orientation.pitch,
-            detections.drone_orientation.roll,
+            detections.odometry_local.orientation.orientation.yaw,
+            detections.odometry_local.orientation.orientation.pitch,
+            detections.odometry_local.orientation.orientation.roll,
         )
         if not result:
             return False, None
@@ -257,9 +257,9 @@ class Geolocation:
         # Camera position in world (NED system)
         drone_position_ned = np.array(
             [
-                detections.drone_position.latitude,
-                detections.drone_position.longitude,
-                -detections.drone_position.altitude,
+                detections.odometry_local.position.north,
+                detections.odometry_local.position.east,
+                detections.odometry_local.position.down,
             ],
             dtype=np.float32,
         )
