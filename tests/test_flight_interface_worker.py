@@ -12,8 +12,8 @@ from utilities.workers import worker_controller
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
-FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 TIMEOUT_HOME = 10.0  # seconds
+FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
 # To test, start Mission Planner and forward MAVLink over TCP
