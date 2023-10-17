@@ -6,25 +6,27 @@ class DecisionCommand:
     Command struct for the decisions module.
     The following constructors are available for different command types:
 
-    * Command.create_relative_movement_command()
-    * Command.create_absolute_movement_command()
-    * Command.create_land_immediate_command()
-    * Command.create_land_at_position_command()
+    * Command.create_move_to_relative_position_command
+    * Command.create_move_to_absolute_position_command
+    * Command.create_land_at_current_position_command
+    * Command.create_move_to_relative_position_command
+    * Command.create_land_at_absolute_position_command
 
     """
     class CommandType(enum.Enum):
         """
         Different types of commands.
         """
-        MOVE_RELATIVE    = 0  # Move relative to current position
-        MOVE_ABSOLUTE    = 1  # Move to absolute position within local space
-        LAND_IMMEDIATE   = 2  # Stop the drone at current position
-        LAND_AT_POSITION = 3  # Stop the drone at position within local space
+        MOVE_TO_RELATIVE_POSITION = 0  # Move relative to current position
+        MOVE_TO_ABSOLUTE_POSITION = 1  # Move to absolute position within local space
+        LAND_AT_CURRENT_POSITION  = 2  # Stop the drone at current position
+        LAND_AT_RELATIVE_POSITION = 3  # Stop the drone at relative position within local space
+        LAND_AT_ABSOLUTE_POSITION = 4  # Stop the drone at absolute position within local space
 
     __create_key = object()
 
     @classmethod
-    def create_relative_movement_command(cls,
+    def create_move_to_relative_position_command(cls,
                                          relative_x: float,
                                          relative_y: float,
                                          relative_z: float) -> "DecisionCommand":
@@ -33,14 +35,14 @@ class DecisionCommand:
         """
         return DecisionCommand(
             cls.__create_key,
-            DecisionCommand.CommandType.MOVE_RELATIVE,
+            DecisionCommand.CommandType.MOVE_TO_RELATIVE_POSITION,
             relative_x,
             relative_y,
             relative_z
         )
 
     @classmethod
-    def create_absolute_movement_command(cls,
+    def create_move_to_absolute_position_command(cls,
                                         absolute_x: float,
                                         absolute_y: float,
                                         absolute_z: float) -> "DecisionCommand":
@@ -49,27 +51,43 @@ class DecisionCommand:
         """
         return DecisionCommand(
             cls.__create_key,
-            DecisionCommand.CommandType.MOVE_ABSOLUTE,
+            DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION,
             absolute_x,
             absolute_y,
             absolute_z
         )
 
     @classmethod
-    def create_land_immediate_command(cls) -> "DecisionCommand":
+    def create_land_at_current_position_command(cls) -> "DecisionCommand":
         """
         Command for landing at current position.
         """
         return DecisionCommand(
             cls.__create_key,
-            DecisionCommand.CommandType.LAND_IMMEDIATE,
+            DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION,
             0.0,
             0.0,
             0.0
         )
 
     @classmethod
-    def create_land_at_position_command(cls, 
+    def create_land_at_relative_position_command(cls, 
+                                        x: float, 
+                                        y: float,
+                                        z: float) -> "DecisionCommand":
+        """
+        Command to land the drone at a relative position within local space.
+        """
+        return DecisionCommand(
+            cls.__create_key,
+            DecisionCommand.CommandType.LAND_AT_RELATIVE_POSITION,
+            x,
+            y,
+            z
+        )
+
+    @classmethod
+    def create_land_at_absolute_position_command(cls, 
                                         x: float, 
                                         y: float,
                                         z: float) -> "DecisionCommand":
@@ -78,7 +96,7 @@ class DecisionCommand:
         """
         return DecisionCommand(
             cls.__create_key,
-            DecisionCommand.CommandType.LAND_AT_POSITION,
+            DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION,
             x,
             y,
             z
@@ -118,7 +136,7 @@ class DecisionCommand:
         """
         representation = "Command: " + str(self.__command_type)
 
-        if self.__command_type != DecisionCommand.CommandType.LAND_IMMEDIATE:
+        if self.__command_type != DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION:
             representation += " " + str(self.get_command_position())
 
         return representation
