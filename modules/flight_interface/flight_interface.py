@@ -20,7 +20,7 @@ class FlightInterface:
     def create(cls, address: str, timeout_home: float) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP or port.
-        timeout: Timeout for home location in seconds.
+        timeout_home: Timeout for home location in seconds.
         """
         result, controller = flight_controller.FlightController.create(address)
         if not result:

@@ -9,14 +9,14 @@ from . import flight_interface
 
 
 def flight_interface_worker(address: str,
-                            timeout_home: float,
+                            timeout: float,
                             period: float,
                             output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                             controller: worker_controller.WorkerController):
     """
     Worker process. 
 
-    address, timeout_home is initial setting.
+    address, timeout is initial setting.
     period is minimum period between loops.
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
@@ -24,7 +24,7 @@ def flight_interface_worker(address: str,
     # TODO: Error handling
     # TODO: Logging
 
-    result, interface = flight_interface.FlightInterface.create(address, timeout_home)
+    result, interface = flight_interface.FlightInterface.create(address, timeout)
     if not result:
         print("ERROR: flight_interface_worker could not create interface")
         return

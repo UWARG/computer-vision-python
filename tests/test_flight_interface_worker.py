@@ -12,7 +12,7 @@ from utilities.workers import worker_controller
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
-TIMEOUT_HOME = 10.0  # seconds
+FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         target=flight_interface_worker.flight_interface_worker,
         args=(
             MAVLINK_CONNECTION_ADDRESS,
-            TIMEOUT_HOME,
+            FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             out_queue,
             controller,
