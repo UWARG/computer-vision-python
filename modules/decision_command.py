@@ -1,7 +1,7 @@
 import enum
 
 
-class Command:
+class DecisionCommand:
     """
     Command struct for the decisions module.
     The following constructors are available for different command types:
@@ -27,13 +27,13 @@ class Command:
     def create_relative_movement_command(cls,
                                          relative_x: float,
                                          relative_y: float,
-                                         relative_z: float) -> "Command":
+                                         relative_z: float) -> "DecisionCommand":
         """
         Command for drone movement relative to current position.
         """
-        return Command(
+        return DecisionCommand(
             cls.__create_key,
-            Command.CommandType.MOVE_RELATIVE,
+            DecisionCommand.CommandType.MOVE_RELATIVE,
             relative_x,
             relative_y,
             relative_z
@@ -43,26 +43,26 @@ class Command:
     def create_absolute_movement_command(cls,
                                         absolute_x: float,
                                         absolute_y: float,
-                                        absolute_z: float) -> "Command":
+                                        absolute_z: float) -> "DecisionCommand":
         """
         Command for drone movement to absolute position within local space.
         """
-        return Command(
+        return DecisionCommand(
             cls.__create_key,
-            Command.CommandType.MOVE_ABSOLUTE,
+            DecisionCommand.CommandType.MOVE_ABSOLUTE,
             absolute_x,
             absolute_y,
             absolute_z
         )
 
     @classmethod
-    def create_land_immediate_command(cls) -> "Command":
+    def create_land_immediate_command(cls) -> "DecisionCommand":
         """
         Command for landing at current position.
         """
-        return Command(
+        return DecisionCommand(
             cls.__create_key,
-            Command.CommandType.LAND_IMMEDIATE,
+            DecisionCommand.CommandType.LAND_IMMEDIATE,
             0.0,
             0.0,
             0.0
@@ -72,13 +72,13 @@ class Command:
     def create_land_at_position_command(cls, 
                                         x: float, 
                                         y: float,
-                                        z: float) -> "Command":
+                                        z: float) -> "DecisionCommand":
         """
         Command to land the drone at an absolute position within local space.
         """
-        return Command(
+        return DecisionCommand(
             cls.__create_key,
-            Command.CommandType.LAND_AT_POSITION,
+            DecisionCommand.CommandType.LAND_AT_POSITION,
             x,
             y,
             z
@@ -93,7 +93,7 @@ class Command:
         """
         Private constructor, use create() method.
         """
-        assert class_private_create_key is Command.__create_key, "Use create() method"
+        assert class_private_create_key is DecisionCommand.__create_key, "Use create() method"
 
         self.__command_type = command_type
         self.__command_x = command_x
@@ -118,7 +118,7 @@ class Command:
         """
         representation = "Command: " + str(self.__command_type)
 
-        if self.__command_type != Command.CommandType.LAND_IMMEDIATE:
+        if self.__command_type != DecisionCommand.CommandType.LAND_IMMEDIATE:
             representation += " " + str(self.get_command_position())
 
         return representation
