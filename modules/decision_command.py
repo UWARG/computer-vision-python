@@ -1,9 +1,17 @@
+"""
+Commands for the decision module.
+"""
+
 import enum
 
 
 class DecisionCommand:
     """
-    Command struct for the decisions module.
+    Contains command type and coordinate data.
+
+    All coordinate values use the NED coordinate system. Positive x is north,
+    positive y is east, positive z is down.
+
     The following constructors are available for different command types:
 
     * Command.create_move_to_relative_position_command
@@ -72,34 +80,34 @@ class DecisionCommand:
 
     @classmethod
     def create_land_at_relative_position_command(cls, 
-                                        x: float, 
-                                        y: float,
-                                        z: float) -> "DecisionCommand":
+                                        relative_x: float, 
+                                        relative_y: float,
+                                        relative_z: float) -> "DecisionCommand":
         """
         Command to land the drone at a relative position within local space.
         """
         return DecisionCommand(
             cls.__create_key,
             DecisionCommand.CommandType.LAND_AT_RELATIVE_POSITION,
-            x,
-            y,
-            z
+            relative_x,
+            relative_y,
+            relative_z
         )
 
     @classmethod
     def create_land_at_absolute_position_command(cls, 
-                                        x: float, 
-                                        y: float,
-                                        z: float) -> "DecisionCommand":
+                                        absolute_x: float, 
+                                        absolute_y: float,
+                                        absolute_z: float) -> "DecisionCommand":
         """
         Command to land the drone at an absolute position within local space.
         """
         return DecisionCommand(
             cls.__create_key,
             DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION,
-            x,
-            y,
-            z
+            absolute_x,
+            absolute_y,
+            absolute_z
         )
 
     def __init__(self,
@@ -120,13 +128,13 @@ class DecisionCommand:
 
     def get_command_type(self) -> CommandType:
         """
-        Getter.
+        Returns the command type enum.
         """
         return self.__command_type
 
     def get_command_position(self) -> "tuple[float, float, float]":
         """
-        Getter.
+        Returns the command position in x, y, z tuple.
         """
         return self.__command_x, self.__command_y, self.__command_z
 
