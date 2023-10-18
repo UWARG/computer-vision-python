@@ -39,7 +39,9 @@ class DecisionCommand:
                                          relative_y: float,
                                          relative_z: float) -> "DecisionCommand":
         """
-        Command for drone movement relative to current position.
+        Command for drone movement relative to current position, using
+        the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
+        directions.
         """
         return DecisionCommand(
             cls.__create_key,
@@ -55,7 +57,9 @@ class DecisionCommand:
                                         absolute_y: float,
                                         absolute_z: float) -> "DecisionCommand":
         """
-        Command for drone movement to absolute position within local space.
+        Command for drone movement to absolute position within local space, using
+        the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
+        directions.
         """
         return DecisionCommand(
             cls.__create_key,
@@ -84,7 +88,9 @@ class DecisionCommand:
                                         relative_y: float,
                                         relative_z: float) -> "DecisionCommand":
         """
-        Command to land the drone at a relative position within local space.
+        Command to land the drone at a relative position within local space, using
+        the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
+        directions.
         """
         return DecisionCommand(
             cls.__create_key,
@@ -100,7 +106,9 @@ class DecisionCommand:
                                         absolute_y: float,
                                         absolute_z: float) -> "DecisionCommand":
         """
-        Command to land the drone at an absolute position within local space.
+        Command to land the drone at an absolute position within local space, using
+        the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
+        directions.
         """
         return DecisionCommand(
             cls.__create_key,
@@ -134,7 +142,9 @@ class DecisionCommand:
 
     def get_command_position(self) -> "tuple[float, float, float]":
         """
-        Returns the command position in x, y, z tuple.
+        Returns the command position in x, y, z tuple, using
+        the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
+        directions.
         """
         return self.__command_x, self.__command_y, self.__command_z
 
