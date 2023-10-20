@@ -17,7 +17,7 @@ class DecisionCommand:
     * Command.create_move_to_relative_position_command
     * Command.create_move_to_absolute_position_command
     * Command.create_land_at_current_position_command
-    * Command.create_move_to_relative_position_command
+    * Command.create_land_at_relative_position_command
     * Command.create_land_at_absolute_position_command
 
     """
@@ -35,9 +35,9 @@ class DecisionCommand:
 
     @classmethod
     def create_move_to_relative_position_command(cls,
-                                         relative_x: float,
-                                         relative_y: float,
-                                         relative_z: float) -> "DecisionCommand":
+                                                 relative_x: float,
+                                                 relative_y: float,
+                                                 relative_z: float) -> "DecisionCommand":
         """
         Command for drone movement relative to current position, using
         the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
@@ -53,9 +53,9 @@ class DecisionCommand:
 
     @classmethod
     def create_move_to_absolute_position_command(cls,
-                                        absolute_x: float,
-                                        absolute_y: float,
-                                        absolute_z: float) -> "DecisionCommand":
+                                                 absolute_x: float,
+                                                 absolute_y: float,
+                                                 absolute_z: float) -> "DecisionCommand":
         """
         Command for drone movement to absolute position within local space, using
         the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
@@ -84,9 +84,9 @@ class DecisionCommand:
 
     @classmethod
     def create_land_at_relative_position_command(cls, 
-                                        relative_x: float, 
-                                        relative_y: float,
-                                        relative_z: float) -> "DecisionCommand":
+                                                 relative_x: float, 
+                                                 relative_y: float,
+                                                 relative_z: float) -> "DecisionCommand":
         """
         Command to land the drone at a relative position within local space, using
         the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
@@ -102,9 +102,9 @@ class DecisionCommand:
 
     @classmethod
     def create_land_at_absolute_position_command(cls, 
-                                        absolute_x: float, 
-                                        absolute_y: float,
-                                        absolute_z: float) -> "DecisionCommand":
+                                                 absolute_x: float, 
+                                                 absolute_y: float,
+                                                 absolute_z: float) -> "DecisionCommand":
         """
         Command to land the drone at an absolute position within local space, using
         the NED coordinate system. (+x, +y, +z) corresponds to the north east and down 
