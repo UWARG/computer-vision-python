@@ -21,10 +21,6 @@ class DronePositionLocal:
         """
         north, east, down in metres.
         """
-        # Cannot be underground
-        if down >= 0.0:
-            return False, None
-
         return True, DronePositionLocal(cls.__create_key, north, east, down)
 
     def __init__(self,

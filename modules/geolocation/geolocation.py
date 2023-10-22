@@ -241,6 +241,20 @@ class Geolocation:
         """
         Returns detections in world space.
         """
+        # Camera position in world (NED system)
+        # Cannot be underground
+        if detections.odometry_local.position.down >= 0.0:
+            return False, None
+
+        drone_position_ned = np.array(
+            [
+                detections.odometry_local.position.north,
+                detections.odometry_local.position.east,
+                detections.odometry_local.position.down,
+            ],
+            dtype=np.float32,
+        )
+
         # Generate projective perspective matrix
         # Camera rotation in world
         result, drone_rotation_matrix = camera_properties.create_rotation_matrix_from_orientation(
@@ -253,16 +267,6 @@ class Geolocation:
 
         # Get Pylance to stop complaining
         assert drone_rotation_matrix is not None
-
-        # Camera position in world (NED system)
-        drone_position_ned = np.array(
-            [
-                detections.odometry_local.position.north,
-                detections.odometry_local.position.east,
-                detections.odometry_local.position.down,
-            ],
-            dtype=np.float32,
-        )
 
         result, perspective_transform_matrix = self.__get_perspective_transform_matrix(
             drone_rotation_matrix,
