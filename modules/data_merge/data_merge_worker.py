@@ -10,7 +10,8 @@ from .. import merged_odometry_detections
 from .. import odometry_and_time
 
 
-def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+def data_merge_worker(timeout: float,
+                      detections_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                       odometry_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                       output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                       controller: worker_controller.WorkerController):
@@ -27,11 +28,14 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
     # TODO: Logging?
 
     # Mitigate potential deadlock caused by early program exit
+    # TODO: Timeout
     try:
-        previous_odometry: odometry_and_time.OdometryAndTime = \
-            odometry_input_queue.queue.get(timeout=10)
-        current_odometry: odometry_and_time.OdometryAndTime = \
-            odometry_input_queue.queue.get(timeout=10)
+        previous_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(
+            timeout=timeout,
+        )
+        current_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(
+            timeout=timeout,
+        )
     except queue.Empty:
         return
 
@@ -61,14 +65,12 @@ def data_merge_worker(detections_input_queue: queue_proxy_wrapper.QueueProxyWrap
             < (current_odometry.timestamp - detections.timestamp)):
             # Required for separation
             value = merged_odometry_detections.MergedOdometryDetections(
-                previous_odometry.position,
-                previous_odometry.orientation,
+                previous_odometry.odometry_data,
                 detections.detections,
             )
         else:
             value = merged_odometry_detections.MergedOdometryDetections(
-                current_odometry.position,
-                current_odometry.orientation,
+                current_odometry.odometry_data,
                 detections.detections,
             )
 

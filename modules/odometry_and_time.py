@@ -1,9 +1,9 @@
 """
-Drone odometry and timestamp.
+Drone odometry in local space and timestamp.
 """
 import time
 
-from .common.mavlink.modules import drone_odometry
+from . import drone_odometry_local
 
 
 # Basically a struct
@@ -15,7 +15,7 @@ class OdometryAndTime:
     __create_key = object()
 
     @classmethod
-    def create(cls, odometry_data: drone_odometry.DroneOdometry) \
+    def create(cls, odometry_data: drone_odometry_local.DroneOdometryLocal) \
         -> "tuple[bool, OdometryAndTime | None]":
         """
         Timestamps the odometry with the current time.
@@ -30,7 +30,7 @@ class OdometryAndTime:
 
     def __init__(self,
                  class_private_create_key,
-                 odometry_data: drone_odometry.DroneOdometry,
+                 odometry_data: drone_odometry_local.DroneOdometryLocal,
                  timestamp: float):
         """
         Private constructor, use create() method.

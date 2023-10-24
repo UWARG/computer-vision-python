@@ -12,7 +12,8 @@ from utilities.workers import worker_controller
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
-FLIGHT_INTERFACE_WORKER_PERIOD = 0.1
+FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
+FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
 # To test, start Mission Planner and forward MAVLink over TCP
@@ -26,7 +27,13 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
-        args=(MAVLINK_CONNECTION_ADDRESS, FLIGHT_INTERFACE_WORKER_PERIOD, out_queue, controller),
+        args=(
+            MAVLINK_CONNECTION_ADDRESS,
+            FLIGHT_INTERFACE_TIMEOUT,
+            FLIGHT_INTERFACE_WORKER_PERIOD,
+            out_queue,
+            controller,
+        ),
     )
 
     # Run
