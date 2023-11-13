@@ -15,6 +15,7 @@ from utilities.workers import worker_manager
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
+from modules.detections_and_time import DetectionsAndTime
 
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
@@ -131,9 +132,9 @@ def main() -> int:
 
     while True:
         try:
-            image = detect_target_to_main_queue.queue.get_nowait()
+            detections = detect_target_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            image = None
+            detections = None
 
         odometry_and_time = flight_interface_to_main_queue.queue.get()
 
@@ -147,10 +148,10 @@ def main() -> int:
             print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
             print("")
 
-        if image is None:
+        if detections is None:
             continue
 
-        cv2.imshow("Landing Pad Detector", image)
+        # cv2.imshow("Landing Pad Detector", image)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
