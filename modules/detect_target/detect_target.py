@@ -86,7 +86,6 @@ class DetectTarget:
 
         if show_annotated:
             cv2.imshow("Annotated Image", image_annotated)
-            cv2.waitKey(1)
 
         # TODO: Change this to DetectionsAndTime
         return True, detections
