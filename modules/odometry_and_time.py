@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Drone odometry in local space and timestamp.
-=======
 Drone odometry and timestamp
->>>>>>> 78c49d9 (Update odometry_and_time.py)
 """
 import time
 
@@ -14,7 +10,7 @@ from . import drone_odometry_local
 # pylint: disable=too-few-public-methods
 class OdometryAndTime:
     """
-    Contains odometry/telemetry and timestamp
+    Contains odometry/telemetry and timestamp.
     """
     __create_key = object()
 
@@ -49,8 +45,9 @@ class OdometryAndTime:
                position: drone_odometry.DronePosition, 
                orientation: drone_odometry.DroneOrientation) -> "tuple[bool, MergedOdometryDetections | None]":
         """
-        position: Latitude, longitude in decimal degrees and altitude in metres
-        orientation: Yaw, pitch, roll following NED system (x forward, y right, z down)
+        Constructor sets timestamp to current time.
+        position: Latitude, longitude in decimal degrees and altitude in metres.
+        orientation: Yaw, pitch, roll following NED system (x forward, y right, z down).
         """
 
         return True, OdometryAndTime(cls.__create_key, position, orientation)
@@ -60,8 +57,7 @@ class OdometryAndTime:
                  position: drone_odometry.DronePosition,
                  orientation: drone_odometry.DroneOrientation):
         """
-        Private constructor, use create() method
-        Constructor sets timestamp to current time
+        Private constructor, use create() method.
         """
         assert class_private_create_key is OdometryAndTime.__create_key, "Use create() method"
                      

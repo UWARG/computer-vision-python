@@ -100,7 +100,7 @@ class DetectionsAndTime:
         Sets timestamp to current time.
         """
         # Check if timestamp is positive
-        if timestamp < 0:
+        if timestamp < 0.0:
             return False, None
 
         return True, DetectionsAndTime(cls.__create_key, timestamp)

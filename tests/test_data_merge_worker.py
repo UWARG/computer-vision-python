@@ -21,7 +21,9 @@ def simulate_detect_target_worker(timestamp: float,
     """
     Place the detection into the queue.
     """
-    detections = detections_and_time.DetectionsAndTime.create(timestamp)
+    result, detections = detections_and_time.DetectionsAndTime.create(timestamp)
+    assert result
+    assert detections is not None
     detections_queue.queue.put(detections)
 
 def simulate_flight_input_worker(timestamp: float,
@@ -38,9 +40,17 @@ def simulate_flight_input_worker(timestamp: float,
     assert result
     assert orientation is not None
 
+<<<<<<< HEAD
     result, odometry = drone_odometry_local.DroneOdometryLocal.create(position, orientation)
     assert result
     assert odometry is not None
+=======
+    result, odometry = odometry_and_time.OdometryAndTime.create(position, orientation)
+    assert result
+    assert odometry is not None
+    
+    odometry.timestamp = timestamp
+>>>>>>> ffa9bbe (updating local)
 
     result, odometry_time = odometry_and_time.OdometryAndTime.create(odometry)
     assert result
