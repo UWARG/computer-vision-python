@@ -7,8 +7,8 @@ import pytest
 
 from modules import detection_in_world
 from modules import detections_and_time
+from modules import drone_odometry_local
 from modules import merged_odometry_detections
-from modules.common.mavlink.modules import drone_odometry
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation
 
@@ -20,7 +20,6 @@ FLOAT_PRECISION_TOLERANCE = 4
 def basic_locator():
     """
     Forwards pointing camera.
-    Home in E5.
     """
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         2000,
@@ -38,14 +37,9 @@ def basic_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -57,7 +51,6 @@ def basic_locator():
 def intermediate_locator():
     """
     Downwards pointing camera offset towards front of drone.
-    Home in E5.
     """
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         2000,
@@ -75,14 +68,9 @@ def intermediate_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -95,7 +83,6 @@ def advanced_locator():
     """
     Camera angled at 75° upward.
     Drone is expected to rotate it downwards.
-    Home in E5.
     """
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         2000,
@@ -113,14 +100,9 @@ def advanced_locator():
     assert result
     assert camera_extrinsics is not None
 
-    result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-    assert result
-    assert home_location is not None
-
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
-        home_location,
     )
     assert result
     assert locator is not None
@@ -249,14 +231,9 @@ class TestGeolocationCreate:
         assert result
         assert camera_extrinsics is not None
 
-        result, home_location = drone_odometry.DronePosition.create(43.472978, -80.540103, 336.0)
-        assert result
-        assert home_location is not None
-
         result, locator = geolocation.Geolocation.create(
             camera_intrinsics,
             camera_extrinsics,
-            home_location,
         )
         assert result
         assert locator is not None
@@ -761,27 +738,31 @@ class TestGeolocationRun:
         2 detections.
         """
         # Setup
-        result, drone_position = \
-            drone_odometry.DronePosition.create(
-                43.472978,
-                -80.540103,
-                336.0 + 100.0,  # 100m above ground
-            )
+        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+            0.0,
+            0.0,
+            -100.0,
+        )
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = \
-            drone_odometry.DroneOrientation.create(
-                0.0,
-                -np.pi / 2,
-                0.0,
-            )
+        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+            0.0,
+            -np.pi / 2,
+            0.0,
+        )
         assert result
         assert drone_orientation is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
             drone_position,
             drone_orientation,
+        )
+        assert result
+        assert drone_odometry is not None
+
+        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+            drone_odometry,
             [
                 detection1,
                 detection2,
@@ -855,27 +836,31 @@ class TestGeolocationRun:
         2 point detections.
         """
         # Setup
-        result, drone_position = \
-            drone_odometry.DronePosition.create(
-                43.473059309,  # Camera at 10m north, drone at relative: 10.0 - np.cos(-np.pi / 12)
-                -80.540103,
-                336.0 + 100.0 + np.sin(-np.pi / 12),  # Camera at 100m above ground
-            )
+        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+            10.0 - np.cos(-np.pi / 12),  # Camera at 10m north, drone at relative
+            0.0,
+            -100.0 - np.sin(-np.pi / 12),  # Camera at 100m above ground
+        )
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = \
-            drone_odometry.DroneOrientation.create(
-                0.0,
-                np.pi / 12,
-                -np.pi,
-            )
+        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+            0.0,
+            np.pi / 12,
+            -np.pi,
+        )
         assert result
         assert drone_orientation is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
             drone_position,
             drone_orientation,
+        )
+        assert result
+        assert drone_odometry is not None
+
+        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+            drone_odometry,
             [
                 detection_bottom_right_point,
                 detection_centre_left_point,
@@ -956,27 +941,31 @@ class TestGeolocationRun:
         Bad direction.
         """
         # Setup
-        result, drone_position = \
-            drone_odometry.DronePosition.create(
-                0.0,
-                0.0,
-                200.0 + 100.0,  # 100m above ground
-            )
+        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+            0.0,
+            0.0,
+            -100.0,
+        )
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = \
-            drone_odometry.DroneOrientation.create(
-                0.0,
-                0.0,
-                0.0,
-            )
+        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+            0.0,
+            0.0,
+            0.0,
+        )
         assert result
         assert drone_orientation is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
             drone_position,
             drone_orientation,
+        )
+        assert result
+        assert drone_odometry is not None
+
+        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+            drone_odometry,
             [detection1],
         )
 
