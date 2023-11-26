@@ -21,7 +21,7 @@ MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
 IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
 IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
 
-WORK_COUNT = 3
+THROUGHPUT_TEXT_WORK_COUNT = 50
 OVERRIDE_FULL = False
 
 
@@ -34,7 +34,7 @@ def test_single_image(image_path: str, use_full_precision: bool) -> float:
     assert result
     assert value is not None
 
-    times = timeit.Timer(partial(detection.run, value)).repeat(5,100)
+    times = timeit.Timer(partial(detection.run, value)).repeat(5,5)
     single_time = min(times)/100
     return single_time
 
@@ -57,3 +57,6 @@ if __name__ == "__main__":
     half_precision_time = test_single_image(IMAGE_BUS_PATH, use_full_precision = False)
     print(f"Single image full precision: {full_precision_time}")
     print(f"Single image half precision: {half_precision_time}")
+
+    # throughput test
+
