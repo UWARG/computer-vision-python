@@ -13,6 +13,7 @@ def detect_target_worker(device: "str | int",
                          model_path: str,
                          override_full: bool,
                          save_name: str,
+                         show_annotations: bool,
                          input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                          output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                          controller: worker_controller.WorkerController):
@@ -23,7 +24,7 @@ def detect_target_worker(device: "str | int",
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    detector = detect_target.DetectTarget(device, model_path, override_full, save_name)
+    detector = detect_target.DetectTarget(device, model_path, override_full, save_name, show_annotations)
 
     while not controller.is_exit_requested():
         controller.check_pause()
