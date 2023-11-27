@@ -152,7 +152,7 @@ def main() -> int:
         if detections is None:
             continue
 
-        # cv2.imshow("Landing Pad Detector", image)
+        #cv2.imshow("Landing Pad Detector", image)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -167,6 +167,8 @@ def main() -> int:
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
+
+    cv2.destroyAllWindows()
 
     return 0
 
