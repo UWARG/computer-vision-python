@@ -44,6 +44,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
     parser.add_argument("--full", action="store_true", help="option to force full precision")
+    parser.add_argument("--show-annotated", action="store_true", help="option to show annotated image")
     args = parser.parse_args()
 
     # Set constants
@@ -59,6 +60,7 @@ def main() -> int:
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
+        DETECT_TARGET_ANNOTATE = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
@@ -106,6 +108,7 @@ def main() -> int:
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SAVE_PREFIX,
+            DETECT_TARGET_ANNOTATE,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
             controller,

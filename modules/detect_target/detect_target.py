@@ -17,7 +17,7 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, override_full: bool, save_name: str = ""):
+    def __init__(self, device: "str | int", model_path: str, override_full: bool, save_name: str = "", show_annotations: bool = False):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
@@ -28,16 +28,16 @@ class DetectTarget:
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
         self.__enable_half_precision = False if self.__device == "cpu" else True
+        self.__show_annotations = show_annotations
         if override_full:
             self.__enable_half_precision = False
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: image_and_time.ImageAndTime, show_annotated: bool = False) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
         """
         Returns annotated image.
-        TODO: Change to DetectionsAndTime
         """
         image = data.image
         predictions = self.__model.predict(
@@ -50,7 +50,6 @@ class DetectTarget:
         if len(predictions) == 0:
             return False, None
 
-        # TODO: Change this to DetectionsAndTime for image and telemetry merge for 2024
         image_annotated = predictions[0].plot(conf=True)
 
         # Processing object detection
@@ -84,10 +83,10 @@ class DetectTarget:
 
             self.__counter += 1
 
-        if show_annotated:
+        if self.__show_annotations:
             cv2.imshow("Annotated Image", image_annotated)
+            cv2.waitKey(1)
 
-        # TODO: Change this to DetectionsAndTime
         return True, detections
 
 # pylint: enable=too-few-public-methods
