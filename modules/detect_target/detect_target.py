@@ -35,7 +35,7 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, tuple[detections_and_time.DetectionsAndTime | None, np.ndarray | None]]":
         """
         Returns annotated image.
         """
@@ -84,8 +84,8 @@ class DetectTarget:
             self.__counter += 1
 
         if self.__show_annotations:
-            cv2.imshow("Annotated Image", image_annotated)
+            return True, (detections, image_annotated)
 
-        return True, detections
+        return True, (detections, None)
 
 # pylint: enable=too-few-public-methods
