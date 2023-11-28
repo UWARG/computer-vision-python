@@ -1,29 +1,57 @@
 from .. import decision_command
-from ..cluster_estimation import cluster_estimation
-from ..flight_interface import flight_interface
+from .. import object_in_world
+from .. import odometry_and_time
+
 
 class Decision:
-
     def __init__(self):
-        self.__best_landing_pad = 0
-        self.__res1, self.__landing_pad_states = cluster_estimation.ClusterEstimation.run()
-        self.__res2, self.__current_pos = flight_interface.FlightInterface.run()
+        self.__best_landing_pad = None
         self.__weighted_pads = []
 
-    def distance_to_pad(self, pad):
+    @staticmethod
+    def distance_to_pad(pad: object_in_world.ObjectInWorld,
+                        current_position: odometry_and_time.OdometryAndTime):
         """
-        finds distance to landing pad based of current position
+        Calculate Euclidean distance to landing pad based on current position.
         """
+        dx = pad.position_x - current_position.odometry_data.position.north
+        dy = pad.position_y - current_position.odometry_data.position.east
+        return (dx ** 2 + dy ** 2) ** 0.5
 
-    def weight_pads(self):
+    def weight_pads(self,
+                    pads: list[object_in_world.ObjectInWorld],
+                    current_position: odometry_and_time.OdometryAndTime):
         """
         weights the pads based on variance and distance
         """
+        self.__weighted_pads = [(pad, self.distance_to_pad(pad, current_position) / pad.spherical_variance)
+                                for pad in pads]
+
     def __find_best_pad(self):
         """
-        uses list of tuple(pad, weight) to determine best pad
+        Determine the best pad to land on based on the weighted scores.
         """
+        if not self.__weighted_pads:
+            return None
+        # Find the pad with the smallest weight as the best pad
+        self.__best_landing_pad = min(self.__weighted_pads, key=lambda x: x[1])[0]
+        return self.__best_landing_pad
 
     def run(self,
-            states, variance) -> decision_command.DecisionCommand:
-        return decision_command.DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION
+            states: odometry_and_time.OdometryAndTime,
+            pads: list[object_in_world.ObjectInWorld]) -> decision_command.DecisionCommand:
+        """
+        Determine the best landing pad and issue a command to land there.
+        """
+        self.weight_pads(pads, states)
+        best_pad = self.__find_best_pad()
+        if best_pad:
+            # Assume we're returning a command to move to the best pad's position
+            return decision_command.DecisionCommand.create_land_at_absolute_position_command(
+                best_pad.position_x,
+                best_pad.position_y,
+                -states.odometry_data.position.down  # Assuming down is negative for landing
+            )
+        else:
+            # Default to land at current position if no best pad is found
+            return decision_command.DecisionCommand.create_land_at_current_position_command()
