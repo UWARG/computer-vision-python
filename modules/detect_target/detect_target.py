@@ -17,7 +17,7 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, override_full: bool, save_name: str = "", show_annotations: bool = False):
+    def __init__(self, device: "str | int", model_path: str, override_full: bool, show_annotations: bool = False, save_name: str = ""):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.

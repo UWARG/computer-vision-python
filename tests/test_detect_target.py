@@ -7,9 +7,11 @@ import cv2
 import numpy as np
 import pytest
 import torch
+import ultralytics
 
 from modules.detect_target import detect_target
 from modules import image_and_time
+from modules import detections_and_time
 
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
@@ -20,13 +22,14 @@ IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
 IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
 
+model = ultralytics.YOLO(MODEL_PATH)
 
 @pytest.fixture()
 def detector():
     """
     Construct DetectTarget.
     """
-    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH, OVERRIDE_FULL, show_annotations=True)
+    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH, OVERRIDE_FULL)
     yield detection
 
 
@@ -94,19 +97,31 @@ class TestDetector:
         Bus image.
         """
         # Setup
-        expected = cv2.imread(IMAGE_BUS_ANNOTATED_PATH)
+        image = cv2.imread(IMAGE_BUS_PATH)
+        prediction = model.predict(
+            source=image,
+            half=True,
+            stream=False,
+        )
+
+        boxes = prediction[0].boxes
+        expected = boxes.xyxy.detach().cpu().numpy()
         assert expected is not None
 
         # Run
-        result, (detections, actual) = detector.run(image_bus)
+        result, (actual, _) = detector.run(image_bus)
+        detections = actual.detections
 
         # Test
         assert result
         assert actual is not None
         assert detections is not None
     
-        error = rmse(actual, expected)
-        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+        error = 0
+
+        for i in range(0, len(detections)):
+            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+        assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
@@ -115,19 +130,31 @@ class TestDetector:
         Zidane image.
         """
         # Setup
-        expected = cv2.imread(IMAGE_ZIDANE_ANNOTATED_PATH)
+        image = cv2.imread(IMAGE_ZIDANE_PATH)
+        prediction = model.predict(
+            source=image,
+            half=True,
+            stream=False,
+        )
+
+        boxes = prediction[0].boxes
+        expected = boxes.xyxy.detach().cpu().numpy()
         assert expected is not None
 
         # Run
-        result, (detections, actual) = detector.run(image_zidane)
+        result, (actual, _) = detector.run(image_zidane)
+        detections = actual.detections
 
         # Test
         assert result
         assert actual is not None
         assert detections is not None
 
-        error = rmse(actual, expected)
-        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+        error = 0
+
+        for i in range(0, len(detections)):
+            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+        assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
@@ -138,7 +165,15 @@ class TestDetector:
         IMAGE_COUNT = 4
 
         # Setup
-        expected = cv2.imread(IMAGE_ZIDANE_ANNOTATED_PATH)
+        image = cv2.imread(IMAGE_ZIDANE_PATH)
+        prediction = model.predict(
+            source=image,
+            half=True,
+            stream=False,
+        )
+
+        boxes = prediction[0].boxes
+        expected = boxes.xyxy.detach().cpu().numpy()
         assert expected is not None
 
         input_images = []
@@ -154,11 +189,17 @@ class TestDetector:
 
         # Test
         for i in range(0, IMAGE_COUNT):
-            output: "tuple[bool, np.ndarray | None]" = outputs[i]
-            result, (detections, actual) = output
+            output: "tuple[bool, tuple[detections_and_time.DetectionsAndTime | None, np.ndarray | None]]" = outputs[i]
+            result, (actual, _) = output
+            
+            detections = actual.detections
+
             assert result
             assert actual is not None
             assert detections is not None
 
-            error = rmse(actual, expected)
-            assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+            error = 0
+
+            for i in range(0, len(detections)):
+                error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+            assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
