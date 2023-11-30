@@ -102,6 +102,7 @@ class TestDetector:
             source=image,
             half=True,
             stream=False,
+            device=DEVICE,
         )
 
         boxes = prediction[0].boxes
@@ -135,6 +136,7 @@ class TestDetector:
             source=image,
             half=True,
             stream=False,
+            device=DEVICE,
         )
 
         boxes = prediction[0].boxes
@@ -170,6 +172,7 @@ class TestDetector:
             source=image,
             half=True,
             stream=False,
+            device=DEVICE,
         )
 
         boxes = prediction[0].boxes
