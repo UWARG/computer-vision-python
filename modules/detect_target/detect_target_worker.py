@@ -24,7 +24,7 @@ def detect_target_worker(device: "str | int",
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    detector = detect_target.DetectTarget(device, model_path, override_full, save_name, show_annotations)
+    detector = detect_target.DetectTarget(device, model_path, override_full, show_annotations, save_name)
 
     while not controller.is_exit_requested():
         controller.check_pause()

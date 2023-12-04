@@ -110,7 +110,7 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, (actual, _) = detector.run(image_bus)
+        result, actual = detector.run(image_bus)
         detections = actual.detections
 
         # Test
@@ -144,7 +144,7 @@ class TestDetector:
         assert expected is not None
 
         # Run
-        result, (actual, _) = detector.run(image_zidane)
+        result, actual = detector.run(image_zidane)
         detections = actual.detections
 
         # Test
@@ -192,8 +192,8 @@ class TestDetector:
 
         # Test
         for i in range(0, IMAGE_COUNT):
-            output: "tuple[bool, tuple[detections_and_time.DetectionsAndTime | None, np.ndarray | None]]" = outputs[i]
-            result, (actual, _) = output
+            output: "tuple[bool, detections_and_time.DetectionsAndTime | None]" = outputs[i]
+            result, actual = output
             
             detections = actual.detections
 

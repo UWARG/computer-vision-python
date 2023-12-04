@@ -135,7 +135,7 @@ def main() -> int:
 
     while True:
         try:
-            detections, image = detect_target_to_main_queue.queue.get_nowait()
+            detections = detect_target_to_main_queue.queue.get_nowait()
         except queue.Empty:
             detections = None
 
@@ -153,11 +153,6 @@ def main() -> int:
 
         if detections is None:
             continue
-
-        cv2.imshow("Landing Pad Detector", image)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
     # Teardown
     controller.request_exit()
