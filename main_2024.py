@@ -60,6 +60,7 @@ def main() -> int:
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
+        FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
     except KeyError:
         print("Config key(s) not found")
@@ -116,6 +117,7 @@ def main() -> int:
         flight_interface_worker.flight_interface_worker,
         (
             FLIGHT_INTERFACE_ADDRESS,
+            FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             flight_interface_to_main_queue,
             controller,
