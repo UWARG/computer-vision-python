@@ -1,17 +1,9 @@
 """
-Drone odometry and object detections
+Drone odometry and object detections.
 """
 
 from . import detections_and_time
-<<<<<<< HEAD
-<<<<<<< HEAD
 from . import drone_odometry_local
-=======
-from . import odometry_and_time
->>>>>>> bd110f8 (Update merged_odometry_detections.py)
-=======
-from . import drone_odometry_local
->>>>>>> 5190db5 (rebase changes)
 
 
 # Basically a struct
@@ -35,33 +27,15 @@ class MergedOdometryDetections:
         return True, MergedOdometryDetections(cls.__create_key, odometry_local, detections)
     
     def __init__(self,
-<<<<<<< HEAD
-<<<<<<< HEAD
-                 odometry_local: drone_odometry_local.DroneOdometryLocal,
-=======
                  class_private_create_key,
-                 drone_position: odometry_and_time.DronePosition,
-                 drone_orientation: odometry_and_time.DroneOrientation,
->>>>>>> bd110f8 (Update merged_odometry_detections.py)
-=======
                  odometry_local: drone_odometry_local.DroneOdometryLocal,
->>>>>>> 5190db5 (rebase changes)
                  detections: "list[detections_and_time.Detection]"):
         """
         Private constructor, use create() method.
         """
-<<<<<<< HEAD
-        self.odometry_local = odometry_local
-=======
         assert class_private_create_key is MergedOdometryDetections.__create_key, "Use create() method"
 
-<<<<<<< HEAD
-        self.drone_position = drone_position
-        self.drone_orientation = drone_orientation
->>>>>>> bd110f8 (Update merged_odometry_detections.py)
-=======
         self.odometry_local = odometry_local
->>>>>>> 5190db5 (rebase changes)
         self.detections = detections
 
 # pylint: enable=too-few-public-methods

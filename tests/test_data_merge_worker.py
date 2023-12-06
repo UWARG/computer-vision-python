@@ -40,17 +40,9 @@ def simulate_flight_input_worker(timestamp: float,
     assert result
     assert orientation is not None
 
-<<<<<<< HEAD
     result, odometry = drone_odometry_local.DroneOdometryLocal.create(position, orientation)
     assert result
     assert odometry is not None
-=======
-    result, odometry = odometry_and_time.OdometryAndTime.create(position, orientation)
-    assert result
-    assert odometry is not None
-    
-    odometry.timestamp = timestamp
->>>>>>> ffa9bbe (updating local)
 
     result, odometry_time = odometry_and_time.OdometryAndTime.create(odometry)
     assert result

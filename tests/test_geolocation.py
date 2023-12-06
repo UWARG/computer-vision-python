@@ -754,18 +754,14 @@ class TestGeolocationRun:
         assert result
         assert drone_orientation is not None
 
-<<<<<<< HEAD
         result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
-=======
-        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
->>>>>>> ffa9bbe (updating local)
             drone_position,
             drone_orientation,
         )
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [
                 detection1,
@@ -858,18 +854,14 @@ class TestGeolocationRun:
         assert result
         assert drone_orientation is not None
 
-<<<<<<< HEAD
         result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
-=======
-        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
->>>>>>> ffa9bbe (updating local)
             drone_position,
             drone_orientation,
         )
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [
                 detection_bottom_right_point,
@@ -969,18 +961,14 @@ class TestGeolocationRun:
         assert result
         assert drone_orientation is not None
 
-<<<<<<< HEAD
         result, drone_odometry = drone_odometry_local.DroneOdometryLocal.create(
-=======
-        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
->>>>>>> ffa9bbe (updating local)
             drone_position,
             drone_orientation,
         )
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [detection1],
         )
