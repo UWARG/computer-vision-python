@@ -19,6 +19,7 @@ class MergedOdometryDetections:
                odometry_local: drone_odometry_local.DroneOdometryLocal, 
                detections: "list[detections_and_time.Detection]") -> "tuple[bool, MergedOdometryDetections | None]":
         """
+        odometry_local: Drone position and orientation in local space.
         detections: List of Detections from detections_and_time.
         """
         if len(detections) == 0:
