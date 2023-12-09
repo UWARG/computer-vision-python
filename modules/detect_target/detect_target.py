@@ -61,15 +61,17 @@ class DetectTarget:
         # Make a copy of bounding boxes in CPU space
         objects_bounds = boxes.xyxy.detach().cpu().numpy()
         result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
-        if result:
-            for i in range(0, boxes.shape[0]):
-                bounds = objects_bounds[i]
-                label = int(boxes.cls[i])
-                confidence = float(boxes.conf[i])
-                result, detection = detections_and_time.Detection.create(bounds, label, confidence)
-                if result:
-                    assert detection is not None
-                    detections.append(detection)
+        if not result:
+            return False, None
+
+        for i in range(0, boxes.shape[0]):
+            bounds = objects_bounds[i]
+            label = int(boxes.cls[i])
+            confidence = float(boxes.conf[i])
+            result, detection = detections_and_time.Detection.create(bounds, label, confidence)
+            if result:
+                assert detection is not None
+                detections.append(detection)
 
         # Logging
         if self.__filename_prefix != "":

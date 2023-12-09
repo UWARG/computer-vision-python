@@ -64,17 +64,17 @@ def data_merge_worker(timeout: float,
         if ((detections.timestamp - previous_odometry.timestamp)
             < (current_odometry.timestamp - detections.timestamp)):
             # Required for separation
-            result, value = merged_odometry_detections.MergedOdometryDetections.create(
+            result, merged = merged_odometry_detections.MergedOdometryDetections.create(
                 previous_odometry.odometry_data,
                 detections.detections,
             )
         else:
-            result, value = merged_odometry_detections.MergedOdometryDetections.create(
+            result, merged = merged_odometry_detections.MergedOdometryDetections.create(
                 current_odometry.odometry_data,
                 detections.detections,
             )
-            
+
         if not result:
             break
-        else:
-            output_queue.queue.put(value)
+
+        output_queue.queue.put(merged)
