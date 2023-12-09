@@ -75,6 +75,6 @@ def data_merge_worker(timeout: float,
             )
 
         if not result:
-            break
+            continue
 
         output_queue.queue.put(merged)
