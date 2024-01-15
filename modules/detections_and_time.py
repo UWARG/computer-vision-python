@@ -104,7 +104,7 @@ class DetectionsAndTime:
             return False, None
 
         return True, DetectionsAndTime(cls.__create_key, timestamp)
-    
+
     def __init__(self, class_private_create_key, timestamp: float):
         """
         Private constructor, use create() method.
