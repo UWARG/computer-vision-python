@@ -36,7 +36,7 @@ class MergedOdometryDetections:
         Private constructor, use create() method.
         """
         assert class_private_create_key is MergedOdometryDetections.__create_key, \
-        "Use create() method"
+            "Use create() method"
 
         self.odometry_local = odometry_local
         self.detections = detections
