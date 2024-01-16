@@ -151,8 +151,8 @@ def main() -> int:
             print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
             print("")
 
-        if detections is None:
-            continue
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
 
     # Teardown
     controller.request_exit()

@@ -4,6 +4,7 @@ TODO: PointsAndTime
 """
 
 import cv2
+import numpy as np
 import ultralytics
 
 
@@ -33,8 +34,16 @@ if __name__ == "__main__":
     image_bus_annotated = results_bus[0].plot(conf=True)
     image_zidane_annotated = results_zidane[0].plot(conf=True)
 
+	# Generate expected
+    bus_expected = results_bus[0].boxes.xyxy.detach().cpu().numpy()
+    zidane_expected = results_zidane[0].boxes.xyxy.detach().cpu().numpy()
+
     # Save image
     cv2.imwrite("tests/model_example/bus_annotated.png", image_bus_annotated)
     cv2.imwrite("tests/model_example/zidane_annotated.png", image_zidane_annotated)
+    
+	# Save expected to text file
+    np.savetxt("tests/model_example/bus_expected.txt", bus_expected)
+    np.savetxt("tests/model_example/zidane_expected.txt", zidane_expected)
 
     print("Done!")

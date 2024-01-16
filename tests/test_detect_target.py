@@ -23,6 +23,8 @@ IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
 IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
 
 model = ultralytics.YOLO(MODEL_PATH)
+expected_bus = np.loadtxt("tests/model_example/bus_expected.txt")
+expected_zidane = np.loadtxt("tests/model_example/zidane_expected.txt")
 
 @pytest.fixture()
 def detector():
@@ -96,19 +98,6 @@ class TestDetector:
         """
         Bus image.
         """
-        # Setup
-        image = cv2.imread(IMAGE_BUS_PATH)
-        prediction = model.predict(
-            source=image,
-            half=True,
-            stream=False,
-            device=DEVICE,
-        )
-
-        boxes = prediction[0].boxes
-        expected = boxes.xyxy.detach().cpu().numpy()
-        assert expected is not None
-
         # Run
         result, actual = detector.run(image_bus)
         detections = actual.detections
@@ -121,7 +110,7 @@ class TestDetector:
         error = 0
 
         for i in range(0, len(detections)):
-            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_bus[i])
         assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_single_zidane_image(self,
@@ -130,19 +119,6 @@ class TestDetector:
         """
         Zidane image.
         """
-        # Setup
-        image = cv2.imread(IMAGE_ZIDANE_PATH)
-        prediction = model.predict(
-            source=image,
-            half=True,
-            stream=False,
-            device=DEVICE,
-        )
-
-        boxes = prediction[0].boxes
-        expected = boxes.xyxy.detach().cpu().numpy()
-        assert expected is not None
-
         # Run
         result, actual = detector.run(image_zidane)
         detections = actual.detections
@@ -155,7 +131,7 @@ class TestDetector:
         error = 0
 
         for i in range(0, len(detections)):
-            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_zidane[i])
         assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
 
     def test_multiple_zidane_image(self,
@@ -165,19 +141,6 @@ class TestDetector:
         Multiple Zidane images.
         """
         IMAGE_COUNT = 4
-
-        # Setup
-        image = cv2.imread(IMAGE_ZIDANE_PATH)
-        prediction = model.predict(
-            source=image,
-            half=True,
-            stream=False,
-            device=DEVICE,
-        )
-
-        boxes = prediction[0].boxes
-        expected = boxes.xyxy.detach().cpu().numpy()
-        assert expected is not None
 
         input_images = []
         for _ in range(0, IMAGE_COUNT):
@@ -204,5 +167,5 @@ class TestDetector:
             error = 0
 
             for i in range(0, len(detections)):
-                error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected[i])
+                error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_zidane[i])
             assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
