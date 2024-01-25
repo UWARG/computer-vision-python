@@ -5,6 +5,7 @@ import time
 
 import cv2
 import numpy as np  # TODO: Remove
+import logging
 import ultralytics
 
 from .. import image_and_time
@@ -33,6 +34,7 @@ class DetectTarget:
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
+        self.logger = logging.getLogger(__name__)
 
     def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, np.ndarray | None]":
         """
@@ -78,6 +80,8 @@ class DetectTarget:
             with open(filename + ".txt", "w") as file:
                 # Use internal string representation
                 file.write(repr(detections))
+            
+            self.logger.info(repr(detections))
 
             # Annotated image
             cv2.imwrite(filename + ".png", image_annotated)

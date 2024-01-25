@@ -2,7 +2,10 @@
 For 2023-2024 UAS competition.
 """
 import argparse
+import datetime
+import logging
 import multiprocessing as mp
+import os
 import pathlib
 import queue
 
@@ -16,9 +19,31 @@ from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 
-
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
+
+def init_logger():
+    """
+    Initializes the logger instance
+    """
+    base_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "logs")
+    if not os.path.exists(base_dir):
+        os.mkdir(base_dir)
+    filename = os.path.join(base_dir, f"{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.log")
+
+    file_handler = logging.FileHandler(filename=filename, mode="w")  # Handles logging to file
+    stream_handler = logging.StreamHandler()  # Handles logging to terminal
+
+    formatter = logging.Formatter(fmt='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%I:%M:%S')
+    file_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+    logger.addHandler(stream_handler)
+
+    return logger
 
 def main() -> int:
     """
@@ -138,14 +163,14 @@ def main() -> int:
         odometry_and_time = flight_interface_to_main_queue.queue.get()
 
         if odometry_and_time is not None:
-            print("timestamp: " + str(odometry_and_time.timestamp))
-            print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
-            print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
-            print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
-            print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
-            print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
-            print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
-            print("")
+            logger.info("timestamp: %s", str(odometry_and_time.timestamp))
+            logger.info("lat: %s", str(odometry_and_time.odometry_data.position.latitude))
+            logger.info("lon: %s", str(odometry_and_time.odometry_data.position.longitude))
+            logger.info("alt: %s", str(odometry_and_time.odometry_data.position.altitude))
+            logger.info("yaw: %s", str(odometry_and_time.odometry_data.orientation.yaw))
+            logger.info("roll: %s", str(odometry_and_time.odometry_data.orientation.roll))
+            logger.info("pitch: %s", str(odometry_and_time.odometry_data.orientation.pitch))
+            logger.info("")
 
         if image is None:
             continue
@@ -166,12 +191,17 @@ def main() -> int:
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
 
+    log_queue.put_nowait(None)
+    listener_process.join()
+
     return 0
 
-
+logger = init_logger()
 if __name__ == "__main__":
+    logger.debug('main: logger initialized')
+    
     result_run = main()
     if result_run < 0:
-        print(f"ERROR: Status code: {result_run}")
+        logger.error("ERROR: Status code: %s", result_run)
 
-    print("Done!")
+    logger.info('Done!')

@@ -2,6 +2,8 @@
 Gets frames and outputs detections in image space.
 """
 
+import logging
+
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import detect_target
@@ -23,6 +25,8 @@ def detect_target_worker(device: "str | int",
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
+    logger = logging.getLogger(__name__)
+    logger.info('detect_target_worker initialized')
     detector = detect_target.DetectTarget(device, model_path, override_full, save_name)
 
     while not controller.is_exit_requested():
