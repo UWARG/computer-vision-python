@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 import pytest
 import torch
-import ultralytics
 
 from modules.detect_target import detect_target
 from modules import image_and_time
@@ -19,12 +18,10 @@ MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrai
 OVERRIDE_FULL =                 False  # Tests are able to handle both full and half precision.
 IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
 IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
+BOUNDING_BOX_BUS_PATH =         "tests/model_example/bounding_box_bus.txt"
 IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
 IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
-
-model = ultralytics.YOLO(MODEL_PATH)
-expected_bus = np.loadtxt("tests/model_example/bus_expected.txt")
-expected_zidane = np.loadtxt("tests/model_example/zidane_expected.txt")
+BOUNDING_BOX_ZIDANE_PATH =      "tests/model_example/bounding_box_zidane.txt"
 
 @pytest.fixture()
 def detector():
@@ -58,85 +55,83 @@ def image_zidane():
     assert zidane_image is not None
     yield zidane_image
 
+@pytest.fixture()
+def expected_bus():
+    """
+    Load expected bus image.
+    """
+    expected_bus = np.loadtxt(BOUNDING_BOX_BUS_PATH)
+    assert expected_bus is not None
+    yield expected_bus
 
-def rmse(actual: np.ndarray,
-         expected: np.ndarray) -> float:
-        """
-        Helper function to compute root mean squared error.
-        """
-        mean_squared_error = np.square(actual - expected).mean()
-
-        return np.sqrt(mean_squared_error)
-
-
-def test_rmse():
-        """
-        Root mean squared error.
-        """
-        # Setup
-        sample_actual = np.array([1, 2, 3, 4, 5])
-        sample_expected = np.array([1.6, 2.5, 2.9, 3, 4.1])
-        EXPECTED_ERROR = np.sqrt(0.486)
-
-        # Run
-        actual_error = rmse(sample_actual, sample_expected)
-
-        # Test
-        np.testing.assert_almost_equal(actual_error, EXPECTED_ERROR)
-
+@pytest.fixture()
+def expected_zidane():
+    """
+    Load expected Zidane image.
+    """
+    expected_zidane = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
+    assert expected_zidane is not None
+    yield expected_zidane
 
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
     """
 
-    __IMAGE_DIFFERENCE_TOLERANCE = 1
+    __BOUNDING_BOX_TOLERANCE = 1e-7
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
-                              image_bus: image_and_time.ImageAndTime):
+                              image_bus: image_and_time.ImageAndTime,
+                              expected_bus: np.ndarray):
         """
         Bus image.
         """
         # Run
         result, actual = detector.run(image_bus)
-        detections = actual.detections
 
         # Test
         assert result
         assert actual is not None
-        assert detections is not None
-    
-        error = 0
 
-        for i in range(0, len(detections)):
-            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_bus[i])
-        assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
+        detections = actual.detections
+    
+        assert len(detections) == expected_bus.shape[0]
+
+        errors = np.full((1, expected_bus.shape[1]), 1)
+
+        for i in range(0, expected_bus.shape[0]):
+            errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_bus[i])
+            assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
-                                 image_zidane: image_and_time.ImageAndTime):
+                                 image_zidane: image_and_time.ImageAndTime,
+                                 expected_zidane: np.ndarray):
         """
         Zidane image.
         """
         # Run
         result, actual = detector.run(image_zidane)
-        detections = actual.detections
 
         # Test
         assert result
         assert actual is not None
-        assert detections is not None
 
-        error = 0
+        detections = actual.detections
 
-        for i in range(0, len(detections)):
-            error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_zidane[i])
-        assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
+        assert len(detections) == expected_zidane.shape[0]
+
+        errors = np.full((1, expected_zidane.shape[0]), 1)
+
+        for i in range(0, expected_zidane.shape[0]):
+            errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_zidane[i])
+            assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
-                                   image_zidane: image_and_time.ImageAndTime):
+                                   image_zidane: image_and_time.ImageAndTime,
+                                   expected_zidane: np.ndarray):
         """
         Multiple Zidane images.
         """
@@ -157,15 +152,16 @@ class TestDetector:
         for i in range(0, IMAGE_COUNT):
             output: "tuple[bool, detections_and_time.DetectionsAndTime | None]" = outputs[i]
             result, actual = output
-            
-            detections = actual.detections
 
             assert result
             assert actual is not None
-            assert detections is not None
+            
+            detections = actual.detections
 
-            error = 0
+            assert len(detections) == expected_zidane.shape[0]
 
-            for i in range(0, len(detections)):
-                error += rmse([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2], expected_zidane[i])
-            assert (error / len(detections)) < self.__IMAGE_DIFFERENCE_TOLERANCE
+            errors = np.full((1, expected_zidane.shape[0]), 1)
+
+            for i in range(0, expected_zidane.shape[0]):
+                errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_zidane[i])
+                assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)

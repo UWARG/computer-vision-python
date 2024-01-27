@@ -60,7 +60,7 @@ def main() -> int:
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_ANNOTATE = args.show_annotated
+        DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
@@ -108,7 +108,7 @@ def main() -> int:
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SAVE_PREFIX,
-            DETECT_TARGET_ANNOTATE,
+            DETECT_TARGET_SHOW_ANNOTATED,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
             controller,
@@ -139,6 +139,14 @@ def main() -> int:
         except queue.Empty:
             detections = None
 
+        if detections is not None:
+            print("timestamp: " + str(detections.timestamp))
+            print("detections: " + str(len(detections.detections)))
+            for detection in detections.detections:
+                print("    label: " + str(detection.label))
+                print("    confidence: " + str(detection.confidence))
+            print("")
+
         odometry_and_time = flight_interface_to_main_queue.queue.get()
 
         if odometry_and_time is not None:
@@ -151,7 +159,8 @@ def main() -> int:
             print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
             print("")
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if cv2.waitKey(1) == ord("q"):
+            print("Exiting main loop")
             break
 
     # Teardown

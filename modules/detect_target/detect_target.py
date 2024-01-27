@@ -85,7 +85,6 @@ class DetectTarget:
 
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)
-            cv2.waitKey(1)
 
         return True, detections
 
