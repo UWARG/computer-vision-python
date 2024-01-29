@@ -9,12 +9,14 @@ import queue
 import cv2
 import yaml
 
-from utilities.workers import queue_proxy_wrapper
-from utilities.workers import worker_controller
-from utilities.workers import worker_manager
+from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
+from utilities.workers import worker_manager
+
 
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
@@ -135,16 +137,21 @@ def main() -> int:
         except queue.Empty:
             image = None
 
-        odometry_and_time = flight_interface_to_main_queue.queue.get()
+        odometry_and_time_info: "odometry_and_time.OdometryAndTime | None" = \
+            flight_interface_to_main_queue.queue.get()
 
-        if odometry_and_time is not None:
-            print("timestamp: " + str(odometry_and_time.timestamp))
-            print("lat: " + str(odometry_and_time.odometry_data.position.latitude))
-            print("lon: " + str(odometry_and_time.odometry_data.position.longitude))
-            print("alt: " + str(odometry_and_time.odometry_data.position.altitude))
-            print("yaw: " + str(odometry_and_time.odometry_data.orientation.yaw))
-            print("roll: " + str(odometry_and_time.odometry_data.orientation.roll))
-            print("pitch: " + str(odometry_and_time.odometry_data.orientation.pitch))
+        if odometry_and_time_info is not None:
+            timestamp = odometry_and_time_info.timestamp
+            position = odometry_and_time_info.odometry_data.position
+            orientation = odometry_and_time_info.odometry_data.orientation.orientation
+
+            print("timestamp: " + str(timestamp))
+            print("north: " + str(position.north))
+            print("east: " + str(position.east))
+            print("down: " + str(position.down))
+            print("yaw: " + str(orientation.yaw))
+            print("roll: " + str(orientation.roll))
+            print("pitch: " + str(orientation.pitch))
             print("")
 
         if image is None:
