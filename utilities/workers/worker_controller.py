@@ -46,17 +46,20 @@ class WorkerController:
     def request_exit(self):
         """
         Requests worker processes to exit.
+        Does nothing if already requested.
         """
         time.sleep(self.__QUEUE_DELAY)
-        self.__exit_queue.put(None)
+        if self.__exit_queue.empty():
+            self.__exit_queue.put(None)
 
     def clear_exit(self):
         """
         Clears the exit request condition.
+        Does nothing if already cleared.
         """
         time.sleep(self.__QUEUE_DELAY)
         if not self.__exit_queue.empty():
-            self.__exit_queue.get()
+            _ = self.__exit_queue.get()
 
     def is_exit_requested(self) -> bool:
         """
