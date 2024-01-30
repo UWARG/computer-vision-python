@@ -2,7 +2,7 @@
 
 queue_max_size: 10
 
-log_dir: "logs"
+log_directory_path: "logs"
 
 video_input:
     camera_name: 0
@@ -19,4 +19,3 @@ flight_interface:
     address: "tcp:127.0.0.1:14550"
     timeout: 10.0 # seconds
     worker_period: 0.1 # seconds
-
