@@ -53,13 +53,15 @@ def main() -> int:
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-        VIDEO_INPUT_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{config['video_input']['save_prefix']}"
+        VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
+        VIDEO_INPUT_SAVE_PREFIX = f'{LOG_DIRECTORY_PATH}/{VIDEO_INPUT_SAVE_NAME_PREFIX}'
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
-        DETECT_TARGET_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{config['detect_target']['save_prefix']}"
+        DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
+        DETECT_TARGET_SAVE_PREFIX = f'{LOG_DIRECTORY_PATH}/{DETECT_TARGET_SAVE_NAME_PREFIX}'
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
