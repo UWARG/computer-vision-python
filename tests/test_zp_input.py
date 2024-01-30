@@ -1,3 +1,0 @@
-"""
-No test to run.
-"""
