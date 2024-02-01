@@ -26,16 +26,21 @@ class Decision:
         current_position: odometry_and_time.OdometryAndTime,
     ):
         """
-        Weights the pads based on variance and distance.
+        Weights the pads based on normalized variance and distance.
         """
-        epsilon = 1e-6  # Small value to prevent division by zero
+        distances = [self.distance_to_pad(pad, current_position) for pad in pads]
+        variances = [pad.spherical_variance for pad in pads]
+
+        max_distance = (
+            max(distances) or 1
+        )  # Avoid division by zero if all distances are zero
+        max_variance = (
+            max(variances) or 1
+        )  # Avoid division by zero if all variances are zero
+
         self.__weighted_pads = [
-            (
-                pad,
-                self.distance_to_pad(pad, current_position)
-                / (pad.spherical_variance + epsilon),
-            )
-            for pad in pads
+            (pad, distance / max_distance + variance / max_variance)
+            for pad, distance, variance in zip(pads, distances, variances)
         ]
 
     def __find_best_pad(self):
