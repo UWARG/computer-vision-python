@@ -23,7 +23,7 @@ class Decision:
 
     def weight_pads(
         self,
-        pads: list[object_in_world.ObjectInWorld],
+        pads: "list[object_in_world.ObjectInWorld]",
         current_position: odometry_and_time.OdometryAndTime,
     ):
         """
@@ -57,7 +57,7 @@ class Decision:
     def run(
         self,
         states: odometry_and_time.OdometryAndTime,
-        pads: list[object_in_world.ObjectInWorld],
+        pads: "list[object_in_world.ObjectInWorld]",
     ) -> decision_command.DecisionCommand:
         """
         Determine the best landing pad and issue a command to land there.
