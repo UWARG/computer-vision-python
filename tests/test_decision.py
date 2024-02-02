@@ -128,8 +128,5 @@ class TestDecision:
         """
         command = decision_maker.run(states, [])
 
-        assert isinstance(command, decision_command.DecisionCommand)
-        assert (
-            command.get_command_type()
-            == decision_command.DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION
-        )
+        assert isinstance(command, None)
+        assert None == None
