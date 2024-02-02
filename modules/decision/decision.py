@@ -58,7 +58,7 @@ class Decision:
         self,
         states: odometry_and_time.OdometryAndTime,
         pads: "list[object_in_world.ObjectInWorld]",
-    ) -> decision_command.DecisionCommand:
+    ):
         """
         Determine the best landing pad and issue a command to land there.
         """
@@ -68,18 +68,24 @@ class Decision:
             distance_to_best_bad = self.distance_to_pad(best_pad, states)
             if distance_to_best_bad <= self.__distance_tolerance:
                 # Issue a landing command if within tolerance
-                return decision_command.DecisionCommand.create_land_at_absolute_position_command(
-                    best_pad.position_x,
-                    best_pad.position_y,
-                    states.odometry_data.position.down,
+                return (
+                    True,
+                    decision_command.DecisionCommand.create_land_at_absolute_position_command(
+                        best_pad.position_x,
+                        best_pad.position_y,
+                        states.odometry_data.position.down,
+                    ),
                 )
             else:
                 # Move to best location if not within tolerance
-                return decision_command.DecisionCommand.create_move_to_absolute_position_command(
-                    best_pad.position_x,
-                    best_pad.position_y,
-                    -states.odometry_data.position.down,  # Assuming down is negative for landing
+                return (
+                    True,
+                    decision_command.DecisionCommand.create_move_to_absolute_position_command(
+                        best_pad.position_x,
+                        best_pad.position_y,
+                        -states.odometry_data.position.down,  # Assuming down is negative for landing
+                    ),
                 )
         else:
             # Default to hover if no pad is found
-            return (False, None)
+            return False, None

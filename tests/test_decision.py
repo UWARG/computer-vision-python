@@ -99,9 +99,9 @@ class TestDecision:
         Test decision making when the best pad is within tolerance.
         """
         total_pads = [best_pad_within_tolerance] + pads
-        command = decision_maker.run(states, total_pads)
+        res, command = decision_maker.run(states, total_pads)
 
-        assert isinstance(command, decision_command.DecisionCommand)
+        assert res
         assert (
             command.get_command_type()
             == decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION
@@ -114,9 +114,9 @@ class TestDecision:
         Test decision making when the best pad is outside tolerance.
         """
         total_pads = [best_pad_outside_tolerance] + pads
-        command = decision_maker.run(states, total_pads)
+        res, command = decision_maker.run(states, total_pads)
 
-        assert isinstance(command, decision_command.DecisionCommand)
+        assert res
         assert (
             command.get_command_type()
             == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
@@ -126,7 +126,7 @@ class TestDecision:
         """
         Test decision making when no pads are available.
         """
-        command = decision_maker.run(states, [])
+        res, command = decision_maker.run(states, [])
 
-        assert isinstance(command, None)
-        assert None == None
+        assert res == False
+        assert command is None  # when no pads found
