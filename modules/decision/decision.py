@@ -29,6 +29,9 @@ class Decision:
         """
         Weights the pads based on normalized variance and distance.
         """
+        if not pads:
+            return None
+
         distances = [self.distance_to_pad(pad, current_position) for pad in pads]
         variances = [pad.spherical_variance for pad in pads]
 
