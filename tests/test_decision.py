@@ -1,5 +1,5 @@
 import pytest
-from modules.decision import Decision
+from modules.decision import decision
 from modules import decision_command
 from modules import object_in_world
 from modules import odometry_and_time
