@@ -4,9 +4,10 @@ from .. import odometry_and_time
 
 
 class Decision:
-    def __init__(self):
+    def __init__(self, tolerance: float):
         self.__best_landing_pad = None
         self.__weighted_pads = []
+        self.__distance_tolerance = tolerance
 
     @staticmethod
     def distance_to_pad(
@@ -64,14 +65,21 @@ class Decision:
         self.weight_pads(pads, states)
         best_pad = self.__find_best_pad()
         if best_pad:
-            # Command to move to best location
-            return decision_command.DecisionCommand.create_move_to_absolute_position_command(
-                best_pad.position_x,
-                best_pad.position_y,
-                -states.odometry_data.position.down,  # Assuming down is negative for landing
-            )
+            distance_to_best_bad = self.distance_to_pad(best_pad, states)
+            if distance_to_best_bad <= self.__distance_tolerance:
+                # Issue a landing command if within tolerance
+                return decision_command.DecisionCommand.create_land_at_absolute_position_command(
+                    best_pad.position_x,
+                    best_pad.position_y,
+                    states.odometry_data.position.down,
+                )
+            else:
+                # Move to best location if not within tolerance
+                return decision_command.DecisionCommand.create_move_to_absolute_position_command(
+                    best_pad.position_x,
+                    best_pad.position_y,
+                    -states.odometry_data.position.down,  # Assuming down is negative for landing
+                )
         else:
-            # Default to land at current position if no best pad is found
-            return (
-                decision_command.DecisionCommand.create_land_at_current_position_command()
-            )
+            # Default to hover if no pad is found
+            return (False, None)
