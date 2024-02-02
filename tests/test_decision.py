@@ -14,7 +14,7 @@ def decision_maker():
     """
     Construct a Decision instance with predefined tolerance.
     """
-    decision_instance = Decision(TOLERANCE)
+    decision_instance = decision.Decision(TOLERANCE)
     yield decision_instance
 
 
