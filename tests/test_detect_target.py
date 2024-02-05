@@ -57,7 +57,7 @@ def image_bus():
     """
     Load bus image.
     """
-    image = cv2.imread(IMAGE_BUS_PATH)
+    image = cv2.imread(str(IMAGE_BUS_PATH))
     result, bus_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert bus_image is not None
@@ -69,7 +69,7 @@ def image_zidane():
     """
     Load Zidane image.
     """
-    image = cv2.imread(IMAGE_ZIDANE_PATH)
+    image = cv2.imread(str(IMAGE_ZIDANE_PATH))
     result, zidane_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert zidane_image is not None
