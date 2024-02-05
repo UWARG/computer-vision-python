@@ -22,6 +22,27 @@ BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding
 IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
+BOUNDING_BOX_TOLERANCE = 7
+
+def compare_detections(expected: detections_and_time.DetectionsAndTime, actual: detections_and_time.DetectionsAndTime) -> None:
+    """
+    Compare expected and actual detections.
+    """
+    assert len(expected.detections) == len(actual.detections)
+
+    for i in range(0, len(expected.detections)):
+        expected_detection = expected.detections[i]
+        actual_detection = actual.detections[i]
+
+        assert expected_detection.label == actual_detection.label
+        np.testing.assert_almost_equal(expected_detection.confidence, actual_detection.confidence, decimal=BOUNDING_BOX_TOLERANCE)
+
+        np.testing.assert_almost_equal(expected_detection.x1, actual_detection.x1, decimal=BOUNDING_BOX_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.y1, actual_detection.y1, decimal=BOUNDING_BOX_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.x2, actual_detection.x2, decimal=BOUNDING_BOX_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.y2, actual_detection.y2, decimal=BOUNDING_BOX_TOLERANCE)
+
+
 @pytest.fixture()
 def detector():
     """
@@ -60,8 +81,14 @@ def expected_bus():
     Load expected bus bounding box.
     """
     expected_bus = np.loadtxt(BOUNDING_BOX_BUS_PATH)
-    assert expected_bus is not None
-    yield expected_bus
+    detections = detections_and_time.DetectionsAndTime(0)
+    for i in range(0, expected_bus.shape[0]):
+        result, detection = detections_and_time.Detection.create(expected_bus[i][-4:], int(expected_bus[i][1]), expected_bus[i][0])
+        if result:
+            detections.append(detection)
+
+    assert detections is not None
+    yield detections
 
 @pytest.fixture()
 def expected_zidane():
@@ -69,15 +96,19 @@ def expected_zidane():
     Load expected Zidane bounding box.
     """
     expected_zidane = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
-    assert expected_zidane is not None
-    yield expected_zidane
+    detections = detections_and_time.DetectionsAndTime(0)
+    for i in range(0, expected_zidane.shape[0]):
+        result, detection = detections_and_time.Detection.create(expected_zidane[i][-4:], int(expected_zidane[i][1]), expected_zidane[i][0])
+        if result:
+            detections.append(detection)
+
+    assert detections is not None
+    yield detections
 
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
     """
-
-    __BOUNDING_BOX_TOLERANCE = 1e-7
 
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
@@ -93,15 +124,10 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        detections = actual.detections
-    
-        assert len(detections) == expected_bus.shape[0]
+        print(len(actual.detections))
 
-        errors = np.full((1, expected_bus.shape[1]), 1)
-
-        for i in range(0, expected_bus.shape[0]):
-            errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_bus[i])
-            assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)
+        compare_detections(expected_bus, actual)
+        
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
@@ -117,15 +143,7 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        detections = actual.detections
-
-        assert len(detections) == expected_zidane.shape[0]
-
-        errors = np.full((1, expected_zidane.shape[0]), 1)
-
-        for i in range(0, expected_zidane.shape[0]):
-            errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_zidane[i])
-            assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)
+        compare_detections(expected_zidane, actual)
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
@@ -155,12 +173,4 @@ class TestDetector:
             assert result
             assert actual is not None
             
-            detections = actual.detections
-
-            assert len(detections) == expected_zidane.shape[0]
-
-            errors = np.full((1, expected_zidane.shape[0]), 1)
-
-            for i in range(0, expected_zidane.shape[0]):
-                errors = np.abs(np.array([detections[i].x1, detections[i].y1, detections[i].x2, detections[i].y2]) - expected_zidane[i])
-                assert all(e < self.__BOUNDING_BOX_TOLERANCE for e in errors)
+            compare_detections(expected_zidane, actual)

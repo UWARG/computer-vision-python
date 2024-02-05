@@ -49,12 +49,21 @@ if __name__ == "__main__":
     bounding_box_bus = results_bus[0].boxes.xyxy.detach().cpu().numpy()
     bounding_box_zidane = results_zidane[0].boxes.xyxy.detach().cpu().numpy()
 
+    conf_bus = results_bus[0].boxes.conf.detach().cpu().numpy()
+    conf_zidane = results_zidane[0].boxes.conf.detach().cpu().numpy()
+
+    labels_bus = results_bus[0].boxes.cls.detach().cpu().numpy()
+    labels_zidane = results_zidane[0].boxes.cls.detach().cpu().numpy()
+
+    predictions_bus = np.insert(bounding_box_bus, 0, [conf_bus, labels_bus], axis=1)
+    predictions_zidane = np.insert(bounding_box_zidane, 0, [conf_zidane, labels_zidane], axis=1)
+
     # Save image
     cv2.imwrite(BUS_IMAGE_ANNOTATED_PATH, image_bus_annotated)
     cv2.imwrite(ZIDANE_IMAGE_ANNOTATED_PATH, image_zidane_annotated)
     
-	# Save expected to text file
-    np.savetxt(BUS_BOUNDING_BOX_PATH, bounding_box_bus)
-    np.savetxt(ZIDANE_BOUNDING_BOX_PATH, bounding_box_zidane)
+    # Save expected to text file
+    np.savetxt(BUS_BOUNDING_BOX_PATH, predictions_bus)
+    np.savetxt(ZIDANE_BOUNDING_BOX_PATH, predictions_zidane)
 
     print("Done!")
