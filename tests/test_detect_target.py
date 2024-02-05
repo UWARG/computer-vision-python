@@ -5,6 +5,7 @@ import copy
 
 import cv2
 import numpy as np
+import pathlib
 import pytest
 import torch
 
@@ -14,14 +15,12 @@ from modules import detections_and_time
 
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
-MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
-OVERRIDE_FULL =                 False  # Tests are able to handle both full and half precision.
-IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
-IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
-BOUNDING_BOX_BUS_PATH =         "tests/model_example/bounding_box_bus.txt"
-IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
-IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
-BOUNDING_BOX_ZIDANE_PATH =      "tests/model_example/bounding_box_zidane.txt"
+MODEL_PATH =                    pathlib.Path("tests", "model_example", "yolov8s_ultralytics_pretrained_default.pt")
+OVERRIDE_FULL =                 not torch.cuda.is_available() # CPU does not support half precision
+IMAGE_BUS_PATH =                pathlib.Path("tests", "model_example", "bus.jpg")
+BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding_box_bus.txt")
+IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
+BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
 @pytest.fixture()
 def detector():
@@ -58,7 +57,7 @@ def image_zidane():
 @pytest.fixture()
 def expected_bus():
     """
-    Load expected bus image.
+    Load expected bus bounding box.
     """
     expected_bus = np.loadtxt(BOUNDING_BOX_BUS_PATH)
     assert expected_bus is not None
@@ -67,7 +66,7 @@ def expected_bus():
 @pytest.fixture()
 def expected_zidane():
     """
-    Load expected Zidane image.
+    Load expected Zidane bounding box.
     """
     expected_zidane = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
     assert expected_zidane is not None
