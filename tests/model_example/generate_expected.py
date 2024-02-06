@@ -11,16 +11,15 @@ import pathlib
 
 # Downloaded from: https://github.com/ultralytics/assets/releases
 MODEL_PATH = pathlib.Path("tests", "model_example", "yolov8s_ultralytics_pretrained_default.pt")
+TEST_PATH = pathlib.Path("tests", "model_example")
 
-BUS_IMAGE_PATH = pathlib.Path("tests", "model_example", "bus.jpg")
-ZIDANE_IMAGE_PATH = pathlib.Path("tests", "model_example", "zidane.jpg")
+BUS_IMAGE_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
+ZIDANE_IMAGE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
 
-SAVE_PATH = pathlib.Path("tests", "model_example")
-
-BUS_IMAGE_ANNOTATED_PATH = pathlib.Path(SAVE_PATH, "bus_annotated.png")
-ZIDANE_IMAGE_ANNOTATED_PATH = pathlib.Path(SAVE_PATH, "zidane_annotated.png")
-BUS_BOUNDING_BOX_PATH = pathlib.Path(SAVE_PATH, "bounding_box_bus.txt")
-ZIDANE_BOUNDING_BOX_PATH = pathlib.Path(SAVE_PATH, "bounding_box_zidane.txt")
+BUS_IMAGE_ANNOTATED_PATH = pathlib.Path(TEST_PATH, "bus_annotated.png")
+ZIDANE_IMAGE_ANNOTATED_PATH = pathlib.Path(TEST_PATH, "zidane_annotated.png")
+BUS_BOUNDING_BOX_PATH = pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
+ZIDANE_BOUNDING_BOX_PATH = pathlib.Path(TEST_PATH, "bounding_box_zidane.txt")
 
 
 if __name__ == "__main__":
@@ -63,6 +62,7 @@ if __name__ == "__main__":
     cv2.imwrite(ZIDANE_IMAGE_ANNOTATED_PATH, image_zidane_annotated)
     
     # Save expected to text file
+    # Format: [confidence, label, x1, y1, x2, y2]
     np.savetxt(BUS_BOUNDING_BOX_PATH, predictions_bus)
     np.savetxt(ZIDANE_BOUNDING_BOX_PATH, predictions_zidane)
 

@@ -16,15 +16,16 @@ from modules import detections_and_time
 
 DEVICE =                        0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH =                    pathlib.Path("tests", "model_example", "yolov8s_ultralytics_pretrained_default.pt")
-OVERRIDE_FULL =                 not torch.cuda.is_available() # CPU does not support half precision
+OVERRIDE_FULL =                 not torch.cuda.is_available()  # CPU does not support half precision
 IMAGE_BUS_PATH =                pathlib.Path("tests", "model_example", "bus.jpg")
 BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding_box_bus.txt")
 IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
-BOUNDING_BOX_TOLERANCE = 7
+BOUNDING_BOX_DESIRED_PRECISION = 7
+CONFIDENCE_DESIRED_PRECISION = 3
 
-def compare_detections(expected: detections_and_time.DetectionsAndTime, actual: detections_and_time.DetectionsAndTime) -> None:
+def compare_detections(actual: detections_and_time.DetectionsAndTime, expected: detections_and_time.DetectionsAndTime) -> None:
     """
     Compare expected and actual detections.
     """
@@ -35,13 +36,24 @@ def compare_detections(expected: detections_and_time.DetectionsAndTime, actual: 
         actual_detection = actual.detections[i]
 
         assert expected_detection.label == actual_detection.label
-        np.testing.assert_almost_equal(expected_detection.confidence, actual_detection.confidence, decimal=BOUNDING_BOX_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.confidence, actual_detection.confidence, decimal=CONFIDENCE_DESIRED_PRECISION)
 
-        np.testing.assert_almost_equal(expected_detection.x1, actual_detection.x1, decimal=BOUNDING_BOX_TOLERANCE)
-        np.testing.assert_almost_equal(expected_detection.y1, actual_detection.y1, decimal=BOUNDING_BOX_TOLERANCE)
-        np.testing.assert_almost_equal(expected_detection.x2, actual_detection.x2, decimal=BOUNDING_BOX_TOLERANCE)
-        np.testing.assert_almost_equal(expected_detection.y2, actual_detection.y2, decimal=BOUNDING_BOX_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.x1, actual_detection.x1, decimal=BOUNDING_BOX_DESIRED_PRECISION)
+        np.testing.assert_almost_equal(expected_detection.y1, actual_detection.y1, decimal=BOUNDING_BOX_DESIRED_PRECISION)
+        np.testing.assert_almost_equal(expected_detection.x2, actual_detection.x2, decimal=BOUNDING_BOX_DESIRED_PRECISION)
+        np.testing.assert_almost_equal(expected_detection.y2, actual_detection.y2, decimal=BOUNDING_BOX_DESIRED_PRECISION)
 
+def create_detections(expected: np.ndarray) -> detections_and_time.DetectionsAndTime:
+    """
+    Create DetectionsAndTime from expected.
+    """
+    detections = detections_and_time.DetectionsAndTime(0)
+    for i in range(0, expected.shape[0]):
+        result, detection = detections_and_time.Detection.create(expected[i][2:], int(expected[i][1]), expected[i][0])
+        assert result
+        detections.append(detection)
+
+    return detections
 
 @pytest.fixture()
 def detector():
@@ -78,32 +90,20 @@ def image_zidane():
 @pytest.fixture()
 def expected_bus():
     """
-    Load expected bus bounding box.
+    Load expected bus detections.
     """
+    # Format: [confidence, label, x1, y1, x2, y2]
     expected_bus = np.loadtxt(BOUNDING_BOX_BUS_PATH)
-    detections = detections_and_time.DetectionsAndTime(0)
-    for i in range(0, expected_bus.shape[0]):
-        result, detection = detections_and_time.Detection.create(expected_bus[i][-4:], int(expected_bus[i][1]), expected_bus[i][0])
-        if result:
-            detections.append(detection)
-
-    assert detections is not None
-    yield detections
+    yield create_detections(expected_bus)
 
 @pytest.fixture()
 def expected_zidane():
     """
-    Load expected Zidane bounding box.
+    Load expected Zidane detections.
     """
+    # Format: [confidence, label, x1, y1, x2, y2]
     expected_zidane = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
-    detections = detections_and_time.DetectionsAndTime(0)
-    for i in range(0, expected_zidane.shape[0]):
-        result, detection = detections_and_time.Detection.create(expected_zidane[i][-4:], int(expected_zidane[i][1]), expected_zidane[i][0])
-        if result:
-            detections.append(detection)
-
-    assert detections is not None
-    yield detections
+    yield create_detections(expected_zidane)
 
 class TestDetector:
     """
@@ -124,9 +124,7 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        print(len(actual.detections))
-
-        compare_detections(expected_bus, actual)
+        compare_detections(actual, expected_bus)
         
 
     def test_single_zidane_image(self,
@@ -143,7 +141,7 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        compare_detections(expected_zidane, actual)
+        compare_detections(actual, expected_zidane)
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
@@ -173,4 +171,4 @@ class TestDetector:
             assert result
             assert actual is not None
             
-            compare_detections(expected_zidane, actual)
+            compare_detections(actual, expected_zidane)
