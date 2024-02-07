@@ -2,10 +2,10 @@
 TODO: PointsAndTime.
 """
 import copy
+import pathlib
 
 import cv2
 import numpy as np
-import pathlib
 import pytest
 import torch
 
@@ -22,8 +22,8 @@ BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding
 IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
-BOUNDING_BOX_DESIRED_TOLERANCE = 7
-CONFIDENCE_DESIRED_TOLERANCE = 3
+BOUNDING_BOX_DECIMAL_TOLERANCE = 1
+CONFIDENCE_DECIMAL_TOLERANCE = 2
 
 
 def compare_detections(actual: detections_and_time.DetectionsAndTime, expected: detections_and_time.DetectionsAndTime) -> None:
@@ -44,12 +44,14 @@ def compare_detections(actual: detections_and_time.DetectionsAndTime, expected: 
         np.testing.assert_almost_equal(actual_detection.x2, expected_detection.x2, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
         np.testing.assert_almost_equal(actual_detection.y2, expected_detection.y2, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
 
+
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
     """
     Create DetectionsAndTime from expected.
+    Format: [confidence, label, x1, y1, x2, y2]
     """
-    detections = detections_and_time.DetectionsAndTime(0)
     assert detections_from_file.shape[1] == 6
+    detections = detections_and_time.DetectionsAndTime(0)
 
     for i in range(0, detections_from_file.shape[0]):
         result, detection = detections_and_time.Detection.create(detections_from_file[i][2:], int(detections_from_file[i][1]), detections_from_file[i][0])
@@ -58,6 +60,7 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
         detections.append(detection)
 
     return detections
+
 
 @pytest.fixture()
 def detector():
@@ -91,23 +94,24 @@ def image_zidane():
     assert zidane_image is not None
     yield zidane_image
 
+
 @pytest.fixture()
 def expected_bus():
     """
     Load expected bus detections.
-    Format: [confidence, label, x1, y1, x2, y2]
     """
     expected_bus = np.loadtxt(BOUNDING_BOX_BUS_PATH)
     yield create_detections(expected_bus)
+
 
 @pytest.fixture()
 def expected_zidane():
     """
     Load expected Zidane detections.
-    Format: [confidence, label, x1, y1, x2, y2]
     """
     expected_zidane = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
     yield create_detections(expected_zidane)
+
 
 class TestDetector:
     """
@@ -128,7 +132,6 @@ class TestDetector:
         assert actual is not None
 
         compare_detections(actual, expected_bus)
-        
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,

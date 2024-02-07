@@ -171,7 +171,7 @@ def main() -> int:
             print("pitch: " + str(orientation.pitch))
             print("")
 
-        if cv2.waitKey(1) == ord("q"):
+        if cv2.waitKey(1) == ord('q'):
             print("Exiting main loop")
             break
 

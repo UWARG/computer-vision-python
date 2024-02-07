@@ -2,15 +2,16 @@
 Generates expected output using pretrained default model and images.
 TODO: PointsAndTime
 """
+import pathlib
 
 import cv2
 import numpy as np
 import ultralytics
-import pathlib
 
+
+TEST_PATH = pathlib.Path("tests", "model_example")
 
 # Downloaded from: https://github.com/ultralytics/assets/releases
-TEST_PATH = pathlib.Path("tests", "model_example")
 MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 
 BUS_IMAGE_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
@@ -44,6 +45,10 @@ if __name__ == "__main__":
     image_bus_annotated = results_bus[0].plot(conf=True)
     image_zidane_annotated = results_zidane[0].plot(conf=True)
 
+    # Save image
+    cv2.imwrite(BUS_IMAGE_ANNOTATED_PATH, image_bus_annotated)
+    cv2.imwrite(ZIDANE_IMAGE_ANNOTATED_PATH, image_zidane_annotated)
+
     # Generate expected
     bounding_box_bus = results_bus[0].boxes.xyxy.detach().cpu().numpy()
     bounding_box_zidane = results_zidane[0].boxes.xyxy.detach().cpu().numpy()
@@ -56,10 +61,6 @@ if __name__ == "__main__":
 
     predictions_bus = np.insert(bounding_box_bus, 0, [conf_bus, labels_bus], axis=1)
     predictions_zidane = np.insert(bounding_box_zidane, 0, [conf_zidane, labels_zidane], axis=1)
-
-    # Save image
-    cv2.imwrite(BUS_IMAGE_ANNOTATED_PATH, image_bus_annotated)
-    cv2.imwrite(ZIDANE_IMAGE_ANNOTATED_PATH, image_zidane_annotated)
     
     # Save expected to text file
     # Format: [confidence, label, x1, y1, x2, y2]
