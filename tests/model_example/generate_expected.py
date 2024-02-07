@@ -10,8 +10,8 @@ import pathlib
 
 
 # Downloaded from: https://github.com/ultralytics/assets/releases
-MODEL_PATH = pathlib.Path("tests", "model_example", "yolov8s_ultralytics_pretrained_default.pt")
 TEST_PATH = pathlib.Path("tests", "model_example")
+MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 
 BUS_IMAGE_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
 ZIDANE_IMAGE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
