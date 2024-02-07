@@ -63,6 +63,7 @@ class DetectTarget:
         result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
         if not result:
             return False, None
+
         assert detections is not None
 
         for i in range(0, boxes.shape[0]):
