@@ -37,12 +37,12 @@ def compare_detections(actual: detections_and_time.DetectionsAndTime, expected: 
         actual_detection = actual.detections[i]
 
         assert expected_detection.label == actual_detection.label
-        np.testing.assert_almost_equal(expected_detection.confidence, actual_detection.confidence, decimal=CONFIDENCE_DESIRED_TOLERANCE)
+        np.testing.assert_almost_equal(expected_detection.confidence, actual_detection.confidence, decimal=CONFIDENCE_DECIMAL_TOLERANCE)
 
-        np.testing.assert_almost_equal(actual_detection.x1, expected_detection.x1, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.y1, expected_detection.y1, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.x2, expected_detection.x2, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.y2, expected_detection.y2, decimal=BOUNDING_BOX_DESIRED_TOLERANCE)
+        np.testing.assert_almost_equal(actual_detection.x1, expected_detection.x1, decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
+        np.testing.assert_almost_equal(actual_detection.y1, expected_detection.y1, decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
+        np.testing.assert_almost_equal(actual_detection.x2, expected_detection.x2, decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
+        np.testing.assert_almost_equal(actual_detection.y2, expected_detection.y2, decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
 
 
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
