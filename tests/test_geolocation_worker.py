@@ -53,12 +53,13 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     assert result_simulate
     assert detection is not None
 
-    value = merged_odometry_detections.MergedOdometryDetections(
+    result_simulate, merged = merged_odometry_detections.MergedOdometryDetections.create(
         drone_odometry,
         [detection],
     )
-
-    in_queue.queue.put(value)
+    assert result_simulate
+    assert merged is not None
+    in_queue.queue.put(merged)
 
 
 if __name__ == "__main__":

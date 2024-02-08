@@ -59,7 +59,12 @@ class DetectTarget:
 
         # Make a copy of bounding boxes in CPU space
         objects_bounds = boxes.xyxy.detach().cpu().numpy()
-        detections = detections_and_time.DetectionsAndTime(data.timestamp)
+        result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
+        if not result:
+            return False, None
+
+        assert detections is not None
+
         for i in range(0, boxes.shape[0]):
             bounds = objects_bounds[i]
             label = int(boxes.cls[i])
