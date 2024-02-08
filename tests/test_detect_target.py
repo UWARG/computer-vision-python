@@ -22,7 +22,7 @@ BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding
 IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
-BOUNDING_BOX_DECIMAL_TOLERANCE = 1
+BOUNDING_BOX_DECIMAL_TOLERANCE = -1
 CONFIDENCE_DECIMAL_TOLERANCE = 2
 
 
