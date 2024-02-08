@@ -761,13 +761,15 @@ class TestGeolocationRun:
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [
                 detection1,
                 detection2,
             ],
         )
+        assert result
+        assert merged_detections is not None
 
         result, expected_detection1 = detection_in_world.DetectionInWorld.create(
             np.array(
@@ -859,13 +861,15 @@ class TestGeolocationRun:
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [
                 detection_bottom_right_point,
                 detection_centre_left_point,
             ],
         )
+        assert result
+        assert merged_detections is not None
 
         result, expected_bottom_right = detection_in_world.DetectionInWorld.create(
             np.array(
@@ -964,10 +968,12 @@ class TestGeolocationRun:
         assert result
         assert drone_odometry is not None
 
-        merged_detections = merged_odometry_detections.MergedOdometryDetections(
+        result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [detection1],
         )
+        assert result
+        assert merged_detections is not None
 
         # Run
         result, actual_list = basic_locator.run(merged_detections)
