@@ -1,3 +1,7 @@
+"""
+Tests the decision class
+"""
+
 import pytest
 
 
@@ -8,8 +12,7 @@ from modules import odometry_and_time
 from modules import drone_odometry_local
 
 
-# Test parameters
-TOLERANCE = 2
+TOLERANCE = 2  # Test parameters
 
 
 @pytest.fixture()
