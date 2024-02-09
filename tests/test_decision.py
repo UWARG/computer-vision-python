@@ -12,7 +12,7 @@ from modules import odometry_and_time
 from modules import drone_odometry_local
 
 
-TOLERANCE = 2  # Test parameters
+LANDING_PAD_LOCATION_TOLERANCE = 2  # Test parameters
 
 
 @pytest.fixture()
@@ -20,11 +20,10 @@ def decision_maker():
     """
     Construct a Decision instance with predefined tolerance.
     """
-    decision_instance = decision.Decision(TOLERANCE)
+    decision_instance = decision.Decision(LANDING_PAD_LOCATION_TOLERANCE)
     yield decision_instance
 
 
-# Fixture for a pad within tolerance
 @pytest.fixture()
 def best_pad_within_tolerance():
     """
@@ -37,26 +36,24 @@ def best_pad_within_tolerance():
         position_x, position_y, spherical_variance
     )
     assert success
-    return pad
+    yield pad
 
 
-# Fixture for a pad outside tolerance
 @pytest.fixture()
 def best_pad_outside_tolerance():
     """
-    Create a mock ObjectInWorld instance outside tolerance.
+    Creates an ObjectInWorld instance outside of distance to pad tolerance.
     """
     position_x = 100.0
     position_y = 200.0
     spherical_variance = 5.0  # variance outside tolerance
-    success, pad = object_in_world.ObjectInWorld.create(
+    result, pad = object_in_world.ObjectInWorld.create(
         position_x, position_y, spherical_variance
     )
-    assert success
-    return pad
+    assert result
+    yield pad
 
 
-# Fixture for a list of pads
 @pytest.fixture()
 def pads():
     """
@@ -65,10 +62,9 @@ def pads():
     pad1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)[1]
     pad2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)[1]
     pad3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0)[1]
-    return [pad1, pad2, pad3]
+    yield [pad1, pad2, pad3]
 
 
-# Fixture for odometry and time states
 @pytest.fixture()
 def states():
     """
@@ -88,9 +84,9 @@ def states():
     )[1]
 
     # Creating the OdometryAndTime instance with current time stamp
-    success, state = odometry_and_time.OdometryAndTime.create(odometry_data)
-    assert success
-    return state
+    result, state = odometry_and_time.OdometryAndTime.create(odometry_data)
+    assert result
+    yield state
 
 
 class TestDecision:
@@ -98,41 +94,48 @@ class TestDecision:
     Tests for the Decision.run() method.
     """
 
-    def test_decision_within_tolerance(
-        self, decision_maker, best_pad_within_tolerance, pads, states
-    ):
+    def test_decision_within_tolerance(self, 
+                                       decision_maker, 
+                                       best_pad_within_tolerance, 
+                                       pads, 
+                                       states):
         """
         Test decision making when the best pad is within tolerance.
         """
         total_pads = [best_pad_within_tolerance] + pads
-        res, command = decision_maker.run(states, total_pads)
+        result, command = decision_maker.run(states, total_pads)
 
-        assert res
+        assert result
         assert (
-            command.get_command_type()
+            command 
             == decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION
         )
 
-    def test_decision_outside_tolerance(
-        self, decision_maker, best_pad_outside_tolerance, pads, states
-    ):
+    def test_decision_outside_tolerance(self, 
+                                        decision_maker, 
+                                        best_pad_outside_tolerance, 
+                                        pads, 
+                                        states):
         """
         Test decision making when the best pad is outside tolerance.
         """
         total_pads = [best_pad_outside_tolerance] + pads
-        res, command = decision_maker.run(states, total_pads)
+        result, command = decision_maker.run(states, total_pads)
 
-        assert res
+        assert result
         assert (
-            command.get_command_type()
+            command
             == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
         )
 
-    def test_decision_no_pads(self, decision_maker, states):
+    def test_decision_no_pads(self, 
+                              decision_maker, 
+                              states):
         """
         Test decision making when no pads are available.
         """
-        res, command = decision_maker.run(states, [])
+        result, command = decision_maker.run(states, [])
 
-        assert res == False
+        assert result == False
         assert command is None  # when no pads found
+        
