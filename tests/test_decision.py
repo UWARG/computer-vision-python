@@ -66,7 +66,7 @@ def pads():
 
 
 @pytest.fixture()
-def states():
+def state():
     """
     Create a mock OdometryAndTime instance with the drone positioned within tolerance of the landing pad.
     """
@@ -91,51 +91,51 @@ def states():
 
 class TestDecision:
     """
-    Tests for the Decision.run() method.
-    """
+    Tests for the Decision.run() method and weight and distance methods
+    """        
 
     def test_decision_within_tolerance(self, 
                                        decision_maker, 
                                        best_pad_within_tolerance, 
                                        pads, 
-                                       states):
+                                       state):
         """
         Test decision making when the best pad is within tolerance.
         """
+        expected = decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION
         total_pads = [best_pad_within_tolerance] + pads
-        result, command = decision_maker.run(states, total_pads)
+        
+        result, actual = decision_maker.run(state, total_pads)
 
         assert result
-        assert (
-            command 
-            == decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION
-        )
+        assert actual == expected
 
     def test_decision_outside_tolerance(self, 
                                         decision_maker, 
                                         best_pad_outside_tolerance, 
                                         pads, 
-                                        states):
+                                        state):
         """
         Test decision making when the best pad is outside tolerance.
         """
+        expected = decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
         total_pads = [best_pad_outside_tolerance] + pads
-        result, command = decision_maker.run(states, total_pads)
+        
+        result, actual = decision_maker.run(state, total_pads)
 
         assert result
-        assert (
-            command
-            == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
-        )
+        assert actual == expected
 
     def test_decision_no_pads(self, 
                               decision_maker, 
-                              states):
+                              state):
         """
         Test decision making when no pads are available.
         """
-        result, command = decision_maker.run(states, [])
+        expected = None
+        
+        result, actual = decision_maker.run(state, [])
 
         assert result == False
-        assert command is None  # when no pads found
+        assert actual == expected
         
