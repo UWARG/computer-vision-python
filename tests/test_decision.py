@@ -108,7 +108,7 @@ class TestDecision:
         result, actual = decision_maker.run(state, total_pads)
 
         assert result
-        assert actual == expected
+        assert actual.get_command_type() == expected
 
     def test_decision_outside_tolerance(self, 
                                         decision_maker, 
@@ -124,7 +124,7 @@ class TestDecision:
         result, actual = decision_maker.run(state, total_pads)
 
         assert result
-        assert actual == expected
+        assert actual.get_command_type() == expected
 
     def test_decision_no_pads(self, 
                               decision_maker, 
