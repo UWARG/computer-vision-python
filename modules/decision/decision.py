@@ -54,7 +54,7 @@ class Decision:
         if max_variance == 0 or max_distance == 0:
             return [ScoredLandingPad(pad, 0) for pad in pads]
             
-        return True, [
+        return [
             ScoredLandingPad(pad, distance / max_distance + variance / max_variance)
             for pad, distance, variance in zip(pads, distances, variances)
         ]
