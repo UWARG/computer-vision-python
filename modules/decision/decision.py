@@ -67,7 +67,7 @@ class Decision:
         if len(weighted_pads) == 0:
             return None
         # Find the pad with the smallest weight as the best pad
-        best_landing_pad = min(weighted_pads, key=lambda x: x[1])[0]
+        best_landing_pad = min(weighted_pads, key=lambda pad: pad.score).landing_pad
         return best_landing_pad
 
     def run(self,
@@ -76,7 +76,11 @@ class Decision:
         """
         Determine the best landing pad and issue a command to land there.
         """
-        result, self.__weighted_pads = self.__weight_pads(pads, curr_state)
+        self.__weighted_pads = self.__weight_pads(pads, curr_state)
+        
+        if not self.__weighted_pads:
+            return False, None
+        
         self.__best_landing_pad = self.__find_best_pad(self.__weighted_pads)
         if self.__best_landing_pad:
             distance_to_best_bad = self.__distance_to_pad(self.__best_landing_pad, curr_state)
