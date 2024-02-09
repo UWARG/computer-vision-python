@@ -39,7 +39,6 @@ class DetectTarget:
         """
         Returns annotated image.
         """
-        print(self.__enable_half_precision)
         image = data.image
         predictions = self.__model.predict(
             source=image,

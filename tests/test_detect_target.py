@@ -22,7 +22,7 @@ BOUNDING_BOX_BUS_PATH =         pathlib.Path("tests", "model_example", "bounding
 IMAGE_ZIDANE_PATH =             pathlib.Path("tests", "model_example", "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH =      pathlib.Path("tests", "model_example", "bounding_box_zidane.txt")
 
-BOUNDING_BOX_DECIMAL_TOLERANCE = -1
+BOUNDING_BOX_DECIMAL_TOLERANCE = 0
 CONFIDENCE_DECIMAL_TOLERANCE = 2
 
 
@@ -51,8 +51,10 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
     Format: [confidence, label, x1, y1, x2, y2]
     """
     assert detections_from_file.shape[1] == 6
+
     result, detections = detections_and_time.DetectionsAndTime.create(0)
     assert result
+    assert detections is not None
 
     for i in range(0, detections_from_file.shape[0]):
         result, detection = detections_and_time.Detection.create(detections_from_file[i][2:], int(detections_from_file[i][1]), detections_from_file[i][0])
