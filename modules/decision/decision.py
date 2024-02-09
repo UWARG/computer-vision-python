@@ -35,7 +35,7 @@ class Decision:
 
     def __weight_pads(self,
                       pads: "list[object_in_world.ObjectInWorld]",
-                      current_position: odometry_and_time.OdometryAndTime) -> "list[ScoredLandingPad]" | None:
+                      current_position: odometry_and_time.OdometryAndTime) -> "list[ScoredLandingPad] | None":
         """
         Weights the pads based on normalized variance and distance.
         """
@@ -54,7 +54,7 @@ class Decision:
         if max_variance == 0 or max_distance == 0:
             return [ScoredLandingPad(pad, 0) for pad in pads]
             
-        return [
+        return True, [
             ScoredLandingPad(pad, distance / max_distance + variance / max_variance)
             for pad, distance, variance in zip(pads, distances, variances)
         ]
@@ -76,7 +76,7 @@ class Decision:
         """
         Determine the best landing pad and issue a command to land there.
         """
-        self.__weighted_pads = self.__weight_pads(pads, curr_state)
+        result, self.__weighted_pads = self.__weight_pads(pads, curr_state)
         self.__best_landing_pad = self.__find_best_pad(self.__weighted_pads)
         if self.__best_landing_pad:
             distance_to_best_bad = self.__distance_to_pad(self.__best_landing_pad, curr_state)
