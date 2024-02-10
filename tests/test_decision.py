@@ -32,10 +32,10 @@ def best_pad_within_tolerance():
     position_x = 10.0
     position_y = 20.0
     spherical_variance = 1.0
-    success, pad = object_in_world.ObjectInWorld.create(
+    result, pad = object_in_world.ObjectInWorld.create(
         position_x, position_y, spherical_variance
     )
-    assert success
+    assert result
     yield pad
 
 
