@@ -133,4 +133,3 @@ class TestDecision:
         assert result == False
         assert actual == expected
         
-        
