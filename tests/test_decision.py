@@ -71,17 +71,11 @@ def state():
     Create a mock OdometryAndTime instance with the drone positioned within tolerance of the landing pad.
     """
     # Creating the position within tolerance of the specified landing pad.
-    position = drone_odometry_local.DronePositionLocal.create(9.0, 19.0, -5.0)[
-        1
-    ]  # Example altitude of -5 meters
+    position = drone_odometry_local.DronePositionLocal.create(9.0, 19.0, -5.0)[1]  
 
-    orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[
-        1
-    ]
+    orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[1]
 
-    odometry_data = drone_odometry_local.DroneOdometryLocal.create(
-        position, orientation
-    )[1]
+    odometry_data = drone_odometry_local.DroneOdometryLocal.create(position, orientation)[1]
 
     # Creating the OdometryAndTime instance with current time stamp
     result, state = odometry_and_time.OdometryAndTime.create(odometry_data)
@@ -138,4 +132,5 @@ class TestDecision:
 
         assert result == False
         assert actual == expected
+        
         
