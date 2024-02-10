@@ -27,7 +27,7 @@ def decision_maker():
 @pytest.fixture()
 def best_pad_within_tolerance():
     """
-    Create a mock ObjectInWorld instance within tolerance.
+    Create an ObjectInWorld instance within distance to pad tolerance.
     """
     position_x = 10.0
     position_y = 20.0
@@ -57,7 +57,7 @@ def best_pad_outside_tolerance():
 @pytest.fixture()
 def pads():
     """
-    Create a list of mock ObjectInWorld instances.
+    Create a list of ObjectInWorld instances for the landing pads.
     """
     pad1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)[1]
     pad2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)[1]
@@ -68,7 +68,7 @@ def pads():
 @pytest.fixture()
 def state():
     """
-    Create a mock OdometryAndTime instance with the drone positioned within tolerance of the landing pad.
+    Create an OdometryAndTime instance with the drone positioned within tolerance of the landing pad.
     """
     # Creating the position within tolerance of the specified landing pad.
     position = drone_odometry_local.DronePositionLocal.create(9.0, 19.0, -5.0)[1]  
