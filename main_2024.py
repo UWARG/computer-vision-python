@@ -45,7 +45,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
     parser.add_argument("--full", action="store_true", help="option to force full precision")
-    parser.add_argument("--show-annotated", action="store_true", help="option to show annotated image")
+    parser.add_argument("--show-annotated", 
+                        action="store_true", 
+                        help="option to show annotated image")
     args = parser.parse_args()
 
     # Set constants

@@ -1,6 +1,5 @@
 """
 Generates expected output using pretrained default model and images.
-TODO: PointsAndTime
 """
 import pathlib
 
@@ -61,7 +60,6 @@ if __name__ == "__main__":
 
     predictions_bus = np.insert(bounding_box_bus, 0, [conf_bus, labels_bus], axis=1)
     predictions_zidane = np.insert(bounding_box_zidane, 0, [conf_zidane, labels_zidane], axis=1)
-    
     # Save expected to text file
     # Format: [confidence, label, x1, y1, x2, y2]
     np.savetxt(BUS_BOUNDING_BOX_PATH, predictions_bus)

@@ -4,7 +4,6 @@ Detects objects using the provided model.
 import time
 
 import cv2
-import numpy as np  # TODO: Remove
 import ultralytics
 
 from .. import image_and_time
@@ -17,7 +16,11 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, override_full: bool, show_annotations: bool = False, save_name: str = ""):
+    def __init__(self, device: "str | int", 
+                 model_path: str, 
+                 override_full: bool, 
+                 show_annotations: bool = False, 
+                 save_name: str = ""):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
@@ -35,7 +38,11 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    """
+    Runs object detection on the provided image and returns the detections.
+    """
+    def run(self, 
+            data: image_and_time.ImageAndTime) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
         """
         Returns annotated image.
         """
