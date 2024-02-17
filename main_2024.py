@@ -9,6 +9,8 @@ import queue
 import cv2
 import yaml
 
+# Used in type annotation of flight interface output
+# pylint: disable-next=unused-import
 from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
@@ -18,10 +20,10 @@ from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 
-
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
-
+# Main Function
+# pylint: disable-next=too-many-locals,too-many-statements
 def main() -> int:
     """
     Main function for airside code.
@@ -45,9 +47,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
     parser.add_argument("--full", action="store_true", help="option to force full precision")
-    parser.add_argument("--show-annotated", 
-                        action="store_true", 
-                        help="option to show annotated image")
+    parser.add_argument(
+        "--show-annotated",
+        action="store_true",
+        help="option to show annotated image",
+    )
     args = parser.parse_args()
 
     # Set constants
@@ -116,8 +120,8 @@ def main() -> int:
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SAVE_PREFIX,
             DETECT_TARGET_SHOW_ANNOTATED,
+            DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
             controller,

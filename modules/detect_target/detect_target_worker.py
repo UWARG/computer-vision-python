@@ -12,15 +12,15 @@ from . import detect_target
 def detect_target_worker(device: "str | int",
                          model_path: str,
                          override_full: bool,
-                         save_name: str,
                          show_annotations: bool,
+                         save_name: str,
                          input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                          output_queue: queue_proxy_wrapper.QueueProxyWrapper,
                          controller: worker_controller.WorkerController):
     """
     Worker process.
 
-    device, model_path, override_full, and save_name are initial settings.
+    device, model_path, override_full, show_annotations, and save_name are initial settings.
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
