@@ -1,7 +1,8 @@
 """
-TODO: PointsAndTime.
+Test DetectTarget module.
 """
 import copy
+import pathlib
 
 import cv2
 import numpy as np
@@ -10,15 +11,88 @@ import torch
 
 from modules.detect_target import detect_target
 from modules import image_and_time
+from modules import detections_and_time
+
+TEST_PATH =                pathlib.Path("tests", "model_example")
+DEVICE =                   0 if torch.cuda.is_available() else "cpu"
+MODEL_PATH =               pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
+OVERRIDE_FULL =            not torch.cuda.is_available()  # CPU does not support half precision
+IMAGE_BUS_PATH =           pathlib.Path(TEST_PATH, "bus.jpg")
+BOUNDING_BOX_BUS_PATH =    pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
+IMAGE_ZIDANE_PATH =        pathlib.Path(TEST_PATH, "zidane.jpg")
+BOUNDING_BOX_ZIDANE_PATH = pathlib.Path(TEST_PATH, "bounding_box_zidane.txt")
+
+BOUNDING_BOX_DECIMAL_TOLERANCE = 0
+CONFIDENCE_DECIMAL_TOLERANCE = 2
 
 
-DEVICE =                        0 if torch.cuda.is_available() else "cpu"
-MODEL_PATH =                    "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
-OVERRIDE_FULL =                 False  # Tests are able to handle both full and half precision.
-IMAGE_BUS_PATH =                "tests/model_example/bus.jpg"
-IMAGE_BUS_ANNOTATED_PATH =      "tests/model_example/bus_annotated.png"
-IMAGE_ZIDANE_PATH =             "tests/model_example/zidane.jpg"
-IMAGE_ZIDANE_ANNOTATED_PATH =   "tests/model_example/zidane_annotated.png"
+def compare_detections(actual: detections_and_time.DetectionsAndTime,
+                       expected: detections_and_time.DetectionsAndTime) -> None:
+    """
+    Compare expected and actual detections.
+    """
+    assert len(actual.detections) == len(expected.detections)
+
+    # Using integer indexing for both lists
+    # pylint: disable-next=consider-using-enumerate
+    for i in range(0, len(expected.detections)):
+        expected_detection = expected.detections[i]
+        actual_detection = actual.detections[i]
+
+        assert expected_detection.label == actual_detection.label
+        np.testing.assert_almost_equal(
+            expected_detection.confidence,
+            actual_detection.confidence,
+            decimal=CONFIDENCE_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.x1,
+            expected_detection.x1,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.y1,
+            expected_detection.y1,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.x2,
+            expected_detection.x2,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.y2,
+            expected_detection.y2,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+
+def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
+    """
+    Create DetectionsAndTime from expected.
+    Format: [confidence, label, x1, y1, x2, y2]
+    """
+    assert detections_from_file.shape[1] == 6
+
+    result, detections = detections_and_time.DetectionsAndTime.create(0)
+    assert result
+    assert detections is not None
+
+    for i in range(0, detections_from_file.shape[0]):
+        result, detection = detections_and_time.Detection.create(
+            detections_from_file[i][2:],
+            int(detections_from_file[i][1]),
+            detections_from_file[i][0],
+        )
+        assert result
+        assert detection is not None
+        detections.append(detection)
+
+    return detections
 
 
 @pytest.fixture()
@@ -35,7 +109,7 @@ def image_bus():
     """
     Load bus image.
     """
-    image = cv2.imread(IMAGE_BUS_PATH)
+    image = cv2.imread(str(IMAGE_BUS_PATH))
     result, bus_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert bus_image is not None
@@ -47,76 +121,58 @@ def image_zidane():
     """
     Load Zidane image.
     """
-    image = cv2.imread(IMAGE_ZIDANE_PATH)
+    image = cv2.imread(str(IMAGE_ZIDANE_PATH))
     result, zidane_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert zidane_image is not None
     yield zidane_image
 
 
-def rmse(actual: np.ndarray,
-         expected: np.ndarray) -> float:
-        """
-        Helper function to compute root mean squared error.
-        """
-        mean_squared_error = np.square(actual - expected).mean()
+@pytest.fixture()
+def expected_bus():
+    """
+    Load expected bus detections.
+    """
+    expected = np.loadtxt(BOUNDING_BOX_BUS_PATH)
+    yield create_detections(expected)
 
-        return np.sqrt(mean_squared_error)
 
-
-def test_rmse():
-        """
-        Root mean squared error.
-        """
-        # Setup
-        sample_actual = np.array([1, 2, 3, 4, 5])
-        sample_expected = np.array([1.6, 2.5, 2.9, 3, 4.1])
-        EXPECTED_ERROR = np.sqrt(0.486)
-
-        # Run
-        actual_error = rmse(sample_actual, sample_expected)
-
-        # Test
-        np.testing.assert_almost_equal(actual_error, EXPECTED_ERROR)
+@pytest.fixture()
+def expected_zidane():
+    """
+    Load expected Zidane detections.
+    """
+    expected = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
+    yield create_detections(expected)
 
 
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
     """
-
-    __IMAGE_DIFFERENCE_TOLERANCE = 1
-
     def test_single_bus_image(self,
                               detector: detect_target.DetectTarget,
-                              image_bus: image_and_time.ImageAndTime):
+                              image_bus: image_and_time.ImageAndTime,
+                              expected_bus: detections_and_time.DetectionsAndTime):
         """
         Bus image.
         """
-        # Setup
-        expected = cv2.imread(IMAGE_BUS_ANNOTATED_PATH)
-        assert expected is not None
-
         # Run
         result, actual = detector.run(image_bus)
 
         # Test
         assert result
         assert actual is not None
-    
-        error = rmse(actual, expected)
-        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+
+        compare_detections(actual, expected_bus)
 
     def test_single_zidane_image(self,
                                  detector: detect_target.DetectTarget,
-                                 image_zidane: image_and_time.ImageAndTime):
+                                 image_zidane: image_and_time.ImageAndTime,
+                                 expected_zidane: detections_and_time.DetectionsAndTime):
         """
         Zidane image.
         """
-        # Setup
-        expected = cv2.imread(IMAGE_ZIDANE_ANNOTATED_PATH)
-        assert expected is not None
-
         # Run
         result, actual = detector.run(image_zidane)
 
@@ -124,20 +180,16 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        error = rmse(actual, expected)
-        assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+        compare_detections(actual, expected_zidane)
 
     def test_multiple_zidane_image(self,
                                    detector: detect_target.DetectTarget,
-                                   image_zidane: image_and_time.ImageAndTime):
+                                   image_zidane: image_and_time.ImageAndTime,
+                                   expected_zidane: detections_and_time.DetectionsAndTime):
         """
         Multiple Zidane images.
         """
         IMAGE_COUNT = 4
-
-        # Setup
-        expected = cv2.imread(IMAGE_ZIDANE_ANNOTATED_PATH)
-        assert expected is not None
 
         input_images = []
         for _ in range(0, IMAGE_COUNT):
@@ -152,10 +204,9 @@ class TestDetector:
 
         # Test
         for i in range(0, IMAGE_COUNT):
-            output: "tuple[bool, np.ndarray | None]" = outputs[i]
+            output: "tuple[bool, detections_and_time.DetectionsAndTime | None]" = outputs[i]
             result, actual = output
+
             assert result
             assert actual is not None
-
-            error = rmse(actual, expected)
-            assert error < self.__IMAGE_DIFFERENCE_TOLERANCE
+            compare_detections(actual, expected_zidane)
