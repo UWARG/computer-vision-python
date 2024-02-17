@@ -1,27 +1,32 @@
 """
 Test worker process.
-TODO: PointsAndTime
 """
 import multiprocessing as mp
+import pathlib
 import time
 
 import cv2
-import numpy as np
 import torch
 
 from modules.detect_target import detect_target_worker
 from modules import image_and_time
-# from modules import points_and_time
+from modules import detections_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
-MODEL_PATH = "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"
-IMAGE_BUS_PATH = "tests/model_example/bus.jpg"
-IMAGE_ZIDANE_PATH = "tests/model_example/zidane.jpg"
+TEST_PATH = pathlib.Path("tests", "model_example")
+IMAGE_BUS_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
+IMAGE_ZIDANE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
 
 WORK_COUNT = 3
+DELAY_FOR_SIMULATED_WORKERS = 1  # seconds
+DELAY_FOR_CUDA_WARMUP = 20  # seconds
+
+MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 OVERRIDE_FULL = False
+SHOW_ANNOTATIONS = False
+SAVE_NAME = ""  # No need to save images
 
 
 def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.QueueProxyWrapper):
@@ -47,33 +52,46 @@ if __name__ == "__main__":
 
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
-        args=(device, MODEL_PATH, OVERRIDE_FULL, "", image_in_queue, image_out_queue, controller),
+        args=(
+            device,
+            MODEL_PATH,
+            OVERRIDE_FULL,
+            SAVE_NAME,
+            SHOW_ANNOTATIONS,
+            image_in_queue,
+            image_out_queue,
+            controller,
+        ),
     )
 
     # Run
+    print("Starting worker")
     worker.start()
 
     for _ in range(0, WORK_COUNT):
         simulate_previous_worker(IMAGE_BUS_PATH, image_in_queue)
 
-    time.sleep(1)
+    time.sleep(DELAY_FOR_SIMULATED_WORKERS)
 
     for _ in range(0, WORK_COUNT):
         simulate_previous_worker(IMAGE_ZIDANE_PATH, image_in_queue)
 
     # Takes some time for CUDA to warm up
-    time.sleep(20)
+    print("Waiting for CUDA to warm up")
+    time.sleep(DELAY_FOR_CUDA_WARMUP)
 
     controller.request_exit()
+    print("Requested exit")
 
     # Test
     for _ in range(0, WORK_COUNT * 2):
-        input_data: np.ndarray = image_out_queue.queue.get_nowait()
+        input_data: detections_and_time.DetectionsAndTime = image_out_queue.queue.get_nowait()
         assert input_data is not None
 
     assert image_out_queue.queue.empty()
 
     # Teardown
+    print("Teardown")
     image_in_queue.fill_and_drain_queue()
     worker.join()
 

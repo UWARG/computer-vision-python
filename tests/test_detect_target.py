@@ -1,3 +1,6 @@
+"""
+Test DetectTarget module.
+"""
 import copy
 import pathlib
 
@@ -23,35 +26,49 @@ BOUNDING_BOX_DECIMAL_TOLERANCE = 0
 CONFIDENCE_DECIMAL_TOLERANCE = 2
 
 
-def compare_detections(actual: detections_and_time.DetectionsAndTime, 
+def compare_detections(actual: detections_and_time.DetectionsAndTime,
                        expected: detections_and_time.DetectionsAndTime) -> None:
     """
     Compare expected and actual detections.
     """
     assert len(actual.detections) == len(expected.detections)
 
+    # Using integer indexing for both lists
     # pylint: disable-next=consider-using-enumerate
     for i in range(0, len(expected.detections)):
         expected_detection = expected.detections[i]
         actual_detection = actual.detections[i]
 
         assert expected_detection.label == actual_detection.label
-        np.testing.assert_almost_equal(expected_detection.confidence, 
-                                       actual_detection.confidence, 
-                                       decimal=CONFIDENCE_DECIMAL_TOLERANCE)
+        np.testing.assert_almost_equal(
+            expected_detection.confidence,
+            actual_detection.confidence,
+            decimal=CONFIDENCE_DECIMAL_TOLERANCE,
+        )
 
-        np.testing.assert_almost_equal(actual_detection.x1, 
-                                       expected_detection.x1, 
-                                       decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.y1, 
-                                       expected_detection.y1, 
-                                       decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.x2, 
-                                       expected_detection.x2, 
-                                       decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
-        np.testing.assert_almost_equal(actual_detection.y2, 
-                                       expected_detection.y2, 
-                                       decimal=BOUNDING_BOX_DECIMAL_TOLERANCE)
+        np.testing.assert_almost_equal(
+            actual_detection.x1,
+            expected_detection.x1,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.y1,
+            expected_detection.y1,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.x2,
+            expected_detection.x2,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
+
+        np.testing.assert_almost_equal(
+            actual_detection.y2,
+            expected_detection.y2,
+            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+        )
 
 
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
@@ -66,9 +83,11 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
     assert detections is not None
 
     for i in range(0, detections_from_file.shape[0]):
-        result, detection = detections_and_time.Detection.create(detections_from_file[i][2:], 
-                                                                 int(detections_from_file[i][1]), 
-                                                                 detections_from_file[i][0])
+        result, detection = detections_and_time.Detection.create(
+            detections_from_file[i][2:],
+            int(detections_from_file[i][1]),
+            detections_from_file[i][0],
+        )
         assert result
         assert detection is not None
         detections.append(detection)

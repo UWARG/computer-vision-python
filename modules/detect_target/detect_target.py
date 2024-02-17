@@ -16,10 +16,13 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", 
-                 model_path: str, 
-                 override_full: bool, 
-                 show_annotations: bool = False, 
+    # Required for logging
+    # pylint: disable-next=too-many-arguments
+    def __init__(self,
+                 device: "str | int",
+                 model_path: str,
+                 override_full: bool,
+                 show_annotations: bool = False,
                  save_name: str = ""):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
@@ -38,13 +41,17 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    """
-    Runs object detection on the provided image and returns the detections.
-    """
-    def run(self, 
-            data: image_and_time.ImageAndTime) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    # Required for logging
+    # pylint: disable-next=too-many-locals
+    def run(self,
+            data: image_and_time.ImageAndTime) \
+        -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
         """
-        Returns annotated image.
+        Runs object detection on the provided image and returns the detections.
+
+        data: Image with a timestamp.
+
+        Return: Success and the detections.
         """
         image = data.image
         predictions = self.__model.predict(
@@ -70,6 +77,7 @@ class DetectTarget:
         if not result:
             return False, None
 
+        # Get Pylance to stop complaining
         assert detections is not None
 
         for i in range(0, boxes.shape[0]):
@@ -86,7 +94,7 @@ class DetectTarget:
             filename = self.__filename_prefix + str(self.__counter)
 
             # Object detections
-            with open(filename + ".txt", "w") as file:
+            with open(filename + ".txt", "w", encoding="utf-8") as file:
                 # Use internal string representation
                 file.write(repr(detections))
 

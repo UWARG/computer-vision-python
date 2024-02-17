@@ -27,7 +27,7 @@ if __name__ == "__main__":
     image_bus = cv2.imread(BUS_IMAGE_PATH)
     image_zidane = cv2.imread(ZIDANE_IMAGE_PATH)
 
-    # ultralytics saves as .jpg , bad for testing reproducibility
+    # Ultralytics saves as .jpg , bad for testing reproducibility
     results_bus = model.predict(
             source=image_bus,
             half=True,
@@ -60,6 +60,7 @@ if __name__ == "__main__":
 
     predictions_bus = np.insert(bounding_box_bus, 0, [conf_bus, labels_bus], axis=1)
     predictions_zidane = np.insert(bounding_box_zidane, 0, [conf_zidane, labels_zidane], axis=1)
+
     # Save expected to text file
     # Format: [confidence, label, x1, y1, x2, y2]
     np.savetxt(BUS_BOUNDING_BOX_PATH, predictions_bus)
