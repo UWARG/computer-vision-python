@@ -18,9 +18,8 @@ from utilities.workers import worker_controller
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 
-def simulate_detect_target_worker(
-    timestamp: float, detections_queue: queue_proxy_wrapper.QueueProxyWrapper
-):
+def simulate_detect_target_worker(timestamp: float,
+                                  detections_queue: queue_proxy_wrapper.QueueProxyWrapper):
     """
     Place the detection into the queue.
     """
