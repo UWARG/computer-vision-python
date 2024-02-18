@@ -36,6 +36,14 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements-pytorch.txt
 
-      # Run tests with PyTest
-      - name: Run tests
+      # Run Black formatter inn check mode
+      - name: Black formatter check
+        run: black --check .
+
+      # Run Pylint linter
+      - name: Pylint linter
+        run: pylint .
+
+      # Run unit tests with PyTest
+      - name: Run unit tests
         run: pytest -vv
