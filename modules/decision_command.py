@@ -107,8 +107,6 @@ class DecisionCommand:
             absolute_z,
         )
 
-    # Create key required
-    # pylint: disable-next=too-many-arguments
     def __init__(
         self,
         class_private_create_key,

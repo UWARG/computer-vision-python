@@ -5,8 +5,6 @@ Detection information and timestamp.
 import numpy as np
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class Detection:
     """
     A detected object in image space.
@@ -19,7 +17,7 @@ class Detection:
         cls, bounds: np.ndarray, label: int, confidence: float
     ) -> "tuple[bool, Detection | None]":
         """
-        bounds are of form x1, y1, x2, y2 .
+        bounds are of form x_1, y_1, x_2, y_2 .
         """
         # Check every element in bounds is >= 0.0
         if bounds.shape != (4,) or not np.greater_equal(bounds, 0.0).all():
@@ -43,13 +41,11 @@ class Detection:
         """
         assert class_private_create_key is Detection.__create_key, "Use create() method"
 
-        # Mixing letters and numbers confuses Pylint
-        # pylint: disable=invalid-name
-        self.x1 = bounds[0]
-        self.y1 = bounds[1]
-        self.x2 = bounds[2]
-        self.y2 = bounds[3]
-        # pylint: enable=invalid-name
+        self.x_1 = bounds[0]
+        self.y_1 = bounds[1]
+        self.x_2 = bounds[2]
+        self.y_2 = bounds[3]
+
         self.label = label
         self.confidence = confidence
 
@@ -60,13 +56,13 @@ class Detection:
             + ", conf: "
             + str(self.confidence)
             + ", bounds: "
-            + str(self.x1)
+            + str(self.x_1)
             + " "
-            + str(self.y1)
+            + str(self.y_1)
             + " "
-            + str(self.x2)
+            + str(self.x_2)
             + " "
-            + str(self.y2)
+            + str(self.y_2)
         )
 
         return representation
@@ -75,23 +71,21 @@ class Detection:
         """
         Gets the xy centre of the bounding box.
         """
-        centre_x = (self.x1 + self.x2) / 2
-        centre_y = (self.y1 + self.y2) / 2
+        centre_x = (self.x_1 + self.x_2) / 2
+        centre_y = (self.y_1 + self.y_2) / 2
         return centre_x, centre_y
 
     def get_corners(self) -> "list[tuple[float, float]]":
         """
         Gets the xy corners of the bounding box.
         """
-        top_left = self.x1, self.y1
-        top_right = self.x2, self.y1
-        bottom_left = self.x1, self.y2
-        bottom_right = self.x2, self.y2
+        top_left = self.x_1, self.y_1
+        top_right = self.x_2, self.y_1
+        bottom_left = self.x_1, self.y_2
+        bottom_right = self.x_2, self.y_2
         return [top_left, top_right, bottom_left, bottom_right]
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class DetectionsAndTime:
     """
     Contains detected object and timestamp.
@@ -120,6 +114,9 @@ class DetectionsAndTime:
         self.timestamp = timestamp
 
     def __repr__(self) -> str:
+        """
+        String representation.
+        """
         representation = (
             str(self.__class__)
             + ", time: "

@@ -24,11 +24,9 @@ from utilities.workers import worker_manager
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 
-# Main function
-# pylint: disable-next=too-many-locals,too-many-statements
 def main() -> int:
     """
-    Main function for airside code.
+    Main function.
     """
     # Open config file
     try:
@@ -217,10 +215,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    # Not a constant
-    # pylint: disable-next=invalid-name
-    result_run = main()
-    if result_run < 0:
-        print(f"ERROR: Status code: {result_run}")
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

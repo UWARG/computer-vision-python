@@ -22,7 +22,10 @@ BUS_BOUNDING_BOX_PATH = pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
 ZIDANE_BOUNDING_BOX_PATH = pathlib.Path(TEST_PATH, "bounding_box_zidane.txt")
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     model = ultralytics.YOLO(MODEL_PATH)
     image_bus = cv2.imread(BUS_IMAGE_PATH)  # type: ignore
     image_zidane = cv2.imread(ZIDANE_IMAGE_PATH)  # type: ignore
@@ -62,8 +65,16 @@ if __name__ == "__main__":
     predictions_zidane = np.insert(bounding_box_zidane, 0, [conf_zidane, labels_zidane], axis=1)
 
     # Save expected to text file
-    # Format: [confidence, label, x1, y1, x2, y2]
+    # Format: [confidence, label, x_1, y_1, x_2, y_2]
     np.savetxt(BUS_BOUNDING_BOX_PATH, predictions_bus)
     np.savetxt(ZIDANE_BOUNDING_BOX_PATH, predictions_zidane)
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

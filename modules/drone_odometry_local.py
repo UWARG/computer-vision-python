@@ -5,8 +5,6 @@ Drone odometry in local space (origin at home location).
 from .common.mavlink.modules import drone_odometry
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class DronePositionLocal:
     """
     Drone position in NED system.
@@ -19,7 +17,7 @@ class DronePositionLocal:
         cls, north: float, east: float, down: float
     ) -> "tuple[bool, DronePositionLocal | None]":
         """
-        north, east, down in metres.
+        North, east, down in metres.
         """
         return True, DronePositionLocal(cls.__create_key, north, east, down)
 
@@ -34,8 +32,6 @@ class DronePositionLocal:
         self.down = down
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class DroneOrientationLocal:
     """
     Wrapper for DroneOrientation as it is the same in both local and global space.
@@ -48,7 +44,7 @@ class DroneOrientationLocal:
         cls, yaw: float, pitch: float, roll: float
     ) -> "tuple[bool, DroneOrientationLocal | None]":
         """
-        yaw, pitch, roll in radians.
+        Yaw, pitch, roll in radians.
         """
         result, orientation = drone_odometry.DroneOrientation.create(yaw, pitch, roll)
         if not result:
@@ -75,8 +71,6 @@ class DroneOrientationLocal:
         self.orientation = orientation
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class DroneOdometryLocal:
     """
     Wrapper for DronePositionLocal and DroneOrientationLocal.

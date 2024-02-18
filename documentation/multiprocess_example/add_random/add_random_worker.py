@@ -7,8 +7,6 @@ from utilities.workers import worker_controller
 from . import add_random
 
 
-# Worker has both class and control parameters
-# pylint: disable-next=too-many-arguments
 def add_random_worker(
     seed: int,
     max_random_term: int,

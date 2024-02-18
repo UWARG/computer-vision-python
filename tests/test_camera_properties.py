@@ -1,6 +1,3 @@
-# Large test file
-# No enable
-# pylint: disable=too-many-lines
 """
 Test camera intrinsics and extrinsics.
 """

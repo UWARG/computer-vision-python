@@ -132,8 +132,6 @@ class TestAddition:
     # * Large negative with large negative
 
 
-# Test class
-# pylint: disable-next=too-few-public-methods
 class TestMultiply:
     """
     Many multiplication cases need to be covered as well.

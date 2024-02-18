@@ -15,7 +15,10 @@ VIDEO_INPUT_WORKER_PERIOD = 1.0
 CAMERA = 0
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -47,5 +50,13 @@ if __name__ == "__main__":
 
     # Teardown
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

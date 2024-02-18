@@ -8,8 +8,6 @@ from . import camera_properties
 from . import geolocation
 
 
-# Worker has both class and control parameters
-# pylint: disable-next=too-many-arguments
 def geolocation_worker(
     camera_intrinsics: camera_properties.CameraIntrinsics,
     camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,

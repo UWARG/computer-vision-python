@@ -396,14 +396,15 @@ class TestCorrectNumberClusterOutputs:
         generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        detections_in_world = []
+        result_latest = False
+        detections_in_world_latest = []
         for point in generated_detections:
-            result, detections_in_world = cluster_model.run([point], False)
-            assert result
-            assert detections_in_world is not None
+            result_latest, detections_in_world_latest = cluster_model.run([point], False)
 
         # Test
-        assert len(detections_in_world) == expected_cluster_count
+        assert result_latest
+        assert detections_in_world_latest is not None
+        assert len(detections_in_world_latest) == expected_cluster_count
 
     def test_detect_consecutive_inputs_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
@@ -419,18 +420,17 @@ class TestCorrectNumberClusterOutputs:
         generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        detections_in_world = []
+        result_latest = False
+        detections_in_world_latest = []
         for point in generated_detections:
-            result, detections_in_world = cluster_model.run([point], False)
-            assert result
-            assert detections_in_world is not None
+            result_latest, detections_in_world_latest = cluster_model.run([point], False)
 
         # Test
-        assert len(detections_in_world) == expected_cluster_count
+        assert result_latest
+        assert detections_in_world_latest is not None
+        assert len(detections_in_world_latest) == expected_cluster_count
 
 
-# Test class
-# pylint: disable-next=too-few-public-methods
 class TestCorrectClusterPositionOutput:
     """
     Tests if cluster estimation output falls within acceptable distance to

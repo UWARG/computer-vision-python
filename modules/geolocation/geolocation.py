@@ -151,13 +151,10 @@ class Geolocation:
         src = np.array(self.__perspective_transform_sources, dtype=np.float32)
         dst = np.array(ground_points, dtype=np.float32)
         try:
-            # Pylint does not like the OpenCV module
-            # pylint: disable=no-member
             matrix = cv2.getPerspectiveTransform(  # type: ignore
                 src,
                 dst,
             )
-            # pylint: enable=no-member
         # All exceptions must be caught and logged as early as possible
         # pylint: disable-next=bare-except
         except:
@@ -167,7 +164,6 @@ class Geolocation:
         return True, matrix
 
     @staticmethod
-    # pylint: disable-next=too-many-locals
     def __convert_detection_to_world_from_image(
         detection: detections_and_time.Detection, perspective_transform_matrix: np.ndarray
     ) -> "tuple[bool, detection_in_world.DetectionInWorld | None]":

@@ -5,8 +5,6 @@ Object detection in world space.
 import numpy as np
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class DetectionInWorld:
     """
     Typically on the ground.
@@ -37,8 +35,6 @@ class DetectionInWorld:
 
         return True, DetectionInWorld(cls.__create_key, vertices, centre, label, confidence)
 
-    # Create key required
-    # pylint: disable-next=too-many-arguments
     def __init__(
         self,
         class_private_create_key,

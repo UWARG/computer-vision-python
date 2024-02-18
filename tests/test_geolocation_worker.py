@@ -62,8 +62,13 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
     in_queue.queue.put(merged)
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
+    # Similar to Geolocation tests
+    # pylint: disable=duplicate-code
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         2000,
         2000,
@@ -79,6 +84,7 @@ if __name__ == "__main__":
     )
     assert result
     assert camera_extrinsics is not None
+    # pylint: enable=duplicate-code
 
     controller = worker_controller.WorkerController()
 
@@ -121,5 +127,13 @@ if __name__ == "__main__":
     # Teardown
     detection_in_queue.fill_and_drain_queue()
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

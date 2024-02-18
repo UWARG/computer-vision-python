@@ -1,5 +1,5 @@
 """
-Test worker process.
+To test, start Mission Planner and forward MAVLink over TCP.
 """
 import multiprocessing as mp
 import queue
@@ -16,8 +16,10 @@ FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
-# To test, start Mission Planner and forward MAVLink over TCP
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -55,5 +57,13 @@ if __name__ == "__main__":
 
     # Teardown
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

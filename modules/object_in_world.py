@@ -3,8 +3,6 @@ Location of the object in world space.
 """
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class ObjectInWorld:
     """
     Contains the estimated location of the object in local coordinates.

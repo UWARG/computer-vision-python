@@ -80,4 +80,7 @@ def data_merge_worker(
         if not result:
             continue
 
+        # Get Pylance to stop complaining
+        assert merged is not None
+
         output_queue.queue.put(merged)

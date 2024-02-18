@@ -9,7 +9,10 @@ MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     result, interface = flight_interface.FlightInterface.create(
         MAVLINK_CONNECTION_ADDRESS,
@@ -24,5 +27,13 @@ if __name__ == "__main__":
     # Test
     assert result
     assert odometry_time is not None
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

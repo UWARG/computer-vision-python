@@ -54,26 +54,26 @@ def compare_detections(
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.x1,
-            expected_detection.x1,
+            actual_detection.x_1,
+            expected_detection.x_1,
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.y1,
-            expected_detection.y1,
+            actual_detection.y_1,
+            expected_detection.y_1,
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.x2,
-            expected_detection.x2,
+            actual_detection.x_2,
+            expected_detection.x_2,
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.y2,
-            expected_detection.y2,
+            actual_detection.y_2,
+            expected_detection.y_2,
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
@@ -81,7 +81,7 @@ def compare_detections(
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
     """
     Create DetectionsAndTime from expected.
-    Format: [confidence, label, x1, y1, x2, y2] .
+    Format: [confidence, label, x_1, y_1, x_2, y_2] .
     """
     assert detections_from_file.shape[1] == 6
 

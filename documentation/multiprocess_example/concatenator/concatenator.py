@@ -6,8 +6,6 @@ import time
 from .. import intermediate_struct
 
 
-# This class does very little, but still has state
-# pylint: disable-next=too-few-public-methods
 class Concatenator:
     """
     Concatenates a prefix and suffix to the object.

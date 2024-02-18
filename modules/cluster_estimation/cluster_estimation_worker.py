@@ -7,8 +7,6 @@ from utilities.workers import worker_controller
 from . import cluster_estimation
 
 
-# Worker has both class and control parameters
-# pylint: disable-next=too-many-arguments
 def cluster_estimation_worker(
     min_activation_threshold: int,
     min_new_points_to_run: int,

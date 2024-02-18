@@ -6,8 +6,6 @@ from . import detections_and_time
 from . import drone_odometry_local
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class MergedOdometryDetections:
     """
     Contains odometry/telemetry and detections merged by closest timestamp.

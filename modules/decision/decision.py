@@ -7,8 +7,6 @@ from .. import object_in_world
 from .. import odometry_and_time
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class ScoredLandingPad:
     """
     Landing pad with score for decision.
@@ -19,8 +17,6 @@ class ScoredLandingPad:
         self.score = score
 
 
-# This class still has state
-# pylint: disable-next=too-few-public-methods
 class Decision:
     """
     Chooses next action to take based on known landing pad information.

@@ -10,15 +10,11 @@ from .. import image_and_time
 from .. import detections_and_time
 
 
-# This is just an interface
-# pylint: disable-next=too-few-public-methods
 class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
 
-    # Required for logging
-    # pylint: disable-next=too-many-arguments
     def __init__(
         self,
         device: "str | int",
@@ -45,8 +41,6 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    # Required for logging
-    # pylint: disable-next=too-many-locals
     def run(
         self, data: image_and_time.ImageAndTime
     ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":

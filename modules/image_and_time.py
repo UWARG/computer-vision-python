@@ -6,8 +6,6 @@ import time
 import numpy as np
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class ImageAndTime:
     """
     Contains image and timestamp.

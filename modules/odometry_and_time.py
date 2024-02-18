@@ -6,8 +6,6 @@ import time
 from . import drone_odometry_local
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class OdometryAndTime:
     """
     Contains odometry/telemetry and timestamp.

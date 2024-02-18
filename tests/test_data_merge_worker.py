@@ -69,7 +69,10 @@ def simulate_flight_input_worker(
     odometry_queue.queue.put(odometry_time)
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -133,5 +136,13 @@ if __name__ == "__main__":
     detections_in_queue.fill_and_drain_queue()
     odometry_in_queue.fill_and_drain_queue()
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

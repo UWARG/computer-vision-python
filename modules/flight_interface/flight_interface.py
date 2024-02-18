@@ -8,8 +8,6 @@ from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
 
 
-# This is just an interface
-# pylint: disable-next=too-few-public-methods
 class FlightInterface:
     """
     Create flight controller and combines odometry data and timestamp.

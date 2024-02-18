@@ -35,14 +35,17 @@ def simulate_previous_worker(
     """
     Place the image into the queue.
     """
-    image = cv2.imread(image_path)  # type: ignore
+    image = cv2.imread(str(image_path))  # type: ignore
     result, value = image_and_time.ImageAndTime.create(image)
     assert result
     assert value is not None
     in_queue.queue.put(value)
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     # Not a constant
     # pylint: disable-next=invalid-name
@@ -98,5 +101,13 @@ if __name__ == "__main__":
     print("Teardown")
     image_in_queue.fill_and_drain_queue()
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

@@ -6,8 +6,6 @@ from ..common.camera.modules import camera_device
 from .. import image_and_time
 
 
-# This is just an interface
-# pylint: disable-next=too-few-public-methods
 class VideoInput:
     """
     Combines image and timestamp together.

@@ -7,8 +7,6 @@ import random
 from .. import intermediate_struct
 
 
-# This class does very little, but still has state
-# pylint: disable-next=too-few-public-methods
 class AddRandom:
     """
     Adds a random number to the input.
@@ -23,18 +21,12 @@ class AddRandom:
         """
         random.seed(seed)
         # Maximum value that can be added
-        # Constant within class does not follow Pylint naming
-        # pylint: disable=invalid-name
-        self.__MAX_RANDOM_TERM = max_random_term
-        # pylint: enable=invalid-name
+        self.__max_random_term = max_random_term
 
         # Number of adds before getting a new random number
-        # Constant within class does not follow Pylint naming
-        # pylint: disable=invalid-name
-        self.__ADD_CHANGE_COUNT = add_change_count
-        # pylint: enable=invalid-name
+        self.__add_change_count = add_change_count
 
-        self.__current_random_term = self.__generate_random_number(0, self.__MAX_RANDOM_TERM)
+        self.__current_random_term = self.__generate_random_number(0, self.__max_random_term)
         self.__add_count = 0
 
     @staticmethod
@@ -52,8 +44,8 @@ class AddRandom:
 
         # Change the random term if the add count has been reached
         self.__add_count += 1
-        if self.__add_count >= self.__ADD_CHANGE_COUNT:
-            self.__current_random_term = self.__generate_random_number(0, self.__MAX_RANDOM_TERM)
+        if self.__add_count >= self.__add_change_count:
+            self.__current_random_term = self.__generate_random_number(0, self.__max_random_term)
             self.__add_count = 0
 
         # Pretending this class is hard at work
@@ -63,10 +55,7 @@ class AddRandom:
         if add_sum % 2 == 0:
             add_string = "even"
 
-        # For some reason Pylint hates having more than 1 parameter in a constructor
-        # pylint: disable=too-many-function-args
         output = intermediate_struct.IntermediateStruct(add_sum, add_string)
-        # pylint: enable=too-many-function-args
 
         # Function returns result and the output
         # The class is responsible for packing the intermediate type

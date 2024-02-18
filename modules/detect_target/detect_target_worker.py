@@ -7,8 +7,6 @@ from utilities.workers import worker_controller
 from . import detect_target
 
 
-# Worker has both class and control parameters
-# pylint: disable-next=too-many-arguments
 def detect_target_worker(
     device: "str | int",
     model_path: str,

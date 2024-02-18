@@ -81,8 +81,6 @@ class CameraIntrinsics:
     __create_key = object()
 
     @classmethod
-    # Required for checks
-    # pylint: disable-next=too-many-return-statements
     def create(
         cls, resolution_x: int, resolution_y: int, fov_x: float, fov_y: float
     ) -> "tuple[bool, CameraIntrinsics | None]":
@@ -118,8 +116,6 @@ class CameraIntrinsics:
             v_scalar,
         )
 
-    # Create key required
-    # pylint: disable-next=too-many-arguments
     def __init__(
         self,
         class_private_create_key,
@@ -204,8 +200,6 @@ class CameraIntrinsics:
         return True, vec_camera
 
 
-# Basically a struct
-# pylint: disable-next=too-few-public-methods
 class CameraDroneExtrinsics:
     """
     Camera in relation to drone.

@@ -4,8 +4,6 @@ Contains the Countup class.
 import time
 
 
-# This class does very little, but still has state
-# pylint: disable-next=too-few-public-methods
 class Countup:
     """
     Increments its internal counter and outputs current counter.
