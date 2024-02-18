@@ -1,5 +1,5 @@
 """
-main process.
+Main process.
 """
 import multiprocessing as mp
 import time

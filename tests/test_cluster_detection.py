@@ -1,5 +1,5 @@
 """
-Testing Cluster Estimation worker.
+Testing ClusterEstimation.
 """
 
 import numpy as np
@@ -11,23 +11,34 @@ from modules import detection_in_world
 
 MIN_TOTAL_POINTS_THRESHOLD = 100
 MIN_NEW_POINTS_TO_RUN = 10
-RANDOM_STATE = 0
-CENTER_BOX_SIZE = 500
+RNG_SEED = 0
+CENTRE_BOX_SIZE = 500
+
+
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
 
 
 @pytest.fixture()
 def cluster_model():
-    _, model = cluster_estimation.ClusterEstimation.create(
+    """
+    Cluster estimation object.
+    """
+    result, model = cluster_estimation.ClusterEstimation.create(
         MIN_TOTAL_POINTS_THRESHOLD,
         MIN_NEW_POINTS_TO_RUN,
-        RANDOM_STATE,
+        RNG_SEED,
     )
+    assert result
     assert model is not None
+
     yield model
 
 
-def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_deviation: int) \
-    -> "tuple[list[detection_in_world.DetectionInWorld], list[np.ndarray]]":
+def generate_cluster_data(
+    n_samples_per_cluster: "list[int]", cluster_standard_deviation: int
+) -> "tuple[list[detection_in_world.DetectionInWorld], list[np.ndarray]]":
     """
     Returns a list of points (DetectionInWorld objects) with specified points per cluster
     and standard deviation.
@@ -36,7 +47,7 @@ def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_d
     ----------
     n_samples_per_cluster: list[int]
         List corresponding to how many points to generate for each generated cluster
-        ex: [10 20 30] will generate 10 points for one cluster, 20 points for the next, 
+        ex: [10 20 30] will generate 10 points for one cluster, 20 points for the next,
         and 30 points for the final cluster.
 
     cluster_standard_deviation: int
@@ -58,12 +69,12 @@ def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_d
     # Second value is the integer labels for cluster membership of each generated point (unused).
     # Third value is the (x,y) coordinates for each of the cluster centres.
 
-    generated_points, _, cluster_positions = sklearn.datasets.make_blobs(
+    generated_points, _, cluster_positions = sklearn.datasets.make_blobs(  # type: ignore
         n_samples=n_samples_per_cluster,
         n_features=2,
         cluster_std=cluster_standard_deviation,
-        center_box=(0, CENTER_BOX_SIZE),
-        random_state=RANDOM_STATE,
+        center_box=(0, CENTRE_BOX_SIZE),
+        random_state=RNG_SEED,
         return_centers=True,
     )
 
@@ -88,10 +99,11 @@ def generate_cluster_data(n_samples_per_cluster: "list[int]", cluster_standard_d
     return detections, cluster_positions.tolist()
 
 
-def generate_points_away_from_cluster(num_points_to_generate: int,
-                                      minimum_distance_from_cluster: float,
-                                      cluster_positions: "list[np.ndarray]") \
-    -> "list[detection_in_world.DetectionInWorld]":
+def generate_points_away_from_cluster(
+    num_points_to_generate: int,
+    minimum_distance_from_cluster: float,
+    cluster_positions: "list[np.ndarray]",
+) -> "list[detection_in_world.DetectionInWorld]":
     """
     Returns a list of points with each point being the specified distance away from input cluster
     centre positions.
@@ -115,11 +127,11 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
     detections = []
 
     # Initialize random generator
-    rng = np.random.default_rng(seed=RANDOM_STATE)
+    rng = np.random.default_rng(seed=RNG_SEED)
 
     while len(detections) < num_points_to_generate:
         # Generate random point
-        point = rng.uniform(0, CENTER_BOX_SIZE, size=2)
+        point = rng.uniform(0, CENTRE_BOX_SIZE, size=2)
         valid = True
 
         # Check if outside minimum distance to cluster centres
@@ -128,25 +140,27 @@ def generate_points_away_from_cluster(num_points_to_generate: int,
                 valid = False
                 break
 
-        if valid:
-            # Placeholder variables to create DetectionInWorld objects
-            placeholder_vertices = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
-            placeholder_label = 1
-            placeholder_confidence = 0.5
+        if not valid:
+            continue
 
-            result, detection_to_add = detection_in_world.DetectionInWorld.create(
-                placeholder_vertices,
-                point,
-                placeholder_label,
-                placeholder_confidence,
-            )
+        # Placeholder variables to create DetectionInWorld objects
+        placeholder_vertices = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
+        placeholder_label = 1
+        placeholder_confidence = 0.5
 
-            # Check that DetectionInWorld object created correctly
-            assert result
-            assert detection_to_add is not None
+        result, detection_to_add = detection_in_world.DetectionInWorld.create(
+            placeholder_vertices,
+            point,
+            placeholder_label,
+            placeholder_confidence,
+        )
 
-            # Add to list for return
-            detections.append(detection_to_add)
+        # Check that DetectionInWorld object created correctly
+        assert result
+        assert detection_to_add is not None
+
+        # Add to list for return
+        detections.append(detection_to_add)
 
     return detections
 
@@ -156,21 +170,22 @@ class TestModelExecutionCondition:
     Tests execution condition for estimation worker at different amount of total and new data
     points.
     """
-    STD_DEV_REG = 1  # Regular standard deviation is 1m
+
+    __STD_DEV_REG = 1  # Regular standard deviation is 1m
 
     def test_under_min_total_threshold(self, cluster_model: cluster_estimation.ClusterEstimation):
         """
         Total data under threshold should not run.
         """
-        # Setup 
-        TOTAL_NUM_DETECTIONS = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
-        generated_detections, _ = generate_cluster_data([TOTAL_NUM_DETECTIONS], self.STD_DEV_REG)
+        # Setup
+        original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert not model_ran
+        assert not result
         assert detections_in_world is None
 
     def test_at_min_total_threshold(self, cluster_model: cluster_estimation.ClusterEstimation):
@@ -179,20 +194,20 @@ class TestModelExecutionCondition:
         current bucket size.
         """
         # Setup
-        NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
-        NEW_DATA_POINTS = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
+        original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
+        new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
 
-        generated_detections, _ = generate_cluster_data([NUM_DATA_POINTS], self.STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data([NEW_DATA_POINTS], self.STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
-        model_ran_2, detections_in_world_2 = cluster_model.run(generated_detections_2, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
+        result_2, detections_in_world_2 = cluster_model.run(generated_detections_2, False)
 
         # Test
-        assert not model_ran
+        assert not result
         assert detections_in_world is None
-        assert model_ran_2
+        assert result_2
         assert detections_in_world_2 is not None
 
     def test_under_min_bucket_size(self, cluster_model: cluster_estimation.ClusterEstimation):
@@ -200,253 +215,261 @@ class TestModelExecutionCondition:
         New data under threshold should not run.
         """
         # Setup
-        NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
-        NEW_DATA_POINTS = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
+        original_count = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
+        new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
 
-        generated_detections, _ = generate_cluster_data([NUM_DATA_POINTS], self.STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data([NEW_DATA_POINTS], self.STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
-        model_ran_2, detections_in_world_2 = cluster_model.run(generated_detections_2, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
+        result_2, detections_in_world_2 = cluster_model.run(generated_detections_2, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert not model_ran_2
+        assert not result_2
         assert detections_in_world_2 is None
 
     def test_good_data(self, cluster_model: cluster_estimation.ClusterEstimation):
         """
         All conditions met should run.
         """
-        NUM_DATA_POINTS = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
-        generated_detections, _ = generate_cluster_data([NUM_DATA_POINTS], self.STD_DEV_REG)
+        original_count = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
 
 
 class TestCorrectNumberClusterOutputs:
     """
     Tests if cluster estimation output matches number of input clusters
-    at different data scenarios. 
+    at different data scenarios.
     """
-    STD_DEV_REGULAR = 1
-    STD_DEV_LARGE = 5
 
-    def test_detect_normal_data_single_cluster(self,
-                                               cluster_model: cluster_estimation.ClusterEstimation):
+    __STD_DEV_REGULAR = 1
+    __STD_DEV_LARGE = 5
+
+    def test_detect_normal_data_single_cluster(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with small distribution and equal number of points per cluster centre.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100]
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_REGULAR)
+        points_per_cluster = [100]
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
 
-    def test_detect_normal_data_five_clusters(self,
-                                              cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_normal_data_five_clusters(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with small distribution and equal number of points per cluster centre.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100, 100, 100, 100, 100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_REGULAR)
+        points_per_cluster = [100, 100, 100, 100, 100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_large_std_dev_single_cluster(self,
-                                                 cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_large_std_dev_single_cluster(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with large distribution and equal number of points per cluster centre.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_LARGE)
+        points_per_cluster = [100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_large_std_dev_five_clusters(self,
-                                                cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_large_std_dev_five_clusters(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with large distribution and equal number of points per cluster centre.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100, 100, 100, 100, 100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_LARGE)
+        points_per_cluster = [100, 100, 100, 100, 100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_skewed_data_single_cluster(self,
-                                               cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_skewed_data_single_cluster(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with small distribution but varying number of points per cluster centre and
         random outlier points to simulate false detections.
         """
         # Setup
-        POINTS_PER_CLUSTER = [10, 100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_REGULAR)
+        points_per_cluster = [10, 100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_skewed_data_five_clusters(self,
-                                              cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_skewed_data_five_clusters(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Data with small distribution but varying number of points per cluster centre and
         random outlier points to simulate false detections.
         """
         # Setup
-        POINTS_PER_CLUSTER = [20, 100, 100, 100, 100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
+        points_per_cluster = [20, 100, 100, 100, 100]
+        expected_cluster_count = len(points_per_cluster)
         generated_detections, cluster_positions = generate_cluster_data(
-            POINTS_PER_CLUSTER,
-            self.STD_DEV_REGULAR,
+            points_per_cluster,
+            self.__STD_DEV_REGULAR,
         )
 
         # Add 5 random points to dataset, each being at least 20m away from cluster centres
-        NUM_OUTLIER_POINTS = 5
-        OUTLIER_DISTANCE_FROM_CLUSTER_CENTRE = 20
+        outlier_count = 5
+        outlier_distance_from_cluster_centre = 20
         outlier_detections = generate_points_away_from_cluster(
-            NUM_OUTLIER_POINTS,
-            OUTLIER_DISTANCE_FROM_CLUSTER_CENTRE,
+            outlier_count,
+            outlier_distance_from_cluster_centre,
             cluster_positions,
         )
         generated_detections += outlier_detections
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_consecutive_inputs_single_cluster(self,
-                                                      cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_consecutive_inputs_single_cluster(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Previous tests executed model with all points available at once. This test feeds the model
         one point from the dataset one at a time (and calls .run() each time), checking for correct
         number of output clusters once all points have been inputted.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_REGULAR)
+        points_per_cluster = [100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
-        model_ran = False
         detections_in_world = []
-        for i, point in enumerate(generated_detections):
-            model_ran, detections_in_world = cluster_model.run([point], False)
+        for point in generated_detections:
+            result, detections_in_world = cluster_model.run([point], False)
+            assert result
+            assert detections_in_world is not None
 
         # Test
-        assert model_ran
-        assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
-    def test_detect_consecutive_inputs_five_clusters(self,
-                                                     cluster_model: cluster_estimation.ClusterEstimation):
+    def test_detect_consecutive_inputs_five_clusters(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ):
         """
         Previous tests executed model with all points available at once. This test feeds the model
         one point from the dataset one at a time (and calls .run() each time), checking for correct
         number of output clusters once all points have been inputted.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100, 100, 100, 100, 100]
-        EXPECTED_CLUSTER_COUNT = len(POINTS_PER_CLUSTER)
-        generated_detections, _ = generate_cluster_data(POINTS_PER_CLUSTER, self.STD_DEV_REGULAR)
-        
+        points_per_cluster = [100, 100, 100, 100, 100]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+
         # Run
-        model_ran = False
         detections_in_world = []
-        for i, point in enumerate(generated_detections):
-            model_ran, detections_in_world = cluster_model.run([point], False)
+        for point in generated_detections:
+            result, detections_in_world = cluster_model.run([point], False)
+            assert result
+            assert detections_in_world is not None
 
         # Test
-        assert model_ran
-        assert detections_in_world is not None
-        assert len(detections_in_world) == EXPECTED_CLUSTER_COUNT
+        assert len(detections_in_world) == expected_cluster_count
 
 
+# Test class
+# pylint: disable-next=too-few-public-methods
 class TestCorrectClusterPositionOutput:
     """
     Tests if cluster estimation output falls within acceptable distance to
     input cluster positions.
     """
-    STD_DEV_REG = 1  # Regular standard deviation is 1m
-    MAX_POSITION_TOLERANCE = 1
+
+    __STD_DEV_REG = 1  # Regular standard deviation is 1m
+    __MAX_POSITION_TOLERANCE = 1
 
     def test_position_regular_data(self, cluster_model: cluster_estimation.ClusterEstimation):
         """
         Five clusters with small standard deviation and large number of points per cluster.
         """
         # Setup
-        POINTS_PER_CLUSTER = [100, 100, 100, 100, 100]
+        points_per_cluster = [100, 100, 100, 100, 100]
         generated_detections, cluster_positions = generate_cluster_data(
-            POINTS_PER_CLUSTER,
-            self.STD_DEV_REG,
+            points_per_cluster,
+            self.__STD_DEV_REG,
         )
 
         # Run
-        model_ran, detections_in_world = cluster_model.run(generated_detections, False)
+        result, detections_in_world = cluster_model.run(generated_detections, False)
 
         # Test
-        assert model_ran
+        assert result
         assert detections_in_world is not None
 
         # Check if within acceptable distance
         for detection in detections_in_world:
-            has_match = False
+            is_match = False
             for position in cluster_positions:
-
                 # Get distance between predicted cluster and actual cluster
                 distance = np.linalg.norm(
-                    [detection.position_x - position[0],
-                     detection.position_y - position[1]]
+                    [detection.location_x - position[0], detection.location_y - position[1]]
                 )
 
                 # Check tolerance
-                if distance < self.MAX_POSITION_TOLERANCE:
-                    has_match = True
+                if distance < self.__MAX_POSITION_TOLERANCE:
+                    is_match = True
                     break
 
-            assert has_match
+            assert is_match

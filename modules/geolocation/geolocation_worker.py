@@ -8,13 +8,15 @@ from . import camera_properties
 from . import geolocation
 
 
-# Extra parameters required for worker communication
-# pylint: disable=too-many-arguments
-def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
-                       camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
-                       input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                       output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                       controller: worker_controller.WorkerController):
+# Worker has both class and control parameters
+# pylint: disable-next=too-many-arguments
+def geolocation_worker(
+    camera_intrinsics: camera_properties.CameraIntrinsics,
+    camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+):
     """
     Worker process.
 
@@ -29,6 +31,7 @@ def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
         camera_drone_extrinsics,
     )
     if not result:
+        print("Worker failed to create class object")
         return
 
     # Get Pylance to stop complaining
@@ -46,5 +49,3 @@ def geolocation_worker(camera_intrinsics: camera_properties.CameraIntrinsics,
             continue
 
         output_queue.queue.put(value)
-
-# pylint: enable=too-many-arguments

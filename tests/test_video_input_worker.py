@@ -39,7 +39,7 @@ if __name__ == "__main__":
     while True:
         try:
             input_data: image_and_time.ImageAndTime = out_queue.queue.get_nowait()
-            assert str(type(input_data)) == "<class \'modules.image_and_time.ImageAndTime\'>"
+            assert str(type(input_data)) == "<class 'modules.image_and_time.ImageAndTime'>"
             assert input_data.image is not None
 
         except queue.Empty:

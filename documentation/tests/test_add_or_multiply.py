@@ -12,6 +12,11 @@ import pytest
 import add_or_multiply
 
 
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
+
+
 # Pytest fixtures are reusable setup components
 # Makes it easier when setup is complicated
 @pytest.fixture()
@@ -21,6 +26,7 @@ def adder():
     """
     add = add_or_multiply.AddOrMultiply(add_or_multiply.MathOperation.ADD)
     yield add
+
 
 @pytest.fixture()
 def multiplier():
@@ -36,6 +42,7 @@ class TestAddition:
     Unit tests can be organized into groups under classes.
     The function or method name contains test somewhere for Pytest to run it.
     """
+
     def test_add_positive(self, adder: add_or_multiply.AddOrMultiply):
         """
         Add 2 positive numbers.
@@ -125,10 +132,13 @@ class TestAddition:
     # * Large negative with large negative
 
 
+# Test class
+# pylint: disable-next=too-few-public-methods
 class TestMultiply:
     """
     Many multiplication cases need to be covered as well.
     """
+
     def test_multiply_positive(self, multiplier: add_or_multiply.AddOrMultiply):
         """
         Multiply 2 positive numbers.
@@ -150,6 +160,7 @@ class TestSwap:
     """
     Test a different method.
     """
+
     def test_swap_add_to_multiply(self, adder: add_or_multiply.AddOrMultiply):
         """
         Add and then multiply.
@@ -163,10 +174,8 @@ class TestSwap:
         # Test
         # Better to test private members directly rather than rely on other class methods
         # since the more dependencies a test has the less unit and independent it is
-        # Access required for test
-        # pylint: disable=protected-access
-        actual = adder._AddOrMultiply__operator
-        # pylint: enable=protected-access
+        actual = adder._AddOrMultiply__operator  # type: ignore
+
         assert actual == expected
 
     def test_swap_multiply_to_add(self, multiplier: add_or_multiply.AddOrMultiply):
@@ -180,8 +189,6 @@ class TestSwap:
         multiplier.swap_state()
 
         # Test
-        # Access required for test
-        # pylint: disable=protected-access
-        actual = multiplier._AddOrMultiply__operator
-        # pylint: enable=protected-access
+        actual = multiplier._AddOrMultiply__operator  # type: ignore
+
         assert actual == expected

@@ -51,13 +51,14 @@ class ClusterEstimation:
     __filter_by_covariances()
         Removes any cluster with covariances much higher than the lowest covariance value.
     """
+
     __create_key = object()
 
     # VGMM Hyperparameters
     __COVAR_TYPE = "spherical"
     __MODEL_INIT_PARAM = "k-means++"
     __WEIGHT_CONCENTRATION_PRIOR = 100
-    __MEAN_PRECISION_PRIOR = 1E-6
+    __MEAN_PRECISION_PRIOR = 1e-6
     __MAX_MODEL_ITERATIONS = 1000
 
     # Real-world scenario Hyperparameters
@@ -68,10 +69,9 @@ class ClusterEstimation:
     __MAX_COVARIANCE_THRESHOLD = 10
 
     @classmethod
-    def create(cls,
-               min_activation_threshold: int,
-               min_new_points_to_run: int,
-               random_state: int) -> "tuple[bool, ClusterEstimation | None]":
+    def create(
+        cls, min_activation_threshold: int, min_new_points_to_run: int, random_state: int
+    ) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation model to run.
         """
@@ -83,17 +83,20 @@ class ClusterEstimation:
         if min_activation_threshold < 1:
             return False, None
 
-        return True, ClusterEstimation(cls.__create_key,
+        return True, ClusterEstimation(
+            cls.__create_key,
             min_activation_threshold,
             min_new_points_to_run,
             random_state,
         )
 
-    def __init__(self,
-                 class_private_create_key: object,
-                 min_activation_threshold: int,
-                 min_new_points_to_run: int,
-                 random_state: int):
+    def __init__(
+        self,
+        class_private_create_key: object,
+        min_activation_threshold: int,
+        min_new_points_to_run: int,
+        random_state: int,
+    ):
         """
         Private constructor, use create() method.
         """
@@ -111,16 +114,17 @@ class ClusterEstimation:
         )
 
         # Points storage
-        self.__all_points = []
-        self.__current_bucket = []
+        self.__all_points: "list[tuple[float, float]]" = []
+        self.__current_bucket: "list[tuple[float, float]]" = []
 
         # Requirements to decide to run
         self.__min_activation_threshold = min_activation_threshold
         self.__min_new_points_to_run = min_new_points_to_run
         self.__has_ran_once = False
 
-    def run(self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool) \
-        -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
+    def run(
+        self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool
+    ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
@@ -130,7 +134,7 @@ class ClusterEstimation:
         detections: list[DetectionInWorld]
             List containing DetectionInWorld objects which holds real-world positioning data to run
             clustering on.
-        
+
         run_override: bool
             Forces ClusterEstimation to predict if data is available, regardless of any other
             requirements.
@@ -152,7 +156,7 @@ class ClusterEstimation:
             return False, None
 
         # Fit points and get cluster data
-        self.__vgmm = self.__vgmm.fit(self.__all_points)
+        self.__vgmm = self.__vgmm.fit(self.__all_points)  # type: ignore
 
         # Check convergence
         if not self.__vgmm.converged_:
@@ -161,9 +165,9 @@ class ClusterEstimation:
         # Get predictions from cluster model
         model_output: "list[tuple[np.ndarray, float, float]]" = list(
             zip(
-                self.__vgmm.means_,
-                self.__vgmm.weights_,
-                self.__vgmm.covariances_,
+                self.__vgmm.means_,  # type: ignore
+                self.__vgmm.weights_,  # type: ignore
+                self.__vgmm.covariances_,  # type: ignore
             )
         )
 
@@ -215,17 +219,20 @@ class ClusterEstimation:
         bool
             True if estimation model will be run, False otherwise.
         """
+        count_all = len(self.__all_points)
+        count_current = len(self.__current_bucket)
+
         if not run_override:
             # Don't run if total points under minimum requirement
-            if len(self.__all_points) + len(self.__current_bucket) < self.__min_activation_threshold:
+            if count_all + count_current < self.__min_activation_threshold:
                 return False
 
             # Don't run if not enough new points
-            if len(self.__current_bucket) < self.__min_new_points_to_run and self.__has_ran_once:
+            if count_current < self.__min_new_points_to_run and self.__has_ran_once:
                 return False
 
         # No data can not run
-        if len(self.__all_points) + len(self.__current_bucket) == 0:
+        if count_all + count_current == 0:
             return False
 
         # Requirements met, empty bucket and run
@@ -236,8 +243,9 @@ class ClusterEstimation:
         return True
 
     @staticmethod
-    def __sort_by_weights(model_output: "list[tuple[np.ndarray, float, float]]") \
-        -> "list[tuple[np.ndarray, float, float]]":
+    def __sort_by_weights(
+        model_output: "list[tuple[np.ndarray, float, float]]",
+    ) -> "list[tuple[np.ndarray, float, float]]":
         """
         Sort input model output list by weights in descending order.
 
@@ -254,10 +262,10 @@ class ClusterEstimation:
         """
         return sorted(model_output, key=lambda x: x[1], reverse=True)
 
-
     @staticmethod
-    def __convert_detections_to_point(detections: "list[detection_in_world.DetectionInWorld]") \
-        -> "list[tuple[float, float]]":
+    def __convert_detections_to_point(
+        detections: "list[detection_in_world.DetectionInWorld]",
+    ) -> "list[tuple[float, float]]":
         """
         Convert DetectionInWorld input object to a list of points- (x,y) positions, to store.
 
@@ -286,9 +294,9 @@ class ClusterEstimation:
 
         return points
 
-    def __filter_by_points_ownership(self,
-                                     model_output: "list[tuple[np.ndarray, float, float]]") \
-        -> "list[tuple[np.ndarray, float, float]]":
+    def __filter_by_points_ownership(
+        self, model_output: "list[tuple[np.ndarray, float, float]]"
+    ) -> "list[tuple[np.ndarray, float, float]]":
         """
         Removes any clusters that don't have any points belonging to it.
 
@@ -303,21 +311,23 @@ class ClusterEstimation:
         filtered_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres after filtering.
         """
-
-        results = self.__vgmm.predict(self.__all_points)
+        results = self.__vgmm.predict(self.__all_points)  # type: ignore
         filtered_output = []
 
         # Filtering by each cluster's point ownership
-        unique_clusters, num_points_per_cluster = np.unique(results, return_counts=True)
+        unique_clusters, _ = np.unique(results, return_counts=True)
         # Remove empty clusters
+        # Integer index required
+        # pylint: disable-next=consider-using-enumerate
         for i in range(len(model_output)):
             if i in unique_clusters:
                 filtered_output.append(model_output[i])
 
         return filtered_output
 
-    def __filter_by_covariances(self, model_output: "list[tuple[np.ndarray, float, float]]") \
-        -> "list[tuple[np.ndarray, float, float]]":
+    def __filter_by_covariances(
+        self, model_output: "list[tuple[np.ndarray, float, float]]"
+    ) -> "list[tuple[np.ndarray, float, float]]":
         """
         Removes any cluster with covariances much higher than the lowest covariance value.
 

@@ -7,11 +7,12 @@ from .. import intermediate_struct
 
 
 # This class does very little, but still has state
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class Concatenator:
     """
     Concatenates a prefix and suffix to the object.
     """
+
     def __init__(self, prefix: str, suffix: str):
         """
         Constructor sets the prefix and suffix.
@@ -19,10 +20,10 @@ class Concatenator:
         self.__prefix = prefix
         self.__suffix = suffix
 
-
     # The working function
-    def run_concatenation(self,
-                          middle: intermediate_struct.IntermediateStruct) -> "tuple[bool, str]":
+    def run_concatenation(
+        self, middle: intermediate_struct.IntermediateStruct
+    ) -> "tuple[bool, str]":
         """
         Concatenate the prefix and suffix to the input.
         """
@@ -42,5 +43,3 @@ class Concatenator:
 
         # Function returns result and the output
         return True, concatenated_string
-
-# pylint: enable=too-few-public-methods

@@ -8,11 +8,13 @@ from utilities.workers import worker_controller
 from . import video_input
 
 
-def video_input_worker(camera_name: "int | str",
-                       period: float,
-                       save_name: str,
-                       output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                       controller: worker_controller.WorkerController):
+def video_input_worker(
+    camera_name: "int | str",
+    period: float,
+    save_name: str,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+):
     """
     Worker process.
 

@@ -1,3 +1,6 @@
+# Large test file
+# No enable
+# pylint: disable=too-many-lines
 """
 Test camera intrinsics and extrinsics.
 """
@@ -8,8 +11,16 @@ import pytest
 from modules.geolocation import camera_properties
 
 
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
+
+
 @pytest.fixture
 def camera_intrinsic():
+    """
+    Intrinsic camera properties.
+    """
     resolution_x = 2000
     resolution_y = 2000
     fov_x = np.pi / 2
@@ -31,6 +42,7 @@ class TestVectorR3Check:
     """
     Test 3D vector check.
     """
+
     def test_r3(self):
         """
         R^3 .
@@ -88,6 +100,7 @@ class TestMatrixR3x3Check:
     """
     Test 3x3 matrix check.
     """
+
     def test_r3x3(self):
         """
         R^{3x3} .
@@ -145,6 +158,7 @@ class TestRotationMatrix:
     """
     Test rotation matrix.
     """
+
     def test_no_rotation(self):
         """
         Identity.
@@ -180,10 +194,10 @@ class TestRotationMatrix:
         expected = np.array(
             [
                 [0.0, -1.0, 0.0],
-                [1.0,  0.0, 0.0],
-                [0.0,  0.0, 1.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
 
         # Run
@@ -209,11 +223,11 @@ class TestRotationMatrix:
 
         expected = np.array(
             [
-                [ 0.0, 0.0, 1.0],
-                [ 0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [0.0, 1.0, 0.0],
                 [-1.0, 0.0, 0.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
 
         # Run
@@ -239,11 +253,11 @@ class TestRotationMatrix:
 
         expected = np.array(
             [
-                [1.0, 0.0,  0.0],
+                [1.0, 0.0, 0.0],
                 [0.0, 0.0, -1.0],
-                [0.0, 1.0,  0.0],
+                [0.0, 1.0, 0.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
 
         # Run
@@ -269,11 +283,11 @@ class TestRotationMatrix:
 
         expected = np.array(
             [
-                [          1 / 2, (np.sqrt(2) - 2) / 4, (np.sqrt(2) + 2) / 4],
-                [          1 / 2, (np.sqrt(2) + 2) / 4, (np.sqrt(2) - 2) / 4],
-                [-np.sqrt(2) / 2,                1 / 2,                1 / 2],
+                [1 / 2, (np.sqrt(2) - 2) / 4, (np.sqrt(2) + 2) / 4],
+                [1 / 2, (np.sqrt(2) + 2) / 4, (np.sqrt(2) - 2) / 4],
+                [-np.sqrt(2) / 2, 1 / 2, 1 / 2],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
 
         # Run
@@ -299,11 +313,11 @@ class TestRotationMatrix:
 
         expected = np.array(
             [
-                [         1 / 2,  (np.sqrt(2) + 2) / 4, (-np.sqrt(2) + 2) / 4],
-                [        -1 / 2, (-np.sqrt(2) + 2) / 4,  (np.sqrt(2) + 2) / 4],
-                [np.sqrt(2) / 2,                -1 / 2,                 1 / 2],
+                [1 / 2, (np.sqrt(2) + 2) / 4, (-np.sqrt(2) + 2) / 4],
+                [-1 / 2, (-np.sqrt(2) + 2) / 4, (np.sqrt(2) + 2) / 4],
+                [np.sqrt(2) / 2, -1 / 2, 1 / 2],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
 
         # Run
@@ -320,7 +334,7 @@ class TestRotationMatrix:
 
     def test_bad_yaw_too_negative(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = -4.0
@@ -340,7 +354,7 @@ class TestRotationMatrix:
 
     def test_bad_yaw_too_positive(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 4.0
@@ -360,7 +374,7 @@ class TestRotationMatrix:
 
     def test_bad_pitch_too_negative(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -380,7 +394,7 @@ class TestRotationMatrix:
 
     def test_bad_pitch_too_positive(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -400,7 +414,7 @@ class TestRotationMatrix:
 
     def test_bad_roll_too_negative(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -420,7 +434,7 @@ class TestRotationMatrix:
 
     def test_bad_roll_too_positive(self):
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -443,6 +457,7 @@ class TestCameraIntrinsicsCreate:
     """
     Test constructor.
     """
+
     def test_normal(self):
         """
         Successful construction.
@@ -467,7 +482,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_resolution_x(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = -1
@@ -489,7 +504,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_resolution_y(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -511,7 +526,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_x_negative(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -533,7 +548,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_x_zero(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -555,7 +570,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_x_too_positive(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -577,7 +592,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_y_negative(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -599,7 +614,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_y_zero(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -621,7 +636,7 @@ class TestCameraIntrinsicsCreate:
 
     def test_bad_fov_y_too_positive(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -646,6 +661,7 @@ class TestImagePixelToVector:
     """
     Test convert from image pixel to image vector.
     """
+
     def test_centre(self):
         """
         Centre of image.
@@ -658,15 +674,14 @@ class TestImagePixelToVector:
         expected = np.zeros(3)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
@@ -685,15 +700,14 @@ class TestImagePixelToVector:
         expected = np.array([-1.0, -1.0, -1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
@@ -712,15 +726,14 @@ class TestImagePixelToVector:
         expected = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
@@ -739,15 +752,14 @@ class TestImagePixelToVector:
         expected = np.array([0.5, 0.5, 0.5], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
@@ -756,7 +768,7 @@ class TestImagePixelToVector:
 
     def test_bad_pixel_too_positive(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 2001
@@ -764,15 +776,14 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
@@ -780,7 +791,7 @@ class TestImagePixelToVector:
 
     def test_bad_pixel_negative(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = -1
@@ -788,15 +799,14 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
@@ -804,7 +814,7 @@ class TestImagePixelToVector:
 
     def test_bad_resolution_zero(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -812,15 +822,14 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
@@ -828,7 +837,7 @@ class TestImagePixelToVector:
 
     def test_bad_resolution_negative(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -836,15 +845,14 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
@@ -852,7 +860,7 @@ class TestImagePixelToVector:
 
     def test_bad_vec_base_not_r3(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -860,15 +868,14 @@ class TestImagePixelToVector:
         vec_r2 = np.array([1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_r2,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_r2,
+        )
 
         # Test
         assert not result
@@ -879,6 +886,7 @@ class TestImageToCameraSpace:
     """
     Test convert from image point to camera vector.
     """
+
     def test_centre(self, camera_intrinsic: camera_properties.CameraIntrinsics):
         """
         Centre of image.
@@ -935,7 +943,7 @@ class TestImageToCameraSpace:
 
     def test_bad_pixel_x_negative(self, camera_intrinsic: camera_properties.CameraIntrinsics):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = -1
@@ -950,7 +958,7 @@ class TestImageToCameraSpace:
 
     def test_bad_pixel_x_too_positive(self, camera_intrinsic: camera_properties.CameraIntrinsics):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 2001
@@ -965,7 +973,7 @@ class TestImageToCameraSpace:
 
     def test_bad_pixel_y_negative(self, camera_intrinsic: camera_properties.CameraIntrinsics):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 1000
@@ -980,7 +988,7 @@ class TestImageToCameraSpace:
 
     def test_bad_pixel_y_too_positive(self, camera_intrinsic: camera_properties.CameraIntrinsics):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 1000
@@ -998,6 +1006,7 @@ class TestCameraExtrinsicsCreate:
     """
     Test constructor.
     """
+
     def test_normal(self):
         """
         Successful construction.
@@ -1018,7 +1027,7 @@ class TestCameraExtrinsicsCreate:
 
     def test_bad_orientation(self):
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         camera_position_xyz = (0.0, 0.0, 0.0)

@@ -9,17 +9,18 @@ from ..common.mavlink.modules import flight_controller
 
 
 # This is just an interface
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class FlightInterface:
     """
     Create flight controller and combines odometry data and timestamp.
     """
+
     __create_key = object()
 
     @classmethod
     def create(cls, address: str, timeout_home: float) -> "tuple[bool, FlightInterface | None]":
         """
-        address: TCP or port.
+        address: TCP address or port.
         timeout_home: Timeout for home location in seconds.
         """
         result, controller = flight_controller.FlightController.create(address)
@@ -38,10 +39,12 @@ class FlightInterface:
 
         return True, FlightInterface(cls.__create_key, controller, home_location)
 
-    def __init__(self,
-                 class_private_create_key,
-                 controller: flight_controller.FlightController,
-                 home_location: drone_odometry.DronePosition):
+    def __init__(
+        self,
+        class_private_create_key,
+        controller: flight_controller.FlightController,
+        home_location: drone_odometry.DronePosition,
+    ):
         """
         Private constructor, use create() method.
         """
@@ -49,7 +52,6 @@ class FlightInterface:
 
         self.controller = controller
         self.__home_location = home_location
-
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
@@ -73,5 +75,3 @@ class FlightInterface:
         assert odometry_local is not None
 
         return odometry_and_time.OdometryAndTime.create(odometry_local)
-
-# pylint: enable=too-few-public-methods

@@ -6,18 +6,18 @@ import numpy as np
 
 
 # Basically a struct
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class Detection:
     """
     A detected object in image space.
     """
+
     __create_key = object()
 
     @classmethod
-    def create(cls,
-               bounds: np.ndarray,
-               label: int,
-               confidence: float) -> "tuple[bool, Detection | None]":
+    def create(
+        cls, bounds: np.ndarray, label: int, confidence: float
+    ) -> "tuple[bool, Detection | None]":
         """
         bounds are of form x1, y1, x2, y2 .
         """
@@ -54,14 +54,20 @@ class Detection:
         self.confidence = confidence
 
     def __repr__(self) -> str:
-        representation = \
-            "cls: " + str(self.label) \
-            + ", conf: " + str(self.confidence) \
-            + ", bounds: " \
-                + str(self.x1) + " " \
-                + str(self.y1) + " " \
-                + str(self.x2) + " " \
-                + str(self.y2)
+        representation = (
+            "cls: "
+            + str(self.label)
+            + ", conf: "
+            + str(self.confidence)
+            + ", bounds: "
+            + str(self.x1)
+            + " "
+            + str(self.y1)
+            + " "
+            + str(self.x2)
+            + " "
+            + str(self.y2)
+        )
 
         return representation
 
@@ -83,15 +89,14 @@ class Detection:
         bottom_right = self.x2, self.y2
         return [top_left, top_right, bottom_left, bottom_right]
 
-# pylint: enable=too-few-public-methods
-
 
 # Basically a struct
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class DetectionsAndTime:
     """
     Contains detected object and timestamp.
     """
+
     __create_key = object()
 
     @classmethod
@@ -115,10 +120,13 @@ class DetectionsAndTime:
         self.timestamp = timestamp
 
     def __repr__(self) -> str:
-        representation = \
-            str(self.__class__) \
-            + ", time: " + str(int(self.timestamp)) \
-            + ", size: " + str(len(self))
+        representation = (
+            str(self.__class__)
+            + ", time: "
+            + str(int(self.timestamp))
+            + ", size: "
+            + str(len(self))
+        )
 
         representation += "\n" + repr(self.detections)
         return representation
@@ -134,5 +142,3 @@ class DetectionsAndTime:
         Appends a detected object.
         """
         self.detections.append(detection)
-
-# pylint: enable=too-few-public-methods

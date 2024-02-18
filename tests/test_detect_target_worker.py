@@ -29,11 +29,13 @@ SHOW_ANNOTATIONS = False
 SAVE_NAME = ""  # No need to save images
 
 
-def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_previous_worker(
+    image_path: pathlib.Path, in_queue: queue_proxy_wrapper.QueueProxyWrapper
+):
     """
     Place the image into the queue.
     """
-    image = cv2.imread(image_path)
+    image = cv2.imread(image_path)  # type: ignore
     result, value = image_and_time.ImageAndTime.create(image)
     assert result
     assert value is not None
@@ -42,6 +44,8 @@ def simulate_previous_worker(image_path: str, in_queue: queue_proxy_wrapper.Queu
 
 if __name__ == "__main__":
     # Setup
+    # Not a constant
+    # pylint: disable-next=invalid-name
     device = 0 if torch.cuda.is_available() else "cpu"
     controller = worker_controller.WorkerController()
 

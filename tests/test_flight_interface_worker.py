@@ -47,7 +47,7 @@ if __name__ == "__main__":
     while True:
         try:
             input_data: odometry_and_time.OdometryAndTime = out_queue.queue.get_nowait()
-            assert str(type(input_data)) == "<class \'modules.odometry_and_time.OdometryAndTime\'>"
+            assert str(type(input_data)) == "<class 'modules.odometry_and_time.OdometryAndTime'>"
             assert input_data.odometry_data is not None
 
         except queue.Empty:

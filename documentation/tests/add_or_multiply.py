@@ -8,6 +8,7 @@ class MathOperation(enum.Enum):
     """
     Enumeration for Add or Multiply.
     """
+
     ADD = 0
     MULTIPLY = 1
 
@@ -16,6 +17,7 @@ class AddOrMultiply:
     """
     Add or multiply depending on state.
     """
+
     def __init__(self, switch: MathOperation):
         self.__operator = switch
 

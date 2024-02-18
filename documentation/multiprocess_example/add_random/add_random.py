@@ -8,13 +8,14 @@ from .. import intermediate_struct
 
 
 # This class does very little, but still has state
-# pylint: disable=too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class AddRandom:
     """
     Adds a random number to the input.
 
     A new random number is generated every `__ADD_SWITCH_COUNT` times.
     """
+
     def __init__(self, seed: int, max_random_term: int, add_change_count: int):
         """
         Constructor seeds the RNG and sets the max add and
@@ -70,5 +71,3 @@ class AddRandom:
         # Function returns result and the output
         # The class is responsible for packing the intermediate type
         return True, output
-
-# pylint: enable=too-few-public-methods

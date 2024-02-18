@@ -1,3 +1,6 @@
+# Large test file
+# No enable
+# pylint: disable=too-many-lines
 """
 Test geolocation.
 """
@@ -14,6 +17,11 @@ from modules.geolocation import geolocation
 
 
 FLOAT_PRECISION_TOLERANCE = 4
+
+
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
 
 
 @pytest.fixture
@@ -183,12 +191,13 @@ def affine_matrix():
         [
             [0.0, 1.0, -1.0],
             [2.0, 0.0, -1.0],
-            [0.0, 0.0,  1.0],
+            [0.0, 0.0, 1.0],
         ],
         dtype=np.float32,
     )
 
     yield matrix
+
 
 @pytest.fixture
 def non_affine_matrix():
@@ -199,7 +208,7 @@ def non_affine_matrix():
         [
             [0.0, 1.0, -1.0],
             [2.0, 0.0, -1.0],
-            [1.0, 1.0,  1.0],
+            [1.0, 1.0, 1.0],
         ],
         dtype=np.float32,
     )
@@ -211,6 +220,7 @@ class TestGeolocationCreate:
     """
     Test constructor.
     """
+
     def test_normal(self):
         """
         Successful construction.
@@ -243,6 +253,7 @@ class TestGroundIntersection:
     """
     Test where vector intersects with ground.
     """
+
     def test_above_origin_directly_down(self):
         """
         Above origin, directly down.
@@ -254,14 +265,13 @@ class TestGroundIntersection:
         expected = np.array([0.0, 0.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_down,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_down,
+        )
 
         # Test
         assert result
@@ -279,14 +289,13 @@ class TestGroundIntersection:
         expected = np.array([100.0, -100.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_down,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_down,
+        )
 
         # Test
         assert result
@@ -304,14 +313,13 @@ class TestGroundIntersection:
         expected = np.array([100.0, 100.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_down,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_down,
+        )
 
         # Test
         assert result
@@ -329,14 +337,13 @@ class TestGroundIntersection:
         expected = np.array([0.0, 0.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_down,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_down,
+        )
 
         # Test
         assert result
@@ -352,14 +359,13 @@ class TestGroundIntersection:
         vec_horizontal = np.array([10.0, 0.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_horizontal,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_horizontal,
+        )
 
         # Test
         assert not result
@@ -374,14 +380,13 @@ class TestGroundIntersection:
         vec_up = np.array([0.0, 0.0, -1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_camera_in_world_position,
-                vec_up,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_camera_in_world_position,
+            vec_up,
+        )
 
         # Test
         assert not result
@@ -396,14 +401,13 @@ class TestGroundIntersection:
         vec_down = np.array([0.0, 0.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
-                vec_underground,
-                vec_down,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+            vec_underground,
+            vec_down,
+        )
 
         # Test
         assert not result
@@ -414,6 +418,7 @@ class TestPerspectiveTransformMatrix:
     """
     Test perspective transform creation.
     """
+
     def test_basic_above_origin_pointed_down(self, basic_locator: geolocation.Geolocation):
         """
         Above origin, directly down.
@@ -432,14 +437,13 @@ class TestPerspectiveTransformMatrix:
         vec_ground_expected = np.array([-100.0, 100.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
-                drone_rotation_matrix,
-                drone_position_ned,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
 
         # Test
         assert result
@@ -453,8 +457,9 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_intermediate_above_origin_pointing_north(self,
-                                                      intermediate_locator: geolocation.Geolocation):
+    def test_intermediate_above_origin_pointing_north(
+        self, intermediate_locator: geolocation.Geolocation
+    ):
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
         """
@@ -472,14 +477,13 @@ class TestPerspectiveTransformMatrix:
         vec_ground_expected = np.array([-100.0, 100.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
-                drone_rotation_matrix,
-                drone_position_ned,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
 
         # Test
         assert result
@@ -493,8 +497,9 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_intermediate_above_origin_pointing_west(self,
-                                                     intermediate_locator: geolocation.Geolocation):
+    def test_intermediate_above_origin_pointing_west(
+        self, intermediate_locator: geolocation.Geolocation
+    ):
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
         """
@@ -512,14 +517,13 @@ class TestPerspectiveTransformMatrix:
         vec_ground_expected = np.array([100.0, 100.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
-                drone_rotation_matrix,
-                drone_position_ned,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
 
         # Test
         assert result
@@ -538,7 +542,6 @@ class TestPerspectiveTransformMatrix:
         Camera is north of origin with an angle from vertical. Also rotated.
         """
         # Setup
-        # TODO
         result, drone_rotation_matrix = camera_properties.create_rotation_matrix_from_orientation(
             0.0,
             np.pi / 12,
@@ -567,14 +570,13 @@ class TestPerspectiveTransformMatrix:
         )
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            advanced_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
-                drone_rotation_matrix,
-                drone_position_ned,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = advanced_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
 
         # Test
         assert result
@@ -619,14 +621,13 @@ class TestPerspectiveTransformMatrix:
         )
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
-                drone_rotation_matrix,
-                drone_position_ned,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+            drone_rotation_matrix,
+            drone_position_ned,
+        )
 
         # Test
         assert not result
@@ -637,6 +638,7 @@ class TestGeolocationConvertDetection:
     """
     Test extract and convert.
     """
+
     def test_normal1(self, detection1: detections_and_time.Detection, affine_matrix: np.ndarray):
         """
         Normal detection and matrix.
@@ -645,9 +647,9 @@ class TestGeolocationConvertDetection:
         result, expected = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
-                    [  -1.0,   -1.0],
-                    [  -1.0, 3999.0],
-                    [1999.0,   -1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 3999.0],
+                    [1999.0, -1.0],
                     [1999.0, 3999.0],
                 ],
                 dtype=np.float32,
@@ -663,14 +665,13 @@ class TestGeolocationConvertDetection:
         assert expected is not None
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
-                detection1,
-                affine_matrix,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
+            detection1,
+            affine_matrix,
+        )
 
         # Test
         assert result
@@ -689,9 +690,9 @@ class TestGeolocationConvertDetection:
         result, expected = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
-                    [ -1.0,   -1.0],
-                    [ -1.0, 1999.0],
-                    [999.0,   -1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 1999.0],
+                    [999.0, -1.0],
                     [999.0, 1999.0],
                 ],
                 dtype=np.float32,
@@ -707,14 +708,13 @@ class TestGeolocationConvertDetection:
         assert expected is not None
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
-                detection2,
-                affine_matrix,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
+            detection2,
+            affine_matrix,
+        )
 
         # Test
         assert result
@@ -730,10 +730,13 @@ class TestGeolocationRun:
     """
     Run.
     """
-    def test_basic(self,
-                   basic_locator: geolocation.Geolocation,
-                   detection1: detections_and_time.Detection,
-                   detection2: detections_and_time.Detection):
+
+    def test_basic(
+        self,
+        basic_locator: geolocation.Geolocation,
+        detection1: detections_and_time.Detection,
+        detection2: detections_and_time.Detection,
+    ):
         """
         2 detections.
         """
@@ -774,10 +777,10 @@ class TestGeolocationRun:
         result, expected_detection1 = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
-                    [ 100.0, -100.0],
-                    [ 100.0,  100.0],
+                    [100.0, -100.0],
+                    [100.0, 100.0],
                     [-100.0, -100.0],
-                    [-100.0,  100.0],
+                    [-100.0, 100.0],
                 ],
                 dtype=np.float32,
             ),
@@ -794,10 +797,10 @@ class TestGeolocationRun:
         result, expected_detection2 = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
-                    [ 100.0, -100.0],
-                    [ 100.0,    0.0],
-                    [   0.0, -100.0],
-                    [   0.0,    0.0],
+                    [100.0, -100.0],
+                    [100.0, 0.0],
+                    [0.0, -100.0],
+                    [0.0, 0.0],
                 ],
                 dtype=np.float32,
             ),
@@ -830,10 +833,12 @@ class TestGeolocationRun:
             assert actual.label == expected_list[i].label
             np.testing.assert_almost_equal(actual.confidence, expected_list[i].confidence)
 
-    def test_advanced(self,
-                      advanced_locator: geolocation.Geolocation,
-                      detection_bottom_right_point: detections_and_time.Detection,
-                      detection_centre_left_point: detections_and_time.Detection):
+    def test_advanced(
+        self,
+        advanced_locator: geolocation.Geolocation,
+        detection_bottom_right_point: detections_and_time.Detection,
+        detection_centre_left_point: detections_and_time.Detection,
+    ):
         """
         2 point detections.
         """
@@ -938,9 +943,9 @@ class TestGeolocationRun:
             assert actual.label == expected_list[i].label
             np.testing.assert_almost_equal(actual.confidence, expected_list[i].confidence)
 
-    def test_bad_direction(self,
-                           basic_locator: geolocation.Geolocation,
-                           detection1: detections_and_time.Detection):
+    def test_bad_direction(
+        self, basic_locator: geolocation.Geolocation, detection1: detections_and_time.Detection
+    ):
         """
         Bad direction.
         """

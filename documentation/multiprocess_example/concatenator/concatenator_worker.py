@@ -7,10 +7,12 @@ from utilities.workers import worker_controller
 from . import concatenator
 
 
-def concatenator_worker(prefix: str,
-                        suffix: str,
-                        input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                        controller: worker_controller.WorkerController):
+def concatenator_worker(
+    prefix: str,
+    suffix: str,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+):
     """
     Worker process.
 

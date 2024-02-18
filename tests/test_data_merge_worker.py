@@ -18,8 +18,9 @@ from utilities.workers import worker_controller
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 
-def simulate_detect_target_worker(timestamp: float,
-                                  detections_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_detect_target_worker(
+    timestamp: float, detections_queue: queue_proxy_wrapper.QueueProxyWrapper
+):
     """
     Place the detection into the queue.
     """
@@ -40,8 +41,9 @@ def simulate_detect_target_worker(timestamp: float,
     detections_queue.queue.put(detections)
 
 
-def simulate_flight_input_worker(timestamp: float,
-                                 odometry_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_flight_input_worker(
+    timestamp: float, odometry_queue: queue_proxy_wrapper.QueueProxyWrapper
+):
     """
     Place the odometry into the queue.
     """
@@ -120,8 +122,9 @@ if __name__ == "__main__":
 
     # Test
     for expected_time in expected_times:
-        merged: merged_odometry_detections.MergedOdometryDetections = \
+        merged: merged_odometry_detections.MergedOdometryDetections = (
             merged_out_queue.queue.get_nowait()
+        )
         assert int(merged.odometry_local.position.north) == expected_time
 
     assert merged_out_queue.queue.empty()

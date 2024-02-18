@@ -7,14 +7,16 @@ from utilities.workers import worker_controller
 from . import add_random
 
 
-# As kwargs is not being used, this function needs many parameters
-# pylint: disable=too-many-arguments
-def add_random_worker(seed: int,
-                      max_random_term: int,
-                      add_change_count: int,
-                      input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                      output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                      controller: worker_controller.WorkerController):
+# Worker has both class and control parameters
+# pylint: disable-next=too-many-arguments
+def add_random_worker(
+    seed: int,
+    max_random_term: int,
+    add_change_count: int,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+):
     """
     Worker process.
 
@@ -52,5 +54,3 @@ def add_random_worker(seed: int,
         # If the queue is full, the worker process will block
         # until the queue is non-empty
         output_queue.queue.put(value)
-
-# pylint: enable=too-many-arguments

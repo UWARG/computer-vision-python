@@ -9,6 +9,7 @@ class WorkerManager:
     For interprocess communication from main to worker.
     Contains exit and pause requests.
     """
+
     def __init__(self, workers: "list[mp.Process] | None" = None):
         """
         Constructor creates internal queue and semaphore.

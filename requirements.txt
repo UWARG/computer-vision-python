@@ -1,6 +1,8 @@
 # Packages listed in alphabetical order
+black
 numpy
 opencv-python
+pylint
 pymap3d
 pytest
 pyyaml

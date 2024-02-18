@@ -10,6 +10,7 @@ class WorkerController:
     For interprocess communication from main to worker.
     Contains exit and pause requests.
     """
+
     __QUEUE_DELAY = 0.1  # seconds
 
     def __init__(self):
