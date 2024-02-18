@@ -35,15 +35,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-pytorch.txt
-          pip list
 
-      # Run Black formatter inn check mode
-      - name: Black formatter check
-        run: black --check .
-
-      # Run Pylint linter
-      - name: Pylint linter
-        run: pylint .
+      # Run linters and formatters
+      - name: Linters and formatters
+        run: |
+          black --check .
+          pylint .
 
       # Run unit tests with PyTest
       - name: Run unit tests
