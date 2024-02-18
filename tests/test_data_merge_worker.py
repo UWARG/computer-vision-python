@@ -4,6 +4,8 @@ Test worker process.
 import multiprocessing as mp
 import time
 
+import numpy as np
+
 from modules import drone_odometry_local
 from modules import detections_and_time
 from modules import merged_odometry_detections
@@ -16,15 +18,28 @@ from utilities.workers import worker_controller
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 
-def simulate_detect_target_worker(timestamp: float,
-                                  detections_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_detect_target_worker(
+    timestamp: float, detections_queue: queue_proxy_wrapper.QueueProxyWrapper
+):
     """
     Place the detection into the queue.
     """
     result, detections = detections_and_time.DetectionsAndTime.create(timestamp)
     assert result
     assert detections is not None
+
+    result, detection = detections_and_time.Detection.create(
+        np.array([0.0, 0.0, 1.0, 1.0]),
+        0,
+        1.0,
+    )
+    assert result
+    assert detection is not None
+
+    detections.append(detection)
+
     detections_queue.queue.put(detections)
+
 
 def simulate_flight_input_worker(timestamp: float,
                                  odometry_queue: queue_proxy_wrapper.QueueProxyWrapper):
