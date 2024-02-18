@@ -41,3 +41,12 @@ class OdometryAndTime:
 
         self.odometry_data = odometry_data
         self.timestamp = timestamp
+
+    def __repr__(self) -> str:
+        """
+        String representation.
+        """
+        representation = str(self.__class__) + ", time: " + str(int(self.timestamp))
+
+        representation += "\n" + repr(self.odometry_data)
+        return representation

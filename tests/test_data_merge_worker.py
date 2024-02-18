@@ -28,11 +28,7 @@ def simulate_detect_target_worker(
     assert result
     assert detections is not None
 
-    result, detection = detections_and_time.Detection.create(
-        np.array([0.0, 0.0, 1.0, 1.0]),
-        0,
-        1.0,
-    )
+    result, detection = detections_and_time.Detection.create(np.array([0.0, 0.0, 1.0, 1.0]), 0, 1.0)
     assert result
     assert detection is not None
 
