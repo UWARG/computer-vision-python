@@ -1,6 +1,7 @@
 """
 Contains the Concatenator class.
 """
+
 import time
 
 from .. import intermediate_struct

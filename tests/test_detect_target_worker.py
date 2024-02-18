@@ -1,6 +1,7 @@
 """
 Test worker process.
 """
+
 import multiprocessing as mp
 import pathlib
 import time

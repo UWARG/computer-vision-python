@@ -1,6 +1,7 @@
 """
 Simple class for Pytest example.
 """
+
 import enum
 
 

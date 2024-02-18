@@ -1,6 +1,7 @@
 """
 Drone odometry in local space and timestamp.
 """
+
 import time
 
 from . import drone_odometry_local

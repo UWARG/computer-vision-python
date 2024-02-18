@@ -1,6 +1,7 @@
 """
 For 2023-2024 UAS competition.
 """
+
 import argparse
 import multiprocessing as mp
 import pathlib

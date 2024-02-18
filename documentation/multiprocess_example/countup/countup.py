@@ -1,6 +1,7 @@
 """
 Contains the Countup class.
 """
+
 import time
 
 

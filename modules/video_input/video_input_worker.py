@@ -1,6 +1,7 @@
 """
 Gets images from the camera.
 """
+
 import time
 
 from utilities.workers import queue_proxy_wrapper

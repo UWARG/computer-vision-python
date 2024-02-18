@@ -1,6 +1,7 @@
 """
 Commands for the decision module.
 """
+
 import enum
 
 

@@ -1,6 +1,7 @@
 """
 Detects objects using the provided model.
 """
+
 import time
 
 import cv2

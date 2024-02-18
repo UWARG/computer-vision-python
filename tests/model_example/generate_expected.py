@@ -1,6 +1,7 @@
 """
 Generates expected output using pretrained default model and images.
 """
+
 import pathlib
 
 import cv2

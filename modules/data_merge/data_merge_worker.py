@@ -1,6 +1,7 @@
 """
 Merges detections and telemetry by time.
 """
+
 import queue
 
 from utilities.workers import queue_proxy_wrapper

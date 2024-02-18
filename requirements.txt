@@ -1,8 +1,9 @@
 # Packages listed in alphabetical order
-black
+# Linters and formatters are explicitly versioned
+black==24.2.0
 numpy
 opencv-python
-pylint
+pylint==3.0.3
 pymap3d
 pytest
 pyyaml

@@ -1,6 +1,7 @@
 """
 Test DetectTarget module.
 """
+
 import copy
 import pathlib
 

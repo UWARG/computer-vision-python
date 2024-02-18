@@ -1,6 +1,7 @@
 """
 Image and timestamp.
 """
+
 import time
 
 import numpy as np

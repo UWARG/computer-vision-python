@@ -1,6 +1,7 @@
 """
 Contains the AddRandom class.
 """
+
 import time
 import random
 
