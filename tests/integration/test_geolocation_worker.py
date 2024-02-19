@@ -19,7 +19,7 @@ from utilities.workers import worker_controller
 WORK_COUNT = 3
 
 
-def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper) -> None:
     """
     Place the image into the queue.
     """

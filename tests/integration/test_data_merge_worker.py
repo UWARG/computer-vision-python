@@ -21,7 +21,7 @@ DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 def simulate_detect_target_worker(
     timestamp: float, detections_queue: queue_proxy_wrapper.QueueProxyWrapper
-):
+) -> None:
     """
     Place the detection into the queue.
     """
@@ -40,7 +40,7 @@ def simulate_detect_target_worker(
 
 def simulate_flight_input_worker(
     timestamp: float, odometry_queue: queue_proxy_wrapper.QueueProxyWrapper
-):
+) -> None:
     """
     Place the odometry into the queue.
     """

@@ -13,6 +13,7 @@ def main() -> int:
     Main function.
     """
     # Setup
+    # TODO: Common change logging option
     camera = video_input.VideoInput(
         CAMERA,
     )

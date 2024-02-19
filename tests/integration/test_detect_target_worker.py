@@ -32,7 +32,7 @@ SAVE_NAME = ""  # No need to save images
 
 def simulate_previous_worker(
     image_path: pathlib.Path, in_queue: queue_proxy_wrapper.QueueProxyWrapper
-):
+) -> None:
     """
     Place the image into the queue.
     """
