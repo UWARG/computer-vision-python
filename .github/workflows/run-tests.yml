@@ -40,6 +40,7 @@ jobs:
       - name: Linters and formatters
         run: |
           black --check .
+          flake8 .
           pylint .
 
       # Run unit tests with PyTest
