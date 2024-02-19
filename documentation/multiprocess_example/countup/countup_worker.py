@@ -12,7 +12,7 @@ def countup_worker(
     max_iterations: int,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-):
+) -> None:
     """
     Worker process.
 

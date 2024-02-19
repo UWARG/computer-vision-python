@@ -15,7 +15,7 @@ def flight_interface_worker(
     period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-):
+) -> None:
     """
     Worker process.
 

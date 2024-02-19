@@ -23,7 +23,7 @@ class DetectTarget:
         override_full: bool,
         show_annotations: bool = False,
         save_name: str = "",
-    ):
+    ) -> None:
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.

@@ -11,13 +11,13 @@ class WorkerManager:
     Contains exit and pause requests.
     """
 
-    def __init__(self, workers: "list[mp.Process] | None" = None):
+    def __init__(self, workers: "list[mp.Process] | None" = None) -> None:
         """
         Constructor creates internal queue and semaphore.
         """
         self.__workers = [] if workers is None else workers
 
-    def create_workers(self, count: int, target, args):
+    def create_workers(self, count: int, target: "(...) -> object", args: tuple) -> None:  # type: ignore
         """
         Create identical workers.
 
@@ -29,20 +29,20 @@ class WorkerManager:
             worker = mp.Process(target=target, args=args)
             self.__workers.append(worker)
 
-    def concatenate_workers(self, workers: "list[mp.Process]"):
+    def concatenate_workers(self, workers: "list[mp.Process]") -> None:
         """
         Add workers.
         """
         self.__workers += workers
 
-    def start_workers(self):
+    def start_workers(self) -> None:
         """
         Start workers.
         """
         for worker in self.__workers:
             worker.start()
 
-    def join_workers(self):
+    def join_workers(self) -> None:
         """
         Join workers.
         """

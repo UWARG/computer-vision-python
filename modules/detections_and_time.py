@@ -35,7 +35,9 @@ class Detection:
 
         return True, Detection(cls.__create_key, bounds, label, confidence)
 
-    def __init__(self, class_private_create_key, bounds: np.ndarray, label: int, confidence: float):
+    def __init__(
+        self, class_private_create_key: object, bounds: np.ndarray, label: int, confidence: float
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -50,6 +52,9 @@ class Detection:
         self.confidence = confidence
 
     def __repr__(self) -> str:
+        """
+        String representation.
+        """
         representation = (
             "cls: "
             + str(self.label)
@@ -104,7 +109,7 @@ class DetectionsAndTime:
 
         return True, DetectionsAndTime(cls.__create_key, timestamp)
 
-    def __init__(self, class_private_create_key, timestamp: float):
+    def __init__(self, class_private_create_key: object, timestamp: float) -> None:
         """
         Private constructor, use create() method.
         """
@@ -134,7 +139,7 @@ class DetectionsAndTime:
         """
         return len(self.detections)
 
-    def append(self, detection: Detection):
+    def append(self, detection: Detection) -> None:
         """
         Appends a detected object.
         """

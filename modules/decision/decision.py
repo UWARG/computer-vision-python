@@ -12,7 +12,7 @@ class ScoredLandingPad:
     Landing pad with score for decision.
     """
 
-    def __init__(self, landing_pad: object_in_world.ObjectInWorld, score: float):
+    def __init__(self, landing_pad: object_in_world.ObjectInWorld, score: float) -> None:
         self.landing_pad = landing_pad
         self.score = score
 
@@ -22,7 +22,7 @@ class Decision:
     Chooses next action to take based on known landing pad information.
     """
 
-    def __init__(self, tolerance: float):
+    def __init__(self, tolerance: float) -> None:
         self.__best_landing_pad: "object_in_world.ObjectInWorld | None" = None
         self.__weighted_pads = []
         self.__distance_tolerance = tolerance

@@ -118,12 +118,12 @@ class CameraIntrinsics:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         resolution_x: int,
         resolution_y: int,
         u_scalar: float,
         v_scalar: float,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -248,10 +248,10 @@ class CameraDroneExtrinsics:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         vec_camera_on_drone_position: np.ndarray,
         camera_to_drone_rotation_matrix: np.ndarray,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

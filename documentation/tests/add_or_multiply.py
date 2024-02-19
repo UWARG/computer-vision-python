@@ -34,7 +34,7 @@ class AddOrMultiply:
 
         raise NotImplementedError
 
-    def swap_state(self):
+    def swap_state(self) -> None:
         """
         Swaps internal state.
         """

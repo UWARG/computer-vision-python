@@ -39,10 +39,10 @@ class FlightInterface:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         controller: flight_controller.FlightController,
         home_location: drone_odometry.DronePosition,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

@@ -17,7 +17,7 @@ def data_merge_worker(
     odometry_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-):
+) -> None:
     """
     Worker process. Expects telemetry to be more frequent than detections.
     Queue is monotonic (i.e. timestamps never decrease).

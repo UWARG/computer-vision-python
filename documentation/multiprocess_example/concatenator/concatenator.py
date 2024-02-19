@@ -12,7 +12,7 @@ class Concatenator:
     Concatenates a prefix and suffix to the object.
     """
 
-    def __init__(self, prefix: str, suffix: str):
+    def __init__(self, prefix: str, suffix: str) -> None:
         """
         Constructor sets the prefix and suffix.
         """

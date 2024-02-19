@@ -110,12 +110,12 @@ class DecisionCommand:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         command_type: CommandType,
         command_x: float,
         command_y: float,
         command_z: float,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

@@ -15,7 +15,7 @@ class AddRandom:
     A new random number is generated every `__ADD_SWITCH_COUNT` times.
     """
 
-    def __init__(self, seed: int, max_random_term: int, add_change_count: int):
+    def __init__(self, seed: int, max_random_term: int, add_change_count: int) -> None:
         """
         Constructor seeds the RNG and sets the max add and
         number of adds before a new random number is chosen.

@@ -63,11 +63,11 @@ class Geolocation:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
         perspective_transform_sources: "list[list[float]]",
         rotated_source_vectors: "list[np.ndarray]",
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

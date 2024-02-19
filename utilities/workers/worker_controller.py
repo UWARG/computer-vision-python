@@ -14,7 +14,7 @@ class WorkerController:
 
     __QUEUE_DELAY = 0.1  # seconds
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Constructor creates internal queue and semaphore.
         """
@@ -22,7 +22,7 @@ class WorkerController:
         self.__is_paused = False
         self.__exit_queue = mp.Queue(1)
 
-    def request_pause(self):
+    def request_pause(self) -> None:
         """
         Requests worker processes to pause.
         """
@@ -30,7 +30,7 @@ class WorkerController:
             self.__pause.acquire()
             self.__is_paused = True
 
-    def request_resume(self):
+    def request_resume(self) -> None:
         """
         Requests worker processes to resume.
         """
@@ -38,14 +38,14 @@ class WorkerController:
             self.__pause.release()
             self.__is_paused = False
 
-    def check_pause(self):
+    def check_pause(self) -> None:
         """
         Blocks worker if main has requested it to pause, otherwise continues.
         """
         self.__pause.acquire()
         self.__pause.release()
 
-    def request_exit(self):
+    def request_exit(self) -> None:
         """
         Requests worker processes to exit.
         Does nothing if already requested.
@@ -54,7 +54,7 @@ class WorkerController:
         if self.__exit_queue.empty():
             self.__exit_queue.put(None)
 
-    def clear_exit(self):
+    def clear_exit(self) -> None:
         """
         Clears the exit request condition.
         Does nothing if already cleared.

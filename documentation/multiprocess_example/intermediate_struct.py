@@ -8,7 +8,7 @@ class IntermediateStruct:
     Example of a simple struct.
     """
 
-    def __init__(self, number: int, sentence: str):
+    def __init__(self, number: int, sentence: str) -> None:
         """
         Constructor.
         """

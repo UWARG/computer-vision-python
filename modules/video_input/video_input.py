@@ -11,7 +11,7 @@ class VideoInput:
     Combines image and timestamp together.
     """
 
-    def __init__(self, camera_name: "int | str", save_name: str = ""):
+    def __init__(self, camera_name: "int | str", save_name: str = "") -> None:
         self.device = camera_device.CameraDevice(camera_name, 1, save_name)
 
     def run(self) -> "tuple[bool, image_and_time.ImageAndTime | None]":

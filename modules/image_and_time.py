@@ -29,7 +29,9 @@ class ImageAndTime:
 
         return True, ImageAndTime(cls.__create_key, image, current_time)
 
-    def __init__(self, class_private_create_key, image: np.ndarray, timestamp: float):
+    def __init__(
+        self, class_private_create_key: object, image: np.ndarray, timestamp: float
+    ) -> None:
         """
         Private constructor, use create() method.
         """

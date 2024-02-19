@@ -11,10 +11,10 @@ class LandingPadTracking:
     positive, unconfirmed positive, or false positive.
     """
 
-    def __init__(self, distance_squared_threshold: float):
-        self.__unconfirmed_positives = []
-        self.__false_positives = []
-        self.__confirmed_positives = []
+    def __init__(self, distance_squared_threshold: float) -> None:
+        self.__unconfirmed_positives: "list[object_in_world.ObjectInWorld]" = []
+        self.__false_positives: "list[object_in_world.ObjectInWorld]" = []
+        self.__confirmed_positives: "list[object_in_world.ObjectInWorld]" = []
 
         # Landing pads within the square root of this distance are considered the same landing pad
         self.__distance_squared_threshold = distance_squared_threshold
@@ -34,7 +34,7 @@ class LandingPadTracking:
         ) ** 2
         return distance_squared < distance_squared_threshold
 
-    def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
+    def mark_false_positive(self, detection: object_in_world.ObjectInWorld) -> None:
         """
         Marks a detection as false positive and removes similar landing pads from the list of
         unconfirmed positives.
@@ -46,13 +46,15 @@ class LandingPadTracking:
             if not self.__is_similar(landing_pad, detection, self.__distance_squared_threshold)
         ]
 
-    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld):
+    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) -> None:
         """
         Marks a detection as a confimred positive for future use.
         """
         self.__confirmed_positives.append(detection)
 
-    def run(self, detections: "list[object_in_world.ObjectInWorld]"):
+    def run(
+        self, detections: "list[object_in_world.ObjectInWorld]"
+    ) -> "tuple[bool, object_in_world.ObjectInWorld | None]":
         """
         Updates the list of unconfirmed positives and returns the a first confirmed positive if
         one exists, else the unconfirmed positive with the lowest variance.

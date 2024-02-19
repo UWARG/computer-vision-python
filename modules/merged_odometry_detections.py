@@ -30,10 +30,10 @@ class MergedOdometryDetections:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         odometry_local: drone_odometry_local.DroneOdometryLocal,
         detections: "list[detections_and_time.Detection]",
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

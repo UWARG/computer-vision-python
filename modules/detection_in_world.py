@@ -37,12 +37,12 @@ class DetectionInWorld:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         vertices: np.ndarray,
         centre: np.ndarray,
         label: int,
         confidence: float,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

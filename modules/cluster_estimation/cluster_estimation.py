@@ -96,7 +96,7 @@ class ClusterEstimation:
         min_activation_threshold: int,
         min_new_points_to_run: int,
         random_state: int,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

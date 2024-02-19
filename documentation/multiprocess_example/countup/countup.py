@@ -10,7 +10,7 @@ class Countup:
     Increments its internal counter and outputs current counter.
     """
 
-    def __init__(self, start_thousands: int, max_iterations: int):
+    def __init__(self, start_thousands: int, max_iterations: int) -> None:
         """
         Constructor initializes the start and max points.
         """

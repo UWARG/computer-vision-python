@@ -15,7 +15,7 @@ def video_input_worker(
     save_name: str,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-):
+) -> None:
     """
     Worker process.
 

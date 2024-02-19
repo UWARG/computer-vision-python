@@ -25,11 +25,11 @@ class ObjectInWorld:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         location_x: float,
         location_y: float,
         spherical_variance: float,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

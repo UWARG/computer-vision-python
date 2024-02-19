@@ -31,10 +31,10 @@ class OdometryAndTime:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         odometry_data: drone_odometry_local.DroneOdometryLocal,
         timestamp: float,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """

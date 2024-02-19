@@ -21,7 +21,9 @@ class DronePositionLocal:
         """
         return True, DronePositionLocal(cls.__create_key, north, east, down)
 
-    def __init__(self, class_private_create_key, north: float, east: float, down: float):
+    def __init__(
+        self, class_private_create_key: object, north: float, east: float, down: float
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -69,13 +71,17 @@ class DroneOrientationLocal:
         return True, DroneOrientationLocal(cls.__create_key, orientation)
 
     @classmethod
-    def create_wrap(cls, orientation: drone_odometry.DroneOrientation):
+    def create_wrap(
+        cls, orientation: drone_odometry.DroneOrientation
+    ) -> "tuple[bool, DroneOrientationLocal | None]":
         """
         Wrap existing orientation.
         """
         return True, DroneOrientationLocal(cls.__create_key, orientation)
 
-    def __init__(self, class_private_create_key, orientation: drone_odometry.DroneOrientation):
+    def __init__(
+        self, class_private_create_key: object, orientation: drone_odometry.DroneOrientation
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -122,10 +128,10 @@ class DroneOdometryLocal:
 
     def __init__(
         self,
-        class_private_create_key,
+        class_private_create_key: object,
         position: DronePositionLocal,
         orientation: DroneOrientationLocal,
-    ):
+    ) -> None:
         """
         Private constructor, use create() method.
         """
