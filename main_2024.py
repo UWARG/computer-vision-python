@@ -13,6 +13,7 @@ from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
+from modules.data_merge import data_merge_worker
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -68,6 +69,8 @@ def main() -> int:
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
+
+        DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
     except KeyError:
         print("Config key(s) not found")
         return -1
@@ -80,15 +83,20 @@ def main() -> int:
     mp_manager = mp.Manager()
     video_input_to_detect_target_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
+    # tmp - are the commas supposed to be on these second elements too?
         QUEUE_MAX_SIZE,
     )
-    detect_target_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    detect_target_to_data_merge_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    flight_interface_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    flight_interface_to_data_merge_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
-        QUEUE_MAX_SIZE
+        QUEUE_MAX_SIZE,
+    )
+    data_merge_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
     )
 
     video_input_manager = worker_manager.WorkerManager()
@@ -114,7 +122,7 @@ def main() -> int:
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
-            detect_target_to_main_queue,
+            detect_target_to_data_merge_queue,
             controller,
         ),
     )
@@ -127,7 +135,20 @@ def main() -> int:
             FLIGHT_INTERFACE_ADDRESS,
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_WORKER_PERIOD,
-            flight_interface_to_main_queue,
+            flight_interface_to_data_merge_queue,
+            controller,
+        ),
+    )
+
+    data_merge_manager = worker_manager.WorkerManager()
+    data_merge_manager.create_workers(
+        1,
+        data_merge_worker.data_merge_worker,
+        (
+            DATA_MERGE_TIMEOUT,
+            detect_target_to_data_merge_queue,
+            flight_interface_to_data_merge_queue,
+            data_merge_to_main_queue,
             controller,
         ),
     )
@@ -136,15 +157,36 @@ def main() -> int:
     video_input_manager.start_workers()
     detect_target_manager.start_workers()
     flight_interface_manager.start_workers()
+    data_merge_manager.start_workers()
 
     while True:
+        # try:
+        #     merged_data = data_merge_to_main_queue.queue.get_nowait()
+        # except queue.Empty:
+        #     merged_data = None
+            
+        # if merged_data is not None:
+        #     timestamp = merged_data.timestamp
+        #     odometry = merged_data.odometry_local
+        #     detections = merged_data.detections
+
+        #     print("timestamp: " + str(timestamp))
+        #     print("north: " + str(odometry.position.north))
+        #     print("east: " + str(position.east))
+        #     print("down: " + str(position.down))
+        #     print("yaw: " + str(orientation.yaw))
+        #     print("roll: " + str(orientation.roll))
+        #     print("pitch: " + str(orientation.pitch))
+        #     print("detections: " + str(detections))
+        #     print("")
+
         try:
-            image = detect_target_to_main_queue.queue.get_nowait()
+            image = detect_target_to_data_merge_queue.queue.get_nowait()
         except queue.Empty:
             image = None
 
         odometry_and_time_info: "odometry_and_time.OdometryAndTime | None" = \
-            flight_interface_to_main_queue.queue.get()
+            flight_interface_to_data_merge_queue.queue.get()
 
         if odometry_and_time_info is not None:
             timestamp = odometry_and_time_info.timestamp
@@ -172,12 +214,14 @@ def main() -> int:
     controller.request_exit()
 
     video_input_to_detect_target_queue.fill_and_drain_queue()
-    detect_target_to_main_queue.fill_and_drain_queue()
-    flight_interface_to_main_queue.fill_and_drain_queue()
+    detect_target_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    data_merge_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
+    data_merge_manager.join_workers()
 
     return 0
 
