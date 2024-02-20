@@ -23,7 +23,7 @@ class Detection:
         if bounds.shape != (4,) or not np.greater_equal(bounds, 0.0).all():
             return False, None
 
-        # n1 <= n2
+        # n_1 <= n_2
         if bounds[0] > bounds[2] or bounds[1] > bounds[3]:
             return False, None
 

@@ -9,6 +9,7 @@ import sklearn.datasets
 from modules.cluster_estimation import cluster_estimation
 from modules import detection_in_world
 
+
 MIN_TOTAL_POINTS_THRESHOLD = 100
 MIN_NEW_POINTS_TO_RUN = 10
 RNG_SEED = 0
@@ -21,7 +22,7 @@ CENTRE_BOX_SIZE = 500
 
 
 @pytest.fixture()
-def cluster_model():
+def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
     """
     Cluster estimation object.
     """
@@ -33,7 +34,7 @@ def cluster_model():
     assert result
     assert model is not None
 
-    yield model
+    yield model  # type: ignore
 
 
 def generate_cluster_data(
@@ -173,7 +174,9 @@ class TestModelExecutionCondition:
 
     __STD_DEV_REG = 1  # Regular standard deviation is 1m
 
-    def test_under_min_total_threshold(self, cluster_model: cluster_estimation.ClusterEstimation):
+    def test_under_min_total_threshold(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ) -> None:
         """
         Total data under threshold should not run.
         """
@@ -188,7 +191,9 @@ class TestModelExecutionCondition:
         assert not result
         assert detections_in_world is None
 
-    def test_at_min_total_threshold(self, cluster_model: cluster_estimation.ClusterEstimation):
+    def test_at_min_total_threshold(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ) -> None:
         """
         Should run once total threshold reached regardless of
         current bucket size.
@@ -210,7 +215,9 @@ class TestModelExecutionCondition:
         assert result_2
         assert detections_in_world_2 is not None
 
-    def test_under_min_bucket_size(self, cluster_model: cluster_estimation.ClusterEstimation):
+    def test_under_min_bucket_size(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ) -> None:
         """
         New data under threshold should not run.
         """
@@ -231,7 +238,7 @@ class TestModelExecutionCondition:
         assert not result_2
         assert detections_in_world_2 is None
 
-    def test_good_data(self, cluster_model: cluster_estimation.ClusterEstimation):
+    def test_good_data(self, cluster_model: cluster_estimation.ClusterEstimation) -> None:
         """
         All conditions met should run.
         """
@@ -257,7 +264,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_normal_data_single_cluster(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with small distribution and equal number of points per cluster centre.
         """
@@ -274,7 +281,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_normal_data_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with small distribution and equal number of points per cluster centre.
         """
@@ -293,7 +300,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_large_std_dev_single_cluster(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with large distribution and equal number of points per cluster centre.
         """
@@ -312,7 +319,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_large_std_dev_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with large distribution and equal number of points per cluster centre.
         """
@@ -331,7 +338,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_skewed_data_single_cluster(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with small distribution but varying number of points per cluster centre and
         random outlier points to simulate false detections.
@@ -351,7 +358,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_skewed_data_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Data with small distribution but varying number of points per cluster centre and
         random outlier points to simulate false detections.
@@ -384,7 +391,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_consecutive_inputs_single_cluster(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Previous tests executed model with all points available at once. This test feeds the model
         one point from the dataset one at a time (and calls .run() each time), checking for correct
@@ -408,7 +415,7 @@ class TestCorrectNumberClusterOutputs:
 
     def test_detect_consecutive_inputs_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
-    ):
+    ) -> None:
         """
         Previous tests executed model with all points available at once. This test feeds the model
         one point from the dataset one at a time (and calls .run() each time), checking for correct
@@ -440,7 +447,9 @@ class TestCorrectClusterPositionOutput:
     __STD_DEV_REG = 1  # Regular standard deviation is 1m
     __MAX_POSITION_TOLERANCE = 1
 
-    def test_position_regular_data(self, cluster_model: cluster_estimation.ClusterEstimation):
+    def test_position_regular_data(
+        self, cluster_model: cluster_estimation.ClusterEstimation
+    ) -> None:
         """
         Five clusters with small standard deviation and large number of points per cluster.
         """

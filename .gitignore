@@ -4,12 +4,11 @@
 
 # Python
 __pycache__/
-.pytest_cache/
 venv/
+
+# Logging
+logs/
 
 # Pytorch and Ultralytics
 *.pt
 *.pth
-
-# Logging
-*log*

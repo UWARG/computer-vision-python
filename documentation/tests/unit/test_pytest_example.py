@@ -9,7 +9,7 @@ pytest
 import pytest
 
 
-def test_trivial_pass():
+def test_trivial_pass() -> None:
     """
     Unit test will pass by default.
     """
@@ -18,7 +18,7 @@ def test_trivial_pass():
     pass
 
 
-def test_1_plus_1_equals_2():
+def test_1_plus_1_equals_2() -> None:
     """
     Easy unit test.
     """
@@ -28,7 +28,7 @@ def test_1_plus_1_equals_2():
     assert actual == expected
 
 
-def test_expect_exception():
+def test_expect_exception() -> None:
     """
     If an exception is expected.
     """

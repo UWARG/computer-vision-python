@@ -19,18 +19,18 @@ class AddOrMultiply:
     Add or multiply depending on state.
     """
 
-    def __init__(self, switch: MathOperation):
+    def __init__(self, switch: MathOperation) -> None:
         self.__operator = switch
 
-    def add_or_multiply(self, num1: float, num2: float) -> float:
+    def add_or_multiply(self, num_1: float, num_2: float) -> float:
         """
         Adds or multiplies numbers based on internal state.
         """
         if self.__operator == MathOperation.ADD:
-            return num1 + num2
+            return num_1 + num_2
 
         if self.__operator == MathOperation.MULTIPLY:
-            return num1 * num2
+            return num_1 * num_2
 
         raise NotImplementedError
 

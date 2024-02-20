@@ -104,16 +104,16 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
 
 
 @pytest.fixture()
-def detector():
+def detector() -> detect_target.DetectTarget:  # type: ignore
     """
     Construct DetectTarget.
     """
     detection = detect_target.DetectTarget(DEVICE, str(MODEL_PATH), OVERRIDE_FULL)
-    yield detection
+    yield detection  # type: ignore
 
 
 @pytest.fixture()
-def image_bus():
+def image_bus() -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load bus image.
     """
@@ -121,11 +121,11 @@ def image_bus():
     result, bus_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert bus_image is not None
-    yield bus_image
+    yield bus_image  # type: ignore
 
 
 @pytest.fixture()
-def image_zidane():
+def image_zidane() -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load Zidane image.
     """
@@ -133,25 +133,25 @@ def image_zidane():
     result, zidane_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert zidane_image is not None
-    yield zidane_image
+    yield zidane_image  # type: ignore
 
 
 @pytest.fixture()
-def expected_bus():
+def expected_bus() -> detections_and_time.DetectionsAndTime:  # type: ignore
     """
     Load expected bus detections.
     """
     expected = np.loadtxt(BOUNDING_BOX_BUS_PATH)
-    yield create_detections(expected)
+    yield create_detections(expected)  # type: ignore
 
 
 @pytest.fixture()
-def expected_zidane():
+def expected_zidane() -> detections_and_time.DetectionsAndTime:  # type: ignore
     """
     Load expected Zidane detections.
     """
     expected = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
-    yield create_detections(expected)
+    yield create_detections(expected)  # type: ignore
 
 
 class TestDetector:
@@ -164,7 +164,7 @@ class TestDetector:
         detector: detect_target.DetectTarget,
         image_bus: image_and_time.ImageAndTime,
         expected_bus: detections_and_time.DetectionsAndTime,
-    ):
+    ) -> None:
         """
         Bus image.
         """
@@ -182,7 +182,7 @@ class TestDetector:
         detector: detect_target.DetectTarget,
         image_zidane: image_and_time.ImageAndTime,
         expected_zidane: detections_and_time.DetectionsAndTime,
-    ):
+    ) -> None:
         """
         Zidane image.
         """
@@ -200,7 +200,7 @@ class TestDetector:
         detector: detect_target.DetectTarget,
         image_zidane: image_and_time.ImageAndTime,
         expected_zidane: detections_and_time.DetectionsAndTime,
-    ):
+    ) -> None:
         """
         Multiple Zidane images.
         """

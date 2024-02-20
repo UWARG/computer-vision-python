@@ -22,7 +22,7 @@ FLOAT_PRECISION_TOLERANCE = 4
 
 
 @pytest.fixture
-def basic_locator():
+def basic_locator() -> geolocation.Geolocation:  # type: ignore
     """
     Forwards pointing camera.
     """
@@ -49,11 +49,11 @@ def basic_locator():
     assert result
     assert locator is not None
 
-    yield locator
+    yield locator  # type: ignore
 
 
 @pytest.fixture
-def intermediate_locator():
+def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
     """
     Downwards pointing camera offset towards front of drone.
     """
@@ -80,11 +80,11 @@ def intermediate_locator():
     assert result
     assert locator is not None
 
-    yield locator
+    yield locator  # type: ignore
 
 
 @pytest.fixture
-def advanced_locator():
+def advanced_locator() -> geolocation.Geolocation:  # type: ignore
     """
     Camera angled at 75° upward.
     Drone is expected to rotate it downwards.
@@ -112,11 +112,11 @@ def advanced_locator():
     assert result
     assert locator is not None
 
-    yield locator
+    yield locator  # type: ignore
 
 
 @pytest.fixture
-def detection_bottom_right_point():
+def detection_bottom_right_point() -> detections_and_time.Detection:  # type: ignore
     """
     Bounding box is a single point.
     """
@@ -128,11 +128,11 @@ def detection_bottom_right_point():
     assert result
     assert detection is not None
 
-    yield detection
+    yield detection  # type: ignore
 
 
 @pytest.fixture
-def detection_centre_left_point():
+def detection_centre_left_point() -> detections_and_time.Detection:  # type: ignore
     """
     Bounding box is a single point.
     """
@@ -144,11 +144,11 @@ def detection_centre_left_point():
     assert result
     assert detection is not None
 
-    yield detection
+    yield detection  # type: ignore
 
 
 @pytest.fixture
-def detection1():
+def detection_1() -> detections_and_time.Detection:  # type: ignore
     """
     Entire image.
     """
@@ -160,11 +160,11 @@ def detection1():
     assert result
     assert detection is not None
 
-    yield detection
+    yield detection  # type: ignore
 
 
 @pytest.fixture
-def detection2():
+def detection_2() -> detections_and_time.Detection:  # type: ignore
     """
     Quadrant.
     """
@@ -176,11 +176,11 @@ def detection2():
     assert result
     assert detection is not None
 
-    yield detection
+    yield detection  # type: ignore
 
 
 @pytest.fixture
-def affine_matrix():
+def affine_matrix() -> np.ndarray:  # type: ignore
     """
     3x3 homogeneous.
     """
@@ -193,11 +193,11 @@ def affine_matrix():
         dtype=np.float32,
     )
 
-    yield matrix
+    yield matrix  # type: ignore
 
 
 @pytest.fixture
-def non_affine_matrix():
+def non_affine_matrix() -> np.ndarray:  # type: ignore
     """
     3x3 homogeneous.
     """
@@ -210,7 +210,7 @@ def non_affine_matrix():
         dtype=np.float32,
     )
 
-    yield matrix
+    yield matrix  # type: ignore
 
 
 class TestGeolocationCreate:
@@ -218,7 +218,7 @@ class TestGeolocationCreate:
     Test constructor.
     """
 
-    def test_normal(self):
+    def test_normal(self) -> None:
         """
         Successful construction.
         """
@@ -251,7 +251,7 @@ class TestGroundIntersection:
     Test where vector intersects with ground.
     """
 
-    def test_above_origin_directly_down(self):
+    def test_above_origin_directly_down(self) -> None:
         """
         Above origin, directly down.
         """
@@ -275,7 +275,7 @@ class TestGroundIntersection:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected, decimal=FLOAT_PRECISION_TOLERANCE)
 
-    def test_non_origin_directly_down(self):
+    def test_non_origin_directly_down(self) -> None:
         """
         Directly down.
         """
@@ -299,7 +299,7 @@ class TestGroundIntersection:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected, decimal=FLOAT_PRECISION_TOLERANCE)
 
-    def test_above_origin_angled_down(self):
+    def test_above_origin_angled_down(self) -> None:
         """
         Above origin, angled down towards positive.
         """
@@ -323,7 +323,7 @@ class TestGroundIntersection:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected, decimal=FLOAT_PRECISION_TOLERANCE)
 
-    def test_non_origin_angled_down(self):
+    def test_non_origin_angled_down(self) -> None:
         """
         Angled down towards origin.
         """
@@ -347,7 +347,7 @@ class TestGroundIntersection:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected, decimal=FLOAT_PRECISION_TOLERANCE)
 
-    def test_bad_almost_horizontal(self):
+    def test_bad_almost_horizontal(self) -> None:
         """
         False, None .
         """
@@ -368,7 +368,7 @@ class TestGroundIntersection:
         assert not result
         assert actual is None
 
-    def test_bad_upwards(self):
+    def test_bad_upwards(self) -> None:
         """
         False, None .
         """
@@ -389,7 +389,7 @@ class TestGroundIntersection:
         assert not result
         assert actual is None
 
-    def test_bad_underground(self):
+    def test_bad_underground(self) -> None:
         """
         False, None .
         """
@@ -416,7 +416,7 @@ class TestPerspectiveTransformMatrix:
     Test perspective transform creation.
     """
 
-    def test_basic_above_origin_pointed_down(self, basic_locator: geolocation.Geolocation):
+    def test_basic_above_origin_pointed_down(self, basic_locator: geolocation.Geolocation) -> None:
         """
         Above origin, directly down.
         """
@@ -456,7 +456,7 @@ class TestPerspectiveTransformMatrix:
 
     def test_intermediate_above_origin_pointing_north(
         self, intermediate_locator: geolocation.Geolocation
-    ):
+    ) -> None:
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
         """
@@ -496,7 +496,7 @@ class TestPerspectiveTransformMatrix:
 
     def test_intermediate_above_origin_pointing_west(
         self, intermediate_locator: geolocation.Geolocation
-    ):
+    ) -> None:
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
         """
@@ -534,7 +534,7 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_advanced(self, advanced_locator: geolocation.Geolocation):
+    def test_advanced(self, advanced_locator: geolocation.Geolocation) -> None:
         """
         Camera is north of origin with an angle from vertical. Also rotated.
         """
@@ -595,7 +595,7 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_bad_direction(self, basic_locator: geolocation.Geolocation):
+    def test_bad_direction(self, basic_locator: geolocation.Geolocation) -> None:
         """
         Camera pointing forward.
         """
@@ -636,7 +636,9 @@ class TestGeolocationConvertDetection:
     Test extract and convert.
     """
 
-    def test_normal1(self, detection1: detections_and_time.Detection, affine_matrix: np.ndarray):
+    def test_normal1(
+        self, detection_1: detections_and_time.Detection, affine_matrix: np.ndarray
+    ) -> None:
         """
         Normal detection and matrix.
         """
@@ -666,7 +668,7 @@ class TestGeolocationConvertDetection:
             result,
             actual,
         ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
-            detection1,
+            detection_1,
             affine_matrix,
         )
 
@@ -679,7 +681,9 @@ class TestGeolocationConvertDetection:
         assert actual.label == expected.label
         np.testing.assert_almost_equal(actual.confidence, expected.confidence)
 
-    def test_normal2(self, detection2: detections_and_time.Detection, affine_matrix: np.ndarray):
+    def test_normal2(
+        self, detection_2: detections_and_time.Detection, affine_matrix: np.ndarray
+    ) -> None:
         """
         Normal detection and matrix.
         """
@@ -709,7 +713,7 @@ class TestGeolocationConvertDetection:
             result,
             actual,
         ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
-            detection2,
+            detection_2,
             affine_matrix,
         )
 
@@ -731,9 +735,9 @@ class TestGeolocationRun:
     def test_basic(
         self,
         basic_locator: geolocation.Geolocation,
-        detection1: detections_and_time.Detection,
-        detection2: detections_and_time.Detection,
-    ):
+        detection_1: detections_and_time.Detection,
+        detection_2: detections_and_time.Detection,
+    ) -> None:
         """
         2 detections.
         """
@@ -764,14 +768,14 @@ class TestGeolocationRun:
         result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
             [
-                detection1,
-                detection2,
+                detection_1,
+                detection_2,
             ],
         )
         assert result
         assert merged_detections is not None
 
-        result, expected_detection1 = detection_in_world.DetectionInWorld.create(
+        result, expected_detection_1 = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
                     [100.0, -100.0],
@@ -789,9 +793,9 @@ class TestGeolocationRun:
             1.0,
         )
         assert result
-        assert expected_detection1 is not None
+        assert expected_detection_1 is not None
 
-        result, expected_detection2 = detection_in_world.DetectionInWorld.create(
+        result, expected_detection_2 = detection_in_world.DetectionInWorld.create(
             np.array(
                 [
                     [100.0, -100.0],
@@ -809,11 +813,11 @@ class TestGeolocationRun:
             0.5,
         )
         assert result
-        assert expected_detection2 is not None
+        assert expected_detection_2 is not None
 
         expected_list = [
-            expected_detection1,
-            expected_detection2,
+            expected_detection_1,
+            expected_detection_2,
         ]
 
         # Run
@@ -835,7 +839,7 @@ class TestGeolocationRun:
         advanced_locator: geolocation.Geolocation,
         detection_bottom_right_point: detections_and_time.Detection,
         detection_centre_left_point: detections_and_time.Detection,
-    ):
+    ) -> None:
         """
         2 point detections.
         """
@@ -941,8 +945,8 @@ class TestGeolocationRun:
             np.testing.assert_almost_equal(actual.confidence, expected_list[i].confidence)
 
     def test_bad_direction(
-        self, basic_locator: geolocation.Geolocation, detection1: detections_and_time.Detection
-    ):
+        self, basic_locator: geolocation.Geolocation, detection_1: detections_and_time.Detection
+    ) -> None:
         """
         Bad direction.
         """
@@ -972,7 +976,7 @@ class TestGeolocationRun:
 
         result, merged_detections = merged_odometry_detections.MergedOdometryDetections.create(
             drone_odometry,
-            [detection1],
+            [detection_1],
         )
         assert result
         assert merged_detections is not None

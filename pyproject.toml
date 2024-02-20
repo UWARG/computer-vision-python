@@ -1,7 +1,33 @@
 [tool.pylint.main]
+# Add files or directories matching the regular expressions patterns to the
+# ignore-list. The regex matches against paths and can be in Posix or Windows
+# format. Because '\\' represents the directory delimiter on Windows systems, it
+# can't be used as an escape character.
+ignore-paths = [
+    # From .gitignore
+    # IDEs
+    ".idea/",
+    ".vscode/",
+
+    # Python
+    "__pycache__/",
+    "venv/",
+
+    # Logging
+    "logs/",
+]
+
+# Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
+# number of processors available to use, and will cap the count on Windows to
+# avoid hangs.
+jobs = 0
+
 # Minimum Python version to use for version dependent checks. Will default to the
 # version used to run pylint.
 py-version = "3.8"
+
+# Discover python modules and packages in the file system subtree.
+recursive = true
 
 # [tool.pylint.basic]
 # Good variable names which should always be accepted, separated by a comma.
@@ -46,6 +72,7 @@ disable = [
     "no-member",                   # Pylint cannot handle 3rd party imports
     "too-few-public-methods",      # Some classes are simple
     "too-many-arguments",          # Function signatures
+    "too-many-branches",           # Don't care
     "too-many-lines",              # Line count in file
     "too-many-locals",             # Don't care
     "too-many-statements",         # Don't care

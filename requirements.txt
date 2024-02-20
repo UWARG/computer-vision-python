@@ -1,12 +1,13 @@
 # Packages listed in alphabetical order
-# Linters and formatters are explicitly versioned
-black==24.2.0
-flake8-annotations==3.0.1
 numpy
 opencv-python
-pylint==3.0.3
 pymap3d
 pytest
 pyyaml
 scikit-learn
 # pytorch special case, see requirements-pytorch.txt
+
+# Linters and formatters are explicitly versioned
+black==24.2.0
+flake8-annotations==3.0.1
+pylint==3.0.3

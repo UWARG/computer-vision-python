@@ -25,16 +25,16 @@ DRONE_OFFSET_FROM_PAD = 1.0
 
 
 @pytest.fixture()
-def decision_maker():
+def decision_maker() -> decision.Decision:  # type: ignore
     """
     Construct a Decision instance with predefined tolerance.
     """
     decision_instance = decision.Decision(LANDING_PAD_LOCATION_TOLERANCE)
-    yield decision_instance
+    yield decision_instance  # type: ignore
 
 
 @pytest.fixture()
-def best_pad_within_tolerance():
+def best_pad_within_tolerance() -> object_in_world.ObjectInWorld:  # type: ignore
     """
     Create an ObjectInWorld instance within distance to pad tolerance.
     """
@@ -45,11 +45,11 @@ def best_pad_within_tolerance():
     assert result
     assert pad is not None
 
-    yield pad
+    yield pad  # type: ignore
 
 
 @pytest.fixture()
-def best_pad_outside_tolerance():
+def best_pad_outside_tolerance() -> object_in_world.ObjectInWorld:  # type: ignore
     """
     Creates an ObjectInWorld instance outside of distance to pad tolerance.
     """
@@ -60,31 +60,31 @@ def best_pad_outside_tolerance():
     assert result
     assert pad is not None
 
-    yield pad
+    yield pad  # type: ignore
 
 
 @pytest.fixture()
-def pads():
+def pads() -> "list[object_in_world.ObjectInWorld]":  # type: ignore
     """
     Create a list of ObjectInWorld instances for the landing pads.
     """
-    result, pad1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)
+    result, pad_1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)
     assert result
-    assert pad1 is not None
+    assert pad_1 is not None
 
-    result, pad2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)
+    result, pad_2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)
     assert result
-    assert pad2 is not None
+    assert pad_2 is not None
 
-    result, pad3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0)
+    result, pad_3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0)
     assert result
-    assert pad3 is not None
+    assert pad_3 is not None
 
-    yield [pad1, pad2, pad3]
+    yield [pad_1, pad_2, pad_3]  # type: ignore
 
 
 @pytest.fixture()
-def drone_odometry_and_time():
+def drone_odometry_and_time() -> odometry_and_time.OdometryAndTime:  # type: ignore
     """
     Create an OdometryAndTime instance with the drone positioned within tolerance of landing pad.
     """
@@ -110,7 +110,7 @@ def drone_odometry_and_time():
     assert result
     assert odometry_with_time is not None
 
-    yield odometry_with_time
+    yield odometry_with_time  # type: ignore
 
 
 class TestDecision:
@@ -119,8 +119,12 @@ class TestDecision:
     """
 
     def test_decision_within_tolerance(
-        self, decision_maker, best_pad_within_tolerance, pads, drone_odometry_and_time
-    ):
+        self,
+        decision_maker: decision.Decision,
+        best_pad_within_tolerance: object_in_world.ObjectInWorld,
+        pads: "list[object_in_world.ObjectInWorld]",
+        drone_odometry_and_time: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test decision making when the best pad is within tolerance.
         """
@@ -134,8 +138,12 @@ class TestDecision:
         assert command.get_command_type() == expected
 
     def test_decision_outside_tolerance(
-        self, decision_maker, best_pad_outside_tolerance, pads, drone_odometry_and_time
-    ):
+        self,
+        decision_maker: decision.Decision,
+        best_pad_outside_tolerance: object_in_world.ObjectInWorld,
+        pads: "list[object_in_world.ObjectInWorld]",
+        drone_odometry_and_time: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test decision making when the best pad is outside tolerance.
         """
@@ -148,7 +156,11 @@ class TestDecision:
         assert command is not None
         assert command.get_command_type() == expected
 
-    def test_decision_no_pads(self, decision_maker, drone_odometry_and_time):
+    def test_decision_no_pads(
+        self,
+        decision_maker: decision.Decision,
+        drone_odometry_and_time: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test decision making when no pads are available.
         """
