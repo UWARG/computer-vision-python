@@ -4,7 +4,6 @@ Detects objects using the provided model.
 import time
 
 import cv2
-import numpy as np  # TODO: Remove
 import ultralytics
 
 from .. import image_and_time
@@ -17,27 +16,43 @@ class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    def __init__(self, device: "str | int", model_path: str, override_full: bool, save_name: str = ""):
+    # Required for logging
+    # pylint: disable-next=too-many-arguments
+    def __init__(self,
+                 device: "str | int",
+                 model_path: str,
+                 override_full: bool,
+                 show_annotations: bool = False,
+                 save_name: str = ""):
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
         override_full: Force full precision floating point calculations.
+        show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
         self.__enable_half_precision = False if self.__device == "cpu" else True
+        self.__show_annotations = show_annotations
         if override_full:
             self.__enable_half_precision = False
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    def run(self, data: image_and_time.ImageAndTime) -> "tuple[bool, np.ndarray | None]":
+    # Required for logging
+    # pylint: disable-next=too-many-locals
+    def run(self,
+            data: image_and_time.ImageAndTime) \
+        -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
         """
-        Returns annotated image.
-        TODO: Change to DetectionsAndTime
+        Runs object detection on the provided image and returns the detections.
+
+        data: Image with a timestamp.
+
+        Return: Success and the detections.
         """
         image = data.image
         predictions = self.__model.predict(
@@ -50,7 +65,6 @@ class DetectTarget:
         if len(predictions) == 0:
             return False, None
 
-        # TODO: Change this to DetectionsAndTime for image and telemetry merge for 2024
         image_annotated = predictions[0].plot(conf=True)
 
         # Processing object detection
@@ -64,6 +78,7 @@ class DetectTarget:
         if not result:
             return False, None
 
+        # Get Pylance to stop complaining
         assert detections is not None
 
         for i in range(0, boxes.shape[0]):
@@ -80,7 +95,7 @@ class DetectTarget:
             filename = self.__filename_prefix + str(self.__counter)
 
             # Object detections
-            with open(filename + ".txt", "w") as file:
+            with open(filename + ".txt", "w", encoding="utf-8") as file:
                 # Use internal string representation
                 file.write(repr(detections))
 
@@ -89,7 +104,9 @@ class DetectTarget:
 
             self.__counter += 1
 
-        # TODO: Change this to DetectionsAndTime
-        return True, image_annotated
+        if self.__show_annotations:
+            cv2.imshow("Annotated", image_annotated)
+
+        return True, detections
 
 # pylint: enable=too-few-public-methods

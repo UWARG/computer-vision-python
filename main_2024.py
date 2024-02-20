@@ -9,6 +9,8 @@ import queue
 import cv2
 import yaml
 
+# Used in type annotation of flight interface output
+# pylint: disable-next=unused-import
 from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
@@ -18,10 +20,10 @@ from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 
-
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
-
+# Main Function
+# pylint: disable-next=too-many-locals,too-many-statements
 def main() -> int:
     """
     Main function for airside code.
@@ -45,6 +47,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
     parser.add_argument("--full", action="store_true", help="option to force full precision")
+    parser.add_argument(
+        "--show-annotated",
+        action="store_true",
+        help="option to show annotated image",
+    )
     args = parser.parse_args()
 
     # Set constants
@@ -64,6 +71,7 @@ def main() -> int:
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
         DETECT_TARGET_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
+        DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
@@ -112,6 +120,7 @@ def main() -> int:
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+            DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
             video_input_to_detect_target_queue,
             detect_target_to_main_queue,
@@ -139,9 +148,17 @@ def main() -> int:
 
     while True:
         try:
-            image = detect_target_to_main_queue.queue.get_nowait()
+            detections = detect_target_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            image = None
+            detections = None
+
+        if detections is not None:
+            print("timestamp: " + str(detections.timestamp))
+            print("detections: " + str(len(detections.detections)))
+            for detection in detections.detections:
+                print("    label: " + str(detection.label))
+                print("    confidence: " + str(detection.confidence))
+            print("")
 
         odometry_and_time_info: "odometry_and_time.OdometryAndTime | None" = \
             flight_interface_to_main_queue.queue.get()
@@ -160,12 +177,8 @@ def main() -> int:
             print("pitch: " + str(orientation.pitch))
             print("")
 
-        if image is None:
-            continue
-
-        cv2.imshow("Landing Pad Detector", image)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) == ord('q'):
+            print("Exiting main loop")
             break
 
     # Teardown
@@ -178,6 +191,8 @@ def main() -> int:
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
+
+    cv2.destroyAllWindows()
 
     return 0
 
