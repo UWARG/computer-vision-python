@@ -51,9 +51,10 @@ class SearchPattern:
         return (self.target_posx - current_position.odometry_data.position.east) ** 2 + (self.target_posy - current_position.odometry_data.position.north) ** 2
 
     def continue_search(self, current_position: odometry_and_time.OdometryAndTime) -> decision_command.DecisionCommand:
-        #if drone is at target position, set next location, otherwise, move to target location.
+        #if drone is at target position, set next location, otherwise, move to target location
         if self.distance_to_target_squared(current_position) < self.acceptable_variance_squared:
             self.set_next_location()
             self.find_current_location()
 
         return decision_command.DecisionCommand.create_move_to_absolute_position_command(self.target_posx, self.target_posy, current_position.odometry_data.position.down)
+    
