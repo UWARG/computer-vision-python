@@ -189,7 +189,7 @@ def main() -> int:
         #     print("")
 
         try:
-            detections = detect_target_to_main_queue.queue.get_nowait()
+            detections = detect_target_to_data_merge_queue.queue.get_nowait()
         except queue.Empty:
             detections = None
 
@@ -202,7 +202,7 @@ def main() -> int:
             print("")
 
         odometry_and_time_info: "odometry_and_time.OdometryAndTime | None" = \
-            flight_interface_to_main_queue.queue.get()
+            flight_interface_to_data_merge_queue.queue.get()
 
         if odometry_and_time_info is not None:
             timestamp = odometry_and_time_info.timestamp
@@ -226,8 +226,8 @@ def main() -> int:
     controller.request_exit()
 
     video_input_to_detect_target_queue.fill_and_drain_queue()
-    detect_target_to_main_queue.fill_and_drain_queue()
-    flight_interface_to_main_queue.fill_and_drain_queue()
+    detect_target_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_data_merge_queue.fill_and_drain_queue()
     data_merge_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
