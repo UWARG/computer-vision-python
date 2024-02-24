@@ -15,6 +15,10 @@ ignore-paths = [
 
     # Logging
     "logs/",
+
+    # Outside of .gitignore
+    # Submodules
+    "modules/common/",
 ]
 
 # Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
@@ -38,7 +42,9 @@ good-names = [
     "ex",
     "Run",
     "_",
-    "result_main",  # Return of main()
+
+    # Return of main()
+    "result_main",
 ]
 
 # Good variable names regexes, separated by a comma. If names match any regex,
@@ -66,29 +72,44 @@ disable = [
     "use-symbolic-message-instead",
     "use-implicit-booleaness-not-comparison-to-string",
     "use-implicit-booleaness-not-comparison-to-zero",
-    "fixme",                       # Ignore TODOs
-    "import-error",                # Pylint cannot find modules
-    "line-too-long",               # Covered by black formatter
-    "no-member",                   # Pylint cannot handle 3rd party imports
-    "too-few-public-methods",      # Some classes are simple
-    "too-many-arguments",          # Function signatures
-    "too-many-branches",           # Don't care
-    "too-many-lines",              # Line count in file
-    "too-many-locals",             # Don't care
-    "too-many-statements",         # Don't care
-    "too-many-return-statements",  # Don't care
+    # WARG
+    # Ignore TODOs
+    "fixme",
+    # Pylint cannot find modules
+    "import-error",
+    # Covered by Black formatter
+    "line-too-long",
+    # Pylint cannot handle 3rd party imports
+    "no-member",
+    # Some classes are simple
+    "too-few-public-methods",
+    # Function signatures
+    "too-many-arguments",
+    # Don't care
+    "too-many-branches",
+    # Line count in file
+    "too-many-lines",
+    # Don't care
+    "too-many-locals",
+    # Don't care
+    "too-many-statements",
+    # Don't care
+    "too-many-return-statements",
 ]
 
 [tool.pylint.similarities]
 # Minimum lines number of a similarity.
-min-similarity-lines = 10  # Main guard
+# Main guard
+min-similarity-lines = 10
 
 [tool.pytest.ini_options]
 minversion = "6.0"
+# Submodules
 addopts = "--ignore=modules/common/"
 
 [tool.black]
 line-length = 100
 target-version = ["py38"]
 # Excludes files or directories in addition to the defaults
+# Submodules
 extend-exclude = "modules/common/*"
