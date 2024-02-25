@@ -169,28 +169,6 @@ def main() -> int:
 
     while True:
         try:
-            merged_data = data_merge_to_main_queue.queue.get_nowait()
-        except queue.Empty:
-            merged_data = None
-            
-        if merged_data is not None:
-            position = merged_data.odometry_local.position
-            orientation = merged_data.odometry_local.orientation.orientation
-            detections = merged_data.detections
-
-            print("MERGED north: " + str(position.north))
-            print("MERGED east: " + str(position.east))
-            print("MERGED down: " + str(position.down))
-            print("MERGED yaw: " + str(orientation.yaw))
-            print("MERGED roll: " + str(orientation.roll))
-            print("MERGED pitch: " + str(orientation.pitch))
-            print("detections: " + str(len(detections)))
-            for detection in detections:
-                print("    label: " + str(detection.label))
-                print("    confidence: " + str(detection.confidence))
-            print("")
-
-        try:
             detections = detect_target_to_data_merge_queue.queue.get_nowait()
         except queue.Empty:
             detections = None
@@ -211,13 +189,35 @@ def main() -> int:
             position = odometry_and_time_info.odometry_data.position
             orientation = odometry_and_time_info.odometry_data.orientation.orientation
 
-            # print("timestamp: " + str(timestamp))
-            # print("north: " + str(position.north))
-            # print("east: " + str(position.east))
-            # print("down: " + str(position.down))
-            # print("yaw: " + str(orientation.yaw))
-            # print("roll: " + str(orientation.roll))
+            print("timestamp: " + str(timestamp))
+            print("north: " + str(position.north))
+            print("east: " + str(position.east))
+            print("down: " + str(position.down))
+            print("yaw: " + str(orientation.yaw))
+            print("roll: " + str(orientation.roll))
             print("pitch: " + str(orientation.pitch))
+            print("")
+
+        try:
+            merged_data = data_merge_to_main_queue.queue.get_nowait()
+        except queue.Empty:
+            merged_data = None
+
+        if merged_data is not None:
+            position = merged_data.odometry_local.position
+            orientation = merged_data.odometry_local.orientation.orientation
+            detections = merged_data.detections
+
+            print("merged north: " + str(position.north))
+            print("merged east: " + str(position.east))
+            print("merged down: " + str(position.down))
+            print("merged yaw: " + str(orientation.yaw))
+            print("merged roll: " + str(orientation.roll))
+            print("merged pitch: " + str(orientation.pitch))
+            print("merged detections: " + str(len(detections)))
+            for detection in detections:
+                print("merged label: " + str(detection.label))
+                print("merged confidence: " + str(detection.confidence))
             print("")
 
         if cv2.waitKey(1) == ord('q'):
