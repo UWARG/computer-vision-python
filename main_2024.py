@@ -168,25 +168,27 @@ def main() -> int:
     data_merge_manager.start_workers()
 
     while True:
-        # try:
-        #     merged_data = data_merge_to_main_queue.queue.get_nowait()
-        # except queue.Empty:
-        #     merged_data = None
+        try:
+            merged_data = data_merge_to_main_queue.queue.get_nowait()
+        except queue.Empty:
+            merged_data = None
             
-        # if merged_data is not None:
-        #     timestamp = merged_data.timestamp
-        #     odometry = merged_data.odometry_local
-        #     detections = merged_data.detections
+        if merged_data is not None:
+            position = merged_data.odometry_local.position
+            orientation = merged_data.odometry_local.orientation.orientation
+            detections = merged_data.detections
 
-        #     print("timestamp: " + str(timestamp))
-        #     print("north: " + str(odometry.position.north))
-        #     print("east: " + str(position.east))
-        #     print("down: " + str(position.down))
-        #     print("yaw: " + str(orientation.yaw))
-        #     print("roll: " + str(orientation.roll))
-        #     print("pitch: " + str(orientation.pitch))
-        #     print("detections: " + str(detections))
-        #     print("")
+            print("MERGED north: " + str(position.north))
+            print("MERGED east: " + str(position.east))
+            print("MERGED down: " + str(position.down))
+            print("MERGED yaw: " + str(orientation.yaw))
+            print("MERGED roll: " + str(orientation.roll))
+            print("MERGED pitch: " + str(orientation.pitch))
+            print("detections: " + str(len(detections)))
+            for detection in detections:
+                print("    label: " + str(detection.label))
+                print("    confidence: " + str(detection.confidence))
+            print("")
 
         try:
             detections = detect_target_to_data_merge_queue.queue.get_nowait()
@@ -209,12 +211,12 @@ def main() -> int:
             position = odometry_and_time_info.odometry_data.position
             orientation = odometry_and_time_info.odometry_data.orientation.orientation
 
-            print("timestamp: " + str(timestamp))
-            print("north: " + str(position.north))
-            print("east: " + str(position.east))
-            print("down: " + str(position.down))
-            print("yaw: " + str(orientation.yaw))
-            print("roll: " + str(orientation.roll))
+            # print("timestamp: " + str(timestamp))
+            # print("north: " + str(position.north))
+            # print("east: " + str(position.east))
+            # print("down: " + str(position.down))
+            # print("yaw: " + str(orientation.yaw))
+            # print("roll: " + str(orientation.roll))
             print("pitch: " + str(orientation.pitch))
             print("")
 
