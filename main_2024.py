@@ -169,36 +169,6 @@ def main() -> int:
 
     while True:
         try:
-            detections = detect_target_to_data_merge_queue.queue.get_nowait()
-        except queue.Empty:
-            detections = None
-
-        if detections is not None:
-            print("timestamp: " + str(detections.timestamp))
-            print("detections: " + str(len(detections.detections)))
-            for detection in detections.detections:
-                print("    label: " + str(detection.label))
-                print("    confidence: " + str(detection.confidence))
-            print("")
-
-        odometry_and_time_info: "odometry_and_time.OdometryAndTime | None" = \
-            flight_interface_to_data_merge_queue.queue.get()
-
-        if odometry_and_time_info is not None:
-            timestamp = odometry_and_time_info.timestamp
-            position = odometry_and_time_info.odometry_data.position
-            orientation = odometry_and_time_info.odometry_data.orientation.orientation
-
-            print("timestamp: " + str(timestamp))
-            print("north: " + str(position.north))
-            print("east: " + str(position.east))
-            print("down: " + str(position.down))
-            print("yaw: " + str(orientation.yaw))
-            print("roll: " + str(orientation.roll))
-            print("pitch: " + str(orientation.pitch))
-            print("")
-
-        try:
             merged_data = data_merge_to_main_queue.queue.get_nowait()
         except queue.Empty:
             merged_data = None
@@ -214,7 +184,7 @@ def main() -> int:
             print("merged yaw: " + str(orientation.yaw))
             print("merged roll: " + str(orientation.roll))
             print("merged pitch: " + str(orientation.pitch))
-            print("merged detections: " + str(len(detections)))
+            print("merged detections count: " + str(len(detections)))
             for detection in detections:
                 print("merged label: " + str(detection.label))
                 print("merged confidence: " + str(detection.confidence))
