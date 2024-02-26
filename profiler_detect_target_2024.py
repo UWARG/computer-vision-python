@@ -2,7 +2,6 @@ import argparse
 import multiprocessing as mp
 import pathlib
 import queue
-import cProfile
 import time
 import numpy as np 
 import os
@@ -11,9 +10,8 @@ import pandas as pd
 import cv2
 import yaml
 
-from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
-from modules.flight_interface import flight_interface_worker
+
 from modules.video_input import video_input_worker
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
