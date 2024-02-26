@@ -27,9 +27,12 @@ class DetectTarget:
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half_precision = False if self.__device == "cpu" else True
+        self.__enable_half_precision = False if self.__device == "cpu" else False
+        #modified so override_full controls if its half or full - FOR PROFILING ONLY 
         if override_full:
             self.__enable_half_precision = False
+        elif override_full is False:
+            self.__enable_half_precision = True
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
@@ -39,6 +42,8 @@ class DetectTarget:
         Returns annotated image.
         TODO: Change to DetectionsAndTime
         """
+        start_time = time.time()
+
         image = data.image
         predictions = self.__model.predict(
             source=image,
@@ -74,6 +79,22 @@ class DetectTarget:
             if result:
                 assert detection is not None
                 detections.append(detection)
+
+        stop_time = time.time()
+
+        elapsed_time = stop_time - start_time
+      
+        for pred in predictions: 
+            with open('profiler.txt', 'a') as file:
+                speeds = pred.speed
+                preprocess_speed = round(speeds['preprocess'], 3)
+                inference_speed = round(speeds['inference'], 3)
+                postprocess_speed = round(speeds['postprocess'], 3)
+                elapsed_time_ms = elapsed_time * 1000
+                precision_string = "half" if self.__enable_half_precision else "full"
+
+
+                file.write(f"{preprocess_speed}, {inference_speed}, {postprocess_speed}, {elapsed_time_ms}, {precision_string}\n")
 
         # Logging
         if self.__filename_prefix != "":
