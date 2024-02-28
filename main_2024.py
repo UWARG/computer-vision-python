@@ -16,6 +16,7 @@ from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
+from modules.geolocation import geolocation_worker
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -101,7 +102,11 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    data_merge_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    geolocation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -156,7 +161,30 @@ def main() -> int:
             DATA_MERGE_TIMEOUT,
             detect_target_to_data_merge_queue,
             flight_interface_to_data_merge_queue,
-            data_merge_to_main_queue,
+            data_merge_to_geolocation_queue,
+            controller,
+        ),
+    )
+
+    geolocation_manager = worker_manager.WorkerManager()
+    geolocation_manager.create_workers(
+# tmp - still just 1 worker always?
+        1,
+        geolocation_worker.geolocation_worker,
+        (
+# tmp - where should I put these camera properties?
+            camera_properties.CameraIntrinsics.create(
+                2000,
+                2000,
+                np.pi / 2,
+                np.pi / 2,
+            ),
+            camera_properties.CameraDroneExtrinsics.create(
+                (0.0, 0.0, 0.0),
+                (0.0, 0.0, 0.0),
+            ),
+            data_merge_to_geolocation_queue,
+            geolocation_to_main_queue,
             controller,
         ),
     )
@@ -166,10 +194,11 @@ def main() -> int:
     detect_target_manager.start_workers()
     flight_interface_manager.start_workers()
     data_merge_manager.start_workers()
+    geolocation_manager.start_workers()
 
     while True:
         try:
-            merged_data = data_merge_to_main_queue.queue.get_nowait()
+            merged_data = data_merge_to_geolocation_queue.queue.get_nowait()
         except queue.Empty:
             merged_data = None
 
@@ -200,12 +229,14 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
-    data_merge_to_main_queue.fill_and_drain_queue()
+    data_merge_to_geolocation_queue.fill_and_drain_queue()
+    geolocation_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
     data_merge_manager.join_workers()
+    geolocation_manager.join_workers()
 
     cv2.destroyAllWindows()
 
