@@ -3,6 +3,7 @@ For 2023-2024 UAS competition.
 """
 import argparse
 import multiprocessing as mp
+import numpy as np
 import pathlib
 import queue
 
@@ -17,6 +18,7 @@ from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
+from modules.geolocation import camera_properties
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -80,6 +82,17 @@ def main() -> int:
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
+
+        GEOLOCATION_RESOLUTION_X = config["geolocation"]["resolution_x"]
+        GEOLOCATION_RESOLUTION_Y = config["geolocation"]["resolution_y"]
+        GEOLOCATION_FOV_X = config["geolocation"]["fov_x"]
+        GEOLOCATION_FOV_Y = config["geolocation"]["fov_y"]
+        GEOLOCATION_CAMERA_POSITION_X = config["geolocation"]["camera_position_x"]
+        GEOLOCATION_CAMERA_POSITION_Y = config["geolocation"]["camera_position_y"]
+        GEOLOCATION_CAMERA_POSITION_Z = config["geolocation"]["camera_position_z"]
+        GEOLOCATION_CAMERA_ORIENTATION_YAW = config["geolocation"]["camera_orientation_yaw"]
+        GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
+        GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
     except KeyError:
         print("Config key(s) not found")
         return -1
@@ -174,14 +187,15 @@ def main() -> int:
         (
 # tmp - where should I put these camera properties?
             camera_properties.CameraIntrinsics.create(
-                2000,
-                2000,
-                np.pi / 2,
-                np.pi / 2,
+                GEOLOCATION_RESOLUTION_X,
+                GEOLOCATION_RESOLUTION_Y,
+                np.float64(GEOLOCATION_FOV_X),
+                np.float64(GEOLOCATION_FOV_Y),
+# tmp - or should I put: np.pi / 2,
             ),
             camera_properties.CameraDroneExtrinsics.create(
-                (0.0, 0.0, 0.0),
-                (0.0, 0.0, 0.0),
+                (GEOLOCATION_CAMERA_POSITION_X, GEOLOCATION_CAMERA_POSITION_Y, GEOLOCATION_CAMERA_POSITION_Z),
+                (GEOLOCATION_CAMERA_ORIENTATION_YAW, GEOLOCATION_CAMERA_ORIENTATION_PITCH, GEOLOCATION_CAMERA_ORIENTATION_ROLL),
             ),
             data_merge_to_geolocation_queue,
             geolocation_to_main_queue,
@@ -218,6 +232,17 @@ def main() -> int:
                 print("merged label: " + str(detection.label))
                 print("merged confidence: " + str(detection.confidence))
             print("")
+
+
+        try:
+            geolocation_data = geolocation_to_main_queue.queue.get_nowait()
+        except queue.Empty:
+            geolocation_data = None
+        
+        if geolocation_data is not None:
+# tmp - what should I grab from these?
+            camera_intrinsics = geolocation_data.camera_intrinsics
+            camera_drone_extrinsics = geolocation_data.camera_drone_extrinsics
 
         if cv2.waitKey(1) == ord('q'):
             print("Exiting main loop")
