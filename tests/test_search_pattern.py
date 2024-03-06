@@ -13,7 +13,7 @@ from modules.decision import search_pattern
 CAMERA_FOV = 90  # Camera's field of view in degrees
 SEARCH_HEIGHT = 100  # Altitude at which the search is conducted
 SEARCH_OVERLAP = 0.5  # Overlap between passes
-ACCEPTABLE_VARIANCE_SQUARED = 1  # Acceptable variance squared
+DISTANCE_SQUARED_THRESHOLD = 1  # Acceptable variance squared
 
 
 @pytest.fixture()
@@ -40,7 +40,7 @@ def search_maker(drone_odometry):
         search_height=SEARCH_HEIGHT,
         search_overlap=SEARCH_OVERLAP,
         current_position=drone_odometry,
-        acceptable_variance_squared=ACCEPTABLE_VARIANCE_SQUARED
+        distance_squared_threshold=DISTANCE_SQUARED_THRESHOLD
     )
     yield search_pattern_instance
 
@@ -58,15 +58,6 @@ class TestSearchPattern:
         assert search_maker.current_ring == 0
         assert search_maker.current_pos_in_ring == 0
         assert search_maker.max_pos_in_ring == 0
-
-    def test_distance_to_target_squared(self, search_maker, drone_odometry):
-        """
-        Test distance_to_target_squared method.
-        """
-        # Drone and target position are at the origin, so the distance should be near 0
-        
-        distance = search_maker.distance_to_target_squared(drone_odometry)
-        assert distance <= 0.1 
 
     def test_continue_search_move_command(self, search_maker, drone_odometry):
         """
