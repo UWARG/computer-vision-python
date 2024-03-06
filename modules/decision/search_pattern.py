@@ -1,11 +1,13 @@
+"""
+Initiates/continues a search pattern when the drone cannot find a landing pad.
+"""
+
 from .. import decision_command
 from .. import odometry_and_time
 from math import tan, pi, cos, sin, ceil
 
 class SearchPattern:
     """
-    Implements a search pattern based on camera field of view, search height, and overlap.
-    
     Attributes:
         camera_fov (float): 
             Camera's field of view, measured in degrees. Use the smallest measurement available.
@@ -14,7 +16,7 @@ class SearchPattern:
             The altitude at which the search is conducted. This is used to calculate the pattern.
             It does not make the drone go to this height
         search_overlap (float): 
-            Overlap between passes, between 0 and 1. Recomended probably 0.5-0.7.
+            Overlap between passes, between 0 and 1. Recomended probably ~0.5, experiment with less.
         current_position (OdometryAndTime):
             The drone's current position.
         acceptable_variance_squared (float):
@@ -94,4 +96,3 @@ class SearchPattern:
             self.target_posx,
             self.target_posy,
             current_position.odometry_data.position.down)
-    
