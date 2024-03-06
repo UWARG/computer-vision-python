@@ -181,7 +181,6 @@ def main() -> int:
 
     geolocation_manager = worker_manager.WorkerManager()
     geolocation_manager.create_workers(
-# tmp - still just 1 worker always?
         1,
         geolocation_worker.geolocation_worker,
         (
@@ -240,9 +239,12 @@ def main() -> int:
             geolocation_data = None
         
         if geolocation_data is not None:
-# tmp - what should I grab from these?
-            camera_intrinsics = geolocation_data.camera_intrinsics
-            camera_drone_extrinsics = geolocation_data.camera_drone_extrinsics
+            for detection_world in geolocation_data:
+                print("geolocation vertices: " + np.array2string(detection_world.vertices))
+                print("geolocation centre: " + np.array2string(detection_world.centre))
+                print("geolocation label: " + str(detection_world.label))
+                print("geolocation confidence: " + str(detection_world.confidence))
+                print("")
 
         if cv2.waitKey(1) == ord('q'):
             print("Exiting main loop")
