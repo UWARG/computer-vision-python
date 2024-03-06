@@ -211,29 +211,6 @@ def main() -> int:
 
     while True:
         try:
-            merged_data = data_merge_to_geolocation_queue.queue.get_nowait()
-        except queue.Empty:
-            merged_data = None
-
-        if merged_data is not None:
-            position = merged_data.odometry_local.position
-            orientation = merged_data.odometry_local.orientation.orientation
-            detections = merged_data.detections
-
-            print("merged north: " + str(position.north))
-            print("merged east: " + str(position.east))
-            print("merged down: " + str(position.down))
-            print("merged yaw: " + str(orientation.yaw))
-            print("merged roll: " + str(orientation.roll))
-            print("merged pitch: " + str(orientation.pitch))
-            print("merged detections count: " + str(len(detections)))
-            for detection in detections:
-                print("merged label: " + str(detection.label))
-                print("merged confidence: " + str(detection.confidence))
-            print("")
-
-
-        try:
             geolocation_data = geolocation_to_main_queue.queue.get_nowait()
         except queue.Empty:
             geolocation_data = None
