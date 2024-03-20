@@ -31,8 +31,6 @@ ASPHALT_DATA_DIR = "profiler/profile_data/Asphalt"
 FIELD_DATA_DIR = "profiler/profile_data/Field"
 
 
-THROUGHPUT_TEXT_WORK_COUNT = 50
-OVERRIDE_FULL = False
 MS_TO_NS_CONV = 1000000
 
 
@@ -43,9 +41,10 @@ def load_images(dir):
     for filename in os.listdir(dir):
         if filename.endswith(".png"):
             img = cv2.imread(os.path.join(dir, filename))
-            success, image_with_time = ImageAndTime.create(img)
-            if success:
-                images.append(image_with_time)
+            if img is not None: 
+                success, image_with_time = ImageAndTime.create(img)
+                if success:
+                    images.append(image_with_time)
     return images
 
 
@@ -170,9 +169,9 @@ def main() -> int:
 
 
     #save to csvs
-    grass_results.to_csv(f"profiler/results/results_grass.csv")
-    asphalt_results.to_csv(f"profiler/results/results_asphalt.csv")
-    field_results.to_csv(f"profiler/results/results_field.csv")
+    grass_results.to_csv(f"profiler/profile_data/results/results_grass.csv")
+    asphalt_results.to_csv(f"profiler/profile_data/results/results_asphalt.csv")
+    field_results.to_csv(f"profiler/profile_data/results/results_field.csv")
 
 
 if __name__ == "__main__":
