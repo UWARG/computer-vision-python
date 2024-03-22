@@ -5,7 +5,7 @@ import queue
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
-def logging_worker(input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+def multiprocess_logging_worker(input_queue: queue_proxy_wrapper.QueueProxyWrapper,
                    controller: worker_controller.WorkerController):
     logger = logging.getLogger('airside_logger')
 
