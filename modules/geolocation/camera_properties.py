@@ -38,32 +38,38 @@ def create_rotation_matrix_from_orientation(
     if roll < -np.pi or roll > np.pi:
         return False, None
 
+    # fmt: off
     yaw_matrix = np.array(
         [
             [np.cos(yaw), -np.sin(yaw), 0.0],
-            [np.sin(yaw), np.cos(yaw), 0.0],
-            [0.0, 0.0, 1.0],
+            [np.sin(yaw),  np.cos(yaw), 0.0],
+            [        0.0,          0.0, 1.0],
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
+    # fmt: off
     pitch_matrix = np.array(
         [
-            [np.cos(pitch), 0.0, np.sin(pitch)],
-            [0.0, 1.0, 0.0],
+            [ np.cos(pitch), 0.0, np.sin(pitch)],
+            [           0.0, 1.0,           0.0],
             [-np.sin(pitch), 0.0, np.cos(pitch)],
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
+    # fmt: off
     roll_matrix = np.array(
         [
-            [1.0, 0.0, 0.0],
+            [1.0,          0.0,           0.0],
             [0.0, np.cos(roll), -np.sin(roll)],
-            [0.0, np.sin(roll), np.cos(roll)],
+            [0.0, np.sin(roll),  np.cos(roll)],
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
     rotation_matrix = yaw_matrix @ pitch_matrix @ roll_matrix
 

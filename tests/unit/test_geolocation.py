@@ -184,14 +184,16 @@ def affine_matrix() -> np.ndarray:  # type: ignore
     """
     3x3 homogeneous.
     """
+    # fmt: off
     matrix = np.array(
         [
             [0.0, 1.0, -1.0],
             [2.0, 0.0, -1.0],
-            [0.0, 0.0, 1.0],
+            [0.0, 0.0,  1.0],
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
     yield matrix  # type: ignore
 
@@ -201,14 +203,16 @@ def non_affine_matrix() -> np.ndarray:  # type: ignore
     """
     3x3 homogeneous.
     """
+    # fmt: off
     matrix = np.array(
         [
             [0.0, 1.0, -1.0],
             [2.0, 0.0, -1.0],
-            [1.0, 1.0, 1.0],
+            [1.0, 1.0,  1.0],
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
     yield matrix  # type: ignore
 
@@ -644,15 +648,17 @@ class TestGeolocationConvertDetection:
         """
         # Setup
         result, expected = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
-                    [-1.0, -1.0],
-                    [-1.0, 3999.0],
-                    [1999.0, -1.0],
+                    [  -1.0,   -1.0],
+                    [  -1.0, 3999.0],
+                    [1999.0,   -1.0],
                     [1999.0, 3999.0],
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [999.0, 1999.0],
                 dtype=np.float32,
@@ -689,15 +695,17 @@ class TestGeolocationConvertDetection:
         """
         # Setup
         result, expected = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
-                    [-1.0, -1.0],
-                    [-1.0, 1999.0],
-                    [999.0, -1.0],
+                    [ -1.0,   -1.0],
+                    [ -1.0, 1999.0],
+                    [999.0,   -1.0],
                     [999.0, 1999.0],
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [499.0, 999.0],
                 dtype=np.float32,
@@ -776,15 +784,17 @@ class TestGeolocationRun:
         assert merged_detections is not None
 
         result, expected_detection_1 = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
-                    [100.0, -100.0],
-                    [100.0, 100.0],
+                    [ 100.0, -100.0],
+                    [ 100.0,  100.0],
                     [-100.0, -100.0],
-                    [-100.0, 100.0],
+                    [-100.0,  100.0],
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [0.0, 0.0],
                 dtype=np.float32,
@@ -796,15 +806,17 @@ class TestGeolocationRun:
         assert expected_detection_1 is not None
 
         result, expected_detection_2 = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
-                    [100.0, -100.0],
-                    [100.0, 0.0],
-                    [0.0, -100.0],
-                    [0.0, 0.0],
+                    [ 100.0, -100.0],
+                    [ 100.0,    0.0],
+                    [   0.0, -100.0],
+                    [   0.0,    0.0],
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [50.0, -50.0],
                 dtype=np.float32,
@@ -878,6 +890,7 @@ class TestGeolocationRun:
         assert merged_detections is not None
 
         result, expected_bottom_right = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
                     [10.0 + 100.0 * np.sqrt(3), 100.0],
@@ -887,6 +900,7 @@ class TestGeolocationRun:
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [10.0 + 100.0 * np.sqrt(3), 100.0],
                 dtype=np.float32,
@@ -898,6 +912,7 @@ class TestGeolocationRun:
         assert expected_bottom_right is not None
 
         result, expected_centre_left = detection_in_world.DetectionInWorld.create(
+            # fmt: off
             np.array(
                 [
                     [10.0, 0.0],
@@ -907,6 +922,7 @@ class TestGeolocationRun:
                 ],
                 dtype=np.float32,
             ),
+            # fmt: on
             np.array(
                 [10.0, 0.0],
                 dtype=np.float32,

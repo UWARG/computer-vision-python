@@ -188,14 +188,16 @@ class TestRotationMatrix:
         pitch = 0.0
         roll = 0.0
 
+        # fmt: off
         expected = np.array(
             [
                 [0.0, -1.0, 0.0],
-                [1.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0],
+                [1.0,  0.0, 0.0],
+                [0.0,  0.0, 1.0],
             ],
             dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -218,14 +220,16 @@ class TestRotationMatrix:
         pitch = np.pi / 2
         roll = 0.0
 
+        # fmt: off
         expected = np.array(
             [
-                [0.0, 0.0, 1.0],
-                [0.0, 1.0, 0.0],
+                [ 0.0, 0.0, 1.0],
+                [ 0.0, 1.0, 0.0],
                 [-1.0, 0.0, 0.0],
             ],
             dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -248,14 +252,16 @@ class TestRotationMatrix:
         pitch = 0.0
         roll = np.pi / 2
 
+        # fmt: off
         expected = np.array(
             [
-                [1.0, 0.0, 0.0],
+                [1.0, 0.0,  0.0],
                 [0.0, 0.0, -1.0],
-                [0.0, 1.0, 0.0],
+                [0.0, 1.0,  0.0],
             ],
             dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -278,14 +284,16 @@ class TestRotationMatrix:
         pitch = np.pi / 4
         roll = np.pi / 4
 
+        # fmt: off
         expected = np.array(
             [
-                [1 / 2, (np.sqrt(2) - 2) / 4, (np.sqrt(2) + 2) / 4],
-                [1 / 2, (np.sqrt(2) + 2) / 4, (np.sqrt(2) - 2) / 4],
-                [-np.sqrt(2) / 2, 1 / 2, 1 / 2],
+                [          1 / 2, (np.sqrt(2) - 2) / 4, (np.sqrt(2) + 2) / 4],
+                [          1 / 2, (np.sqrt(2) + 2) / 4, (np.sqrt(2) - 2) / 4],
+                [-np.sqrt(2) / 2,                1 / 2,                1 / 2],
             ],
             dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -308,14 +316,16 @@ class TestRotationMatrix:
         pitch = -np.pi / 4
         roll = -np.pi / 4
 
+        # fmt: off
         expected = np.array(
             [
-                [1 / 2, (np.sqrt(2) + 2) / 4, (-np.sqrt(2) + 2) / 4],
-                [-1 / 2, (-np.sqrt(2) + 2) / 4, (np.sqrt(2) + 2) / 4],
-                [np.sqrt(2) / 2, -1 / 2, 1 / 2],
+                [         1 / 2,  (np.sqrt(2) + 2) / 4, (-np.sqrt(2) + 2) / 4],
+                [        -1 / 2, (-np.sqrt(2) + 2) / 4,  (np.sqrt(2) + 2) / 4],
+                [np.sqrt(2) / 2,                -1 / 2,                 1 / 2],
             ],
             dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
