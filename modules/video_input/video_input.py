@@ -14,12 +14,11 @@ class VideoInput:
     """
     Combines image and timestamp together.
     """
-
     def __init__(
         self,
         logging_queue: queue_proxy_wrapper.QueueProxyWrapper,
         camera_name: "int | str",
-        save_name: str = ""
+        save_name: str = "",
     ) -> None:
         self.device = camera_device.CameraDevice(camera_name, 1, save_name)
         self.logging_queue = logging_queue
