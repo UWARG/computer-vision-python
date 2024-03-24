@@ -5,17 +5,20 @@ import queue
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
-def multiprocess_logging_worker(input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                   controller: worker_controller.WorkerController):
-    logger = logging.getLogger('airside_logger')
+
+def multiprocess_logging_worker(
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+):
+    logger = logging.getLogger("airside_logger")
 
     filename = f"logs/{datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.log"
-    file_handler = logging.FileHandler(filename=filename, mode="w")    # Handles logging to file
-    stream_handler = logging.StreamHandler()                           # Handles logging to terminal
+    file_handler = logging.FileHandler(filename=filename, mode="w")  # Handles logging to file
+    stream_handler = logging.StreamHandler()  # Handles logging to terminal
 
     formatter = logging.Formatter(
-        fmt='%(asctime)s: [%(levelname)s] %(message)s',
-        datefmt='%I:%M:%S',
+        fmt="%(asctime)s: [%(levelname)s] %(message)s",
+        datefmt="%I:%M:%S",
     )
 
     file_handler.setFormatter(formatter)
@@ -28,7 +31,7 @@ def multiprocess_logging_worker(input_queue: queue_proxy_wrapper.QueueProxyWrapp
 
     while not controller.is_exit_requested():
         controller.check_pause()
-    
+
         logging_message, level = input_queue.queue.get()
 
         if logging_message is None:

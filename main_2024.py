@@ -96,10 +96,7 @@ def main() -> int:
 
     mp_manager = mp.Manager()
 
-    logging_queue = queue_proxy_wrapper.QueueProxyWrapper(
-        mp_manager,
-        QUEUE_MAX_SIZE
-    )
+    logging_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager, QUEUE_MAX_SIZE)
 
     video_input_to_detect_target_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
@@ -125,7 +122,7 @@ def main() -> int:
         (
             logging_queue,
             controller,
-        )
+        ),
     )
 
     video_input_manager = worker_manager.WorkerManager()
@@ -193,7 +190,9 @@ def main() -> int:
 
     try:
         frame = inspect.currentframe()
-        multiprocess_logging.log_message('workers started', multiprocess_logging.DEBUG, frame, logging_queue)
+        multiprocess_logging.log_message(
+            "workers started", multiprocess_logging.DEBUG, frame, logging_queue
+        )
         # logging_queue.queue.put((multiprocess_logging.message_and_metadata('workers started', frame), logging.INFO), block=False)
     except queue.Full:
         pass

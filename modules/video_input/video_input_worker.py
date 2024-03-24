@@ -1,6 +1,7 @@
 """
 Gets images from the camera.
 """
+
 import inspect
 import queue
 import time
@@ -32,11 +33,13 @@ def video_input_worker(
 
     try:
         frame = inspect.currentframe()
-        multiprocess_logging.log_message('video_input started', multiprocess_logging.DEBUG, frame, logging_queue)
+        multiprocess_logging.log_message(
+            "video_input started", multiprocess_logging.DEBUG, frame, logging_queue
+        )
         # logging_queue.queue.put((multiprocess_logging.message_and_metadata('video_input started', frame), logging.DEBUG), block=False)
     except queue.Full:
         pass
-    
+
     while not controller.is_exit_requested():
         controller.check_pause()
 

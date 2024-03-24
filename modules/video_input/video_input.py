@@ -1,6 +1,7 @@
 """
 Combines image and timestamp together.
 """
+
 import inspect
 import queue
 
@@ -14,6 +15,7 @@ class VideoInput:
     """
     Combines image and timestamp together.
     """
+
     def __init__(
         self,
         logging_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -31,7 +33,9 @@ class VideoInput:
 
         try:
             frame = inspect.currentframe()
-            multiprocess_logging.log_message(f'image size {image.shape}', multiprocess_logging.DEBUG, frame, self.logging_queue)
+            multiprocess_logging.log_message(
+                f"image size {image.shape}", multiprocess_logging.DEBUG, frame, self.logging_queue
+            )
             # self.logging_queue.queue.put((multiprocess_logging.message_and_metadata(f'image size {image.shape}', frame), logging.DEBUG), block=False)
         except queue.Full:
             pass
