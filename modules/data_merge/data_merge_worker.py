@@ -1,6 +1,7 @@
 """
 Merges detections and telemetry by time.
 """
+
 import queue
 
 from utilities.workers import queue_proxy_wrapper
@@ -10,11 +11,13 @@ from .. import merged_odometry_detections
 from .. import odometry_and_time
 
 
-def data_merge_worker(timeout: float,
-                      detections_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                      odometry_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                      output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                      controller: worker_controller.WorkerController):
+def data_merge_worker(
+    timeout: float,
+    detections_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    odometry_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+) -> None:
     """
     Worker process. Expects telemetry to be more frequent than detections.
     Queue is monotonic (i.e. timestamps never decrease).
@@ -28,7 +31,6 @@ def data_merge_worker(timeout: float,
     # TODO: Logging?
 
     # Mitigate potential deadlock caused by early program exit
-    # TODO: Timeout
     try:
         previous_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(
             timeout=timeout,
@@ -37,6 +39,7 @@ def data_merge_worker(timeout: float,
             timeout=timeout,
         )
     except queue.Empty:
+        print("ERROR: Queue timed out on startup")
         return
 
     while not controller.is_exit_requested():
@@ -61,8 +64,9 @@ def data_merge_worker(timeout: float,
             break
 
         # Merge with closest timestamp
-        if ((detections.timestamp - previous_odometry.timestamp)
-            < (current_odometry.timestamp - detections.timestamp)):
+        if (detections.timestamp - previous_odometry.timestamp) < (
+            current_odometry.timestamp - detections.timestamp
+        ):
             # Required for separation
             result, merged = merged_odometry_detections.MergedOdometryDetections.create(
                 previous_odometry.odometry_data,
@@ -76,5 +80,8 @@ def data_merge_worker(timeout: float,
 
         if not result:
             continue
+
+        # Get Pylance to stop complaining
+        assert merged is not None
 
         output_queue.queue.put(merged)

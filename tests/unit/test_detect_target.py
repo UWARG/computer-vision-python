@@ -1,6 +1,7 @@
 """
 Test DetectTarget module.
 """
+
 import copy
 import pathlib
 
@@ -13,21 +14,28 @@ from modules.detect_target import detect_target
 from modules import image_and_time
 from modules import detections_and_time
 
-TEST_PATH =                pathlib.Path("tests", "model_example")
-DEVICE =                   0 if torch.cuda.is_available() else "cpu"
-MODEL_PATH =               pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
-OVERRIDE_FULL =            not torch.cuda.is_available()  # CPU does not support half precision
-IMAGE_BUS_PATH =           pathlib.Path(TEST_PATH, "bus.jpg")
-BOUNDING_BOX_BUS_PATH =    pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
-IMAGE_ZIDANE_PATH =        pathlib.Path(TEST_PATH, "zidane.jpg")
+
+TEST_PATH = pathlib.Path("tests", "model_example")
+DEVICE = 0 if torch.cuda.is_available() else "cpu"
+MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
+OVERRIDE_FULL = not torch.cuda.is_available()  # CPU does not support half precision
+IMAGE_BUS_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
+BOUNDING_BOX_BUS_PATH = pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
+IMAGE_ZIDANE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
 BOUNDING_BOX_ZIDANE_PATH = pathlib.Path(TEST_PATH, "bounding_box_zidane.txt")
 
-BOUNDING_BOX_DECIMAL_TOLERANCE = 0
-CONFIDENCE_DECIMAL_TOLERANCE = 2
+BOUNDING_BOX_PRECISION_TOLERANCE = 0
+CONFIDENCE_PRECISION_TOLERANCE = 2
 
 
-def compare_detections(actual: detections_and_time.DetectionsAndTime,
-                       expected: detections_and_time.DetectionsAndTime) -> None:
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
+
+
+def compare_detections(
+    actual: detections_and_time.DetectionsAndTime, expected: detections_and_time.DetectionsAndTime
+) -> None:
     """
     Compare expected and actual detections.
     """
@@ -43,38 +51,38 @@ def compare_detections(actual: detections_and_time.DetectionsAndTime,
         np.testing.assert_almost_equal(
             expected_detection.confidence,
             actual_detection.confidence,
-            decimal=CONFIDENCE_DECIMAL_TOLERANCE,
+            decimal=CONFIDENCE_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.x1,
-            expected_detection.x1,
-            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+            actual_detection.x_1,
+            expected_detection.x_1,
+            decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.y1,
-            expected_detection.y1,
-            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+            actual_detection.y_1,
+            expected_detection.y_1,
+            decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.x2,
-            expected_detection.x2,
-            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+            actual_detection.x_2,
+            expected_detection.x_2,
+            decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
-            actual_detection.y2,
-            expected_detection.y2,
-            decimal=BOUNDING_BOX_DECIMAL_TOLERANCE,
+            actual_detection.y_2,
+            expected_detection.y_2,
+            decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
 
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
     """
     Create DetectionsAndTime from expected.
-    Format: [confidence, label, x1, y1, x2, y2]
+    Format: [confidence, label, x_1, y_1, x_2, y_2] .
     """
     assert detections_from_file.shape[1] == 6
 
@@ -96,64 +104,67 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
 
 
 @pytest.fixture()
-def detector():
+def detector() -> detect_target.DetectTarget:  # type: ignore
     """
     Construct DetectTarget.
     """
-    detection = detect_target.DetectTarget(DEVICE, MODEL_PATH, OVERRIDE_FULL)
-    yield detection
+    detection = detect_target.DetectTarget(DEVICE, str(MODEL_PATH), OVERRIDE_FULL)
+    yield detection  # type: ignore
 
 
 @pytest.fixture()
-def image_bus():
+def image_bus() -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load bus image.
     """
-    image = cv2.imread(str(IMAGE_BUS_PATH))
+    image = cv2.imread(str(IMAGE_BUS_PATH))  # type: ignore
     result, bus_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert bus_image is not None
-    yield bus_image
+    yield bus_image  # type: ignore
 
 
 @pytest.fixture()
-def image_zidane():
+def image_zidane() -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load Zidane image.
     """
-    image = cv2.imread(str(IMAGE_ZIDANE_PATH))
+    image = cv2.imread(str(IMAGE_ZIDANE_PATH))  # type: ignore
     result, zidane_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert zidane_image is not None
-    yield zidane_image
+    yield zidane_image  # type: ignore
 
 
 @pytest.fixture()
-def expected_bus():
+def expected_bus() -> detections_and_time.DetectionsAndTime:  # type: ignore
     """
     Load expected bus detections.
     """
     expected = np.loadtxt(BOUNDING_BOX_BUS_PATH)
-    yield create_detections(expected)
+    yield create_detections(expected)  # type: ignore
 
 
 @pytest.fixture()
-def expected_zidane():
+def expected_zidane() -> detections_and_time.DetectionsAndTime:  # type: ignore
     """
     Load expected Zidane detections.
     """
     expected = np.loadtxt(BOUNDING_BOX_ZIDANE_PATH)
-    yield create_detections(expected)
+    yield create_detections(expected)  # type: ignore
 
 
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
     """
-    def test_single_bus_image(self,
-                              detector: detect_target.DetectTarget,
-                              image_bus: image_and_time.ImageAndTime,
-                              expected_bus: detections_and_time.DetectionsAndTime):
+
+    def test_single_bus_image(
+        self,
+        detector: detect_target.DetectTarget,
+        image_bus: image_and_time.ImageAndTime,
+        expected_bus: detections_and_time.DetectionsAndTime,
+    ) -> None:
         """
         Bus image.
         """
@@ -166,10 +177,12 @@ class TestDetector:
 
         compare_detections(actual, expected_bus)
 
-    def test_single_zidane_image(self,
-                                 detector: detect_target.DetectTarget,
-                                 image_zidane: image_and_time.ImageAndTime,
-                                 expected_zidane: detections_and_time.DetectionsAndTime):
+    def test_single_zidane_image(
+        self,
+        detector: detect_target.DetectTarget,
+        image_zidane: image_and_time.ImageAndTime,
+        expected_zidane: detections_and_time.DetectionsAndTime,
+    ) -> None:
         """
         Zidane image.
         """
@@ -182,28 +195,30 @@ class TestDetector:
 
         compare_detections(actual, expected_zidane)
 
-    def test_multiple_zidane_image(self,
-                                   detector: detect_target.DetectTarget,
-                                   image_zidane: image_and_time.ImageAndTime,
-                                   expected_zidane: detections_and_time.DetectionsAndTime):
+    def test_multiple_zidane_image(
+        self,
+        detector: detect_target.DetectTarget,
+        image_zidane: image_and_time.ImageAndTime,
+        expected_zidane: detections_and_time.DetectionsAndTime,
+    ) -> None:
         """
         Multiple Zidane images.
         """
-        IMAGE_COUNT = 4
+        image_count = 4
 
         input_images = []
-        for _ in range(0, IMAGE_COUNT):
+        for _ in range(0, image_count):
             input_image = copy.deepcopy(image_zidane)
             input_images.append(input_image)
 
         # Run
         outputs = []
-        for i in range(0, IMAGE_COUNT):
+        for i in range(0, image_count):
             output = detector.run(input_images[i])
             outputs.append(output)
 
         # Test
-        for i in range(0, IMAGE_COUNT):
+        for i in range(0, image_count):
             output: "tuple[bool, detections_and_time.DetectionsAndTime | None]" = outputs[i]
             result, actual = output
 

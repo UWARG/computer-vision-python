@@ -8,10 +8,10 @@ from .. import drone_odometry_local
 from ..common.mavlink.modules import drone_odometry
 
 
-def drone_position_global_from_local(home_location: drone_odometry.DronePosition,
-                                        drone_position_local:
-                                            drone_odometry_local.DronePositionLocal) \
-    -> "tuple[bool, drone_odometry.DronePosition | None]":
+def drone_position_global_from_local(
+    home_location: drone_odometry.DronePosition,
+    drone_position_local: drone_odometry_local.DronePositionLocal,
+) -> "tuple[bool, drone_odometry.DronePosition | None]":
     """
     Local coordinates to global coordinates.
     Return: Drone position in WGS 84.
@@ -38,9 +38,10 @@ def drone_position_global_from_local(home_location: drone_odometry.DronePosition
 
     return True, drone_position
 
-def __drone_position_local_from_global(home_location: drone_odometry.DronePosition,
-                                        drone_position: drone_odometry.DronePosition) \
-    -> "tuple[bool, drone_odometry_local.DronePositionLocal | None]":
+
+def __drone_position_local_from_global(
+    home_location: drone_odometry.DronePosition, drone_position: drone_odometry.DronePosition
+) -> "tuple[bool, drone_odometry_local.DronePositionLocal | None]":
     """
     Global coordinates to local coordinates.
     Return: Drone position relative to home location (NED system).
@@ -67,9 +68,10 @@ def __drone_position_local_from_global(home_location: drone_odometry.DronePositi
 
     return True, drone_position_local
 
-def drone_odometry_local_from_global(odometry: drone_odometry.DroneOdometry,
-                                        home_location: drone_odometry.DronePosition) \
-    -> "tuple[bool, drone_odometry_local.DroneOdometryLocal | None]":
+
+def drone_odometry_local_from_global(
+    odometry: drone_odometry.DroneOdometry, home_location: drone_odometry.DronePosition
+) -> "tuple[bool, drone_odometry_local.DroneOdometryLocal | None]":
     """
     Converts global odometry to local.
     """

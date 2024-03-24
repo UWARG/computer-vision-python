@@ -1,6 +1,10 @@
 """
-main process.
+Main process. To run:
+```
+python -m documentation.main_multiprocess_example
+```
 """
+
 import multiprocessing as mp
 import time
 
@@ -17,8 +21,11 @@ COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5
 ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 
 
-# Command: python -m documentation.main_multiprocess_example
-if __name__ == "__main__":
+# main() is required for early return
+def main() -> int:
+    """
+    Main function.
+    """
     # Main is managing all worker processes and is responsible
     # for creating supporting interprocess communication
     controller = worker_controller.WorkerController()
@@ -142,5 +149,14 @@ if __name__ == "__main__":
     # We can reset controller in case we want to reuse it
     # Alternatively, create a new WorkerController instance
     controller.clear_exit()
+
+    return 0
+
+
+# Main guard is only used to call main()
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

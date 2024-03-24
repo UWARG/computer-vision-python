@@ -29,13 +29,20 @@ jobs:
           git submodule update --init --recursive --remote
           pip install -r ./modules/common/requirements.txt
 
-      # Install computer-vision-python dependencies
+      # Install project dependencies
       - name: Install project dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-pytorch.txt
 
-      # Run tests with PyTest
-      - name: Run tests
+      # Run linters and formatters
+      - name: Linters and formatters
+        run: |
+          black --check .
+          flake8 .
+          pylint .
+
+      # Run unit tests with PyTest
+      - name: Run unit tests
         run: pytest -vv

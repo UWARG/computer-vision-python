@@ -15,15 +15,17 @@ class Geolocation:
     """
     Converts image space into world space.
     """
+
     __create_key = object()
 
-    __MIN_DOWN_COS_ANGLE = 0.1  # ~84°
+    __MIN_DOWN_COS_ANGLE = 0.1  # radians, ~84°
 
     @classmethod
-    def create(cls,
-               camera_intrinsics: camera_properties.CameraIntrinsics,
-               camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics) \
-        -> "tuple[bool, Geolocation | None]":
+    def create(
+        cls,
+        camera_intrinsics: camera_properties.CameraIntrinsics,
+        camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+    ) -> "tuple[bool, Geolocation | None]":
         """
         camera_intrinsics: Camera information without any outside space.
         camera_drone_extrinsics: Camera information related to the drone without any world space.
@@ -59,13 +61,15 @@ class Geolocation:
             rotated_source_vectors,
         )
 
-    def __init__(self,
-                 class_private_create_key,
-                 camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
-                 perspective_transform_sources: "list[list[float]]",
-                 rotated_source_vectors: "list[np.ndarray]"):
+    def __init__(
+        self,
+        class_private_create_key: object,
+        camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+        perspective_transform_sources: "list[list[float]]",
+        rotated_source_vectors: "list[np.ndarray]",
+    ) -> None:
         """
-        Private constructor, use create() method
+        Private constructor, use create() method.
         """
         assert class_private_create_key is Geolocation.__create_key, "Use create() method"
 
@@ -74,9 +78,9 @@ class Geolocation:
         self.__rotated_source_vectors = rotated_source_vectors
 
     @staticmethod
-    def __ground_intersection_from_vector(vec_camera_in_world_position: np.ndarray,
-                                          vec_down: np.ndarray) \
-        -> "tuple[bool, np.ndarray | None]":
+    def __ground_intersection_from_vector(
+        vec_camera_in_world_position: np.ndarray, vec_down: np.ndarray
+    ) -> "tuple[bool, np.ndarray | None]":
         """
         Get 2D coordinates of where the downwards pointing vector intersects the ground.
         """
@@ -107,10 +111,9 @@ class Geolocation:
 
         return True, vec_ground[:2]
 
-    def __get_perspective_transform_matrix(self,
-                                           drone_rotation_matrix: np.ndarray,
-                                           drone_position_ned: np.ndarray) \
-        -> "tuple[bool, np.ndarray | None]":
+    def __get_perspective_transform_matrix(
+        self, drone_rotation_matrix: np.ndarray, drone_position_ned: np.ndarray
+    ) -> "tuple[bool, np.ndarray | None]":
         """
         Calculates the destination points, then uses OpenCV to get the matrix.
         """
@@ -127,9 +130,10 @@ class Geolocation:
             vec_downs.append(vec_down)
 
         # Get the camera position in world space
-        vec_camera_position = \
-              drone_position_ned \
+        vec_camera_position = (
+            drone_position_ned
             + drone_rotation_matrix @ self.__camera_drone_extrinsics.vec_camera_on_drone_position
+        )
 
         # Find the points on the ground
         ground_points = []
@@ -147,27 +151,22 @@ class Geolocation:
         src = np.array(self.__perspective_transform_sources, dtype=np.float32)
         dst = np.array(ground_points, dtype=np.float32)
         try:
-            # Pylint does not like the OpenCV module
-            # pylint: disable=no-member
             matrix = cv2.getPerspectiveTransform(  # type: ignore
                 src,
                 dst,
             )
-            # pylint: enable=no-member
         # All exceptions must be caught and logged as early as possible
-        # pylint: disable=bare-except
+        # pylint: disable-next=bare-except
         except:
             # TODO: Logging
             return False, None
-        # pylint: enable=bare-except
 
         return True, matrix
 
     @staticmethod
-    # pylint: disable-next=too-many-locals
-    def __convert_detection_to_world_from_image(detection: detections_and_time.Detection,
-                                                perspective_transform_matrix: np.ndarray) \
-        -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
+    def __convert_detection_to_world_from_image(
+        detection: detections_and_time.Detection, perspective_transform_matrix: np.ndarray
+    ) -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
         """
         Applies the transform matrix to the detection.
         perspective_transform_matrix: Element in last row and column must be 1 .
@@ -235,9 +234,9 @@ class Geolocation:
 
         return True, detection_world
 
-    def run(self,
-            detections: merged_odometry_detections.MergedOdometryDetections) \
-            -> "tuple[bool, list[detection_in_world.DetectionInWorld] | None]":
+    def run(
+        self, detections: merged_odometry_detections.MergedOdometryDetections
+    ) -> "tuple[bool, list[detection_in_world.DetectionInWorld] | None]":
         """
         Returns detections in world space.
         """

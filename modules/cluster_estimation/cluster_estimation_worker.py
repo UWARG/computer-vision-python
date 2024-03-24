@@ -7,12 +7,14 @@ from utilities.workers import worker_controller
 from . import cluster_estimation
 
 
-def cluster_estimation_worker(min_activation_threshold: int,
-                              min_new_points_to_run: int,
-                              random_state: int,
-                              input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                              output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                              worker_controller: worker_controller.WorkerController):
+def cluster_estimation_worker(
+    min_activation_threshold: int,
+    min_new_points_to_run: int,
+    random_state: int,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+) -> None:
     """
     Estimation worker process.
 
@@ -36,14 +38,20 @@ def cluster_estimation_worker(min_activation_threshold: int,
     worker_controller: worker_controller.WorkerController
         How the main process communicates to this worker process.
     """
-    estimator_created, estimator = cluster_estimation.ClusterEstimation.create(
+    result, estimator = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
         min_new_points_to_run,
         random_state,
     )
+    if not result:
+        print("ERROR: Worker failed to create class object")
+        return
 
-    while not worker_controller.is_exit_requested():
-        worker_controller.check_pause()
+    # Get Pylance to stop complaining
+    assert estimator is not None
+
+    while not controller.is_exit_requested():
+        controller.check_pause()
 
         input_data = input_queue.queue.get()
         if input_data is None:

@@ -3,17 +3,14 @@ Example of an intermediate struct representation.
 """
 
 
-# This class is just a struct containing some members
-# pylint: disable=too-few-public-methods
 class IntermediateStruct:
     """
     Example of a simple struct.
     """
-    def __init__(self, number: int, sentence: str):
+
+    def __init__(self, number: int, sentence: str) -> None:
         """
-        Constructor
+        Constructor.
         """
         self.number = number
         self.sentence = sentence
-
-# pylint: enable=too-few-public-methods

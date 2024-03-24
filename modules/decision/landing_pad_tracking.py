@@ -10,44 +10,51 @@ class LandingPadTracking:
     Tracks the real world location of detected landing pads, labelling them as either confirmed
     positive, unconfirmed positive, or false positive.
     """
-    def __init__(self, distance_squared_threshold: float):
-        self.__unconfirmed_positives = []
-        self.__false_positives = []
-        self.__confirmed_positives = []
+
+    def __init__(self, distance_squared_threshold: float) -> None:
+        self.__unconfirmed_positives: "list[object_in_world.ObjectInWorld]" = []
+        self.__false_positives: "list[object_in_world.ObjectInWorld]" = []
+        self.__confirmed_positives: "list[object_in_world.ObjectInWorld]" = []
 
         # Landing pads within the square root of this distance are considered the same landing pad
         self.__distance_squared_threshold = distance_squared_threshold
 
     @staticmethod
-    def __is_similar(detection_1: object_in_world.ObjectInWorld,
-                     detection_2: object_in_world.ObjectInWorld,
-                     distance_squared_threshold: float) -> bool:
+    def __is_similar(
+        detection_1: object_in_world.ObjectInWorld,
+        detection_2: object_in_world.ObjectInWorld,
+        distance_squared_threshold: float,
+    ) -> bool:
         """
         Returns whether detection_1 and detection_2 are close enough to be considered the same
         landing pad.
         """
-        distance_squared = (detection_2.position_x - detection_1.position_x) ** 2 \
-                           + (detection_2.position_y - detection_1.position_y) ** 2
+        distance_squared = (detection_2.location_x - detection_1.location_x) ** 2 + (
+            detection_2.location_y - detection_1.location_y
+        ) ** 2
         return distance_squared < distance_squared_threshold
 
-    def mark_false_positive(self, detection: object_in_world.ObjectInWorld):
+    def mark_false_positive(self, detection: object_in_world.ObjectInWorld) -> None:
         """
         Marks a detection as false positive and removes similar landing pads from the list of
         unconfirmed positives.
         """
         self.__false_positives.append(detection)
         self.__unconfirmed_positives = [
-            landing_pad for landing_pad in self.__unconfirmed_positives
+            landing_pad
+            for landing_pad in self.__unconfirmed_positives
             if not self.__is_similar(landing_pad, detection, self.__distance_squared_threshold)
         ]
 
-    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld):
+    def mark_confirmed_positive(self, detection: object_in_world.ObjectInWorld) -> None:
         """
         Marks a detection as a confimred positive for future use.
         """
         self.__confirmed_positives.append(detection)
 
-    def run(self, detections: "list[object_in_world.ObjectInWorld]"):
+    def run(
+        self, detections: "list[object_in_world.ObjectInWorld]"
+    ) -> "tuple[bool, object_in_world.ObjectInWorld | None]":
         """
         Updates the list of unconfirmed positives and returns the a first confirmed positive if
         one exists, else the unconfirmed positive with the lowest variance.

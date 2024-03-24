@@ -1,6 +1,7 @@
 """
 Test worker process.
 """
+
 import multiprocessing as mp
 import queue
 import time
@@ -15,7 +16,10 @@ VIDEO_INPUT_WORKER_PERIOD = 1.0
 CAMERA = 0
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -39,7 +43,7 @@ if __name__ == "__main__":
     while True:
         try:
             input_data: image_and_time.ImageAndTime = out_queue.queue.get_nowait()
-            assert str(type(input_data)) == "<class \'modules.image_and_time.ImageAndTime\'>"
+            assert str(type(input_data)) == "<class 'modules.image_and_time.ImageAndTime'>"
             assert input_data.image is not None
 
         except queue.Empty:
@@ -47,5 +51,13 @@ if __name__ == "__main__":
 
     # Teardown
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

@@ -5,20 +5,17 @@ Object detection in world space.
 import numpy as np
 
 
-# Basically a struct
-# pylint: disable=too-few-public-methods
 class DetectionInWorld:
     """
     Typically on the ground.
     """
+
     __create_key = object()
 
     @classmethod
-    def create(cls,
-               vertices: np.ndarray,
-               centre: np.ndarray,
-               label: int,
-               confidence: float) -> "tuple[bool, DetectionInWorld | None]":
+    def create(
+        cls, vertices: np.ndarray, centre: np.ndarray, label: int, confidence: float
+    ) -> "tuple[bool, DetectionInWorld | None]":
         """
         vertices is a quadrilateral of 4 points.
         centre is a point.
@@ -38,12 +35,14 @@ class DetectionInWorld:
 
         return True, DetectionInWorld(cls.__create_key, vertices, centre, label, confidence)
 
-    def __init__(self,
-                 class_private_create_key,
-                 vertices: np.ndarray,
-                 centre: np.ndarray,
-                 label: int,
-                 confidence: float):
+    def __init__(
+        self,
+        class_private_create_key: object,
+        vertices: np.ndarray,
+        centre: np.ndarray,
+        label: int,
+        confidence: float,
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -53,5 +52,3 @@ class DetectionInWorld:
         self.centre = centre
         self.label = label
         self.confidence = confidence
-
-# pylint: enable=too-few-public-methods

@@ -8,8 +8,16 @@ import pytest
 from modules.geolocation import camera_properties
 
 
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name
+
+
 @pytest.fixture
-def camera_intrinsic():
+def camera_intrinsic() -> camera_properties.CameraIntrinsics:  # type: ignore
+    """
+    Intrinsic camera properties.
+    """
     resolution_x = 2000
     resolution_y = 2000
     fov_x = np.pi / 2
@@ -24,14 +32,15 @@ def camera_intrinsic():
     assert result
     assert camera is not None
 
-    yield camera
+    yield camera  # type: ignore
 
 
 class TestVectorR3Check:
     """
     Test 3D vector check.
     """
-    def test_r3(self):
+
+    def test_r3(self) -> None:
         """
         R^3 .
         """
@@ -44,7 +53,7 @@ class TestVectorR3Check:
         # Test
         assert result_actual
 
-    def test_r2(self):
+    def test_r2(self) -> None:
         """
         Not R^3 .
         """
@@ -57,7 +66,7 @@ class TestVectorR3Check:
         # Test
         assert not result_actual
 
-    def test_matrix(self):
+    def test_matrix(self) -> None:
         """
         Matrix.
         """
@@ -70,7 +79,7 @@ class TestVectorR3Check:
         # Test
         assert not result_actual
 
-    def test_weird_r3(self):
+    def test_weird_r3(self) -> None:
         """
         Weird R^3 should not pass.
         """
@@ -88,7 +97,8 @@ class TestMatrixR3x3Check:
     """
     Test 3x3 matrix check.
     """
-    def test_r3x3(self):
+
+    def test_r3x3(self) -> None:
         """
         R^{3x3} .
         """
@@ -101,7 +111,7 @@ class TestMatrixR3x3Check:
         # Test
         assert result_actual
 
-    def test_r2x2(self):
+    def test_r2x2(self) -> None:
         """
         Vector.
         """
@@ -114,7 +124,7 @@ class TestMatrixR3x3Check:
         # Test
         assert not result_actual
 
-    def test_r3(self):
+    def test_r3(self) -> None:
         """
         Vector.
         """
@@ -127,7 +137,7 @@ class TestMatrixR3x3Check:
         # Test
         assert not result_actual
 
-    def test_weird_r3x3(self):
+    def test_weird_r3x3(self) -> None:
         """
         Vector.
         """
@@ -145,7 +155,8 @@ class TestRotationMatrix:
     """
     Test rotation matrix.
     """
-    def test_no_rotation(self):
+
+    def test_no_rotation(self) -> None:
         """
         Identity.
         """
@@ -168,7 +179,7 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_allclose(actual, expected)
 
-    def test_yaw_quarter(self):
+    def test_yaw_quarter(self) -> None:
         """
         Quarter turn towards east from north.
         """
@@ -177,14 +188,16 @@ class TestRotationMatrix:
         pitch = 0.0
         roll = 0.0
 
+        # fmt: off
         expected = np.array(
             [
                 [0.0, -1.0, 0.0],
                 [1.0,  0.0, 0.0],
                 [0.0,  0.0, 1.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -198,7 +211,7 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_pitch_quarter(self):
+    def test_pitch_quarter(self) -> None:
         """
         Quarter turn towards up from forward.
         """
@@ -207,14 +220,16 @@ class TestRotationMatrix:
         pitch = np.pi / 2
         roll = 0.0
 
+        # fmt: off
         expected = np.array(
             [
                 [ 0.0, 0.0, 1.0],
                 [ 0.0, 1.0, 0.0],
                 [-1.0, 0.0, 0.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -228,7 +243,7 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_roll_quarter(self):
+    def test_roll_quarter(self) -> None:
         """
         Quarter turn leaning right.
         """
@@ -237,14 +252,16 @@ class TestRotationMatrix:
         pitch = 0.0
         roll = np.pi / 2
 
+        # fmt: off
         expected = np.array(
             [
                 [1.0, 0.0,  0.0],
                 [0.0, 0.0, -1.0],
                 [0.0, 1.0,  0.0],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -258,7 +275,7 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_combined_rotations_positive(self):
+    def test_combined_rotations_positive(self) -> None:
         """
         Each in 45° positive direction.
         """
@@ -267,14 +284,16 @@ class TestRotationMatrix:
         pitch = np.pi / 4
         roll = np.pi / 4
 
+        # fmt: off
         expected = np.array(
             [
                 [          1 / 2, (np.sqrt(2) - 2) / 4, (np.sqrt(2) + 2) / 4],
                 [          1 / 2, (np.sqrt(2) + 2) / 4, (np.sqrt(2) - 2) / 4],
                 [-np.sqrt(2) / 2,                1 / 2,                1 / 2],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -288,7 +307,7 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_combined_rotations_negative(self):
+    def test_combined_rotations_negative(self) -> None:
         """
         Each in 45° negative direction.
         """
@@ -297,14 +316,16 @@ class TestRotationMatrix:
         pitch = -np.pi / 4
         roll = -np.pi / 4
 
+        # fmt: off
         expected = np.array(
             [
                 [         1 / 2,  (np.sqrt(2) + 2) / 4, (-np.sqrt(2) + 2) / 4],
                 [        -1 / 2, (-np.sqrt(2) + 2) / 4,  (np.sqrt(2) + 2) / 4],
                 [np.sqrt(2) / 2,                -1 / 2,                 1 / 2],
             ],
-            dtype=np.float32
+            dtype=np.float32,
         )
+        # fmt: on
 
         # Run
         result, actual = camera_properties.create_rotation_matrix_from_orientation(
@@ -318,9 +339,9 @@ class TestRotationMatrix:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_bad_yaw_too_negative(self):
+    def test_bad_yaw_too_negative(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = -4.0
@@ -338,9 +359,9 @@ class TestRotationMatrix:
         assert not result
         assert actual is None
 
-    def test_bad_yaw_too_positive(self):
+    def test_bad_yaw_too_positive(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 4.0
@@ -358,9 +379,9 @@ class TestRotationMatrix:
         assert not result
         assert actual is None
 
-    def test_bad_pitch_too_negative(self):
+    def test_bad_pitch_too_negative(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -378,9 +399,9 @@ class TestRotationMatrix:
         assert not result
         assert actual is None
 
-    def test_bad_pitch_too_positive(self):
+    def test_bad_pitch_too_positive(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -398,9 +419,9 @@ class TestRotationMatrix:
         assert not result
         assert actual is None
 
-    def test_bad_roll_too_negative(self):
+    def test_bad_roll_too_negative(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -418,9 +439,9 @@ class TestRotationMatrix:
         assert not result
         assert actual is None
 
-    def test_bad_roll_too_positive(self):
+    def test_bad_roll_too_positive(self) -> None:
         """
-        False, None
+        Expect failure.
         """
         # Setup
         yaw = 0.0
@@ -443,7 +464,8 @@ class TestCameraIntrinsicsCreate:
     """
     Test constructor.
     """
-    def test_normal(self):
+
+    def test_normal(self) -> None:
         """
         Successful construction.
         """
@@ -465,9 +487,9 @@ class TestCameraIntrinsicsCreate:
         assert result
         assert actual is not None
 
-    def test_bad_resolution_x(self):
+    def test_bad_resolution_x(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = -1
@@ -487,9 +509,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_resolution_y(self):
+    def test_bad_resolution_y(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -509,9 +531,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_x_negative(self):
+    def test_bad_fov_x_negative(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -531,9 +553,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_x_zero(self):
+    def test_bad_fov_x_zero(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -553,9 +575,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_x_too_positive(self):
+    def test_bad_fov_x_too_positive(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -575,9 +597,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_y_negative(self):
+    def test_bad_fov_y_negative(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -597,9 +619,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_y_zero(self):
+    def test_bad_fov_y_zero(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -619,9 +641,9 @@ class TestCameraIntrinsicsCreate:
         assert not result
         assert actual is None
 
-    def test_bad_fov_y_too_positive(self):
+    def test_bad_fov_y_too_positive(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         resolution_x = 2000
@@ -646,7 +668,8 @@ class TestImagePixelToVector:
     """
     Test convert from image pixel to image vector.
     """
-    def test_centre(self):
+
+    def test_centre(self) -> None:
         """
         Centre of image.
         """
@@ -658,22 +681,21 @@ class TestImagePixelToVector:
         expected = np.zeros(3)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_left(self):
+    def test_left(self) -> None:
         """
         Left of image.
         """
@@ -685,22 +707,21 @@ class TestImagePixelToVector:
         expected = np.array([-1.0, -1.0, -1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_right(self):
+    def test_right(self) -> None:
         """
         Right of image.
         """
@@ -712,22 +733,21 @@ class TestImagePixelToVector:
         expected = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_half_right(self):
+    def test_half_right(self) -> None:
         """
         Halfway between centre and right of image.
         """
@@ -739,24 +759,23 @@ class TestImagePixelToVector:
         expected = np.array([0.5, 0.5, 0.5], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert result
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_bad_pixel_too_positive(self):
+    def test_bad_pixel_too_positive(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 2001
@@ -764,23 +783,22 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
         assert actual is None
 
-    def test_bad_pixel_negative(self):
+    def test_bad_pixel_negative(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = -1
@@ -788,23 +806,22 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
         assert actual is None
 
-    def test_bad_resolution_zero(self):
+    def test_bad_resolution_zero(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -812,23 +829,22 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
         assert actual is None
 
-    def test_bad_resolution_negative(self):
+    def test_bad_resolution_negative(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -836,23 +852,22 @@ class TestImagePixelToVector:
         vec_base = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_base,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_base,
+        )
 
         # Test
         assert not result
         assert actual is None
 
-    def test_bad_vec_base_not_r3(self):
+    def test_bad_vec_base_not_r3(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel = 1000
@@ -860,15 +875,14 @@ class TestImagePixelToVector:
         vec_r2 = np.array([1.0, 1.0], dtype=np.float32)
 
         # Run
-        # Access required for test
-        # pylint: disable=protected-access
-        result, actual = \
-            camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
-                pixel,
-                resolution,
-                vec_r2,
-            )
-        # pylint: enable=protected-access
+        (
+            result,
+            actual,
+        ) = camera_properties.CameraIntrinsics._CameraIntrinsics__pixel_vector_from_image_space(  # type: ignore
+            pixel,
+            resolution,
+            vec_r2,
+        )
 
         # Test
         assert not result
@@ -879,7 +893,8 @@ class TestImageToCameraSpace:
     """
     Test convert from image point to camera vector.
     """
-    def test_centre(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+
+    def test_centre(self, camera_intrinsic: camera_properties.CameraIntrinsics) -> None:
         """
         Centre of image.
         """
@@ -897,7 +912,7 @@ class TestImageToCameraSpace:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_top_left(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_top_left(self, camera_intrinsic: camera_properties.CameraIntrinsics) -> None:
         """
         Top left corner of image.
         """
@@ -915,7 +930,7 @@ class TestImageToCameraSpace:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_bottom_right(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_bottom_right(self, camera_intrinsic: camera_properties.CameraIntrinsics) -> None:
         """
         Bottom right corner of image.
         """
@@ -933,9 +948,11 @@ class TestImageToCameraSpace:
         assert actual is not None
         np.testing.assert_almost_equal(actual, expected)
 
-    def test_bad_pixel_x_negative(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_bad_pixel_x_negative(
+        self, camera_intrinsic: camera_properties.CameraIntrinsics
+    ) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = -1
@@ -948,9 +965,11 @@ class TestImageToCameraSpace:
         assert not result
         assert actual is None
 
-    def test_bad_pixel_x_too_positive(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_bad_pixel_x_too_positive(
+        self, camera_intrinsic: camera_properties.CameraIntrinsics
+    ) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 2001
@@ -963,9 +982,11 @@ class TestImageToCameraSpace:
         assert not result
         assert actual is None
 
-    def test_bad_pixel_y_negative(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_bad_pixel_y_negative(
+        self, camera_intrinsic: camera_properties.CameraIntrinsics
+    ) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 1000
@@ -978,9 +999,11 @@ class TestImageToCameraSpace:
         assert not result
         assert actual is None
 
-    def test_bad_pixel_y_too_positive(self, camera_intrinsic: camera_properties.CameraIntrinsics):
+    def test_bad_pixel_y_too_positive(
+        self, camera_intrinsic: camera_properties.CameraIntrinsics
+    ) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         pixel_x = 1000
@@ -998,7 +1021,8 @@ class TestCameraExtrinsicsCreate:
     """
     Test constructor.
     """
-    def test_normal(self):
+
+    def test_normal(self) -> None:
         """
         Successful construction.
         """
@@ -1016,9 +1040,9 @@ class TestCameraExtrinsicsCreate:
         assert result
         assert actual is not None
 
-    def test_bad_orientation(self):
+    def test_bad_orientation(self) -> None:
         """
-        False, None .
+        Expect failure.
         """
         # Setup
         camera_position_xyz = (0.0, 0.0, 0.0)

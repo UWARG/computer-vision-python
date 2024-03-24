@@ -1,0 +1,111 @@
+[tool.pylint.main]
+# Add files or directories matching the regular expressions patterns to the
+# ignore-list. The regex matches against paths and can be in Posix or Windows
+# format. Because '\\' represents the directory delimiter on Windows systems, it
+# can't be used as an escape character.
+ignore-paths = [
+    # From .gitignore
+    # IDEs
+    ".idea/",
+    ".vscode/",
+
+    # Python
+    "__pycache__/",
+    "venv/",
+
+    # Logging
+    "logs/",
+
+    # Outside of .gitignore
+    # Submodules
+    "modules/common/",
+]
+
+# Use multiple processes to speed up Pylint. Specifying 0 will auto-detect the
+# number of processors available to use, and will cap the count on Windows to
+# avoid hangs.
+jobs = 0
+
+# Minimum Python version to use for version dependent checks. Will default to the
+# version used to run pylint.
+py-version = "3.8"
+
+# Discover python modules and packages in the file system subtree.
+recursive = true
+
+# [tool.pylint.basic]
+# Good variable names which should always be accepted, separated by a comma.
+good-names = [
+    "i",
+    "j",
+    "k",
+    "ex",
+    "Run",
+    "_",
+
+    # Return of main()
+    "result_main",
+]
+
+[tool.pylint."messages control"]
+# Disable the message, report, category or checker with the given id(s). You can
+# either give multiple identifiers separated by comma (,) or put this option
+# multiple times (only on the command line, not in the configuration file where
+# it should appear only once). You can also use "--disable=all" to disable
+# everything first and then re-enable specific checks. For example, if you want
+# to run only the similarities checker, you can use "--disable=all
+# --enable=similarities". If you want to run only the classes checker, but have
+# no Warning level messages displayed, use "--disable=all --enable=classes
+# --disable=W".
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "use-implicit-booleaness-not-comparison-to-string",
+    "use-implicit-booleaness-not-comparison-to-zero",
+    # WARG
+    # Ignore TODOs
+    "fixme",
+    # Pylint cannot find modules
+    "import-error",
+    # Covered by Black formatter
+    "line-too-long",
+    # Pylint cannot handle 3rd party imports
+    "no-member",
+    # Some classes are simple
+    "too-few-public-methods",
+    # Function signatures
+    "too-many-arguments",
+    # Don't care
+    "too-many-branches",
+    # Line count in file
+    "too-many-lines",
+    # Don't care
+    "too-many-locals",
+    # Don't care
+    "too-many-statements",
+    # Don't care
+    "too-many-return-statements",
+]
+
+[tool.pylint.similarities]
+# Minimum lines number of a similarity.
+# Main guard
+min-similarity-lines = 10
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+# Submodules
+addopts = "--ignore=modules/common/"
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+# Excludes files or directories in addition to the defaults
+# Submodules
+extend-exclude = "modules/common/*"

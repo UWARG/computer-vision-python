@@ -1,6 +1,7 @@
 """
 For 2022-2023 UAS competition.
 """
+
 import argparse
 import multiprocessing as mp
 import pathlib
@@ -18,9 +19,11 @@ from modules.video_input import video_input_worker
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 
+# Code copied into main_2024.py
+# pylint: disable=duplicate-code
 def main() -> int:
     """
-    Main function for airside code.
+    Main function.
     """
     # Open config file
     try:
@@ -45,6 +48,8 @@ def main() -> int:
 
     # Set constants
     try:
+        # Local constants
+        # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
@@ -52,10 +57,11 @@ def main() -> int:
         VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
+        DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = config["detect_target"]["save_prefix"]
+        # pylint: enable=invalid-name
     except KeyError:
         print("Config key(s) not found")
         return -1
@@ -110,8 +116,8 @@ def main() -> int:
         if image is None:
             continue
 
-        cv2.imshow("Landing Pad Detector", image)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.imshow("Landing Pad Detector", image)  # type: ignore
+        if cv2.waitKey(1) & 0xFF == ord("q"):  # type: ignore
             break
 
     # Teardown
@@ -126,9 +132,12 @@ def main() -> int:
     return 0
 
 
+# pylint: enable=duplicate-code
+
+
 if __name__ == "__main__":
-    result_run = main()
-    if result_run < 0:
-        print(f"ERROR: Status code: {result_run}")
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

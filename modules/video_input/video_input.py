@@ -6,13 +6,12 @@ from ..common.camera.modules import camera_device
 from .. import image_and_time
 
 
-# This is just an interface
-# pylint: disable=too-few-public-methods
 class VideoInput:
     """
     Combines image and timestamp together.
     """
-    def __init__(self, camera_name: "int | str", save_name: str = ""):
+
+    def __init__(self, camera_name: "int | str", save_name: str = "") -> None:
         self.device = camera_device.CameraDevice(camera_name, 1, save_name)
 
     def run(self) -> "tuple[bool, image_and_time.ImageAndTime | None]":
@@ -24,5 +23,3 @@ class VideoInput:
             return False, None
 
         return image_and_time.ImageAndTime.create(image)
-
-# pylint: enable=too-few-public-methods

@@ -1,6 +1,7 @@
 """
 Test worker process.
 """
+
 import multiprocessing as mp
 import time
 
@@ -18,8 +19,9 @@ from utilities.workers import worker_controller
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
 
-def simulate_detect_target_worker(timestamp: float,
-                                  detections_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_detect_target_worker(
+    timestamp: float, detections_queue: queue_proxy_wrapper.QueueProxyWrapper
+) -> None:
     """
     Place the detection into the queue.
     """
@@ -27,11 +29,7 @@ def simulate_detect_target_worker(timestamp: float,
     assert result
     assert detections is not None
 
-    result, detection = detections_and_time.Detection.create(
-        np.array([0.0, 0.0, 1.0, 1.0]),
-        0,
-        1.0,
-    )
+    result, detection = detections_and_time.Detection.create(np.array([0.0, 0.0, 1.0, 1.0]), 0, 1.0)
     assert result
     assert detection is not None
 
@@ -40,8 +38,9 @@ def simulate_detect_target_worker(timestamp: float,
     detections_queue.queue.put(detections)
 
 
-def simulate_flight_input_worker(timestamp: float,
-                                 odometry_queue: queue_proxy_wrapper.QueueProxyWrapper):
+def simulate_flight_input_worker(
+    timestamp: float, odometry_queue: queue_proxy_wrapper.QueueProxyWrapper
+) -> None:
     """
     Place the odometry into the queue.
     """
@@ -67,7 +66,10 @@ def simulate_flight_input_worker(timestamp: float,
     odometry_queue.queue.put(odometry_time)
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """
+    Main function.
+    """
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -120,8 +122,9 @@ if __name__ == "__main__":
 
     # Test
     for expected_time in expected_times:
-        merged: merged_odometry_detections.MergedOdometryDetections = \
+        merged: merged_odometry_detections.MergedOdometryDetections = (
             merged_out_queue.queue.get_nowait()
+        )
         assert int(merged.odometry_local.position.north) == expected_time
 
     assert merged_out_queue.queue.empty()
@@ -130,5 +133,13 @@ if __name__ == "__main__":
     detections_in_queue.fill_and_drain_queue()
     odometry_in_queue.fill_and_drain_queue()
     worker.join()
+
+    return 0
+
+
+if __name__ == "__main__":
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

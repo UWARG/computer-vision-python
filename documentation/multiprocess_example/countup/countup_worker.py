@@ -7,10 +7,12 @@ from utilities.workers import worker_controller
 from . import countup
 
 
-def countup_worker(start_thousands:int,
-                   max_iterations: int,
-                   output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                   controller: worker_controller.WorkerController):
+def countup_worker(
+    start_thousands: int,
+    max_iterations: int,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+) -> None:
     """
     Worker process.
 

@@ -7,16 +7,16 @@ from utilities.workers import worker_controller
 from . import detect_target
 
 
-# Extra parameters required for worker communication
-# pylint: disable=too-many-arguments
-def detect_target_worker(device: "str | int",
-                         model_path: str,
-                         override_full: bool,
-                         show_annotations: bool,
-                         save_name: str,
-                         input_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                         output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-                         controller: worker_controller.WorkerController):
+def detect_target_worker(
+    device: "str | int",
+    model_path: str,
+    override_full: bool,
+    show_annotations: bool,
+    save_name: str,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    controller: worker_controller.WorkerController,
+) -> None:
     """
     Worker process.
 
@@ -44,5 +44,3 @@ def detect_target_worker(device: "str | int",
             continue
 
         output_queue.queue.put(value)
-
-# pylint: enable=too-many-arguments

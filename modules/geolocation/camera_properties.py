@@ -19,9 +19,9 @@ def is_matrix_r3x3(matrix: np.ndarray) -> bool:
     return matrix.shape == (3, 3)
 
 
-def create_rotation_matrix_from_orientation(yaw: float,
-                                            pitch: float,
-                                            roll: float) -> "tuple[bool, np.ndarray | None]":
+def create_rotation_matrix_from_orientation(
+    yaw: float, pitch: float, roll: float
+) -> "tuple[bool, np.ndarray | None]":
     """
     Creates a rotation matrix from yaw pitch roll in NED system (x forward, y right, z down).
     Specifically, intrinsic (Tait-Bryan) rotations in the zyx/3-2-1 order.
@@ -38,6 +38,7 @@ def create_rotation_matrix_from_orientation(yaw: float,
     if roll < -np.pi or roll > np.pi:
         return False, None
 
+    # fmt: off
     yaw_matrix = np.array(
         [
             [np.cos(yaw), -np.sin(yaw), 0.0],
@@ -46,7 +47,9 @@ def create_rotation_matrix_from_orientation(yaw: float,
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
+    # fmt: off
     pitch_matrix = np.array(
         [
             [ np.cos(pitch), 0.0, np.sin(pitch)],
@@ -55,7 +58,9 @@ def create_rotation_matrix_from_orientation(yaw: float,
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
+    # fmt: off
     roll_matrix = np.array(
         [
             [1.0,          0.0,           0.0],
@@ -64,6 +69,7 @@ def create_rotation_matrix_from_orientation(yaw: float,
         ],
         dtype=np.float32,
     )
+    # fmt: on
 
     rotation_matrix = yaw_matrix @ pitch_matrix @ roll_matrix
 
@@ -77,14 +83,13 @@ class CameraIntrinsics:
     Image follows xy system with top-left as origin, pixel coordinates
     refer to their top-left corner.
     """
+
     __create_key = object()
 
     @classmethod
-    def create(cls,
-               resolution_x: int,
-               resolution_y: int,
-               fov_x: float,
-               fov_y: float) -> "tuple[bool, CameraIntrinsics | None]":
+    def create(
+        cls, resolution_x: int, resolution_y: int, fov_x: float, fov_y: float
+    ) -> "tuple[bool, CameraIntrinsics | None]":
         """
         Resolution is in pixels.
         Field of view in radians horizontally and vertically across the image (edge to edge).
@@ -117,28 +122,30 @@ class CameraIntrinsics:
             v_scalar,
         )
 
-    def __init__(self,
-                 class_private_create_key,
-                 resolution_x: int,
-                 resolution_y: int,
-                 u_scalar: float,
-                 v_scalar: float):
+    def __init__(
+        self,
+        class_private_create_key: object,
+        resolution_x: int,
+        resolution_y: int,
+        u_scalar: float,
+        v_scalar: float,
+    ) -> None:
         """
-        Private constructor, use create() method
+        Private constructor, use create() method.
         """
         assert class_private_create_key is CameraIntrinsics.__create_key, "Use create() method"
 
         self.resolution_x = resolution_x
         self.resolution_y = resolution_y
 
-        self.__vec_c = np.array([1.0,      0.0,      0.0], dtype=np.float32)
-        self.__vec_u = np.array([0.0, u_scalar,      0.0], dtype=np.float32)
-        self.__vec_v = np.array([0.0,      0.0, v_scalar], dtype=np.float32)
+        self.__vec_c = np.array([1.0, 0.0, 0.0], dtype=np.float32)
+        self.__vec_u = np.array([0.0, u_scalar, 0.0], dtype=np.float32)
+        self.__vec_v = np.array([0.0, 0.0, v_scalar], dtype=np.float32)
 
     @staticmethod
-    def __pixel_vector_from_image_space(pixel: int,
-                                        resolution: int,
-                                        vec_base: np.ndarray) -> "tuple[bool, np.ndarray | None]":
+    def __pixel_vector_from_image_space(
+        pixel: int, resolution: int, vec_base: np.ndarray
+    ) -> "tuple[bool, np.ndarray | None]":
         """
         Get u or v vector from pixel coordinate.
         """
@@ -162,9 +169,9 @@ class CameraIntrinsics:
 
         return True, vec_pixel
 
-    def camera_space_from_image_space(self,
-                                      pixel_x: int,
-                                      pixel_y: int) -> "tuple[bool, np.ndarray | None]":
+    def camera_space_from_image_space(
+        self, pixel_x: int, pixel_y: int
+    ) -> "tuple[bool, np.ndarray | None]":
         """
         Pixel in image space to vector in camera space.
         """
@@ -203,13 +210,15 @@ class CameraDroneExtrinsics:
     """
     Camera in relation to drone.
     """
+
     __create_key = object()
 
     @classmethod
-    def create(cls,
-               camera_position_xyz: "tuple[float, float, float]",
-               camera_orientation_ypr: "tuple[float, float, float]") \
-            -> "tuple[bool, CameraDroneExtrinsics | None]":
+    def create(
+        cls,
+        camera_position_xyz: "tuple[float, float, float]",
+        camera_orientation_ypr: "tuple[float, float, float]",
+    ) -> "tuple[bool, CameraDroneExtrinsics | None]":
         """
         camera_position_xyz: Camera position is x, y, z.
         camera_orientation_ypr: Camera orientation is yaw, pitch, roll.
@@ -223,12 +232,11 @@ class CameraDroneExtrinsics:
 
         vec_camera_on_drone_position = np.array([camera_x, camera_y, camera_z], dtype=np.float32)
 
-        result, camera_to_drone_rotation_matrix = \
-            create_rotation_matrix_from_orientation(
-                camera_yaw,
-                camera_pitch,
-                camera_roll,
-            )
+        result, camera_to_drone_rotation_matrix = create_rotation_matrix_from_orientation(
+            camera_yaw,
+            camera_pitch,
+            camera_roll,
+        )
         if not result:
             return False, None
 
@@ -244,12 +252,14 @@ class CameraDroneExtrinsics:
             camera_to_drone_rotation_matrix,
         )
 
-    def __init__(self,
-                 class_private_create_key,
-                 vec_camera_on_drone_position: np.ndarray,
-                 camera_to_drone_rotation_matrix: np.ndarray):
+    def __init__(
+        self,
+        class_private_create_key: object,
+        vec_camera_on_drone_position: np.ndarray,
+        camera_to_drone_rotation_matrix: np.ndarray,
+    ) -> None:
         """
-        Private constructor, use create() method
+        Private constructor, use create() method.
         """
         assert class_private_create_key is CameraDroneExtrinsics.__create_key, "Use create() method"
 

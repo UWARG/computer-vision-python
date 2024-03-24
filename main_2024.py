@@ -1,6 +1,7 @@
 """
 For 2023-2024 UAS competition.
 """
+
 import argparse
 import multiprocessing as mp
 import pathlib
@@ -23,11 +24,10 @@ from utilities.workers import worker_manager
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
-# Main Function
-# pylint: disable-next=too-many-locals,too-many-statements
+
 def main() -> int:
     """
-    Main function for airside code.
+    Main function.
     """
     # Open config file
     try:
@@ -57,6 +57,8 @@ def main() -> int:
 
     # Set constants
     try:
+        # Local constants
+        # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         LOG_DIRECTORY_PATH = config["log_directory_path"]
@@ -67,7 +69,7 @@ def main() -> int:
         VIDEO_INPUT_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        DETECT_TARGET_DEVICE =  "cpu" if args.cpu else config["detect_target"]["device"]
+        DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
@@ -79,6 +81,7 @@ def main() -> int:
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
+        # pylint: enable=invalid-name
     except KeyError:
         print("Config key(s) not found")
         return -1
@@ -190,7 +193,7 @@ def main() -> int:
                 print("merged confidence: " + str(detection.confidence))
             print("")
 
-        if cv2.waitKey(1) == ord('q'):
+        if cv2.waitKey(1) == ord("q"):  # type: ignore
             print("Exiting main loop")
             break
 
@@ -207,14 +210,14 @@ def main() -> int:
     flight_interface_manager.join_workers()
     data_merge_manager.join_workers()
 
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows()  # type: ignore
 
     return 0
 
 
 if __name__ == "__main__":
-    result_run = main()
-    if result_run < 0:
-        print(f"ERROR: Status code: {result_run}")
+    result_main = main()
+    if result_main < 0:
+        print(f"ERROR: Status code: {result_main}")
 
     print("Done!")

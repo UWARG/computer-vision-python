@@ -1,6 +1,7 @@
 """
 Detects objects using the provided model.
 """
+
 import time
 
 import cv2
@@ -10,20 +11,19 @@ from .. import image_and_time
 from .. import detections_and_time
 
 
-# This is just an interface
-# pylint: disable=too-few-public-methods
 class DetectTarget:
     """
     Contains the YOLOv8 model for prediction.
     """
-    # Required for logging
-    # pylint: disable-next=too-many-arguments
-    def __init__(self,
-                 device: "str | int",
-                 model_path: str,
-                 override_full: bool,
-                 show_annotations: bool = False,
-                 save_name: str = ""):
+
+    def __init__(
+        self,
+        device: "str | int",
+        model_path: str,
+        override_full: bool,
+        show_annotations: bool = False,
+        save_name: str = "",
+    ) -> None:
         """
         device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
         model_path: path to the YOLOv8 model.
@@ -34,7 +34,7 @@ class DetectTarget:
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half_precision = False if self.__device == "cpu" else True
+        self.__enable_half_precision = not self.__device == "cpu"
         self.__show_annotations = show_annotations
         if override_full:
             self.__enable_half_precision = False
@@ -42,11 +42,9 @@ class DetectTarget:
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    # Required for logging
-    # pylint: disable-next=too-many-locals
-    def run(self,
-            data: image_and_time.ImageAndTime) \
-        -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    def run(
+        self, data: image_and_time.ImageAndTime
+    ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
         """
         Runs object detection on the provided image and returns the detections.
 
@@ -100,13 +98,11 @@ class DetectTarget:
                 file.write(repr(detections))
 
             # Annotated image
-            cv2.imwrite(filename + ".png", image_annotated)
+            cv2.imwrite(filename + ".png", image_annotated)  # type: ignore
 
             self.__counter += 1
 
         if self.__show_annotations:
-            cv2.imshow("Annotated", image_annotated)
+            cv2.imshow("Annotated", image_annotated)  # type: ignore
 
         return True, detections
-
-# pylint: enable=too-few-public-methods
