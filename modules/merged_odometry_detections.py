@@ -48,8 +48,7 @@ class MergedOdometryDetections:
         """
         To string.
         """
-        representation = (
+        return (
             f"Merged: {self.odometry_local}, detections: {len(self.detections)}\n"
             + f"{self.detections}"
         )
-        return representation

@@ -55,8 +55,7 @@ class Detection:
         """
         To string.
         """
-        representation = f"cls: {self.label}, conf: {self.confidence}, bounds: {self.x_1} {self.y_1} {self.x_2} {self.y_2}"
-        return representation
+        return f"cls: {self.label}, conf: {self.confidence}, bounds: {self.x_1} {self.y_1} {self.x_2} {self.y_2}"
 
     def get_centre(self) -> "tuple[float, float]":
         """
@@ -108,11 +107,10 @@ class DetectionsAndTime:
         """
         To string.
         """
-        representation = (
+        return (
             f"{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}\n"
             + f"{self.detections}"
         )
-        return representation
 
     def __len__(self) -> int:
         """
