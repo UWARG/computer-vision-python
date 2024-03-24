@@ -311,16 +311,18 @@ class ClusterEstimation:
         filtered_output: list[tuple[np.ndarray, float, float]]
             List containing predicted cluster centres after filtering.
         """
-        results = self.__vgmm.predict(self.__all_points)  # type: ignore
-        filtered_output = []
+        # List of each point's cluster index
+        cluster_assignment = self.__vgmm.predict(self.__all_points)  # type: ignore
 
-        # Filtering by each cluster's point ownership
-        unique_clusters, _ = np.unique(results, return_counts=True)
+        # Find which cluster indices have points
+        clusters_with_points = np.unique(cluster_assignment)
+
         # Remove empty clusters
-        # Integer index required
+        filtered_output: "list[tuple[np.ndarray, float, float]]" = []
+        # By cluster index
         # pylint: disable-next=consider-using-enumerate
         for i in range(len(model_output)):
-            if i in unique_clusters:
+            if i in clusters_with_points:
                 filtered_output.append(model_output[i])
 
         return filtered_output
