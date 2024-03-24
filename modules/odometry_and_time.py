@@ -47,7 +47,7 @@ class OdometryAndTime:
         """
         To string.
         """
-        representation = f"""{self.__class__}, time: {int(self.timestamp)}
-{self.odometry_data}"""
-
+        representation = (
+            f"{self.__class__}, time: {int(self.timestamp)}\n" + f"{self.odometry_data}"
+        )
         return representation

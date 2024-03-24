@@ -108,9 +108,10 @@ class DetectionsAndTime:
         """
         To string.
         """
-        representation = f"""{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}
-{self.detections}"""
-
+        representation = (
+            f"{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}\n"
+            + f"{self.detections}"
+        )
         return representation
 
     def __len__(self) -> int:
