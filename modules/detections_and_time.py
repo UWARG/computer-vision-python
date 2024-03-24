@@ -51,25 +51,11 @@ class Detection:
         self.label = label
         self.confidence = confidence
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
-        representation = (
-            "cls: "
-            + str(self.label)
-            + ", conf: "
-            + str(self.confidence)
-            + ", bounds: "
-            + str(self.x_1)
-            + " "
-            + str(self.y_1)
-            + " "
-            + str(self.x_2)
-            + " "
-            + str(self.y_2)
-        )
-
+        representation = f"cls: {self.label}, conf: {self.confidence}, bounds: {self.x_1} {self.y_1} {self.x_2} {self.y_2}"
         return representation
 
     def get_centre(self) -> "tuple[float, float]":
@@ -118,19 +104,13 @@ class DetectionsAndTime:
         self.detections = []
         self.timestamp = timestamp
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
-        representation = (
-            str(self.__class__)
-            + ", time: "
-            + str(int(self.timestamp))
-            + ", size: "
-            + str(len(self))
-        )
+        representation = f"""{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}
+{self.detections}"""
 
-        representation += "\n" + repr(self.detections)
         return representation
 
     def __len__(self) -> int:

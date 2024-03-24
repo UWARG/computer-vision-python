@@ -33,18 +33,11 @@ class DronePositionLocal:
         self.east = east
         self.down = down
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
-        return (
-            "DronePositionLocal (NED): "
-            + str(self.north)
-            + ", "
-            + str(self.east)
-            + ", "
-            + str(self.down)
-        )
+        return f"DronePositionLocal (NED): {self.north}, {self.east}, {self.down}"
 
 
 class DroneOrientationLocal:
@@ -89,19 +82,12 @@ class DroneOrientationLocal:
 
         self.orientation = orientation
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
         # TODO: Update common
-        return (
-            "DroneOrientationLocal (YPR): "
-            + str(self.orientation.yaw)
-            + ", "
-            + str(self.orientation.pitch)
-            + ", "
-            + str(self.orientation.roll)
-        )
+        return f"DroneOrientationLocal (YPR rad): {self.orientation.yaw}, {self.orientation.pitch}, {self.orientation.roll}"
 
 
 class DroneOdometryLocal:
@@ -140,8 +126,8 @@ class DroneOdometryLocal:
         self.position = position
         self.orientation = orientation
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
-        return "DroneOdometryLocal: " + str(self.position) + ", " + str(self.orientation)
+        return f"DroneOdometryLocal: {self.position}, {self.orientation}"

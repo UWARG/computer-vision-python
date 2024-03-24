@@ -44,13 +44,11 @@ class MergedOdometryDetections:
         self.odometry_local = odometry_local
         self.detections = detections
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
-        String representation.
+        To string.
         """
-        representation = (
-            "Merged: " + str(self.odometry_local) + ", detections: " + str(len(self.detections))
-        )
+        representation = f"""Merged: {self.odometry_local}, detections: {len(self.detections)}
+{self.detections}"""
 
-        representation += "\n" + str(self.detections)
         return representation

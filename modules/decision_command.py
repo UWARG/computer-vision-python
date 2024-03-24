@@ -139,13 +139,13 @@ class DecisionCommand:
         """
         return self.__command_x, self.__command_y, self.__command_z
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """
         To string.
         """
-        representation = "Command: " + str(self.__command_type)
+        representation = f"Command: {self.__command_type}"
 
         if self.__command_type != DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION:
-            representation += " " + str(self.get_command_position())
+            representation += f" {self.get_command_position()}"
 
         return representation
