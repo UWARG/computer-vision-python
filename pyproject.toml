@@ -47,10 +47,6 @@ good-names = [
     "result_main",
 ]
 
-# Good variable names regexes, separated by a comma. If names match any regex,
-# they will always be accepted
-good-names-rgxs = "computer-vision-python"
-
 [tool.pylint."messages control"]
 # Disable the message, report, category or checker with the given id(s). You can
 # either give multiple identifiers separated by comma (,) or put this option
