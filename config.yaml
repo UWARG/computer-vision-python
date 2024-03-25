@@ -3,6 +3,7 @@
 queue_max_size: 10
 
 log_directory_path: "logs"
+profiling_length: 300
 
 video_input:
     camera_name: 0
