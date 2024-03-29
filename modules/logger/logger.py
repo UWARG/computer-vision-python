@@ -3,6 +3,7 @@ Logs debug messages.
 """
 
 import datetime
+import inspect
 import logging
 import pathlib
 import os
@@ -84,3 +85,31 @@ class Logger:
         assert class_create_private_key is Logger.__create_key, "Use create() method."
 
         self.logger = logger
+
+    @staticmethod
+    def message_and_metadata(message, frame):
+        function_name = frame.f_code.co_name
+        filename = frame.f_code.co_filename
+        line_number = inspect.getframeinfo(frame).lineno
+
+        return f"[{filename} | {function_name} | {line_number}] {message}"
+    
+    def debug(self, message, frame):
+        message = self.message_and_metadata(message, frame)
+        self.logger.debug(message)
+
+    def info(self, message, frame):
+        message = self.message_and_metadata(message, frame)
+        self.logger.info(message)
+
+    def warning(self, message, frame):
+        message = self.message_and_metadata(message, frame)
+        self.logger.warning(message)
+
+    def error(self, message, frame):
+        message = self.message_and_metadata(message, frame)
+        self.logger.error(message)
+
+    def critical(self, message, frame):
+        message = self.message_and_metadata(message, frame)
+        self.logger.critical(message)
