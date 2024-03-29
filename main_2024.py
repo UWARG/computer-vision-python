@@ -113,7 +113,7 @@ def main() -> int:
     result, main_logger = logger.Logger.create("main")
     if result:
         frame = inspect.currentframe()
-        main_logger.info("main logger initialized")
+        main_logger.info("main logger initialized", frame)
 
     # Setup
     controller = worker_controller.WorkerController()

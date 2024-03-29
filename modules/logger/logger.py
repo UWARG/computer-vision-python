@@ -88,28 +88,46 @@ class Logger:
 
     @staticmethod
     def message_and_metadata(message, frame):
+        """
+        Extracts metadata from frame and appends it to the message.
+        """
         function_name = frame.f_code.co_name
         filename = frame.f_code.co_filename
         line_number = inspect.getframeinfo(frame).lineno
 
         return f"[{filename} | {function_name} | {line_number}] {message}"
-    
+
     def debug(self, message, frame):
+        """
+        Logs a debug level message.
+        """
         message = self.message_and_metadata(message, frame)
         self.logger.debug(message)
 
     def info(self, message, frame):
+        """
+        Logs an info level message.
+        """
         message = self.message_and_metadata(message, frame)
         self.logger.info(message)
 
     def warning(self, message, frame):
+        """
+        Logs a warning level message.
+        """
         message = self.message_and_metadata(message, frame)
         self.logger.warning(message)
 
     def error(self, message, frame):
+        """
+        Logs an error level message.
+        """
         message = self.message_and_metadata(message, frame)
         self.logger.error(message)
 
     def critical(self, message, frame):
+        """
+        Logs a critical level message.
+        """
         message = self.message_and_metadata(message, frame)
         self.logger.critical(message)
