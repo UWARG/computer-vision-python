@@ -49,10 +49,10 @@ class Logger:
         # Find the log directory for the current run, which is the most recent timestamp
         datetime_format = "%Y-%m-%d_%H:%M:%S"
         log_path = max(
-            [
+            (
                 datetime.datetime.strptime(datetime_string, datetime_format)
                 for datetime_string in log_names
-            ]
+            )
         ).strftime(datetime_format)
         filename = f"{log_directory_path}/{log_path}/{name}.log"
 
@@ -73,7 +73,6 @@ class Logger:
         logger.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
-        print(logger.type)
 
         return True, Logger(cls.__create_key, logger)
 
