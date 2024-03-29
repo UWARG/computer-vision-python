@@ -7,6 +7,8 @@ import inspect
 import logging
 import pathlib
 import os
+import types
+import typing
 import yaml
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
@@ -87,7 +89,7 @@ class Logger:
         self.logger = logger
 
     @staticmethod
-    def message_and_metadata(message, frame):
+    def message_and_metadata(message: str, frame: typing.Optional[types.FrameType]) -> str:
         """
         Extracts metadata from frame and appends it to the message.
         """
@@ -97,35 +99,35 @@ class Logger:
 
         return f"[{filename} | {function_name} | {line_number}] {message}"
 
-    def debug(self, message, frame):
+    def debug(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
         """
         Logs a debug level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.debug(message)
 
-    def info(self, message, frame):
+    def info(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
         """
         Logs an info level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.info(message)
 
-    def warning(self, message, frame):
+    def warning(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
         """
         Logs a warning level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.warning(message)
 
-    def error(self, message, frame):
+    def error(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
         """
         Logs an error level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.error(message)
 
-    def critical(self, message, frame):
+    def critical(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
         """
         Logs a critical level message.
         """
