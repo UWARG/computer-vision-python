@@ -4,6 +4,7 @@ For 2023-2024 UAS competition.
 
 import argparse
 import datetime
+import inspect
 import multiprocessing as mp
 import pathlib
 import queue
@@ -111,7 +112,8 @@ def main() -> int:
 
     result, main_logger = logger.Logger.create("main")
     if result:
-        main_logger.logger.info("main logger initialized")
+        frame = inspect.currentframe()
+        main_logger.info("main logger initialized")
 
     # Setup
     controller = worker_controller.WorkerController()
