@@ -49,11 +49,12 @@ class Logger:
         # Find the log directory for the current run, which is the most recent timestamp
         datetime_format = "%Y-%m-%d_%H:%M:%S"
         log_path = max(
-            (
-                datetime.datetime.strptime(datetime_string, datetime_format)
-                for datetime_string in log_names
-            )
-        ).strftime(datetime_format)
+            log_names,
+            key=lambda datetime_string: datetime.datetime.strptime(
+                datetime_string, datetime_format
+            ),
+        )
+
         filename = f"{log_directory_path}/{log_path}/{name}.log"
 
         # Formatting configurations for the logger
