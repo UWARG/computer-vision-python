@@ -6,6 +6,7 @@ import yaml
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
+
 class Logger:
     __create_key = object()
 
@@ -24,13 +25,20 @@ class Logger:
         except IOError as exc:
             print(f"Error when opening file: {exc}")
             return False, None
-        
+
         log_directory_path = config["log_directory_path"]
         entries = os.listdir(log_directory_path)
-        log_names = [entry for entry in entries if os.path.isdir(os.path.join(log_directory_path, entry))]
+        log_names = [
+            entry for entry in entries if os.path.isdir(os.path.join(log_directory_path, entry))
+        ]
 
         datetime_format = "%Y-%m-%d_%H:%M:%S"
-        log_path = max([datetime.datetime.strptime(datetime_string, datetime_format) for datetime_string in log_names]).strftime(datetime_format)
+        log_path = max(
+            [
+                datetime.datetime.strptime(datetime_string, datetime_format)
+                for datetime_string in log_names
+            ]
+        ).strftime(datetime_format)
         filename = f"{log_directory_path}/{log_path}/{name}.log"
 
         file_handler = logging.FileHandler(filename=filename, mode="w")  # Handles logging to file
@@ -48,7 +56,7 @@ class Logger:
         logger.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
         logger.addHandler(stream_handler)
-        
+
         return True, Logger(cls.__create_key, logger)
 
     def __init__(self, class_create_private_key, logger):

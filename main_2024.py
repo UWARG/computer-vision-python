@@ -28,6 +28,7 @@ from utilities.workers import worker_manager
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
+
 def main() -> int:
     """
     Main function.
@@ -65,19 +66,23 @@ def main() -> int:
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         LOG_DIRECTORY_PATH = config["log_directory_path"]
-        start_time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
-        VIDEO_INPUT_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
+        VIDEO_INPUT_SAVE_PREFIX = (
+            f"{LOG_DIRECTORY_PATH}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
+        )
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_SAVE_PREFIX = f"{LOG_DIRECTORY_PATH}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
+        DETECT_TARGET_SAVE_PREFIX = (
+            f"{LOG_DIRECTORY_PATH}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
+        )
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
