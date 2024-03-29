@@ -111,7 +111,7 @@ def main() -> int:
 
     result, main_logger = logger.Logger.create("main")
     if result:
-        main_logger.logger.debug("main logger initialized")
+        main_logger.logger.info("main logger initialized")
 
     # Setup
     controller = worker_controller.WorkerController()
