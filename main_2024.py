@@ -181,23 +181,23 @@ def main() -> int:
         ),
     )
 
+    camera_intrinsics = camera_properties.CameraIntrinsics.create(
+        GEOLOCATION_RESOLUTION_X,
+        GEOLOCATION_RESOLUTION_Y,
+        GEOLOCATION_FOV_X,
+        GEOLOCATION_FOV_Y,
+    )
+    camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
+        (GEOLOCATION_CAMERA_POSITION_X, GEOLOCATION_CAMERA_POSITION_Y, GEOLOCATION_CAMERA_POSITION_Z),
+        (GEOLOCATION_CAMERA_ORIENTATION_YAW, GEOLOCATION_CAMERA_ORIENTATION_PITCH, GEOLOCATION_CAMERA_ORIENTATION_ROLL),
+    )
     geolocation_manager = worker_manager.WorkerManager()
     geolocation_manager.create_workers(
         1,
         geolocation_worker.geolocation_worker,
         (
-# tmp - where should I put these camera properties?
-            camera_properties.CameraIntrinsics.create(
-                GEOLOCATION_RESOLUTION_X,
-                GEOLOCATION_RESOLUTION_Y,
-                np.float64(GEOLOCATION_FOV_X),
-                np.float64(GEOLOCATION_FOV_Y),
-# tmp - or should I put: np.pi / 2,
-            ),
-            camera_properties.CameraDroneExtrinsics.create(
-                (GEOLOCATION_CAMERA_POSITION_X, GEOLOCATION_CAMERA_POSITION_Y, GEOLOCATION_CAMERA_POSITION_Z),
-                (GEOLOCATION_CAMERA_ORIENTATION_YAW, GEOLOCATION_CAMERA_ORIENTATION_PITCH, GEOLOCATION_CAMERA_ORIENTATION_ROLL),
-            ),
+            camera_intrinsics,
+            camera_extrinsics,
             data_merge_to_geolocation_queue,
             geolocation_to_main_queue,
             controller,
