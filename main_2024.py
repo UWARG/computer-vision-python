@@ -221,8 +221,8 @@ def main() -> int:
             camera_intrinsics = geolocation_data.camera_intrinsics
             camera_drone_extrinsics = geolocation_data.camera_drone_extrinsics
             for detection_world in geolocation_data:
-                print("geolocation vertices: " + np.array2string(detection_world.vertices))
-                print("geolocation centre: " + np.array2string(detection_world.centre))
+                print("geolocation vertices: " + str(detection_world.vertices.tolist()))
+                print("geolocation centre: " + str(detection_world.centre.tolist()))
                 print("geolocation label: " + str(detection_world.label))
                 print("geolocation confidence: " + str(detection_world.confidence))
                 print("")
