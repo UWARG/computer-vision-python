@@ -218,8 +218,6 @@ def main() -> int:
             geolocation_data = None
 
         if geolocation_data is not None:
-            camera_intrinsics = geolocation_data.camera_intrinsics
-            camera_drone_extrinsics = geolocation_data.camera_drone_extrinsics
             for detection_world in geolocation_data:
                 print("geolocation vertices: " + str(detection_world.vertices.tolist()))
                 print("geolocation centre: " + str(detection_world.centre.tolist()))
