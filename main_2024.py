@@ -3,7 +3,6 @@ For 2023-2024 UAS competition.
 """
 import argparse
 import multiprocessing as mp
-import numpy as np
 import pathlib
 import queue
 
@@ -217,8 +216,8 @@ def main() -> int:
 
         if geolocation_data is not None:
             for detection_world in geolocation_data:
-                print("geolocation vertices: " + np.array2string(detection_world.vertices))
-                print("geolocation centre: " + np.array2string(detection_world.centre))
+                print("geolocation vertices: " + str(detection_world.vertices.tolist()))
+                print("geolocation centre: " + str(detection_world.centre.tolist()))
                 print("geolocation label: " + str(detection_world.label))
                 print("geolocation confidence: " + str(detection_world.confidence))
                 print("")
