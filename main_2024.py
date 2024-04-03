@@ -188,8 +188,16 @@ def main() -> int:
         GEOLOCATION_FOV_Y,
     )
     camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
-        (GEOLOCATION_CAMERA_POSITION_X, GEOLOCATION_CAMERA_POSITION_Y, GEOLOCATION_CAMERA_POSITION_Z),
-        (GEOLOCATION_CAMERA_ORIENTATION_YAW, GEOLOCATION_CAMERA_ORIENTATION_PITCH, GEOLOCATION_CAMERA_ORIENTATION_ROLL),
+        (
+            GEOLOCATION_CAMERA_POSITION_X,
+            GEOLOCATION_CAMERA_POSITION_Y,
+            GEOLOCATION_CAMERA_POSITION_Z,
+        ),
+        (
+            GEOLOCATION_CAMERA_ORIENTATION_YAW,
+            GEOLOCATION_CAMERA_ORIENTATION_PITCH,
+            GEOLOCATION_CAMERA_ORIENTATION_ROLL,
+        ),
     )
     geolocation_manager = worker_manager.WorkerManager()
     geolocation_manager.create_workers(
