@@ -67,7 +67,7 @@ def main() -> int:
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         LOG_DIRECTORY_PATH = config["log_directory_path"]
-        start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
