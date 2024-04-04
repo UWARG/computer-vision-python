@@ -181,13 +181,17 @@ def main() -> int:
         ),
     )
 
-    camera_intrinsics = camera_properties.CameraIntrinsics.create(
+    result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
         GEOLOCATION_RESOLUTION_Y,
         GEOLOCATION_FOV_X,
         GEOLOCATION_FOV_Y,
     )
-    camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
+    if not result:
+        print("Error creating camera intrinsics")
+        return -1
+
+    result, camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
         (
             GEOLOCATION_CAMERA_POSITION_X,
             GEOLOCATION_CAMERA_POSITION_Y,
@@ -199,6 +203,10 @@ def main() -> int:
             GEOLOCATION_CAMERA_ORIENTATION_ROLL,
         ),
     )
+    if not result:
+        print("Error creating camera extrinsics")
+        return -1
+
     geolocation_manager = worker_manager.WorkerManager()
     geolocation_manager.create_workers(
         1,
