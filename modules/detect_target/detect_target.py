@@ -52,6 +52,8 @@ class DetectTarget:
 
         Return: Success and the detections.
         """
+        start_time = time.time()
+
         image = data.image
         predictions = self.__model.predict(
             source=image,
@@ -87,6 +89,22 @@ class DetectTarget:
             if result:
                 assert detection is not None
                 detections.append(detection)
+
+        stop_time = time.time()
+
+        elapsed_time = stop_time - start_time
+      
+        for pred in predictions: 
+            with open('profiler.txt', 'a') as file:
+                speeds = pred.speed
+                preprocess_speed = round(speeds['preprocess'], 3)
+                inference_speed = round(speeds['inference'], 3)
+                postprocess_speed = round(speeds['postprocess'], 3)
+                elapsed_time_ms = elapsed_time * 1000
+                precision_string = "half" if self.__enable_half_precision else "full"
+
+
+                file.write(f"{preprocess_speed}, {inference_speed}, {postprocess_speed}, {elapsed_time_ms}, {precision_string}\n")
 
         # Logging
         if self.__filename_prefix != "":
