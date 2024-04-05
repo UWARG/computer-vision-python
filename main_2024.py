@@ -17,6 +17,8 @@ from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
+from modules.geolocation import geolocation_worker
+from modules.geolocation import camera_properties
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -81,6 +83,17 @@ def main() -> int:
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
+
+        GEOLOCATION_RESOLUTION_X = config["geolocation"]["resolution_x"]
+        GEOLOCATION_RESOLUTION_Y = config["geolocation"]["resolution_y"]
+        GEOLOCATION_FOV_X = config["geolocation"]["fov_x"]
+        GEOLOCATION_FOV_Y = config["geolocation"]["fov_y"]
+        GEOLOCATION_CAMERA_POSITION_X = config["geolocation"]["camera_position_x"]
+        GEOLOCATION_CAMERA_POSITION_Y = config["geolocation"]["camera_position_y"]
+        GEOLOCATION_CAMERA_POSITION_Z = config["geolocation"]["camera_position_z"]
+        GEOLOCATION_CAMERA_ORIENTATION_YAW = config["geolocation"]["camera_orientation_yaw"]
+        GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
+        GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
         # pylint: enable=invalid-name
     except KeyError:
         print("Config key(s) not found")
@@ -104,7 +117,11 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    data_merge_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    geolocation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -159,7 +176,46 @@ def main() -> int:
             DATA_MERGE_TIMEOUT,
             detect_target_to_data_merge_queue,
             flight_interface_to_data_merge_queue,
-            data_merge_to_main_queue,
+            data_merge_to_geolocation_queue,
+            controller,
+        ),
+    )
+
+    result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
+        GEOLOCATION_RESOLUTION_X,
+        GEOLOCATION_RESOLUTION_Y,
+        GEOLOCATION_FOV_X,
+        GEOLOCATION_FOV_Y,
+    )
+    if not result:
+        print("Error creating camera intrinsics")
+        return -1
+
+    result, camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
+        (
+            GEOLOCATION_CAMERA_POSITION_X,
+            GEOLOCATION_CAMERA_POSITION_Y,
+            GEOLOCATION_CAMERA_POSITION_Z,
+        ),
+        (
+            GEOLOCATION_CAMERA_ORIENTATION_YAW,
+            GEOLOCATION_CAMERA_ORIENTATION_PITCH,
+            GEOLOCATION_CAMERA_ORIENTATION_ROLL,
+        ),
+    )
+    if not result:
+        print("Error creating camera extrinsics")
+        return -1
+
+    geolocation_manager = worker_manager.WorkerManager()
+    geolocation_manager.create_workers(
+        1,
+        geolocation_worker.geolocation_worker,
+        (
+            camera_intrinsics,
+            camera_extrinsics,
+            data_merge_to_geolocation_queue,
+            geolocation_to_main_queue,
             controller,
         ),
     )
@@ -169,29 +225,21 @@ def main() -> int:
     detect_target_manager.start_workers()
     flight_interface_manager.start_workers()
     data_merge_manager.start_workers()
+    geolocation_manager.start_workers()
 
     while True:
         try:
-            merged_data = data_merge_to_main_queue.queue.get_nowait()
+            geolocation_data = geolocation_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            merged_data = None
+            geolocation_data = None
 
-        if merged_data is not None:
-            position = merged_data.odometry_local.position
-            orientation = merged_data.odometry_local.orientation.orientation
-            detections = merged_data.detections
-
-            print("merged north: " + str(position.north))
-            print("merged east: " + str(position.east))
-            print("merged down: " + str(position.down))
-            print("merged yaw: " + str(orientation.yaw))
-            print("merged roll: " + str(orientation.roll))
-            print("merged pitch: " + str(orientation.pitch))
-            print("merged detections count: " + str(len(detections)))
-            for detection in detections:
-                print("merged label: " + str(detection.label))
-                print("merged confidence: " + str(detection.confidence))
-            print("")
+        if geolocation_data is not None:
+            for detection_world in geolocation_data:
+                print("geolocation vertices: " + str(detection_world.vertices.tolist()))
+                print("geolocation centre: " + str(detection_world.centre.tolist()))
+                print("geolocation label: " + str(detection_world.label))
+                print("geolocation confidence: " + str(detection_world.confidence))
+                print("")
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             print("Exiting main loop")
@@ -203,12 +251,14 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
-    data_merge_to_main_queue.fill_and_drain_queue()
+    data_merge_to_geolocation_queue.fill_and_drain_queue()
+    geolocation_to_main_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()
     flight_interface_manager.join_workers()
     data_merge_manager.join_workers()
+    geolocation_manager.join_workers()
 
     cv2.destroyAllWindows()  # type: ignore
 

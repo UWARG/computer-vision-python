@@ -22,3 +22,15 @@ flight_interface:
 
 data_merge:
     timeout: 10.0  # seconds
+
+geolocation:
+    resolution_x: 2000
+    resolution_y: 2000
+    fov_x: 1.57079632679
+    fov_y: 1.57079632679
+    camera_position_x: 0.0
+    camera_position_y: 0.0
+    camera_position_z: 0.0
+    camera_orientation_yaw: 0.0
+    camera_orientation_pitch: 0.0
+    camera_orientation_roll: 0.0
