@@ -42,37 +42,44 @@ class Logger:
             print(f"Error when opening file: {exc}")
             return False, None
 
+        try:
+            log_directory_path = config["logger"]["directory_path"]
+            file_datetime_format = config["logger"]["file_datetime_format"]
+            logger_format = config["logger"]["format"]
+            logger_datetime_format = config["logger"]["datetime_format"]
+        except KeyError:
+            print("Config key(s) not found")
+            return False, None
+
         # Get the path to the logs directory.
-        log_directory_path = config["log_directory_path"]
         entries = os.listdir(log_directory_path)
         log_names = [
             entry for entry in entries if os.path.isdir(os.path.join(log_directory_path, entry))
         ]
 
-        # Find the log directory for the current run, which is the most recent timestamp
-        datetime_format = "%Y-%m-%d_%H-%M-%S"
+        # Find the log directory for the current run, which is the most recent timestamp.
         log_path = max(
             log_names,
             key=lambda datetime_string: datetime.datetime.strptime(
-                datetime_string, datetime_format
+                datetime_string, file_datetime_format
             ),
         )
 
         filename = f"{log_directory_path}/{log_path}/{name}.log"
 
-        # Formatting configurations for the logger
+        # Formatting configurations for the logger.
         file_handler = logging.FileHandler(filename=filename, mode="w")  # Handles logging to file.
         stream_handler = logging.StreamHandler()  # Handles logging to terminal.
 
         formatter = logging.Formatter(
-            fmt="%(asctime)s: [%(levelname)s] %(message)s",
-            datefmt="%I:%M:%S",
+            fmt=logger_format,
+            datefmt=logger_datetime_format,
         )
 
         file_handler.setFormatter(formatter)
         stream_handler.setFormatter(formatter)
 
-        # Create a unique logger instance and configure it
+        # Create a unique logger instance and configure it.
         logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
         logger.addHandler(file_handler)
