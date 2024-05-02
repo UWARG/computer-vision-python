@@ -4,20 +4,9 @@ Initiates/continues a search pattern when the drone cannot find a landing pad.
 
 from .. import decision_command
 from .. import odometry_and_time
-from math import tan, pi, ceil, copysign
+from math import tan, pi, ceil
 
 class SearchPattern:
-
-    @staticmethod
-    def __distance_to_target_squared(current_position: odometry_and_time.OdometryAndTime,
-                                     target_posx: float,
-                                     target_posy: float,
-                                     ) -> float:
-        """
-        Returns the square of the distance to it's target location
-        """
-        return ((target_posx - current_position.odometry_data.position.east) ** 2 
-                + (target_posy - current_position.odometry_data.position.north) ** 2)
     """
     Attributes:
         camera_fov_forwards (float): 
@@ -36,6 +25,17 @@ class SearchPattern:
         small_adjustment (float):
             Small distance to ensure drone is facing the correct direction
     """
+    @staticmethod
+    def __distance_to_target_squared(current_position: odometry_and_time.OdometryAndTime,
+                                     target_posx: float,
+                                     target_posy: float,
+                                     ) -> float:
+        """
+        Returns the square of the distance to it's target location
+        """
+        return ((target_posx - current_position.odometry_data.position.east) ** 2
+                + (target_posy - current_position.odometry_data.position.north) ** 2)
+
     def __init__(self,
                  camera_fov_forwards: float,
                  camera_fov_sideways: float,
@@ -45,7 +45,7 @@ class SearchPattern:
                  current_position_y: float,
                  distance_squared_threshold: float,
                  small_adjustment: float):
-        
+
         # Store values to be used later
         self.distance_squared_threshold = distance_squared_threshold
         self.small_adjustment = small_adjustment
@@ -73,7 +73,7 @@ class SearchPattern:
         # Calculate positions for first square
         self.calculate_square_corners()
         self.calculate_side_of_square()
-    
+
     def calculate_square_corners(self):
         """
         Computes the 4 corners of the current square
@@ -132,7 +132,7 @@ class SearchPattern:
 
             if self.current_side_in_square == 0: # If completed this square
                 self.current_square += 1
-                self.calculate_square_corners()  
+                self.calculate_square_corners()
             self.calculate_side_of_square()
 
         # For the first position on a side, we set the drone a small amount off of the position so
@@ -165,10 +165,10 @@ class SearchPattern:
             self.current_pos_on_side += 1
             return True
 
-    def continue_search(self, 
+    def continue_search(self,
                         current_position: odometry_and_time.OdometryAndTime
                         )-> "tuple[bool, decision_command.DecisionCommand]":
-        
+
         """
         Call this function to have the drone go to the next location in the search pattern
         The returned decisionCommand is the next target location, the boolean is if this new
@@ -186,7 +186,7 @@ class SearchPattern:
             new_location = self.set_target_location()
 
         # Send command to go to target.
-        return (new_location, 
+        return (new_location,
                 decision_command.DecisionCommand.create_move_to_absolute_position_command(
                     self.target_posx,
                     self.target_posy,
