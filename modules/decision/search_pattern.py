@@ -45,7 +45,7 @@ class SearchPattern:
                  current_position_y: float,
                  distance_squared_threshold: float,
                  small_adjustment: float):
-
+        
         # Store values to be used later
         self.distance_squared_threshold = distance_squared_threshold
         self.small_adjustment = small_adjustment
@@ -73,7 +73,7 @@ class SearchPattern:
         # Calculate positions for first square
         self.calculate_square_corners()
         self.calculate_side_of_square()
-
+    
     def calculate_square_corners(self):
         """
         Computes the 4 corners of the current square
@@ -89,19 +89,18 @@ class SearchPattern:
             adjustment = (self.search_gap_width - self.search_gap_depth) / 2
 
         # Calculate the corners based on the offsets and the search origin
-        #In order: Top left, top right, bottom right, bottom left.
         self.square_corners = [
-            (self.search_origin_x - square_size - adjustment, self.search_origin_y + square_size),
-            (self.search_origin_x + square_size, self.search_origin_y + square_size + adjustment),
-            (self.search_origin_x + square_size + adjustment, self.search_origin_y - square_size),
-            (self.search_origin_x - square_size, self.search_origin_y - square_size - adjustment),
+            (self.search_origin_x - square_size - adjustment + self.search_gap_width, self.search_origin_y + square_size),  # Top left corner
+            (self.search_origin_x + square_size, self.search_origin_y + square_size + adjustment),  # Top right corner
+            (self.search_origin_x + square_size + adjustment, self.search_origin_y - square_size),  # Bottom right corner
+            (self.search_origin_x - square_size, self.search_origin_y - square_size - adjustment),  # Bottom left corner
         ]
 
     def calculate_side_of_square(self):
         """
         Computes the gaps along the current side of the square
         """
-        # Calculate the current corner and the next corner
+        # Calculate the current corner and the next corner to determine the current side's direction and length
         self.current_corner = self.square_corners[self.current_side_in_square]
         next_corner = self.square_corners[(self.current_side_in_square + 1) % 4]
 
@@ -114,8 +113,16 @@ class SearchPattern:
         else:
             side_length = next_corner[1] - self.current_corner[1]
 
+        if side_length > 0:
+            side_length += (self.search_gap_depth - self.search_gap_width) / 2
+        else:
+            side_length -= (self.search_gap_depth - self.search_gap_width) / 2
+
+        if self.current_side_in_square == 3:
+            side_length += self.search_gap_width
+
         # Calculate the number of stops needed along the current side
-        self.max_pos_on_side = ceil(abs(side_length) / self.search_gap_depth)
+        self.max_pos_on_side = ceil(abs(side_length) / self.search_gap_depth) #+ 1
 
         self.travel_gap = side_length / self.max_pos_on_side
 
@@ -125,14 +132,15 @@ class SearchPattern:
         Returns true if the new target location is a spot we should scan at. If false, it means
         this point is an intermediate point so that the next one is facing the correct direction
         """
+
         # If we've reached the end of the current side, move to the next side
         if self.current_pos_on_side >= self.max_pos_on_side:
             self.current_pos_on_side = -1  # Reset position counter for the new side
-            self.current_side_in_square = (self.current_side_in_square + 1) % 4
+            self.current_side_in_square = (self.current_side_in_square + 1) % 4  # Move to the next side
 
             if self.current_side_in_square == 0: # If completed this square
                 self.current_square += 1
-                self.calculate_square_corners()
+                self.calculate_square_corners()  
             self.calculate_side_of_square()
 
         # For the first position on a side, we set the drone a small amount off of the position so
