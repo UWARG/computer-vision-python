@@ -54,7 +54,7 @@ class SearchPattern:
         self.__search_origin_x = current_position_x
         self.__search_origin_y = current_position_y
 
-        # Drones current target
+        # Drone's current target
         self.__target_posx = self.__search_origin_x
         self.__target_posy = self.__search_origin_y
 
@@ -83,12 +83,14 @@ class SearchPattern:
         square_size = (min(self.__search_gap_depth, self.__search_gap_width)
                  + (self.__current_square - 1) * self.__search_gap_width)
 
-        # If the depth is less than the width, we must adjust the sides of the square
+        # If the depth is less than the width, we apply an offset at each corner to ensure the 
+        # entire area is scanned
         adjustment = 0
         if self.__search_gap_depth < self.__search_width:
             adjustment = (self.__search_gap_width - self.__search_gap_depth) / 2
 
-        # Calculate the corners based on the offsets and the search origin
+        # Calculate the corners based on the offsets and the search origin. Top left corner is moved
+        # right by search_gap_width as the final side of the square will instead cover that part
         self.__square_corners = [
             (self.__search_origin_x - square_size - adjustment + self.__search_gap_width, self.__search_origin_y + square_size),  # Top left corner
             (self.__search_origin_x + square_size, self.__search_origin_y + square_size + adjustment),  # Top right corner
@@ -100,29 +102,33 @@ class SearchPattern:
         """
         Computes the gaps along the current side of the square
         """
-        # Calculate the current corner and the next corner to determine the current side's direction and length
+        # Calculate the positions of the current and next corners
         self.__current_corner = self.__square_corners[self.__current_side_in_square]
         next_corner = self.__square_corners[(self.__current_side_in_square + 1) % 4]
 
-        # Determine if we are moving horizontally or vertically along the current side
+        # Determine if the drone is moving horizontally or vertically along the current side
         self.__moving_horizontally = self.__current_side_in_square % 2 == 0
 
         # Calculate the length of the current side based on the direction of movement
+        # Note that this is signed (e.g. travellingin -x direction has a negative sign)
         if self.__moving_horizontally:
             side_length = next_corner[0] - self.__current_corner[0]
         else:
             side_length = next_corner[1] - self.__current_corner[1]
 
+        # As calculated, it is the distance to the next corner, however, we want to stop before
+        # we actually reach the next side as the area will be covered by it
         if side_length > 0:
             side_length += (self.__search_gap_depth - self.__search_gap_width) / 2
         else:
             side_length -= (self.__search_gap_depth - self.__search_gap_width) / 2
 
+        # If we are on the last side of the square, we will continue until the next square to spiral
         if self.__current_side_in_square == 3:
             side_length += self.__search_gap_width
 
         # Calculate the number of stops needed along the current side
-        self.__max_pos_on_side = ceil(abs(side_length) / self.__search_gap_depth) #+ 1
+        self.__max_pos_on_side = ceil(abs(side_length) / self.__search_gap_depth)
 
         self.__travel_gap = side_length / self.__max_pos_on_side
 
@@ -140,7 +146,8 @@ class SearchPattern:
 
             if self.__current_side_in_square == 0: # If completed this square
                 self.__current_square += 1
-                self.__calculate_square_corners()  
+                self.__calculate_square_corners()
+
             self.__calculate_side_of_square()
 
         # For the first position on a side, we set the drone a small amount off of the position so
@@ -159,6 +166,7 @@ class SearchPattern:
                 self.__target_posx = self.__current_corner[0]
                 self.__target_posy = self.__current_corner[1] - self.__small_adjustment
 
+            # Increment the position counter
             self.__current_pos_on_side += 1
             return False
         else:
@@ -188,14 +196,14 @@ class SearchPattern:
 
         # If it is at it's current target location, update to the next target.
         if (SearchPattern.__distance_to_target_squared(current_position,
-                                                      self.target_posx,
-                                                      self.target_posy)
+                                                      self.__target_posx,
+                                                      self.__target_posy)
                                                       < self.__distance_squared_threshold):
             new_location = self.set_target_location()
 
         # Send command to go to target.
         return (new_location,
                 decision_command.DecisionCommand.create_move_to_absolute_position_command(
-                    self.target_posx,
-                    self.target_posy,
+                    self.__target_posx,
+                    self.__target_posy,
                     current_position.odometry_data.position.down))
