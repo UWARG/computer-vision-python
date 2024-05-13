@@ -124,9 +124,12 @@ class TestSimilar:
         them is equal to the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(1, 1, 0)[1]
-        expected = False
+        assert obj_1 is not None
 
+        obj_2 = object_in_world.ObjectInWorld.create(1, 1, 0)[1]
+        assert obj_2 is not None
+
+        expected = False
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
             obj_1,
             obj_2,
@@ -141,7 +144,11 @@ class TestSimilar:
         them is equal to the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        assert obj_1 is not None
+
         obj_2 = object_in_world.ObjectInWorld.create(-1, -1, 0)[1]
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -158,7 +165,11 @@ class TestSimilar:
         them is less than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        assert obj_1 is not None
+        
         obj_2 = object_in_world.ObjectInWorld.create(0.5, 0.5, 0)[1]
+        assert obj_2 is not None
+
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -175,7 +186,11 @@ class TestSimilar:
         them is less than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        assert obj_1 is not None
+
         obj_2 = object_in_world.ObjectInWorld.create(-0.5, -0.5, 0)[1]
+        assert obj_2 is not None
+
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -192,7 +207,11 @@ class TestSimilar:
         them is more than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        assert obj_1 is not None
+
         obj_2 = object_in_world.ObjectInWorld.create(2, 2, 0)[1]
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -209,7 +228,11 @@ class TestSimilar:
         them is more than the distance threshold.
         """
         obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
+        assert obj_1 is not None
+
         obj_2 = object_in_world.ObjectInWorld.create(-2, -2, 0)[1]
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
