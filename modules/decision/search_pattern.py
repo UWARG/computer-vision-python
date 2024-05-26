@@ -80,6 +80,8 @@ class SearchPattern:
         self.__search_gap_width = self.__search_width * (1 - search_overlap)
         self.__search_gap_depth = self.__search_depth * (1 - search_overlap)
 
+        self.__new_location = True
+
         # Calculate positions for first square
         self.__calculate_square_corners()
         self.__calculate_side_of_square()
@@ -220,8 +222,6 @@ class SearchPattern:
         again after arriving at the destination to get the point to scan at)
         """
 
-        new_location = True
-
         # If it is at it's current target location, update to the next target.
         if (
             SearchPattern.__distance_to_target_squared(
@@ -229,11 +229,11 @@ class SearchPattern:
             )
             < self.__distance_squared_threshold
         ):
-            new_location = self.set_target_location()
+            self.__new_location = self.set_target_location()
 
         # Send command to go to target.
         return (
-            new_location,
+            self.__new_location,
             decision_command.DecisionCommand.create_move_to_absolute_position_command(
                 self.__target_posx,
                 self.__target_posy,
