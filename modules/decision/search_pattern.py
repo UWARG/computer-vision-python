@@ -6,17 +6,18 @@ from math import tan, pi, ceil
 from .. import decision_command
 from .. import odometry_and_time
 
+
 class SearchPattern:
     """
     Attributes:
-        camera_fov_forwards (float): 
+        camera_fov_forwards (float):
             Camera's field of view, measured in degrees, in forwards/backwards direction
         camera_fov_sideways (float):
             Camera's field of view, measured in degrees, in left/right direction
-        search_height (float): 
+        search_height (float):
             The altitude at which the search is conducted. This is used to calculate the pattern.
             It does not make the drone go to this height
-        search_overlap (float): 
+        search_overlap (float):
             Overlap between passes, between 0 and 1.
         current_position (OdometryAndTime):
             The drone's current position.
@@ -25,27 +26,32 @@ class SearchPattern:
         small_adjustment (float):
             Small distance to ensure drone is facing the correct direction
     """
+
     @staticmethod
-    def __distance_to_target_squared(current_position: odometry_and_time.OdometryAndTime,
-                                     target_posx: float,
-                                     target_posy: float,
-                                     ) -> float:
+    def __distance_to_target_squared(
+        current_position: odometry_and_time.OdometryAndTime,
+        target_posx: float,
+        target_posy: float,
+    ) -> float:
         """
         Returns the square of the distance to it's target location
         """
-        return ((target_posx - current_position.odometry_data.position.east) ** 2
-                + (target_posy - current_position.odometry_data.position.north) ** 2)
+        return (target_posx - current_position.odometry_data.position.east) ** 2 + (
+            target_posy - current_position.odometry_data.position.north
+        ) ** 2
 
-    def __init__(self,
-                 camera_fov_forwards: float,
-                 camera_fov_sideways: float,
-                 search_height: float,
-                 search_overlap: float,
-                 current_position_x: float,
-                 current_position_y: float,
-                 distance_squared_threshold: float,
-                 small_adjustment: float):
-        
+    def __init__(
+        self,
+        camera_fov_forwards: float,
+        camera_fov_sideways: float,
+        search_height: float,
+        search_overlap: float,
+        current_position_x: float,
+        current_position_y: float,
+        distance_squared_threshold: float,
+        small_adjustment: float,
+    ):
+
         # Set local constants
         self.__distance_squared_threshold = distance_squared_threshold
         self.__small_adjustment = small_adjustment
@@ -65,25 +71,31 @@ class SearchPattern:
 
         # Calculate the gap between positions search_gap_width is the left/right distance
         # search_gap_depth is the forwards/backwards distance
-        self.__search_width = 2 * search_height * tan((camera_fov_sideways * pi / 180) / 2)
-        self.__search_depth = 2 * search_height * tan((camera_fov_forwards * pi / 180) / 2)
+        self.__search_width = (
+            2 * search_height * tan((camera_fov_sideways * pi / 180) / 2)
+        )
+        self.__search_depth = (
+            2 * search_height * tan((camera_fov_forwards * pi / 180) / 2)
+        )
         self.__search_gap_width = self.__search_width * (1 - search_overlap)
         self.__search_gap_depth = self.__search_depth * (1 - search_overlap)
 
         # Calculate positions for first square
         self.__calculate_square_corners()
         self.__calculate_side_of_square()
-    
+
     def __calculate_square_corners(self):
         """
         Computes the 4 corners of the current square
         """
         # Compute the size of square. First square will be a distance of the minimum of width and
         # depth, each subsequent square will be a width larger
-        square_size = (min(self.__search_gap_depth, self.__search_gap_width)
-                 + (self.__current_square - 1) * self.__search_gap_width)
+        square_size = (
+            min(self.__search_gap_depth, self.__search_gap_width)
+            + (self.__current_square - 1) * self.__search_gap_width
+        )
 
-        # If the depth is less than the width, we apply an offset at each corner to ensure the 
+        # If the depth is less than the width, we apply an offset at each corner to ensure the
         # entire area is scanned
         adjustment = 0
         if self.__search_gap_depth < self.__search_width:
@@ -92,10 +104,25 @@ class SearchPattern:
         # Calculate the corners based on the offsets and the search origin. Top left corner is moved
         # right by search_gap_width as the final side of the square will instead cover that part
         self.__square_corners = [
-            (self.__search_origin_x - square_size - adjustment + self.__search_gap_width, self.__search_origin_y + square_size),  # Top left corner
-            (self.__search_origin_x + square_size, self.__search_origin_y + square_size + adjustment),  # Top right corner
-            (self.__search_origin_x + square_size + adjustment, self.__search_origin_y - square_size),  # Bottom right corner
-            (self.__search_origin_x - square_size, self.__search_origin_y - square_size - adjustment),  # Bottom left corner
+            (
+                self.__search_origin_x
+                - square_size
+                - adjustment
+                + self.__search_gap_width,
+                self.__search_origin_y + square_size,
+            ),  # Top left corner
+            (
+                self.__search_origin_x + square_size,
+                self.__search_origin_y + square_size + adjustment,
+            ),  # Top right corner
+            (
+                self.__search_origin_x + square_size + adjustment,
+                self.__search_origin_y - square_size,
+            ),  # Bottom right corner
+            (
+                self.__search_origin_x - square_size,
+                self.__search_origin_y - square_size - adjustment,
+            ),  # Bottom left corner
         ]
 
     def __calculate_side_of_square(self):
@@ -142,9 +169,11 @@ class SearchPattern:
         # If we've reached the end of the current side, move to the next side
         if self.__current_pos_on_side >= self.__max_pos_on_side:
             self.__current_pos_on_side = -1  # Reset position counter for the new side
-            self.__current_side_in_square = (self.__current_side_in_square + 1) % 4  # Move to the next side
+            self.__current_side_in_square = (
+                self.__current_side_in_square + 1
+            ) % 4  # Move to the next side
 
-            if self.__current_side_in_square == 0: # If completed this square
+            if self.__current_side_in_square == 0:  # If completed this square
                 self.__current_square += 1
                 self.__calculate_square_corners()
 
@@ -169,22 +198,21 @@ class SearchPattern:
             # Increment the position counter
             self.__current_pos_on_side += 1
             return False
+
+        # Calculate the next target position based on the current fraction of the side covered
+        dist_to_move = self.__travel_gap * self.__current_pos_on_side
+        if self.__moving_horizontally:
+            self.__target_posx = self.__current_corner[0] + dist_to_move
         else:
-            # Calculate the next target position based on the current fraction of the side covered
-            dist_to_move = self.__travel_gap * self.__current_pos_on_side
-            if self.__moving_horizontally:
-                self.__target_posx = self.__current_corner[0] + dist_to_move
-            else:
-                self.__target_posy = self.__current_corner[1] + dist_to_move
+            self.__target_posy = self.__current_corner[1] + dist_to_move
 
-            # Increment the position counter
-            self.__current_pos_on_side += 1
-            return True
+        # Increment the position counter
+        self.__current_pos_on_side += 1
+        return True
 
-    def continue_search(self,
-                        current_position: odometry_and_time.OdometryAndTime
-                        )-> "tuple[bool, decision_command.DecisionCommand]":
-
+    def continue_search(
+        self, current_position: odometry_and_time.OdometryAndTime
+    ) -> "tuple[bool, decision_command.DecisionCommand]":
         """
         Call this function to have the drone go to the next location in the search pattern
         The returned decisionCommand is the next target location, the boolean is if this new
@@ -195,15 +223,20 @@ class SearchPattern:
         new_location = True
 
         # If it is at it's current target location, update to the next target.
-        if (SearchPattern.__distance_to_target_squared(current_position,
-                                                      self.__target_posx,
-                                                      self.__target_posy)
-                                                      < self.__distance_squared_threshold):
+        if (
+            SearchPattern.__distance_to_target_squared(
+                current_position, self.__target_posx, self.__target_posy
+            )
+            < self.__distance_squared_threshold
+        ):
             new_location = self.set_target_location()
 
         # Send command to go to target.
-        return (new_location,
-                decision_command.DecisionCommand.create_move_to_absolute_position_command(
-                    self.__target_posx,
-                    self.__target_posy,
-                    current_position.odometry_data.position.down))
+        return (
+            new_location,
+            decision_command.DecisionCommand.create_move_to_absolute_position_command(
+                self.__target_posx,
+                self.__target_posy,
+                current_position.odometry_data.position.down,
+            ),
+        )
