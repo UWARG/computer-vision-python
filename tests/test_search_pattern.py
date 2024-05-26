@@ -21,17 +21,23 @@ def drone_odometry():
     """
     Creates an OdometryAndTime instance representing the drone's current position.
     """
-    position = drone_odometry_local.DronePositionLocal.create(0.0, 0.0, -SEARCH_HEIGHT)[1]
-    orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[1]
-    odometry_data = drone_odometry_local.DroneOdometryLocal.create(position, orientation)[1]
+    position = drone_odometry_local.DronePositionLocal.create(0.0, 0.0, -SEARCH_HEIGHT)[
+        1
+    ]
+    orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[
+        1
+    ]
+    odometry_data = drone_odometry_local.DroneOdometryLocal.create(
+        position, orientation
+    )[1]
 
     result, state = odometry_and_time.OdometryAndTime.create(odometry_data)
     assert result
     yield state
 
 
-#@pytest.fixture()
-#def search_maker(drone_odometry):
+# @pytest.fixture()
+# def search_maker(drone_odometry):
 #    """
 #    Initializes a SearchPattern instance.
 #    """
@@ -45,7 +51,7 @@ def drone_odometry():
 #    yield search_pattern_instance
 #
 #
-#class TestSearchPattern:
+# class TestSearchPattern:
 #    """
 #    Tests for the SearchPattern class methods
 #    """
@@ -63,7 +69,7 @@ def drone_odometry():
 #        """
 #        Test continue_search method when drone is not at the target location.
 #        """
-#        search_maker.set_target_location() 
+#        search_maker.set_target_location()
 #        command = search_maker.continue_search(drone_odometry)
 #
 #        assert command.get_command_type() == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
