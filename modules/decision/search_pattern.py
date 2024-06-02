@@ -3,8 +3,22 @@ Initiates/continues a search pattern when the drone cannot find a landing pad.
 """
 
 from math import tan, pi, ceil
+from enum import Enum
 from .. import decision_command
 from .. import odometry_and_time
+
+
+class Corner(Enum):
+    TOP_LEFT = "top_left"
+    TOP_RIGHT = "top_right"
+    BOTTOM_RIGHT = "bottom_right"
+    BOTTOM_LEFT = "bottom_left"
+
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 
 class SearchPattern:
@@ -66,25 +80,38 @@ class SearchPattern:
 
         # Initialize the drone to the first position in the search pattern
         self.__current_square = 1
-        self.__current_side_in_square = 0
+        self.__current_side_in_square = Corner.TOP_LEFT
         self.__current_pos_on_side = -1
 
         # Calculate the gap between positions search_gap_width is the left/right distance
         # search_gap_depth is the forwards/backwards distance
-        self.__search_width = (
+        self.__search_gap_width = (
             2 * search_height * tan((camera_fov_sideways * pi / 180) / 2)
-        )
-        self.__search_depth = (
+        ) * (1 - search_overlap)
+        self.__search_gap_depth = (
             2 * search_height * tan((camera_fov_forwards * pi / 180) / 2)
-        )
-        self.__search_gap_width = self.__search_width * (1 - search_overlap)
-        self.__search_gap_depth = self.__search_depth * (1 - search_overlap)
+        ) * (1 - search_overlap)
 
+        # This variable is returned to signal whether the target location is one that should be
+        # scanned, or just an intermediate point in its travel to the next
         self.__new_location = True
 
         # Calculate positions for first square
         self.__calculate_square_corners()
         self.__calculate_side_of_square()
+
+    def __get_next_corner(self, corner: Corner) -> Corner:
+        """
+        Takes a corner and returns the next one in the square
+        """
+        if corner == Corner.TOP_LEFT:
+            return Corner.TOP_RIGHT
+        if corner == Corner.TOP_RIGHT:
+            return Corner.BOTTOM_RIGHT
+        if corner == Corner.BOTTOM_RIGHT:
+            return Corner.BOTTOM_LEFT
+        if corner == Corner.BOTTOM_LEFT:
+            return Corner.TOP_LEFT
 
     def __calculate_square_corners(self):
         """
@@ -99,33 +126,35 @@ class SearchPattern:
 
         # If the depth is less than the width, we apply an offset at each corner to ensure the
         # entire area is scanned
-        adjustment = 0
-        if self.__search_gap_depth < self.__search_width:
+
+        if self.__search_gap_depth < self.__search_gap_width:
             adjustment = (self.__search_gap_width - self.__search_gap_depth) / 2
+        else:
+            adjustment = 0
 
         # Calculate the corners based on the offsets and the search origin. Top left corner is moved
         # right by search_gap_width as the final side of the square will instead cover that part
-        self.__square_corners = [
-            (
+        self.__square_corners = {
+            Corner.TOP_LEFT: Point(
                 self.__search_origin_x
                 - square_size
                 - adjustment
                 + self.__search_gap_width,
                 self.__search_origin_y + square_size,
-            ),  # Top left corner
-            (
+            ),
+            Corner.TOP_RIGHT: Point(
                 self.__search_origin_x + square_size,
                 self.__search_origin_y + square_size + adjustment,
-            ),  # Top right corner
-            (
+            ),
+            Corner.BOTTOM_RIGHT: Point(
                 self.__search_origin_x + square_size + adjustment,
                 self.__search_origin_y - square_size,
-            ),  # Bottom right corner
-            (
+            ),
+            Corner.BOTTOM_LEFT: Point(
                 self.__search_origin_x - square_size,
                 self.__search_origin_y - square_size - adjustment,
-            ),  # Bottom left corner
-        ]
+            ),
+        }
 
     def __calculate_side_of_square(self):
         """
@@ -133,17 +162,22 @@ class SearchPattern:
         """
         # Calculate the positions of the current and next corners
         self.__current_corner = self.__square_corners[self.__current_side_in_square]
-        next_corner = self.__square_corners[(self.__current_side_in_square + 1) % 4]
+        next_corner = self.__square_corners[
+            self.__get_next_corner(self.__current_side_in_square)
+        ]
 
         # Determine if the drone is moving horizontally or vertically along the current side
-        self.__moving_horizontally = self.__current_side_in_square % 2 == 0
+        self.__moving_horizontally = (
+            self.__current_side_in_square == Corner.TOP_LEFT
+            or self.__current_side_in_square == Corner.BOTTOM_RIGHT
+        )
 
         # Calculate the length of the current side based on the direction of movement
         # Note that this is signed (e.g. travellingin -x direction has a negative sign)
         if self.__moving_horizontally:
-            side_length = next_corner[0] - self.__current_corner[0]
+            side_length = next_corner.x - self.__current_corner.x
         else:
-            side_length = next_corner[1] - self.__current_corner[1]
+            side_length = next_corner.y - self.__current_corner.y
 
         # As calculated, it is the distance to the next corner, however, we want to stop before
         # we actually reach the next side as the area will be covered by it
@@ -153,7 +187,7 @@ class SearchPattern:
             side_length -= (self.__search_gap_depth - self.__search_gap_width) / 2
 
         # If we are on the last side of the square, we will continue until the next square to spiral
-        if self.__current_side_in_square == 3:
+        if self.__current_side_in_square == Corner.BOTTOM_LEFT:
             side_length += self.__search_gap_width
 
         # Calculate the number of stops needed along the current side
@@ -171,11 +205,13 @@ class SearchPattern:
         # If we've reached the end of the current side, move to the next side
         if self.__current_pos_on_side >= self.__max_pos_on_side:
             self.__current_pos_on_side = -1  # Reset position counter for the new side
-            self.__current_side_in_square = (
-                self.__current_side_in_square + 1
-            ) % 4  # Move to the next side
+            self.__current_side_in_square = self.__get_next_corner(
+                self.__current_side_in_square
+            )
 
-            if self.__current_side_in_square == 0:  # If completed this square
+            if (
+                self.__current_side_in_square == Corner.TOP_LEFT
+            ):  # If completed this square
                 self.__current_square += 1
                 self.__calculate_square_corners()
 
@@ -184,29 +220,31 @@ class SearchPattern:
         # For the first position on a side, we set the drone a small amount off of the position so
         # that the next move turns the drone to face the correct direction
         if self.__current_pos_on_side == -1:
-            if self.__current_side_in_square == 0:
-                self.__target_posx = self.__current_corner[0] - self.__small_adjustment
-                self.__target_posy = self.__current_corner[1]
-            elif self.__current_side_in_square == 1:
-                self.__target_posx = self.__current_corner[0]
-                self.__target_posy = self.__current_corner[1] + self.__small_adjustment
-            elif self.__current_side_in_square == 2:
-                self.__target_posx = self.__current_corner[0] + self.__small_adjustment
-                self.__target_posy = self.__current_corner[1]
-            elif self.__current_side_in_square == 3:
-                self.__target_posx = self.__current_corner[0]
-                self.__target_posy = self.__current_corner[1] - self.__small_adjustment
+            if self.__current_side_in_square == Corner.TOP_LEFT:
+                self.__target_posx = self.__current_corner.x - self.__small_adjustment
+                self.__target_posy = self.__current_corner.y
+            elif self.__current_side_in_square == Corner.TOP_RIGHT:
+                self.__target_posx = self.__current_corner.x
+                self.__target_posy = self.__current_corner.y + self.__small_adjustment
+            elif self.__current_side_in_square == Corner.BOTTOM_RIGHT:
+                self.__target_posx = self.__current_corner.x + self.__small_adjustment
+                self.__target_posy = self.__current_corner.y
+            elif self.__current_side_in_square == Corner.BOTTOM_LEFT:
+                self.__target_posx = self.__current_corner.x
+                self.__target_posy = self.__current_corner.y - self.__small_adjustment
 
             # Increment the position counter
             self.__current_pos_on_side += 1
             return False
 
         # Calculate the next target position based on the current fraction of the side covered
-        dist_to_move = self.__travel_gap * self.__current_pos_on_side
-        if self.__moving_horizontally:
-            self.__target_posx = self.__current_corner[0] + dist_to_move
+        if self.__current_pos_on_side == 0:
+            self.__target_posx = self.__current_corner.x
+            self.__target_posy = self.__current_corner.y
+        elif self.__moving_horizontally:
+            self.__target_posx += self.__travel_gap
         else:
-            self.__target_posy = self.__current_corner[1] + dist_to_move
+            self.__target_posy += self.__travel_gap
 
         # Increment the position counter
         self.__current_pos_on_side += 1
