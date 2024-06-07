@@ -66,7 +66,7 @@ def main() -> int:
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        LOG_DIRECTORY_PATH = config["log_directory_path"]
+        LOG_DIRECTORY_PATH = config["logger"]["directory_path"]
         start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
