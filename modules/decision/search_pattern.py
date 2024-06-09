@@ -7,8 +7,15 @@ from enum import Enum
 from .. import decision_command
 from .. import odometry_and_time
 
+# Class requires more than the default 7 allowed instance attributes
+# pylint: disable=too-many-instance-attributes
+
 
 class Corner(Enum):
+    """
+    Enum class used for square_corners object to acess the 4 corners
+    """
+
     TOP_LEFT = "top_left"
     TOP_RIGHT = "top_right"
     BOTTOM_RIGHT = "bottom_right"
@@ -16,7 +23,11 @@ class Corner(Enum):
 
 
 class Point:
-    def __init__(self, x, y):
+    """
+    2D cartesian points containing and x and y coordinate. Used in the square_corners object
+    """
+
+    def __init__(self, x: float, y: float) -> None:
         self.x = x
         self.y = y
 
@@ -64,7 +75,7 @@ class SearchPattern:
         current_position_y: float,
         distance_squared_threshold: float,
         small_adjustment: float,
-    ):
+    ) -> None:
 
         # Set local constants
         self.__distance_squared_threshold = distance_squared_threshold
@@ -110,10 +121,9 @@ class SearchPattern:
             return Corner.BOTTOM_RIGHT
         if corner == Corner.BOTTOM_RIGHT:
             return Corner.BOTTOM_LEFT
-        if corner == Corner.BOTTOM_LEFT:
-            return Corner.TOP_LEFT
+        return Corner.TOP_LEFT
 
-    def __calculate_square_corners(self):
+    def __calculate_square_corners(self) -> None:
         """
         Computes the 4 corners of the current square
         """
@@ -136,10 +146,7 @@ class SearchPattern:
         # right by search_gap_width as the final side of the square will instead cover that part
         self.__square_corners = {
             Corner.TOP_LEFT: Point(
-                self.__search_origin_x
-                - square_size
-                - adjustment
-                + self.__search_gap_width,
+                self.__search_origin_x - square_size - adjustment + self.__search_gap_width,
                 self.__search_origin_y + square_size,
             ),
             Corner.TOP_RIGHT: Point(
@@ -156,20 +163,18 @@ class SearchPattern:
             ),
         }
 
-    def __calculate_side_of_square(self):
+    def __calculate_side_of_square(self) -> None:
         """
         Computes the gaps along the current side of the square
         """
         # Calculate the positions of the current and next corners
         self.__current_corner = self.__square_corners[self.__current_side_in_square]
-        next_corner = self.__square_corners[
-            self.__get_next_corner(self.__current_side_in_square)
-        ]
+        next_corner = self.__square_corners[self.__get_next_corner(self.__current_side_in_square)]
 
         # Determine if the drone is moving horizontally or vertically along the current side
-        self.__moving_horizontally = (
-            self.__current_side_in_square == Corner.TOP_LEFT
-            or self.__current_side_in_square == Corner.BOTTOM_RIGHT
+        self.__moving_horizontally = self.__current_side_in_square in (
+            Corner.TOP_LEFT,
+            Corner.BOTTOM_RIGHT,
         )
 
         # Calculate the length of the current side based on the direction of movement
@@ -195,23 +200,18 @@ class SearchPattern:
 
         self.__travel_gap = side_length / self.__max_pos_on_side
 
-    def set_target_location(self):
+    def set_target_location(self) -> bool:
         """
         Calculate and set the next target location for the drone to move to.
         Returns true if the new target location is a spot we should scan at. If false, it means
         this point is an intermediate point so that the next one is facing the correct direction
         """
-
         # If we've reached the end of the current side, move to the next side
         if self.__current_pos_on_side >= self.__max_pos_on_side:
             self.__current_pos_on_side = -1  # Reset position counter for the new side
-            self.__current_side_in_square = self.__get_next_corner(
-                self.__current_side_in_square
-            )
+            self.__current_side_in_square = self.__get_next_corner(self.__current_side_in_square)
 
-            if (
-                self.__current_side_in_square == Corner.TOP_LEFT
-            ):  # If completed this square
+            if self.__current_side_in_square == Corner.TOP_LEFT:  # If completed this square
                 self.__current_square += 1
                 self.__calculate_square_corners()
 

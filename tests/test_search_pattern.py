@@ -2,6 +2,7 @@
 Tests the SearchPattern class
 """
 
+from typing import Generator
 import pytest
 
 from modules import decision_command
@@ -12,9 +13,12 @@ from modules.decision import search_pattern
 DISTANCE_SQUARED_THRESHOLD = 2.0
 SMALL_ADJUSTMENT = 1
 
+# Test functions use test fixture signature names and access class privates
+# pylint: disable=redefined-outer-name
+
 
 @pytest.fixture()
-def search_pattern_width_greater_depth():
+def search_pattern_width_greater_depth() -> Generator[search_pattern.SearchPattern, None, None]:
     """
     Initializes a SearchPattern instance.
     """
@@ -32,7 +36,7 @@ def search_pattern_width_greater_depth():
 
 
 @pytest.fixture()
-def search_pattern_depth_greater_width():
+def search_pattern_depth_greater_width() -> Generator[search_pattern.SearchPattern, None, None]:
     """
     Initializes a SearchPattern instance.
     """
@@ -50,42 +54,47 @@ def search_pattern_depth_greater_width():
 
 
 @pytest.fixture()
-def drone_odometry():
-    def create_drone_odometry(pos_x, pos_y, depth):
+def drone_odometry() -> Generator[odometry_and_time.OdometryAndTime, None, None]:
+    """
+    Pytest Fixture for coordinates of drone
+    """
+
+    def create_drone_odometry(
+        pos_x: float, pos_y: float, depth: float
+    ) -> odometry_and_time.OdometryAndTime:
         """
         Creates an OdometryAndTime instance representing the drone's current position.
         """
-        position = drone_odometry_local.DronePositionLocal.create(pos_y, pos_x, -depth)[
-            1
-        ]
-        orientation = drone_odometry_local.DroneOrientationLocal.create_new(
-            0.0, 0.0, 0.0
-        )[1]
-        odometry_data = drone_odometry_local.DroneOdometryLocal.create(
-            position, orientation
-        )[1]
+        position = drone_odometry_local.DronePositionLocal.create(pos_y, pos_x, -depth)[1]
+        orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[1]
+        odometry_data = drone_odometry_local.DroneOdometryLocal.create(position, orientation)[1]
 
-        result, odometry = odometry_and_time.OdometryAndTime.create(odometry_data)
+        odometry = odometry_and_time.OdometryAndTime.create(odometry_data)[1]
         return odometry
 
     return create_drone_odometry
 
 
 def assert_move_command(
-    move, expected_newPos, expected_target_x, expected_target_y, expected_target_z
-):
-    expected_command_type = (
-        decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
-    )
+    move: decision_command.DecisionCommand,
+    expected_new_pos: bool,
+    expected_target_x: float,
+    expected_target_y: float,
+    expected_target_z: float,
+) -> None:
+    """
+    Compares the passed in move command with the expected values for this command
+    """
+    expected_command_type = decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION
 
-    actual_newPos = move[0]
+    actual_new_pos = move[0]
     actual_target_pos = move[1].get_command_position()
     actual_targetx = actual_target_pos[0]
     actual_targety = actual_target_pos[1]
     actual_targetz = actual_target_pos[2]
     actual_command_type = move[1].get_command_type()
 
-    assert actual_newPos == expected_newPos
+    assert actual_new_pos == expected_new_pos
     assert actual_targetx == pytest.approx(expected_target_x, 0.1)
     assert actual_targety == pytest.approx(expected_target_y, 0.1)
     assert actual_targetz == pytest.approx(expected_target_z, 0.1)
@@ -98,8 +107,10 @@ class TestSearchPattern:
     """
 
     def test_width_greater_depth_normal(
-        self, search_pattern_width_greater_depth, drone_odometry
-    ):
+        self,
+        search_pattern_width_greater_depth: search_pattern.SearchPattern,
+        drone_odometry: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test first 20 positions of search pattern where drone has reached point before being called
         """
@@ -131,9 +142,7 @@ class TestSearchPattern:
             current_position = drone_odometry(
                 expected_coordinates[i][0], expected_coordinates[i][1], 100
             )
-            move_command = search_pattern_width_greater_depth.continue_search(
-                current_position
-            )
+            move_command = search_pattern_width_greater_depth.continue_search(current_position)
             assert_move_command(
                 move_command,
                 expected_coordinates[i + 1][2],
@@ -143,8 +152,10 @@ class TestSearchPattern:
             )
 
     def test_depth_greater_width_normal(
-        self, search_pattern_depth_greater_width, drone_odometry
-    ):
+        self,
+        search_pattern_depth_greater_width: search_pattern.SearchPattern,
+        drone_odometry: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test first 20 positions of search pattern where drone has reached point before being called
         """
@@ -176,9 +187,7 @@ class TestSearchPattern:
             current_position = drone_odometry(
                 expected_coordinates[i][0], expected_coordinates[i][1], 50
             )
-            move_command = search_pattern_depth_greater_width.continue_search(
-                current_position
-            )
+            move_command = search_pattern_depth_greater_width.continue_search(current_position)
             assert_move_command(
                 move_command,
                 expected_coordinates[i + 1][2],
@@ -188,21 +197,19 @@ class TestSearchPattern:
             )
 
     def test_return_to_pattern(
-        self, search_pattern_width_greater_depth, drone_odometry
-    ):
+        self,
+        search_pattern_width_greater_depth: search_pattern.SearchPattern,
+        drone_odometry: odometry_and_time.OdometryAndTime,
+    ) -> None:
         """
         Test behaviour when drone has not reached the next waypoint
         """
         current_position = drone_odometry(100, 50, 100)
-        move_command = search_pattern_width_greater_depth.continue_search(
-            current_position
-        )
+        move_command = search_pattern_width_greater_depth.continue_search(current_position)
         assert_move_command(move_command, False, 125.75, 92.87, -100)
 
         # Pretend drone goes off to search
         current_position = drone_odometry(200, 150, 100)
-        move_command = search_pattern_width_greater_depth.continue_search(
-            current_position
-        )
+        move_command = search_pattern_width_greater_depth.continue_search(current_position)
         # Should still have same target location
         assert_move_command(move_command, False, 125.75, 92.87, -100)
