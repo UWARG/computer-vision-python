@@ -123,10 +123,15 @@ class TestSimilar:
         Test case where the second landing pad has positive coordinates and the distance between
         them is equal to the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(1, 1, 0)[1]
-        expected = False
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
 
+        result, obj_2 = object_in_world.ObjectInWorld.create(1, 1, 0)
+        assert result
+        assert obj_2 is not None
+
+        expected = False
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
             obj_1,
             obj_2,
@@ -140,8 +145,14 @@ class TestSimilar:
         Test case where the second landing pad has negative coordinates and the distance between
         them is equal to the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(-1, -1, 0)[1]
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
+
+        result, obj_2 = object_in_world.ObjectInWorld.create(-1, -1, 0)
+        assert result
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -157,8 +168,14 @@ class TestSimilar:
         Test case where the second landing pad has positive coordinates and the distance between
         them is less than the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(0.5, 0.5, 0)[1]
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
+
+        result, obj_2 = object_in_world.ObjectInWorld.create(0.5, 0.5, 0)
+        assert result
+        assert obj_2 is not None
+
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -174,8 +191,14 @@ class TestSimilar:
         Test case where the second landing pad has negative coordinates and the distance between
         them is less than the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(-0.5, -0.5, 0)[1]
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
+
+        result, obj_2 = object_in_world.ObjectInWorld.create(-0.5, -0.5, 0)
+        assert result
+        assert obj_2 is not None
+
         expected = True
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -191,8 +214,14 @@ class TestSimilar:
         Test case where the second landing pad has positive coordinates and the distance between
         them is more than the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(2, 2, 0)[1]
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
+
+        result, obj_2 = object_in_world.ObjectInWorld.create(2, 2, 0)
+        assert result
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
@@ -208,8 +237,14 @@ class TestSimilar:
         Test case where the second landing pad has negative coordinates and the distance between
         them is more than the distance threshold.
         """
-        obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)[1]
-        obj_2 = object_in_world.ObjectInWorld.create(-2, -2, 0)[1]
+        result, obj_1 = object_in_world.ObjectInWorld.create(0, 0, 0)
+        assert result
+        assert obj_1 is not None
+
+        result, obj_2 = object_in_world.ObjectInWorld.create(-2, -2, 0)
+        assert result
+        assert obj_2 is not None
+
         expected = False
 
         actual = landing_pad_tracking.LandingPadTracking._LandingPadTracking__is_similar(  # type: ignore
