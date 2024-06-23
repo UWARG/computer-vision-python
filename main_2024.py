@@ -289,7 +289,8 @@ def main() -> int:
 
                 if manager == ManagerType.VIDEO_INPUT.value:
                     main_logger.error(
-                        "Video Input Worker is dead, attempting to restart.", frame
+                        "Video Input Worker is dead, attempting to restart.", 
+                        frame,
                     )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     del video_input_manager
@@ -309,7 +310,8 @@ def main() -> int:
 
                 elif manager == ManagerType.DETECT_TARGET.value:
                     main_logger.error(
-                        "Detect Target Worker is dead, attempting to restart.", frame
+                        "Detect Target Worker is dead, attempting to restart.", 
+                        frame,
                     )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
@@ -333,7 +335,8 @@ def main() -> int:
 
                 elif manager == ManagerType.FLIGHT_INTERFACE.value:
                     main_logger.error(
-                        "Flight Interface Worker is dead, attempting to restart.", frame
+                        "Flight Interface Worker is dead, attempting to restart.", 
+                        frame,
                     )
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     del flight_interface_manager
@@ -353,7 +356,8 @@ def main() -> int:
 
                 elif manager == ManagerType.DATA_MERGE.value:
                     main_logger.error(
-                        "Data Merge Worker is dead, attempting to restart.", frame
+                        "Data Merge Worker is dead, attempting to restart.", 
+                        frame,
                     )
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
@@ -375,7 +379,8 @@ def main() -> int:
 
                 elif manager == ManagerType.GEOLOCATION.value:
                     main_logger.error(
-                        "Geolocation Worker is dead, attempting to restart.", frame
+                        "Geolocation Worker is dead, attempting to restart.", 
+                        frame,
                     )
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     geolocation_to_main_queue.fill_and_drain_queue()
