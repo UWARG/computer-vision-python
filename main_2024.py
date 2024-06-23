@@ -115,6 +115,74 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.info("main logger initialized", frame)
 
+
+
+    def restart_workers(my_manager):
+        if my_manager is video_input_manager:
+            video_input_manager.create_workers(
+                1,
+                video_input_worker.video_input_worker,
+                (
+                    VIDEO_INPUT_CAMERA_NAME,
+                    VIDEO_INPUT_WORKER_PERIOD,
+                    VIDEO_INPUT_SAVE_PREFIX,
+                    video_input_to_detect_target_queue,
+                    controller,
+                ),
+            )
+        if my_manager is detect_target_manager:
+            detect_target_manager.create_workers(
+                DETECT_TARGET_WORKER_COUNT,
+                detect_target_worker.detect_target_worker,
+                (
+                    DETECT_TARGET_DEVICE,
+                    DETECT_TARGET_MODEL_PATH,
+                    DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+                    DETECT_TARGET_SHOW_ANNOTATED,
+                    DETECT_TARGET_SAVE_PREFIX,
+                    video_input_to_detect_target_queue,
+                    detect_target_to_data_merge_queue,
+                    controller,
+                ),
+            )
+        if my_manager is flight_interface_manager:
+            flight_interface_manager.create_workers(
+                1,
+                flight_interface_worker.flight_interface_worker,
+                (
+                    FLIGHT_INTERFACE_ADDRESS,
+                    FLIGHT_INTERFACE_TIMEOUT,
+                    FLIGHT_INTERFACE_WORKER_PERIOD,
+                    flight_interface_to_data_merge_queue,
+                    controller,
+                ),
+            )
+        if my_manager is data_merge_manager:
+            data_merge_manager.create_workers(
+                1,
+                data_merge_worker.data_merge_worker,
+                (
+                    DATA_MERGE_TIMEOUT,
+                    detect_target_to_data_merge_queue,
+                    flight_interface_to_data_merge_queue,
+                    data_merge_to_geolocation_queue,
+                    controller,
+                ),
+            )
+        if my_manager is geolocation_manager:
+            geolocation_manager.create_workers(
+                1,
+                geolocation_worker.geolocation_worker,
+                (
+                    camera_intrinsics,
+                    camera_extrinsics,
+                    data_merge_to_geolocation_queue,
+                    geolocation_to_main_queue,
+                    controller,
+                ),
+            )
+
+
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -241,6 +309,8 @@ def main() -> int:
     data_merge_manager.start_workers()
     geolocation_manager.start_workers()
 
+    managers_array = [video_input_manager, detect_target_manager,flight_interface_manager, data_merge_manager, geolocation_manager]
+
     while True:
         try:
             geolocation_data = geolocation_to_main_queue.queue.get_nowait()
@@ -254,6 +324,20 @@ def main() -> int:
                 print("geolocation label: " + str(detection_world.label))
                 print("geolocation confidence: " + str(detection_world.confidence))
                 print("")
+
+        # print(
+        #     str(video_input_manager.are_workers_alive()) + " " + 
+        #     str(detect_target_manager.are_workers_alive()) + " " + 
+        #     str(flight_interface_manager.are_workers_alive()) + " " + 
+        #     str(data_merge_manager.are_workers_alive()) + " " + 
+        #     str(geolocation_manager.are_workers_alive())
+        # )
+
+        for i in range(len(managers_array)):
+            # print(str(managers_array[i].are_workers_alive()) + " ")
+            if not managers_array[i].are_workers_alive():
+                managers_array[i].terminate_workers()
+                restart_workers(managers_array[i])
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             print("Exiting main loop")
@@ -285,3 +369,4 @@ if __name__ == "__main__":
         print(f"ERROR: Status code: {result_main}")
 
     print("Done!")
+

@@ -48,3 +48,24 @@ class WorkerManager:
         """
         for worker in self.__workers:
             worker.join()
+
+    def are_workers_alive(self) -> bool:
+        """
+        Check if workers are alive.
+
+        Return: 
+        False is any 1 worker is not alive.
+        True if all workers are alive.
+        """
+        for worker in self.__workers:
+            if not worker.is_alive():
+                return False
+        return True
+    
+    def terminate_workers(self):
+        """
+        Terminate workers.
+        """
+        for worker in self.__workers:
+            worker.terminate()
+            
