@@ -69,3 +69,9 @@ class WorkerManager:
         for worker in self.__workers:
             worker.terminate()
             
+    def close_workers(self) -> None:
+        """
+        Close workers.
+        """
+        for worker in self.__workers:
+            worker.close()

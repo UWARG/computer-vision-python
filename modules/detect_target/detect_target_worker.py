@@ -16,6 +16,7 @@ def detect_target_worker(
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
+    tempbool = bool,
 ) -> None:
     """
     Worker process.
@@ -34,8 +35,14 @@ def detect_target_worker(
 
     while not controller.is_exit_requested():
         controller.check_pause()
+        
+    # Testing:
+        if tempbool:
+            input_data = "asdsad"
+        else:
+            input_data = input_queue.queue.get()
 
-        input_data = input_queue.queue.get()
+
         if input_data is None:
             break
 

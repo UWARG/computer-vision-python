@@ -115,74 +115,6 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.info("main logger initialized", frame)
 
-
-
-    def restart_workers(my_manager):
-        if my_manager is video_input_manager:
-            video_input_manager.create_workers(
-                1,
-                video_input_worker.video_input_worker,
-                (
-                    VIDEO_INPUT_CAMERA_NAME,
-                    VIDEO_INPUT_WORKER_PERIOD,
-                    VIDEO_INPUT_SAVE_PREFIX,
-                    video_input_to_detect_target_queue,
-                    controller,
-                ),
-            )
-        if my_manager is detect_target_manager:
-            detect_target_manager.create_workers(
-                DETECT_TARGET_WORKER_COUNT,
-                detect_target_worker.detect_target_worker,
-                (
-                    DETECT_TARGET_DEVICE,
-                    DETECT_TARGET_MODEL_PATH,
-                    DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-                    DETECT_TARGET_SHOW_ANNOTATED,
-                    DETECT_TARGET_SAVE_PREFIX,
-                    video_input_to_detect_target_queue,
-                    detect_target_to_data_merge_queue,
-                    controller,
-                ),
-            )
-        if my_manager is flight_interface_manager:
-            flight_interface_manager.create_workers(
-                1,
-                flight_interface_worker.flight_interface_worker,
-                (
-                    FLIGHT_INTERFACE_ADDRESS,
-                    FLIGHT_INTERFACE_TIMEOUT,
-                    FLIGHT_INTERFACE_WORKER_PERIOD,
-                    flight_interface_to_data_merge_queue,
-                    controller,
-                ),
-            )
-        if my_manager is data_merge_manager:
-            data_merge_manager.create_workers(
-                1,
-                data_merge_worker.data_merge_worker,
-                (
-                    DATA_MERGE_TIMEOUT,
-                    detect_target_to_data_merge_queue,
-                    flight_interface_to_data_merge_queue,
-                    data_merge_to_geolocation_queue,
-                    controller,
-                ),
-            )
-        if my_manager is geolocation_manager:
-            geolocation_manager.create_workers(
-                1,
-                geolocation_worker.geolocation_worker,
-                (
-                    camera_intrinsics,
-                    camera_extrinsics,
-                    data_merge_to_geolocation_queue,
-                    geolocation_to_main_queue,
-                    controller,
-                ),
-            )
-
-
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -234,6 +166,7 @@ def main() -> int:
             video_input_to_detect_target_queue,
             detect_target_to_data_merge_queue,
             controller,
+            True,
         ),
     )
 
@@ -334,10 +267,108 @@ def main() -> int:
         # )
 
         for i in range(len(managers_array)):
-            # print(str(managers_array[i].are_workers_alive()) + " ")
+            # print(str(managers_array[i].are_workers_alive()) + " ", end="", flush=True)
             if not managers_array[i].are_workers_alive():
                 managers_array[i].terminate_workers()
-                restart_workers(managers_array[i])
+                managers_array[i].join_workers()
+                managers_array[i].close_workers()
+                managers_array[i] = None
+
+                if i == 0:
+                    video_input_to_detect_target_queue.fill_and_drain_queue()
+                    video_input_manager2 = worker_manager.WorkerManager()
+                    managers_array[i] = video_input_manager2
+                    video_input_manager2.create_workers(
+                        1,
+                        video_input_worker.video_input_worker,
+                        (
+                            VIDEO_INPUT_CAMERA_NAME,
+                            VIDEO_INPUT_WORKER_PERIOD,
+                            VIDEO_INPUT_SAVE_PREFIX,
+                            video_input_to_detect_target_queue,
+                            controller,
+                        ),
+                    )
+                    video_input_manager2.start_workers()
+
+                if i == 1:
+                    video_input_to_detect_target_queue.fill_and_drain_queue()
+                    detect_target_to_data_merge_queue.fill_and_drain_queue()
+                    detect_target_manager2 = worker_manager.WorkerManager()
+                    managers_array[i] = detect_target_manager2
+                    detect_target_manager2.create_workers(
+                        DETECT_TARGET_WORKER_COUNT,
+                        detect_target_worker.detect_target_worker,
+                        (
+                            DETECT_TARGET_DEVICE,
+                            DETECT_TARGET_MODEL_PATH,
+                            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+                            DETECT_TARGET_SHOW_ANNOTATED,
+                            DETECT_TARGET_SAVE_PREFIX,
+                            video_input_to_detect_target_queue,
+                            detect_target_to_data_merge_queue,
+                            controller,
+                            False,
+                        ),
+                    )
+                    detect_target_manager2.start_workers()
+
+                if i == 2:
+                    flight_interface_to_data_merge_queue.fill_and_drain_queue()
+                    flight_interface_manager2 = worker_manager.WorkerManager()
+                    managers_array[i] = flight_interface_manager2
+                    flight_interface_manager2.create_workers(
+                        1,
+                        flight_interface_worker.flight_interface_worker,
+                        (
+                            FLIGHT_INTERFACE_ADDRESS,
+                            FLIGHT_INTERFACE_TIMEOUT,
+                            FLIGHT_INTERFACE_WORKER_PERIOD,
+                            flight_interface_to_data_merge_queue,
+                            controller,
+                        ),
+                    )
+                    flight_interface_manager2.start_workers()
+
+                if i == 3:
+                    detect_target_to_data_merge_queue.fill_and_drain_queue()
+                    flight_interface_to_data_merge_queue.fill_and_drain_queue()
+                    data_merge_to_geolocation_queue.fill_and_drain_queue()
+                    data_merge_manager2 = worker_manager.WorkerManager()
+                    managers_array[i] = data_merge_manager2
+                    data_merge_manager2.create_workers(
+                        1,
+                        data_merge_worker.data_merge_worker,
+                        (
+                            DATA_MERGE_TIMEOUT,
+                            detect_target_to_data_merge_queue,
+                            flight_interface_to_data_merge_queue,
+                            data_merge_to_geolocation_queue,
+                            controller,
+                        ),
+                    )
+                    data_merge_manager2.start_workers()
+
+                if i == 4:
+                    data_merge_to_geolocation_queue.fill_and_drain_queue()
+                    geolocation_to_main_queue.fill_and_drain_queue()
+                    geolocation_manager2 = worker_manager.WorkerManager()
+                    managers_array[i] = geolocation_manager2
+                    geolocation_manager2.create_workers(
+                        1,
+                        geolocation_worker.geolocation_worker,
+                        (
+                            camera_intrinsics,
+                            camera_extrinsics,
+                            data_merge_to_geolocation_queue,
+                            geolocation_to_main_queue,
+                            controller,
+                        ),
+                    )
+                    geolocation_manager2.start_workers()
+
+            # if i == 4:
+            #     print(" ")
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             print("Exiting main loop")
