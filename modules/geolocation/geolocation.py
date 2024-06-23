@@ -45,6 +45,7 @@ class Geolocation:
             # Image space to camera space
             result, value = camera_intrinsics.camera_space_from_image_space(source[0], source[1])
             if not result:
+                print("1")
                 return False, None
 
             # Get Pylance to stop complaining
@@ -85,27 +86,40 @@ class Geolocation:
         Get 2D coordinates of where the downwards pointing vector intersects the ground.
         """
         if not camera_properties.is_vector_r3(vec_camera_in_world_position):
+            print("2")
             return False, None
 
         if not camera_properties.is_vector_r3(vec_down):
+            print("3")
             return False, None
 
         # Check camera above ground
         if vec_camera_in_world_position[2] > 0.0:
+            print("4")
             return False, None
 
         # Ensure vector is pointing down by checking angle
         # cos(angle) = a dot b / (||a|| * ||b||)
         vec_z = np.array([0.0, 0.0, 1.0], dtype=np.float32)
         cos_angle = np.dot(vec_down, vec_z) / np.linalg.norm(vec_down)
-        if cos_angle < Geolocation.__MIN_DOWN_COS_ANGLE:
-            return False, None
+        angle = np.arccos(cos_angle) * (180.0 / np.pi)
+        print(f"cos angle = {cos_angle} | angle = {angle}")
+        # if cos_angle < Geolocation.__MIN_DOWN_COS_ANGLE:
+        #     print("5")
+        #     print(f"cos angle if statement = {cos_angle}")  # cos angle = -0.7073870897293091
+        #     return False, None
+        # else:
+        #     print(f"cos angle else statement = {cos_angle}") # cos angle = 0.7068257927894592
 
         # Find scalar multiple for the vector to touch the ground (z/3rd component is 0)
         # Solve for s: o3 + s * d3 = 0
         scaling = -vec_camera_in_world_position[2] / vec_down[2]
-        if scaling < 0.0:
-            return False, None
+        # if scaling < 0.0:
+        #     print("6")
+        #     print(scaling)  
+        #     return False, None
+
+        print(f"scaling = {scaling}")  # scaling = 2.030820369720459
 
         vec_ground = vec_camera_in_world_position + scaling * vec_down
 
@@ -118,9 +132,11 @@ class Geolocation:
         Calculates the destination points, then uses OpenCV to get the matrix.
         """
         if not camera_properties.is_matrix_r3x3(drone_rotation_matrix):
+            print("7")
             return False, None
 
         if not camera_properties.is_vector_r3(drone_position_ned):
+            print("8")
             return False, None
 
         # Get the vectors in world space
@@ -138,11 +154,13 @@ class Geolocation:
         # Find the points on the ground
         ground_points = []
         for vec_down in vec_downs:
+            print(f"vec down = {vec_down}")
             result, ground_point = self.__ground_intersection_from_vector(
                 vec_camera_position,
                 vec_down,
             )
             if not result:
+                print("9")
                 return False, None
 
             ground_points.append(ground_point)
@@ -159,6 +177,7 @@ class Geolocation:
         # pylint: disable-next=bare-except
         except:
             # TODO: Logging
+            print("10")
             return False, None
 
         return True, matrix
@@ -172,9 +191,11 @@ class Geolocation:
         perspective_transform_matrix: Element in last row and column must be 1 .
         """
         if not camera_properties.is_matrix_r3x3(perspective_transform_matrix):
+            print("11")
             return False, None
 
         if not np.allclose(perspective_transform_matrix[2][2], 1.0):
+            print("12")
             return False, None
 
         centre = detection.get_centre()
@@ -218,6 +239,7 @@ class Geolocation:
         # https://www.w3resource.com/python-exercises/numpy/python-numpy-exercise-96.php
         output_normalized = output_vertices / vec_last_element[:, None]
         if not np.isfinite(output_normalized).all():
+            print("13")
             return False, None
 
         # Slice to remove the last element of each row
@@ -230,6 +252,7 @@ class Geolocation:
             detection.confidence,
         )
         if not result:
+            print("14")
             return False, None
 
         return True, detection_world
@@ -243,6 +266,8 @@ class Geolocation:
         # Camera position in world (NED system)
         # Cannot be underground
         if detections.odometry_local.position.down >= 0.0:
+            print("15")
+            print(detections.odometry_local.position)
             return False, None
 
         drone_position_ned = np.array(
@@ -262,6 +287,7 @@ class Geolocation:
             detections.odometry_local.orientation.orientation.roll,
         )
         if not result:
+            print("16")
             return False, None
 
         # Get Pylance to stop complaining
@@ -272,12 +298,15 @@ class Geolocation:
             drone_position_ned,
         )
         if not result:
+            print("17")
             return False, None
 
         # Get Pylance to stop complaining
         assert perspective_transform_matrix is not None
 
         detections_in_world = []
+        calculated_center_x = 0
+        calculated_center_y = 0
         for detection in detections.detections:
             result, detection_world = self.__convert_detection_to_world_from_image(
                 detection,
@@ -285,7 +314,18 @@ class Geolocation:
             )
             # Partial data not allowed
             if not result:
+                print("18")
                 return False, None
+            
+            for vertice in detection_world.vertices:
+                calculated_center_x = calculated_center_x + vertice[0]
+                calculated_center_y = calculated_center_y + vertice[1]
+
+            calculated_center_x = calculated_center_x / 4.0
+            calculated_center_y = calculated_center_y / 4.0
+
+            print(f"calculated centre = ({calculated_center_x}, {calculated_center_y})")
+
             detections_in_world.append(detection_world)
 
         return True, detections_in_world

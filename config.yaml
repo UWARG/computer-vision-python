@@ -9,14 +9,14 @@ logger:
     datetime_format: "%I:%M:%S"
 
 video_input:
-    camera_name: 0
+    camera_name: 1
     worker_period: 1.0  # seconds
     save_prefix: "log_image"
 
 detect_target:
     worker_count: 1
     device: 0
-    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
+    model_path: "tests/model_example/best-2s.pt"  # TODO: update
     save_prefix: "log_comp"
 
 flight_interface:
@@ -28,10 +28,10 @@ data_merge:
     timeout: 10.0  # seconds
 
 geolocation:
-    resolution_x: 2000
-    resolution_y: 2000
-    fov_x: 1.57079632679
-    fov_y: 1.57079632679
+    resolution_x: 1920
+    resolution_y: 1200
+    fov_x: 0.64889
+    fov_y: 0.41438
     camera_position_x: 0.0
     camera_position_y: 0.0
     camera_position_z: 0.0

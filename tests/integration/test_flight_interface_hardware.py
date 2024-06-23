@@ -28,6 +28,8 @@ def main() -> int:
     assert result
     assert odometry_time is not None
 
+    print(str(odometry_time))
+
     return 0
 
 
