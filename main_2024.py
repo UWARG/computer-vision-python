@@ -276,9 +276,10 @@ def main() -> int:
 
                 if i == 0:
                     video_input_to_detect_target_queue.fill_and_drain_queue()
-                    video_input_manager2 = worker_manager.WorkerManager()
-                    managers_array[i] = video_input_manager2
-                    video_input_manager2.create_workers(
+                    del video_input_manager
+                    video_input_manager = worker_manager.WorkerManager()
+                    managers_array[i] = video_input_manager
+                    video_input_manager.create_workers(
                         1,
                         video_input_worker.video_input_worker,
                         (
@@ -289,14 +290,14 @@ def main() -> int:
                             controller,
                         ),
                     )
-                    video_input_manager2.start_workers()
 
-                if i == 1:
+                elif i == 1:
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
-                    detect_target_manager2 = worker_manager.WorkerManager()
-                    managers_array[i] = detect_target_manager2
-                    detect_target_manager2.create_workers(
+                    del detect_target_manager
+                    detect_target_manager = worker_manager.WorkerManager()
+                    managers_array[i] = detect_target_manager
+                    detect_target_manager.create_workers(
                         DETECT_TARGET_WORKER_COUNT,
                         detect_target_worker.detect_target_worker,
                         (
@@ -311,13 +312,13 @@ def main() -> int:
                             False,
                         ),
                     )
-                    detect_target_manager2.start_workers()
 
-                if i == 2:
+                elif i == 2:
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
-                    flight_interface_manager2 = worker_manager.WorkerManager()
-                    managers_array[i] = flight_interface_manager2
-                    flight_interface_manager2.create_workers(
+                    del flight_interface_manager
+                    flight_interface_manager = worker_manager.WorkerManager()
+                    managers_array[i] = flight_interface_manager
+                    flight_interface_manager.create_workers(
                         1,
                         flight_interface_worker.flight_interface_worker,
                         (
@@ -328,15 +329,15 @@ def main() -> int:
                             controller,
                         ),
                     )
-                    flight_interface_manager2.start_workers()
 
-                if i == 3:
+                elif i == 3:
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
-                    data_merge_manager2 = worker_manager.WorkerManager()
-                    managers_array[i] = data_merge_manager2
-                    data_merge_manager2.create_workers(
+                    del data_merge_manager
+                    data_merge_manager = worker_manager.WorkerManager()
+                    managers_array[i] = data_merge_manager
+                    data_merge_manager.create_workers(
                         1,
                         data_merge_worker.data_merge_worker,
                         (
@@ -347,14 +348,14 @@ def main() -> int:
                             controller,
                         ),
                     )
-                    data_merge_manager2.start_workers()
 
-                if i == 4:
+                elif i == 4:
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     geolocation_to_main_queue.fill_and_drain_queue()
-                    geolocation_manager2 = worker_manager.WorkerManager()
-                    managers_array[i] = geolocation_manager2
-                    geolocation_manager2.create_workers(
+                    del geolocation_manager
+                    geolocation_manager = worker_manager.WorkerManager()
+                    managers_array[i] = geolocation_manager
+                    geolocation_manager.create_workers(
                         1,
                         geolocation_worker.geolocation_worker,
                         (
@@ -365,7 +366,8 @@ def main() -> int:
                             controller,
                         ),
                     )
-                    geolocation_manager2.start_workers()
+
+                managers_array[i].start_workers()
 
             # if i == 4:
             #     print(" ")
