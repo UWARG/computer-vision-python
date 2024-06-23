@@ -280,7 +280,7 @@ def main() -> int:
         # Check if all workers are alive in each manager.
         # If a worker is dead, log the error and restart the worker.
         # Steps: Terminate and join the worker, fill and drain the
-        # related queues, and creat and start a new worker.
+        # related queues, and create and start a new worker.
         for manager in range(number_of_managers):
             if not managers_array[manager].are_workers_alive():
                 managers_array[manager].terminate_workers()
