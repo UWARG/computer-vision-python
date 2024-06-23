@@ -244,7 +244,7 @@ def main() -> int:
 
     class ManagerType(Enum):
         """
-        Enum class for mapping index in managers_array to manager names.
+        Enum class for mapping index in managers_array to worker manager names.
         """
 
         VIDEO_INPUT = 0
