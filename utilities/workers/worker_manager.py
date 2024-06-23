@@ -61,14 +61,14 @@ class WorkerManager:
             if not worker.is_alive():
                 return False
         return True
-    
-    def terminate_workers(self):
+
+    def terminate_workers(self) -> None:
         """
         Terminate workers.
         """
         for worker in self.__workers:
             worker.terminate()
-            
+
     def close_workers(self) -> None:
         """
         Close workers.

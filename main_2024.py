@@ -8,6 +8,7 @@ import inspect
 import multiprocessing as mp
 import pathlib
 import queue
+from enum import Enum
 
 import cv2
 import yaml
@@ -25,7 +26,6 @@ from modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
-from enum import Enum
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
@@ -242,8 +242,20 @@ def main() -> int:
     data_merge_manager.start_workers()
     geolocation_manager.start_workers()
 
-    managers_array = [video_input_manager, detect_target_manager,flight_interface_manager, data_merge_manager, geolocation_manager]
+    managers_array = [
+        video_input_manager,
+        detect_target_manager,
+        flight_interface_manager,
+        data_merge_manager,
+        geolocation_manager,
+    ]
+
+
     class ManagerType(Enum):
+        """
+        Enum class for mapping index in managers_array to manager names.
+        """
+
         VIDEO_INPUT = 0
         DETECT_TARGET = 1
         FLIGHT_INTERFACE = 2
@@ -264,21 +276,25 @@ def main() -> int:
                 print("geolocation confidence: " + str(detection_world.confidence))
                 print("")
 
-        for i in range(len(managers_array)):
-            # print(str(managers_array[i].are_workers_alive()) + " ", end="", flush=True)
-            if not managers_array[i].are_workers_alive():
-                managers_array[i].terminate_workers()
-                managers_array[i].join_workers()
-                managers_array[i].close_workers()
-                managers_array[i] = None
+        number_of_managers = len(managers_array)
 
-                if i == ManagerType.VIDEO_INPUT.value:
-                    main_logger.critical("Video Input Worker is dead, attempting to restart.", frame)
+        for manager in range(number_of_managers):
+            # print(str(managers_array[manager].are_workers_alive()) + " ", end="", flush=True)
+            if not managers_array[manager].are_workers_alive():
+                managers_array[manager].terminate_workers()
+                # managers_array[manager].join_workers()
+                # managers_array[manager].close_workers()
+                managers_array[manager] = None
+
+                if manager == ManagerType.VIDEO_INPUT.value:
+                    main_logger.error(
+                        "Video Input Worker is dead, attempting to restart.", frame
+                    )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     video_input_manager = None
                     del video_input_manager
                     video_input_manager = worker_manager.WorkerManager()
-                    managers_array[i] = video_input_manager
+                    managers_array[manager] = video_input_manager
                     video_input_manager.create_workers(
                         1,
                         video_input_worker.video_input_worker,
@@ -291,14 +307,16 @@ def main() -> int:
                         ),
                     )
 
-                elif i == ManagerType.DETECT_TARGET.value:
-                    main_logger.critical("Detect Target Worker is dead, attempting to restart.", frame)
+                elif manager == ManagerType.DETECT_TARGET.value:
+                    main_logger.error(
+                        "Detect Target Worker is dead, attempting to restart.", frame
+                    )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     detect_target_manager = None
                     del detect_target_manager
                     detect_target_manager = worker_manager.WorkerManager()
-                    managers_array[i] = detect_target_manager
+                    managers_array[manager] = detect_target_manager
                     detect_target_manager.create_workers(
                         DETECT_TARGET_WORKER_COUNT,
                         detect_target_worker.detect_target_worker,
@@ -315,13 +333,15 @@ def main() -> int:
                         ),
                     )
 
-                elif i == ManagerType.FLIGHT_INTERFACE.value:
-                    main_logger.critical("Flight Interface Worker is dead, attempting to restart.", frame)
+                elif manager == ManagerType.FLIGHT_INTERFACE.value:
+                    main_logger.error(
+                        "Flight Interface Worker is dead, attempting to restart.", frame
+                    )
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_manager = None
                     del flight_interface_manager
                     flight_interface_manager = worker_manager.WorkerManager()
-                    managers_array[i] = flight_interface_manager
+                    managers_array[manager] = flight_interface_manager
                     flight_interface_manager.create_workers(
                         1,
                         flight_interface_worker.flight_interface_worker,
@@ -334,15 +354,17 @@ def main() -> int:
                         ),
                     )
 
-                elif i == ManagerType.DATA_MERGE.value:
-                    main_logger.critical("Data Merge Worker is dead, attempting to restart.", frame)
+                elif manager == ManagerType.DATA_MERGE.value:
+                    main_logger.error(
+                        "Data Merge Worker is dead, attempting to restart.", frame
+                    )
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     data_merge_manager = None
                     del data_merge_manager
                     data_merge_manager = worker_manager.WorkerManager()
-                    managers_array[i] = data_merge_manager
+                    managers_array[manager] = data_merge_manager
                     data_merge_manager.create_workers(
                         1,
                         data_merge_worker.data_merge_worker,
@@ -355,14 +377,16 @@ def main() -> int:
                         ),
                     )
 
-                elif i == ManagerType.GEOLOCATION.value:
-                    main_logger.critical("Geolocation Worker is dead, attempting to restart.", frame)
+                elif manager == ManagerType.GEOLOCATION.value:
+                    main_logger.error(
+                        "Geolocation Worker is dead, attempting to restart.", frame
+                    )
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     geolocation_to_main_queue.fill_and_drain_queue()
                     geolocation_manager = None
                     del geolocation_manager
                     geolocation_manager = worker_manager.WorkerManager()
-                    managers_array[i] = geolocation_manager
+                    managers_array[manager] = geolocation_manager
                     geolocation_manager.create_workers(
                         1,
                         geolocation_worker.geolocation_worker,
@@ -375,7 +399,7 @@ def main() -> int:
                         ),
                     )
 
-                managers_array[i].start_workers()
+                managers_array[manager].start_workers()
 
             # if i == 4:
             #     print(" ")
@@ -410,4 +434,3 @@ if __name__ == "__main__":
         print(f"ERROR: Status code: {result_main}")
 
     print("Done!")
-
