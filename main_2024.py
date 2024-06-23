@@ -242,14 +242,6 @@ def main() -> int:
     data_merge_manager.start_workers()
     geolocation_manager.start_workers()
 
-    managers_array = [
-        video_input_manager,
-        detect_target_manager,
-        flight_interface_manager,
-        data_merge_manager,
-        geolocation_manager,
-    ]
-
 
     class ManagerType(Enum):
         """
@@ -261,6 +253,16 @@ def main() -> int:
         FLIGHT_INTERFACE = 2
         DATA_MERGE = 3
         GEOLOCATION = 4
+
+    managers_array = [
+        video_input_manager,
+        detect_target_manager,
+        flight_interface_manager,
+        data_merge_manager,
+        geolocation_manager,
+    ]
+
+    number_of_managers = len(managers_array)
 
     while True:
         try:
@@ -276,14 +278,13 @@ def main() -> int:
                 print("geolocation confidence: " + str(detection_world.confidence))
                 print("")
 
-        number_of_managers = len(managers_array)
-
+        # Check if all workers are alive in each manager.
+        # If a worker is dead, terminate and join the worker, and fill and drain
+        # the related queues. Then create a new worker and start it.
         for manager in range(number_of_managers):
-            # print(str(managers_array[manager].are_workers_alive()) + " ", end="", flush=True)
             if not managers_array[manager].are_workers_alive():
                 managers_array[manager].terminate_workers()
-                # managers_array[manager].join_workers()
-                # managers_array[manager].close_workers()
+                managers_array[manager].join_workers()
                 managers_array[manager] = None
 
                 if manager == ManagerType.VIDEO_INPUT.value:
@@ -291,7 +292,6 @@ def main() -> int:
                         "Video Input Worker is dead, attempting to restart.", frame
                     )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
-                    video_input_manager = None
                     del video_input_manager
                     video_input_manager = worker_manager.WorkerManager()
                     managers_array[manager] = video_input_manager
@@ -313,7 +313,6 @@ def main() -> int:
                     )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
-                    detect_target_manager = None
                     del detect_target_manager
                     detect_target_manager = worker_manager.WorkerManager()
                     managers_array[manager] = detect_target_manager
@@ -338,7 +337,6 @@ def main() -> int:
                         "Flight Interface Worker is dead, attempting to restart.", frame
                     )
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
-                    flight_interface_manager = None
                     del flight_interface_manager
                     flight_interface_manager = worker_manager.WorkerManager()
                     managers_array[manager] = flight_interface_manager
@@ -361,7 +359,6 @@ def main() -> int:
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
-                    data_merge_manager = None
                     del data_merge_manager
                     data_merge_manager = worker_manager.WorkerManager()
                     managers_array[manager] = data_merge_manager
@@ -383,7 +380,6 @@ def main() -> int:
                     )
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     geolocation_to_main_queue.fill_and_drain_queue()
-                    geolocation_manager = None
                     del geolocation_manager
                     geolocation_manager = worker_manager.WorkerManager()
                     managers_array[manager] = geolocation_manager
@@ -400,9 +396,6 @@ def main() -> int:
                     )
 
                 managers_array[manager].start_workers()
-
-            # if i == 4:
-            #     print(" ")
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             print("Exiting main loop")

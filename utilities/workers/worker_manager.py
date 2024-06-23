@@ -53,9 +53,8 @@ class WorkerManager:
         """
         Check if workers are alive.
 
-        Return: 
-        False is any 1 worker is not alive.
-        True if all workers are alive.
+        Return: True if all workers are alive. False is any 1 worker is not alive.
+        
         """
         for worker in self.__workers:
             if not worker.is_alive():
@@ -68,10 +67,3 @@ class WorkerManager:
         """
         for worker in self.__workers:
             worker.terminate()
-
-    def close_workers(self) -> None:
-        """
-        Close workers.
-        """
-        for worker in self.__workers:
-            worker.close()
