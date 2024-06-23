@@ -166,7 +166,6 @@ def main() -> int:
             video_input_to_detect_target_queue,
             detect_target_to_data_merge_queue,
             controller,
-            True,
         ),
     )
 
@@ -279,8 +278,9 @@ def main() -> int:
                 print("")
 
         # Check if all workers are alive in each manager.
-        # If a worker is dead, terminate and join the worker, and fill and drain
-        # the related queues. Then create a new worker and start it.
+        # If a worker is dead, log the error and restart the worker.
+        # Steps: Terminate and join the worker, fill and drain the
+        # related queues, and creat and start a new worker.
         for manager in range(number_of_managers):
             if not managers_array[manager].are_workers_alive():
                 managers_array[manager].terminate_workers()
@@ -328,7 +328,6 @@ def main() -> int:
                             video_input_to_detect_target_queue,
                             detect_target_to_data_merge_queue,
                             controller,
-                            False,
                         ),
                     )
 
