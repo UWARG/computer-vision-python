@@ -54,7 +54,6 @@ class WorkerManager:
         Check if workers are alive.
 
         Return: True if all workers are alive. False is any 1 worker is not alive.
-        
         """
         for worker in self.__workers:
             if not worker.is_alive():
