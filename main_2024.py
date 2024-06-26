@@ -300,7 +300,7 @@ def main() -> int:
                             "Video Input Worker is dead, attempting to restart.",
                             frame,
                         )
-                    video_input_to_detect_target_queue.fill_and_drain_queue()
+                    video_input_to_detect_target_queue.drain_queue()
                     del video_input_manager
                     video_input_manager = worker_manager.WorkerManager()
                     managers_array[manager] = video_input_manager
@@ -317,8 +317,8 @@ def main() -> int:
                             "Detect Target Worker is dead, attempting to restart.",
                             frame,
                         )
-                    video_input_to_detect_target_queue.fill_and_drain_queue()
-                    detect_target_to_data_merge_queue.fill_and_drain_queue()
+                    video_input_to_detect_target_queue.drain_queue()
+                    # detect_target_to_data_merge_queue.drain_queue()
                     del detect_target_manager
                     detect_target_manager = worker_manager.WorkerManager()
                     managers_array[manager] = detect_target_manager
@@ -335,7 +335,7 @@ def main() -> int:
                             "Flight Interface Worker is dead, attempting to restart.",
                             frame,
                         )
-                    flight_interface_to_data_merge_queue.fill_and_drain_queue()
+                    flight_interface_to_data_merge_queue.drain_queue()
                     del flight_interface_manager
                     flight_interface_manager = worker_manager.WorkerManager()
                     managers_array[manager] = flight_interface_manager
@@ -352,9 +352,9 @@ def main() -> int:
                             "Data Merge Worker is dead, attempting to restart.",
                             frame,
                         )
-                    detect_target_to_data_merge_queue.fill_and_drain_queue()
-                    flight_interface_to_data_merge_queue.fill_and_drain_queue()
-                    data_merge_to_geolocation_queue.fill_and_drain_queue()
+                    detect_target_to_data_merge_queue.drain_queue()
+                    flight_interface_to_data_merge_queue.drain_queue()
+                    # data_merge_to_geolocation_queue.drain_queue()
                     del data_merge_manager
                     data_merge_manager = worker_manager.WorkerManager()
                     managers_array[manager] = data_merge_manager
@@ -371,8 +371,8 @@ def main() -> int:
                             "Geolocation Worker is dead, attempting to restart.",
                             frame,
                         )
-                    data_merge_to_geolocation_queue.fill_and_drain_queue()
-                    geolocation_to_main_queue.fill_and_drain_queue()
+                    data_merge_to_geolocation_queue.drain_queue()
+                    # geolocation_to_main_queue.drain_queue()
                     del geolocation_manager
                     geolocation_manager = worker_manager.WorkerManager()
                     managers_array[manager] = geolocation_manager
