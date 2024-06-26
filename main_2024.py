@@ -4,11 +4,11 @@ For 2023-2024 UAS competition.
 
 import argparse
 import datetime
+from enum import Enum
 import inspect
 import multiprocessing as mp
 import pathlib
 import queue
-from enum import Enum
 
 import cv2
 import yaml
@@ -28,6 +28,18 @@ from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
+
+
+class ManagerType(Enum):
+    """
+    Enum class for mapping index in managers_array to worker manager names.
+    """
+
+    VIDEO_INPUT = 0
+    DETECT_TARGET = 1
+    FLIGHT_INTERFACE = 2
+    DATA_MERGE = 3
+    GEOLOCATION = 4
 
 
 def main() -> int:
@@ -140,61 +152,6 @@ def main() -> int:
         QUEUE_MAX_SIZE,
     )
 
-    video_input_manager = worker_manager.WorkerManager()
-    video_input_manager.create_workers(
-        1,
-        video_input_worker.video_input_worker,
-        (
-            VIDEO_INPUT_CAMERA_NAME,
-            VIDEO_INPUT_WORKER_PERIOD,
-            VIDEO_INPUT_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            controller,
-        ),
-    )
-
-    detect_target_manager = worker_manager.WorkerManager()
-    detect_target_manager.create_workers(
-        DETECT_TARGET_WORKER_COUNT,
-        detect_target_worker.detect_target_worker,
-        (
-            DETECT_TARGET_DEVICE,
-            DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SHOW_ANNOTATED,
-            DETECT_TARGET_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            detect_target_to_data_merge_queue,
-            controller,
-        ),
-    )
-
-    flight_interface_manager = worker_manager.WorkerManager()
-    flight_interface_manager.create_workers(
-        1,
-        flight_interface_worker.flight_interface_worker,
-        (
-            FLIGHT_INTERFACE_ADDRESS,
-            FLIGHT_INTERFACE_TIMEOUT,
-            FLIGHT_INTERFACE_WORKER_PERIOD,
-            flight_interface_to_data_merge_queue,
-            controller,
-        ),
-    )
-
-    data_merge_manager = worker_manager.WorkerManager()
-    data_merge_manager.create_workers(
-        1,
-        data_merge_worker.data_merge_worker,
-        (
-            DATA_MERGE_TIMEOUT,
-            detect_target_to_data_merge_queue,
-            flight_interface_to_data_merge_queue,
-            data_merge_to_geolocation_queue,
-            controller,
-        ),
-    )
-
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
         GEOLOCATION_RESOLUTION_Y,
@@ -221,17 +178,78 @@ def main() -> int:
         print("Error creating camera extrinsics")
         return -1
 
+    video_input_worker_args = (
+        VIDEO_INPUT_CAMERA_NAME,
+        VIDEO_INPUT_WORKER_PERIOD,
+        VIDEO_INPUT_SAVE_PREFIX,
+        video_input_to_detect_target_queue,
+        controller,
+    )
+    detect_target_worker_args = (
+        DETECT_TARGET_DEVICE,
+        DETECT_TARGET_MODEL_PATH,
+        DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+        DETECT_TARGET_SHOW_ANNOTATED,
+        DETECT_TARGET_SAVE_PREFIX,
+        video_input_to_detect_target_queue,
+        detect_target_to_data_merge_queue,
+        controller,
+    )
+    flight_interface_worker_args = (
+        FLIGHT_INTERFACE_ADDRESS,
+        FLIGHT_INTERFACE_TIMEOUT,
+        FLIGHT_INTERFACE_WORKER_PERIOD,
+        flight_interface_to_data_merge_queue,
+        controller,
+    )
+    data_merge_worker_args = (
+        DATA_MERGE_TIMEOUT,
+        detect_target_to_data_merge_queue,
+        flight_interface_to_data_merge_queue,
+        data_merge_to_geolocation_queue,
+        controller,
+    )
+    geolocation_worker_args = (
+        camera_intrinsics,
+        camera_extrinsics,
+        data_merge_to_geolocation_queue,
+        geolocation_to_main_queue,
+        controller,
+    )
+
+    video_input_manager = worker_manager.WorkerManager()
+    video_input_manager.create_workers(
+        1,
+        video_input_worker.video_input_worker,
+        video_input_worker_args,
+    )
+
+    detect_target_manager = worker_manager.WorkerManager()
+    detect_target_manager.create_workers(
+        DETECT_TARGET_WORKER_COUNT,
+        detect_target_worker.detect_target_worker,
+        detect_target_worker_args,
+    )
+
+    flight_interface_manager = worker_manager.WorkerManager()
+    flight_interface_manager.create_workers(
+        1,
+        flight_interface_worker.flight_interface_worker,
+        flight_interface_worker_args,
+    )
+
+    data_merge_manager = worker_manager.WorkerManager()
+    data_merge_manager.create_workers(
+        1,
+        data_merge_worker.data_merge_worker,
+        data_merge_worker_args,
+    )
+
     geolocation_manager = worker_manager.WorkerManager()
     geolocation_manager.create_workers(
         1,
         geolocation_worker.geolocation_worker,
-        (
-            camera_intrinsics,
-            camera_extrinsics,
-            data_merge_to_geolocation_queue,
-            geolocation_to_main_queue,
-            controller,
-        ),
+        geolocation_worker_args,
     )
 
     # Run
@@ -240,17 +258,6 @@ def main() -> int:
     flight_interface_manager.start_workers()
     data_merge_manager.start_workers()
     geolocation_manager.start_workers()
-
-    class ManagerType(Enum):
-        """
-        Enum class for mapping index in managers_array to worker manager names.
-        """
-
-        VIDEO_INPUT = 0
-        DETECT_TARGET = 1
-        FLIGHT_INTERFACE = 2
-        DATA_MERGE = 3
-        GEOLOCATION = 4
 
     managers_array = [
         video_input_manager,
@@ -298,13 +305,7 @@ def main() -> int:
                     video_input_manager.create_workers(
                         1,
                         video_input_worker.video_input_worker,
-                        (
-                            VIDEO_INPUT_CAMERA_NAME,
-                            VIDEO_INPUT_WORKER_PERIOD,
-                            VIDEO_INPUT_SAVE_PREFIX,
-                            video_input_to_detect_target_queue,
-                            controller,
-                        ),
+                        video_input_worker_args,
                     )
 
                 elif manager == ManagerType.DETECT_TARGET.value:
@@ -320,16 +321,7 @@ def main() -> int:
                     detect_target_manager.create_workers(
                         DETECT_TARGET_WORKER_COUNT,
                         detect_target_worker.detect_target_worker,
-                        (
-                            DETECT_TARGET_DEVICE,
-                            DETECT_TARGET_MODEL_PATH,
-                            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-                            DETECT_TARGET_SHOW_ANNOTATED,
-                            DETECT_TARGET_SAVE_PREFIX,
-                            video_input_to_detect_target_queue,
-                            detect_target_to_data_merge_queue,
-                            controller,
-                        ),
+                        detect_target_worker_args,
                     )
 
                 elif manager == ManagerType.FLIGHT_INTERFACE.value:
@@ -344,13 +336,7 @@ def main() -> int:
                     flight_interface_manager.create_workers(
                         1,
                         flight_interface_worker.flight_interface_worker,
-                        (
-                            FLIGHT_INTERFACE_ADDRESS,
-                            FLIGHT_INTERFACE_TIMEOUT,
-                            FLIGHT_INTERFACE_WORKER_PERIOD,
-                            flight_interface_to_data_merge_queue,
-                            controller,
-                        ),
+                        flight_interface_worker_args,
                     )
 
                 elif manager == ManagerType.DATA_MERGE.value:
@@ -367,13 +353,7 @@ def main() -> int:
                     data_merge_manager.create_workers(
                         1,
                         data_merge_worker.data_merge_worker,
-                        (
-                            DATA_MERGE_TIMEOUT,
-                            detect_target_to_data_merge_queue,
-                            flight_interface_to_data_merge_queue,
-                            data_merge_to_geolocation_queue,
-                            controller,
-                        ),
+                        data_merge_worker_args,
                     )
 
                 elif manager == ManagerType.GEOLOCATION.value:
@@ -389,13 +369,7 @@ def main() -> int:
                     geolocation_manager.create_workers(
                         1,
                         geolocation_worker.geolocation_worker,
-                        (
-                            camera_intrinsics,
-                            camera_extrinsics,
-                            data_merge_to_geolocation_queue,
-                            geolocation_to_main_queue,
-                            controller,
-                        ),
+                        geolocation_worker_args,
                     )
 
                 managers_array[manager].start_workers()
