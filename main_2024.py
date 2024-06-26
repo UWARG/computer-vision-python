@@ -122,8 +122,8 @@ def main() -> int:
     pathlib.Path(LOG_DIRECTORY_PATH).mkdir(exist_ok=True)
     pathlib.Path(f"{LOG_DIRECTORY_PATH}/{start_time}").mkdir()
 
-    result, main_logger = logger.Logger.create("main")
-    if result:
+    create_logger_result, main_logger = logger.Logger.create("main")
+    if create_logger_result:
         frame = inspect.currentframe()
         main_logger.info("main logger initialized", frame)
 
@@ -294,10 +294,12 @@ def main() -> int:
                 managers_array[manager] = None
 
                 if manager == ManagerType.VIDEO_INPUT.value:
-                    main_logger.error(
-                        "Video Input Worker is dead, attempting to restart.",
-                        frame,
-                    )
+                    if create_logger_result:
+                        frame = inspect.currentframe()
+                        main_logger.error(
+                            "Video Input Worker is dead, attempting to restart.",
+                            frame,
+                        )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     del video_input_manager
                     video_input_manager = worker_manager.WorkerManager()
@@ -309,10 +311,12 @@ def main() -> int:
                     )
 
                 elif manager == ManagerType.DETECT_TARGET.value:
-                    main_logger.error(
-                        "Detect Target Worker is dead, attempting to restart.",
-                        frame,
-                    )
+                    if create_logger_result:
+                        frame = inspect.currentframe()
+                        main_logger.error(
+                            "Detect Target Worker is dead, attempting to restart.",
+                            frame,
+                        )
                     video_input_to_detect_target_queue.fill_and_drain_queue()
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     del detect_target_manager
@@ -325,10 +329,12 @@ def main() -> int:
                     )
 
                 elif manager == ManagerType.FLIGHT_INTERFACE.value:
-                    main_logger.error(
-                        "Flight Interface Worker is dead, attempting to restart.",
-                        frame,
-                    )
+                    if create_logger_result:
+                        frame = inspect.currentframe()
+                        main_logger.error(
+                            "Flight Interface Worker is dead, attempting to restart.",
+                            frame,
+                        )
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     del flight_interface_manager
                     flight_interface_manager = worker_manager.WorkerManager()
@@ -340,10 +346,12 @@ def main() -> int:
                     )
 
                 elif manager == ManagerType.DATA_MERGE.value:
-                    main_logger.error(
-                        "Data Merge Worker is dead, attempting to restart.",
-                        frame,
-                    )
+                    if create_logger_result:
+                        frame = inspect.currentframe()
+                        main_logger.error(
+                            "Data Merge Worker is dead, attempting to restart.",
+                            frame,
+                        )
                     detect_target_to_data_merge_queue.fill_and_drain_queue()
                     flight_interface_to_data_merge_queue.fill_and_drain_queue()
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
@@ -357,10 +365,12 @@ def main() -> int:
                     )
 
                 elif manager == ManagerType.GEOLOCATION.value:
-                    main_logger.error(
-                        "Geolocation Worker is dead, attempting to restart.",
-                        frame,
-                    )
+                    if create_logger_result:
+                        frame = inspect.currentframe()
+                        main_logger.error(
+                            "Geolocation Worker is dead, attempting to restart.",
+                            frame,
+                        )
                     data_merge_to_geolocation_queue.fill_and_drain_queue()
                     geolocation_to_main_queue.fill_and_drain_queue()
                     del geolocation_manager
