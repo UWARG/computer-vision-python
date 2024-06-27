@@ -44,10 +44,10 @@ class ManagerType(Enum):
 
 def terminate_and_restart_worker(
     manager: worker_manager,
-    managers_list: "list[worker_manager]",
+    managers_list: "list[worker_manager.WorkerManager]",
     manager_number: int,
     worker_args: tuple,
-    queues_list: "list[queue_proxy_wrapper]",
+    queues_list: "list[queue_proxy_wrapper.QueueProxyWrapper]",
     create_logger_result: bool,
     main_logger: logger,
     logger_message: str,
