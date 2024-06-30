@@ -137,62 +137,6 @@ def main() -> int:
         QUEUE_MAX_SIZE,
     )
 
-    video_input_manager = worker_manager.WorkerManager()
-    video_input_manager.create_workers(
-        1,
-        video_input_worker.video_input_worker,
-        (
-            VIDEO_INPUT_CAMERA_NAME,
-            VIDEO_INPUT_WORKER_PERIOD,
-            VIDEO_INPUT_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            controller,
-        ),
-    )
-
-    detect_target_manager = worker_manager.WorkerManager()
-    detect_target_manager.create_workers(
-        DETECT_TARGET_WORKER_COUNT,
-        detect_target_worker.detect_target_worker,
-        (
-            DETECT_TARGET_DEVICE,
-            DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SHOW_ANNOTATED,
-            DETECT_TARGET_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            detect_target_to_data_merge_queue,
-            controller,
-        ),
-    )
-
-    flight_interface_manager = worker_manager.WorkerManager()
-    flight_interface_manager.create_workers(
-        1,
-        flight_interface_worker.flight_interface_worker,
-        (
-            FLIGHT_INTERFACE_ADDRESS,
-            FLIGHT_INTERFACE_TIMEOUT,
-            FLIGHT_INTERFACE_BAUD_RATE,
-            FLIGHT_INTERFACE_WORKER_PERIOD,
-            flight_interface_to_data_merge_queue,
-            controller,
-        ),
-    )
-
-    data_merge_manager = worker_manager.WorkerManager()
-    data_merge_manager.create_workers(
-        1,
-        data_merge_worker.data_merge_worker,
-        (
-            DATA_MERGE_TIMEOUT,
-            detect_target_to_data_merge_queue,
-            flight_interface_to_data_merge_queue,
-            data_merge_to_geolocation_queue,
-            controller,
-        ),
-    )
-
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
         GEOLOCATION_RESOLUTION_Y,
@@ -221,25 +165,158 @@ def main() -> int:
         main_logger.error("Error creating camera extrinsics", frame)
         return -1
 
-    geolocation_manager = worker_manager.WorkerManager()
-    geolocation_manager.create_workers(
+    # Worker properties
+    result, video_input_worker_properties = worker_manager.WorkerProperties.create(
+        1,
+        video_input_worker.video_input_worker,
+        (
+            VIDEO_INPUT_CAMERA_NAME,
+            VIDEO_INPUT_WORKER_PERIOD,
+            VIDEO_INPUT_SAVE_PREFIX,
+        ),
+        [],
+        [video_input_to_detect_target_queue],
+        controller,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Video Input", frame)
+        return -1
+
+    result, detect_target_worker_properties = worker_manager.WorkerProperties.create(
+        DETECT_TARGET_WORKER_COUNT,
+        detect_target_worker.detect_target_worker,
+        (
+            DETECT_TARGET_DEVICE,
+            DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+            DETECT_TARGET_SHOW_ANNOTATED,
+            DETECT_TARGET_SAVE_PREFIX,
+        ),
+        [video_input_to_detect_target_queue],
+        [detect_target_to_data_merge_queue],
+        controller,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Detect Target", frame)
+        return -1
+
+    result, flight_interface_worker_properties = worker_manager.WorkerProperties.create(
+        1,
+        flight_interface_worker.flight_interface_worker,
+        (
+            FLIGHT_INTERFACE_ADDRESS,
+            FLIGHT_INTERFACE_TIMEOUT,
+            FLIGHT_INTERFACE_WORKER_PERIOD,
+        ),
+        [],
+        [flight_interface_to_data_merge_queue],
+        controller,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Flight Interface", frame)
+        return -1
+
+    result, data_merge_worker_properties = worker_manager.WorkerProperties.create(
+        1,
+        data_merge_worker.data_merge_worker,
+        (DATA_MERGE_TIMEOUT,),
+        [
+            detect_target_to_data_merge_queue,
+            flight_interface_to_data_merge_queue,
+        ],
+        [data_merge_to_geolocation_queue],
+        controller,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Data Merge", frame)
+        return -1
+
+    result, geolocation_worker_properties = worker_manager.WorkerProperties.create(
         1,
         geolocation_worker.geolocation_worker,
         (
             camera_intrinsics,
             camera_extrinsics,
-            data_merge_to_geolocation_queue,
-            geolocation_to_main_queue,
-            controller,
         ),
+        [data_merge_to_geolocation_queue],
+        [geolocation_to_main_queue],
+        controller,
+        main_logger,
     )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Geolocation", frame)
+        return -1
+
+    # Create managers
+    worker_managers = []
+
+    result, video_input_manager = worker_manager.WorkerManager.create(
+        video_input_worker_properties,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Video Input", frame)
+        return -1
+
+    worker_managers.append(video_input_manager)
+
+    result, detect_target_manager = worker_manager.WorkerManager.create(
+        detect_target_worker_properties,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Detect Target", frame)
+        return -1
+
+    worker_managers.append(detect_target_manager)
+
+    result, flight_interface_manager = worker_manager.WorkerManager.create(
+        flight_interface_worker_properties,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Flight Interface", frame)
+        return -1
+
+    worker_managers.append(flight_interface_manager)
+
+    result, data_merge_manager = worker_manager.WorkerManager.create(
+        data_merge_worker_properties,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Data Merge", frame)
+        return -1
+
+    worker_managers.append(data_merge_manager)
+
+    result, geolocation_manager = worker_manager.WorkerManager.create(
+        geolocation_worker_properties,
+        main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Geolocation", frame)
+        return -1
+
+    worker_managers.append(geolocation_manager)
 
     # Run
-    video_input_manager.start_workers()
-    detect_target_manager.start_workers()
-    flight_interface_manager.start_workers()
-    data_merge_manager.start_workers()
-    geolocation_manager.start_workers()
+    for manager in worker_managers:
+        manager.start_workers()
 
     while True:
         try:
@@ -276,11 +353,8 @@ def main() -> int:
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_main_queue.fill_and_drain_queue()
 
-    video_input_manager.join_workers()
-    detect_target_manager.join_workers()
-    flight_interface_manager.join_workers()
-    data_merge_manager.join_workers()
-    geolocation_manager.join_workers()
+    for manager in worker_managers:
+        manager.join_workers()
 
     cv2.destroyAllWindows()  # type: ignore
 
