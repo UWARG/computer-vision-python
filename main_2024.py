@@ -207,7 +207,7 @@ def main() -> int:
     data_merge_worker_args = (
         1,
         data_merge_worker.data_merge_worker,
-        (DATA_MERGE_TIMEOUT),
+        (DATA_MERGE_TIMEOUT,),
         [
             detect_target_to_data_merge_queue,
             flight_interface_to_data_merge_queue,
