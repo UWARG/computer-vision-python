@@ -104,7 +104,7 @@ class WorkerManager:
         # controller: worker_controller.WorkerController,
     ) -> None:
         """
-        Constructor creates internal queue and semaphore.
+        Constructor.
         """
         self.__workers = workers
         # self.__target = target
