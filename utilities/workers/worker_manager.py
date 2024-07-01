@@ -37,7 +37,7 @@ class WorkerManager:
 
         Returns a tuple with all arguments.
         """
-        args = (class_args, tuple(input_queues), tuple(output_queues), controller)
+        args = (class_args + tuple(input_queues) + tuple(output_queues) + (controller,))
         return args
 
     # Potentially put all of these parameters into its own class
@@ -56,6 +56,7 @@ class WorkerManager:
         """
         args = WorkerManager.create_worker_arguments(class_args, input_queues, output_queues, controller)
         try:
+            print(args)
             worker = mp.Process(target=target, args=args)
         except:
             return False, None
