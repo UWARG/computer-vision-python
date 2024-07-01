@@ -3,8 +3,12 @@ For managing workers.
 """
 
 import multiprocessing as mp
+import types
+
 from typing import Tuple
 from utilities.workers import worker_controller
+from utilities.workers import queue_proxy_wrapper
+
 
 class WorkerManager:
     """
@@ -12,87 +16,111 @@ class WorkerManager:
     Contains exit and pause requests.
     """
 
-    def __init__(self, workers: "list[mp.Process]", target, class_args, input_queues, output_queues, controller) -> None:
-        """
-        Constructor creates internal queue and semaphore.
-        """
-        # self, workers: "list[mp.Process] | None" = None
-        # self.__workers = [] if workers is None else workers
-        self.__workers = workers
-        self.__target = target
-        self.__class_args = class_args
-        self.__input_queues = input_queues
-        self.__output_queues = output_queues
-        self.__controller = controller
-
-    @staticmethod
-    def create_worker_arguments(class_args, input_queues, output_queues, controller) -> tuple:
-        """
-        Creates a tuple containing all arguments for a worker.
-
-        class_args: Class arguments.
-        input_queues: Input queues.
-        output_queues: Output queues.
-        controller: Worker controller.
-
-        Returns a tuple with all arguments.
-        """
-        args = (class_args + tuple(input_queues) + tuple(output_queues) + (controller,))
-        return args
-
-    # Potentially put all of these parameters into its own class
-    @staticmethod
-    def create_worker(target, class_args, input_queues, output_queues, controller) -> Tuple[bool, mp.Process]:
-        """
-        Creates a worker.
-
-        target: Fuction
-        class_args: Class arguments.
-        input_queues: Input queues.
-        output_queues: Output queues.
-        controller: Worker controller.
-
-        Returns a tuple with all arguments.
-        """
-        args = WorkerManager.create_worker_arguments(class_args, input_queues, output_queues, controller)
-        try:
-            print(args)
-            worker = mp.Process(target=target, args=args)
-        except:
-            return False, None
-
-        return True, worker
-
     @classmethod
-    def create(cls, count: int, target: "(...) -> object", class_args: tuple, input_queues: list, output_queues: list, controller: worker_controller.WorkerController) -> "list[mp.Process]":  # type: ignore
+    def create(
+        cls,
+        count: int,
+        target: "(...) -> object",  # type: ignore
+        class_args: tuple,
+        input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        controller: worker_controller.WorkerController,
+    ) -> "list[mp.Process]":
         """
         Create identical workers and append them to a workers list.
 
         count: Number of workers.
         target: Function.
         class_args: Arguments to function.
+        input_queues: Input queues.
+        output_queues: Output queues.
+        controller: Worker controller.
+
+        Returns whether the workers were able to be created and the Worker Manager.
         """
         if count == 0:
             return False, None
 
+        args = WorkerManager.create_worker_arguments(
+            class_args, input_queues, output_queues, controller
+        )
+
         workers = []
         for _ in range(0, count):
-            result, worker = WorkerManager.create_worker(target, class_args, input_queues, output_queues, controller)
+            result, worker = WorkerManager.create_single_worker(target, args)
             if not result:
                 return False, None
 
             workers.append(worker)
 
-        return True, WorkerManager(workers, target, class_args, input_queues, output_queues, controller)
+        return True, WorkerManager(
+            workers,
+            # target, class_args, input_queues, output_queues, controller
+        )
 
-    def check_and_restart_dead_workers(self) -> None:
+    @staticmethod
+    def create_worker_arguments(
+        class_args: tuple,
+        input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        controller: worker_controller.WorkerController,
+    ) -> tuple:
         """
-        TODO
+        Creates a tuple containing most arguments for a worker.
+
+        class_args: Class arguments.
+        input_queues: Input queues.
+        output_queues: Output queues.
+        controller: Worker controller.
+
+        Returns a tuple with the arguments.
         """
-        for worker in self.__workers:
-            if not worker.is_alive():
-                # Do the needful
-                pass
+        return class_args + tuple(input_queues) + tuple(output_queues) + (controller,)
+
+    @staticmethod
+    def create_single_worker(target: types.FunctionType, args: tuple) -> Tuple[bool, mp.Process]:
+        """
+        Creates a single worker.
+
+        target: Fuction
+        args: Worker arguments.
+
+        Returns whether a worker was created and the worker.
+        """
+        try:
+            worker = mp.Process(target=target, args=args)
+        except:
+            return False, None
+
+        return True, worker
+
+    def __init__(
+        self,
+        workers: "list[mp.Process]",
+        # target: "(...) -> object", #type: ignore
+        # class_args: tuple,
+        # input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        # output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        # controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Constructor creates internal queue and semaphore.
+        """
+        self.__workers = workers
+        # self.__target = target
+        # self.__class_args = class_args
+        # self.__input_queues = input_queues
+        # self.__output_queues = output_queues
+        # self.__controller = controller
+
+    # def check_and_restart_dead_workers(self) -> None:
+    #     """
+    #     TODO
+    #     """
+    #     for worker in self.__workers:
+    #         if not worker.is_alive():
+    #             #TODO: Implement restarting code.
+    #             pass
 
     def concatenate_workers(self, workers: "list[mp.Process]") -> None:
         """

@@ -166,6 +166,7 @@ def main() -> int:
         print("Error creating camera extrinsics")
         return -1
 
+    # Worker arguments
     video_input_worker_args = (
         1,
         video_input_worker.video_input_worker,
@@ -227,6 +228,7 @@ def main() -> int:
         controller,
     )
 
+    # Create managers
     worker_managers = []
 
     result, manager = worker_manager.WorkerManager.create(*video_input_worker_args)
@@ -274,8 +276,8 @@ def main() -> int:
         manager.start_workers()
 
     while True:
-        for manager in worker_managers:
-            manager.check_and_restart_dead_workers()
+        # for manager in worker_managers:
+        #     manager.check_and_restart_dead_workers()
 
         try:
             geolocation_data = geolocation_to_main_queue.queue.get_nowait()
