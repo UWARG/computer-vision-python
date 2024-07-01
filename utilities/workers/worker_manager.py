@@ -3,7 +3,8 @@ For managing workers.
 """
 
 import multiprocessing as mp
-import worker_controller
+from typing import Tuple
+from utilities.workers import worker_controller
 
 class WorkerManager:
     """
@@ -36,11 +37,12 @@ class WorkerManager:
 
         Returns a tuple with all arguments.
         """
-        return class_args + tuple(input_queues) + tuple(output_queues) + tuple(controller)
+        args = (class_args, tuple(input_queues), tuple(output_queues), controller)
+        return args
 
     # Potentially put all of these parameters into its own class
     @staticmethod
-    def create_worker(target, class_args, input_queues, output_queues, controller) -> tuple[bool, mp.Process | None]:
+    def create_worker(target, class_args, input_queues, output_queues, controller) -> Tuple[bool, mp.Process]:
         """
         Creates a worker.
 
