@@ -61,7 +61,7 @@ class FlightInterface:
         class_private_create_key: object,
         controller: flight_controller.FlightController,
         home_location: drone_odometry.DronePosition,
-        logger: logger.Logger,
+        flight_interface_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -70,7 +70,7 @@ class FlightInterface:
 
         self.controller = controller
         self.__home_location = home_location
-        self.__logger = logger
+        self.__logger = flight_interface_logger
 
         frame = inspect.currentframe()
         self.__logger.info(self.__home_location, frame)
