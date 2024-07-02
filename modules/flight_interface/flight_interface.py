@@ -8,7 +8,7 @@ from . import local_global_conversion
 from .. import odometry_and_time
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
-from ..logger import logger 
+from ..logger import logger
 
 
 class FlightInterface:
