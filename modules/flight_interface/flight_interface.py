@@ -2,10 +2,13 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
+import inspect
+
 from . import local_global_conversion
 from .. import odometry_and_time
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
+from ..logger import logger 
 
 
 class FlightInterface:
@@ -34,6 +37,13 @@ class FlightInterface:
 
         # Get Pylance to stop complaining
         assert home_location is not None
+
+        result, flight_interface_logger = logger.Logger.create("flight_interface")
+
+        if result:
+            frame = inspect.currentframe()
+            flight_interface_logger.info("flight interface logger initialized", frame)
+            flight_interface_logger.info(home_location, frame)
 
         return True, FlightInterface(cls.__create_key, controller, home_location)
 
