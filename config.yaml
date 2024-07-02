@@ -36,5 +36,5 @@ geolocation:
     camera_position_y: 0.0
     camera_position_z: 0.0
     camera_orientation_yaw: 0.0
-    camera_orientation_pitch: 0.0
+    camera_orientation_pitch: -1.57079632679
     camera_orientation_roll: 0.0

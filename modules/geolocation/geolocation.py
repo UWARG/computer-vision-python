@@ -114,10 +114,10 @@ class Geolocation:
         # Find scalar multiple for the vector to touch the ground (z/3rd component is 0)
         # Solve for s: o3 + s * d3 = 0
         scaling = -vec_camera_in_world_position[2] / vec_down[2]
-        # if scaling < 0.0:
-        #     print("6")
-        #     print(scaling)  
-        #     return False, None
+        if scaling < 0.0:
+            print("6")
+            print(scaling)  
+            return False, None
 
         print(f"scaling = {scaling}")  # scaling = 2.030820369720459
 
