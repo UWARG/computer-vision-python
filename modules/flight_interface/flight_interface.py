@@ -52,10 +52,12 @@ class FlightInterface:
         # Get Pylance to stop complaining
         assert home_location is not None
 
-        frame = inspect.currentframe() 
+        frame = inspect.currentframe()
         flight_interface_logger.info(home_location, frame)
 
-        return True, FlightInterface(cls.__create_key, controller, home_location, flight_interface_logger)
+        return True, FlightInterface(
+            cls.__create_key, controller, home_location, flight_interface_logger
+        )
 
     def __init__(
         self,
