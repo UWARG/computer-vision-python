@@ -52,9 +52,6 @@ class FlightInterface:
         # Get Pylance to stop complaining
         assert home_location is not None
 
-        frame = inspect.currentframe()
-        flight_interface_logger.info(home_location, frame)
-
         return True, FlightInterface(
             cls.__create_key, controller, home_location, flight_interface_logger
         )
@@ -74,6 +71,9 @@ class FlightInterface:
         self.controller = controller
         self.__home_location = home_location
         self.__logger = logger
+
+        frame = inspect.currentframe()
+        self.__logger.info(self.__home_location, frame)
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
