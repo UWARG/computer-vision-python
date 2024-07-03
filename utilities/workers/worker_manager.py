@@ -89,7 +89,7 @@ class WorkerManager:
         """
         try:
             worker = mp.Process(target=target, args=args)
-        except:
+        except TypeError:
             return False, None
 
         return True, worker
