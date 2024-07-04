@@ -42,7 +42,7 @@ class WorkerManager:
 
         create_logger_result, worker_manager_logger = logger.Logger.create("worker_manager")
         if not create_logger_result:
-            print("Error creating worker_manager_logger")
+            print("Error creating worker manager logger")
             return False, None
 
         frame = inspect.currentframe()
