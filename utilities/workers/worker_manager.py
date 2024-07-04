@@ -58,7 +58,7 @@ class WorkerManager:
 
         if count <= 0:
             frame = inspect.currentframe()
-            worker_manager_logger.error("Worker count less than or equal to zero, no workers were able to be created", frame)
+            worker_manager_logger.error("Worker count requested is less than or equal to zero, no workers were created", frame)
             return False, None
 
         args = WorkerManager.__create_worker_arguments(
