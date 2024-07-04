@@ -95,6 +95,7 @@ class WorkerManager:
 
         target: Fuction
         args: Worker arguments.
+        worker_manager_logger: Logger for the Worker Manager.
 
         Returns whether a worker was created and the worker.
         """
