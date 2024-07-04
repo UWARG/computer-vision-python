@@ -20,6 +20,11 @@ from utilities.workers import worker_manager
 COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5
 ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE = 5
 
+# Play with these numbers to see process bottlenecks
+COUNTUP_WORKER_COUNT = 2
+ADD_RANDOM_WORKER_COUNT = 2
+CONCATENATOR_WORKER_COUNT = 2
+
 
 # main() is required for early return
 def main() -> int:
@@ -47,83 +52,77 @@ def main() -> int:
         ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE,
     )
 
+    # Worker arguments
+    # Format of each arg is as follows:
+    #   count: int,
+    #   target: "(...) -> object",
+    #   class_args: tuple,
+    #   input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+    #   output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+    #   controller: worker_controller.WorkerController,
+    countup_worker_args = (
+        COUNTUP_WORKER_COUNT,
+        countup_worker.countup_worker,
+        (
+            3,
+            100,
+        ),
+        [],
+        [countup_to_add_random_queue],
+        controller,
+    )
+    add_random_worker_args = (
+        ADD_RANDOM_WORKER_COUNT,
+        add_random_worker.add_random_worker,
+        (
+            252,
+            10,
+            5,
+        ),
+        [countup_to_add_random_queue],
+        [add_random_to_concatenator_queue],
+        controller,
+    )
+    concatenator_worker_args = (
+        CONCATENATOR_WORKER_COUNT,
+        concatenator_worker.concatenator_worker,
+        (
+            "Hello ",
+            " world!",
+        ),
+        [add_random_to_concatenator_queue],
+        [],
+        controller,
+    )
+
     # Prepare processes
     # Data path: countup_worker to add_random_worker to concatenator_workers
-    # Play with these numbers to see process bottlenecks
-    countup_workers = [
-        mp.Process(
-            target=countup_worker.countup_worker,
-            args=(
-                3,
-                100,
-                countup_to_add_random_queue,
-                controller,
-            ),
-        ),
-        mp.Process(
-            target=countup_worker.countup_worker,
-            args=(
-                2,
-                200,
-                countup_to_add_random_queue,
-                controller,
-            ),
-        ),
-    ]
-    countup_manager = worker_manager.WorkerManager(countup_workers)
+    worker_managers = []
 
-    add_random_workers = [
-        mp.Process(
-            target=add_random_worker.add_random_worker,
-            args=(
-                252,
-                10,
-                5,
-                countup_to_add_random_queue,
-                add_random_to_concatenator_queue,
-                controller,
-            ),
-        ),
-        mp.Process(
-            target=add_random_worker.add_random_worker,
-            args=(
-                350,
-                4,
-                1,
-                countup_to_add_random_queue,
-                add_random_to_concatenator_queue,
-                controller,
-            ),
-        ),
-    ]
-    add_random_manager = worker_manager.WorkerManager(add_random_workers)
+    result, countup_manager = worker_manager.WorkerManager.create(*countup_worker_args)
+    if not result:
+        print("Failed to create manager for Countup")
+        return -1
 
-    concatenator_workers = [
-        mp.Process(
-            target=concatenator_worker.concatenator_worker,
-            args=(
-                "Hello ",
-                " world!",
-                add_random_to_concatenator_queue,
-                controller,
-            ),
-        ),
-        mp.Process(
-            target=concatenator_worker.concatenator_worker,
-            args=(
-                "Example ",
-                " code!",
-                add_random_to_concatenator_queue,
-                controller,
-            ),
-        ),
-    ]
-    concatenator_manager = worker_manager.WorkerManager(concatenator_workers)
+    worker_managers.append(countup_manager)
+
+    result, add_random_manager = worker_manager.WorkerManager.create(*add_random_worker_args)
+    if not result:
+        print("Failed to create manager for Add Random")
+        return -1
+
+    worker_managers.append(add_random_manager)
+
+    result, concatenator_manager = worker_manager.WorkerManager.create(*concatenator_worker_args)
+    if not result:
+        print("Failed to create manager for Concatenator")
+        return -1
+
+    worker_managers.append(concatenator_manager)
 
     # Start worker processes
-    countup_manager.start_workers()
-    add_random_manager.start_workers()
-    concatenator_manager.start_workers()
+    for manager in worker_managers:
+        manager.start_workers()
 
     # Run for some time and then pause
     time.sleep(2)
@@ -142,9 +141,8 @@ def main() -> int:
     add_random_to_concatenator_queue.fill_and_drain_queue()
 
     # Clean up worker processes
-    countup_manager.join_workers()
-    add_random_manager.join_workers()
-    concatenator_manager.join_workers()
+    for manager in worker_managers:
+        manager.join_workers()
 
     # We can reset controller in case we want to reuse it
     # Alternatively, create a new WorkerController instance

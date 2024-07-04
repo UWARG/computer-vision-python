@@ -130,12 +130,6 @@ class WorkerManager:
 
         return True, worker
 
-    def concatenate_workers(self, workers: "list[mp.Process]") -> None:
-        """
-        Add workers.
-        """
-        self.__workers += workers
-
     def start_workers(self) -> None:
         """
         Start workers.
