@@ -27,7 +27,7 @@ class WorkerManager:
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
-    ) -> "list[bool, WorkerManager]":
+    ) -> "tuple[bool, WorkerManager]":
         """
         Create identical workers and append them to a workers list.
 
