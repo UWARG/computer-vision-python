@@ -111,9 +111,11 @@ def main() -> int:
     pathlib.Path(f"{LOG_DIRECTORY_PATH}/{start_time}").mkdir()
 
     create_logger_result, main_logger = logger.Logger.create("main")
-    if create_logger_result:
-        frame = inspect.currentframe()
-        main_logger.info("main logger initialized", frame)
+    if not create_logger_result:
+        return -1
+
+    frame = inspect.currentframe()
+    main_logger.info("main logger initialized", frame)
 
     # Setup
     controller = worker_controller.WorkerController()
@@ -167,6 +169,13 @@ def main() -> int:
         return -1
 
     # Worker arguments
+    # Format of each arg is as follows:
+        # count: int,
+        # target: "(...) -> object",
+        # class_args: tuple,
+        # input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        # output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        # controller: worker_controller.WorkerController,
     video_input_worker_args = (
         1,
         video_input_worker.video_input_worker,
@@ -231,54 +240,46 @@ def main() -> int:
     # Create managers
     worker_managers = []
 
-    result, manager = worker_manager.WorkerManager.create(*video_input_worker_args)
+    result, video_input_manager = worker_manager.WorkerManager.create(*video_input_worker_args)
     if not result:
-        if create_logger_result:
-            frame = inspect.currentframe()
-            main_logger.info("Failed to create manager for Video Input", frame)
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Video Input", frame)
         return -1
-    worker_managers.append(manager)
+    worker_managers.append(video_input_manager)
 
-    result, manager = worker_manager.WorkerManager.create(*detect_target_worker_args)
+    result, detect_target_manager = worker_manager.WorkerManager.create(*detect_target_worker_args)
     if not result:
-        if create_logger_result:
-            frame = inspect.currentframe()
-            main_logger.info("Failed to create manager for Detect Target", frame)
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Detect Target", frame)
         return -1
-    worker_managers.append(manager)
+    worker_managers.append(detect_target_manager)
 
-    result, manager = worker_manager.WorkerManager.create(*flight_interface_worker_args)
+    result, flight_interface_manager = worker_manager.WorkerManager.create(*flight_interface_worker_args)
     if not result:
-        if create_logger_result:
-            frame = inspect.currentframe()
-            main_logger.info("Failed to create manager for Flight Interface", frame)
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Flight Interface", frame)
         return -1
-    worker_managers.append(manager)
+    worker_managers.append(flight_interface_manager)
 
-    result, manager = worker_manager.WorkerManager.create(*data_merge_worker_args)
+    result, data_merge_manager = worker_manager.WorkerManager.create(*data_merge_worker_args)
     if not result:
-        if create_logger_result:
-            frame = inspect.currentframe()
-            main_logger.info("Failed to create manager for Date Merge", frame)
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Date Merge", frame)
         return -1
-    worker_managers.append(manager)
+    worker_managers.append(data_merge_manager)
 
-    result, manager = worker_manager.WorkerManager.create(*geolocation_worker_args)
+    result, geolocation_manager = worker_manager.WorkerManager.create(*geolocation_worker_args)
     if not result:
-        if create_logger_result:
-            frame = inspect.currentframe()
-            main_logger.info("Failed to create manager for Geolocation", frame)
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Geolocation", frame)
         return -1
-    worker_managers.append(manager)
+    worker_managers.append(geolocation_manager)
 
     # Run
     for manager in worker_managers:
         manager.start_workers()
 
     while True:
-        # for manager in worker_managers:
-        #     manager.check_and_restart_dead_workers()
-
         try:
             geolocation_data = geolocation_to_main_queue.queue.get_nowait()
         except queue.Empty:

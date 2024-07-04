@@ -3,9 +3,8 @@ For managing workers.
 """
 
 import multiprocessing as mp
-import types
-
 from typing import Tuple
+
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
@@ -38,7 +37,7 @@ class WorkerManager:
 
         Returns whether the workers were able to be created and the Worker Manager.
         """
-        if count == 0:
+        if count <= 0:
             return False, None
 
         args = WorkerManager.create_worker_arguments(
@@ -78,7 +77,7 @@ class WorkerManager:
         return class_args + tuple(input_queues) + tuple(output_queues) + (controller,)
 
     @staticmethod
-    def create_single_worker(target: types.FunctionType, args: tuple) -> Tuple[bool, mp.Process]:
+    def create_single_worker(target: "(...) -> object", args: tuple) -> Tuple[bool, mp.Process]: #type: ignore
         """
         Creates a single worker.
 
@@ -89,7 +88,8 @@ class WorkerManager:
         """
         try:
             worker = mp.Process(target=target, args=args)
-        except TypeError:
+        except Exception as e: # pylint: disable=broad-exception-caught
+            print(f"Error while saving KML file: {e}")
             return False, None
 
         return True, worker
@@ -97,30 +97,11 @@ class WorkerManager:
     def __init__(
         self,
         workers: "list[mp.Process]",
-        # target: "(...) -> object", #type: ignore
-        # class_args: tuple,
-        # input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-        # output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-        # controller: worker_controller.WorkerController,
     ) -> None:
         """
         Constructor.
         """
         self.__workers = workers
-        # self.__target = target
-        # self.__class_args = class_args
-        # self.__input_queues = input_queues
-        # self.__output_queues = output_queues
-        # self.__controller = controller
-
-    # def check_and_restart_dead_workers(self) -> None:
-    #     """
-    #     TODO
-    #     """
-    #     for worker in self.__workers:
-    #         if not worker.is_alive():
-    #             #TODO: Implement restarting code.
-    #             pass
 
     def concatenate_workers(self, workers: "list[mp.Process]") -> None:
         """
