@@ -16,14 +16,7 @@ class WorkerManager:
     Contains exit and pause requests.
     """
 
-    def __init__(
-        self,
-        workers: "list[mp.Process]",
-    ) -> None:
-        """
-        Constructor.
-        """
-        self.__workers = workers
+    __create_key = object()
 
     @classmethod
     def create(
@@ -47,7 +40,6 @@ class WorkerManager:
 
         Returns whether the workers were able to be created and the Worker Manager.
         """
-
         result, worker_manager_logger = logger.Logger.create("worker_manager")
         if not result:
             print("Error creating worker manager logger")
@@ -58,7 +50,10 @@ class WorkerManager:
 
         if count <= 0:
             frame = inspect.currentframe()
-            worker_manager_logger.error("Worker count requested is less than or equal to zero, no workers were created", frame)
+            worker_manager_logger.error(
+                "Worker count requested is less than or equal to zero, no workers were created",
+                frame,
+            )
             return False, None
 
         args = WorkerManager.__create_worker_arguments(
@@ -67,7 +62,11 @@ class WorkerManager:
 
         workers = []
         for _ in range(0, count):
-            result, worker = WorkerManager.__create_single_worker(target, args, worker_manager_logger)
+            result, worker = WorkerManager.__create_single_worker(
+                target,
+                args,
+                worker_manager_logger,
+            )
             if not result:
                 frame = inspect.currentframe()
                 worker_manager_logger.error("Failed to create worker", frame)
@@ -76,8 +75,21 @@ class WorkerManager:
             workers.append(worker)
 
         return True, WorkerManager(
+            cls.__create_key,
             workers,
         )
+
+    def __init__(
+        self,
+        class_private_create_key: object,
+        workers: "list[mp.Process]",
+    ) -> None:
+        """
+        Private constructor, use create() method.
+        """
+        assert class_private_create_key is WorkerManager.__create_key, "Use create() method"
+
+        self.__workers = workers
 
     @staticmethod
     def __create_worker_arguments(
