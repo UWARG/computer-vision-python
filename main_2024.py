@@ -112,6 +112,7 @@ def main() -> int:
 
     create_logger_result, main_logger = logger.Logger.create("main")
     if not create_logger_result:
+        print("Error creating main logger")
         return -1
 
     frame = inspect.currentframe()

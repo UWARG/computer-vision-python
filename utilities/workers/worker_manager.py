@@ -2,9 +2,11 @@
 For managing workers.
 """
 
+import inspect
 import multiprocessing as mp
 from typing import Tuple
 
+from modules.logger import logger
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
@@ -37,6 +39,15 @@ class WorkerManager:
 
         Returns whether the workers were able to be created and the Worker Manager.
         """
+
+        create_logger_result, worker_manager_logger = logger.Logger.create("worker_manager")
+        if not create_logger_result:
+            print("Error creating worker_manager_logger")
+            return False, None
+
+        frame = inspect.currentframe()
+        worker_manager_logger.info("worker manager logger initialized", frame)
+
         if count <= 0:
             return False, None
 
@@ -46,15 +57,16 @@ class WorkerManager:
 
         workers = []
         for _ in range(0, count):
-            result, worker = WorkerManager.create_single_worker(target, args)
+            result, worker = WorkerManager.create_single_worker(target, args, worker_manager_logger)
             if not result:
+                frame = inspect.currentframe()
+                worker_manager_logger.error("Failed to create worker", frame)
                 return False, None
 
             workers.append(worker)
 
         return True, WorkerManager(
             workers,
-            # target, class_args, input_queues, output_queues, controller
         )
 
     @staticmethod
@@ -77,7 +89,7 @@ class WorkerManager:
         return class_args + tuple(input_queues) + tuple(output_queues) + (controller,)
 
     @staticmethod
-    def create_single_worker(target: "(...) -> object", args: tuple) -> Tuple[bool, mp.Process]: #type: ignore
+    def create_single_worker(target: "(...) -> object", args: tuple, worker_manager_logger: logger) -> Tuple[bool, mp.Process]: #type: ignore
         """
         Creates a single worker.
 
@@ -89,7 +101,8 @@ class WorkerManager:
         try:
             worker = mp.Process(target=target, args=args)
         except Exception as e: # pylint: disable=broad-exception-caught
-            print(f"Error while saving KML file: {e}")
+            frame = inspect.currentframe()
+            worker_manager_logger.error(f"Exception raised while creating a worker: {e}", frame)
             return False, None
 
         return True, worker
