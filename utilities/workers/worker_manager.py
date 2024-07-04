@@ -4,7 +4,6 @@ For managing workers.
 
 import inspect
 import multiprocessing as mp
-from typing import Tuple
 
 from modules.logger import logger
 from utilities.workers import worker_controller
@@ -17,22 +16,31 @@ class WorkerManager:
     Contains exit and pause requests.
     """
 
+    def __init__(
+        self,
+        workers: "list[mp.Process]",
+    ) -> None:
+        """
+        Constructor.
+        """
+        self.__workers = workers
+
     @classmethod
     def create(
         cls,
         count: int,
         target: "(...) -> object",  # type: ignore
-        class_args: tuple,
+        class_args: "tuple",
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
-    ) -> "list[mp.Process]":
+    ) -> "list[bool, WorkerManager]":
         """
         Create identical workers and append them to a workers list.
 
         count: Number of workers.
         target: Function.
-        class_args: Arguments to function.
+        class_args: Arguments for worker internals.
         input_queues: Input queues.
         output_queues: Output queues.
         controller: Worker controller.
@@ -40,8 +48,8 @@ class WorkerManager:
         Returns whether the workers were able to be created and the Worker Manager.
         """
 
-        create_logger_result, worker_manager_logger = logger.Logger.create("worker_manager")
-        if not create_logger_result:
+        result, worker_manager_logger = logger.Logger.create("worker_manager")
+        if not result:
             print("Error creating worker manager logger")
             return False, None
 
@@ -49,15 +57,17 @@ class WorkerManager:
         worker_manager_logger.info("worker manager logger initialized", frame)
 
         if count <= 0:
+            frame = inspect.currentframe()
+            worker_manager_logger.error("Worker count less than or equal to zero, no workers were able to be created", frame)
             return False, None
 
-        args = WorkerManager.create_worker_arguments(
+        args = WorkerManager.__create_worker_arguments(
             class_args, input_queues, output_queues, controller
         )
 
         workers = []
         for _ in range(0, count):
-            result, worker = WorkerManager.create_single_worker(target, args, worker_manager_logger)
+            result, worker = WorkerManager.__create_single_worker(target, args, worker_manager_logger)
             if not result:
                 frame = inspect.currentframe()
                 worker_manager_logger.error("Failed to create worker", frame)
@@ -70,8 +80,8 @@ class WorkerManager:
         )
 
     @staticmethod
-    def create_worker_arguments(
-        class_args: tuple,
+    def __create_worker_arguments(
+        class_args: "tuple",
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
@@ -79,7 +89,7 @@ class WorkerManager:
         """
         Creates a tuple containing most arguments for a worker.
 
-        class_args: Class arguments.
+        class_args: Arguments for worker internals.
         input_queues: Input queues.
         output_queues: Output queues.
         controller: Worker controller.
@@ -89,12 +99,12 @@ class WorkerManager:
         return class_args + tuple(input_queues) + tuple(output_queues) + (controller,)
 
     @staticmethod
-    def create_single_worker(target: "(...) -> object", args: tuple, worker_manager_logger: logger) -> Tuple[bool, mp.Process]:  # type: ignore
+    def __create_single_worker(target: "(...) -> object", args: "tuple", worker_manager_logger: logger) -> "tuple[bool, mp.Process]":  # type: ignore
         """
         Creates a single worker.
 
-        target: Fuction
-        args: Worker arguments.
+        target: Function.
+        args: Target function arguments.
         worker_manager_logger: Logger for the Worker Manager.
 
         Returns whether a worker was created and the worker.
@@ -107,15 +117,6 @@ class WorkerManager:
             return False, None
 
         return True, worker
-
-    def __init__(
-        self,
-        workers: "list[mp.Process]",
-    ) -> None:
-        """
-        Constructor.
-        """
-        self.__workers = workers
 
     def concatenate_workers(self, workers: "list[mp.Process]") -> None:
         """

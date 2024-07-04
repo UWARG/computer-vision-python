@@ -110,8 +110,8 @@ def main() -> int:
     pathlib.Path(LOG_DIRECTORY_PATH).mkdir(exist_ok=True)
     pathlib.Path(f"{LOG_DIRECTORY_PATH}/{start_time}").mkdir()
 
-    create_logger_result, main_logger = logger.Logger.create("main")
-    if not create_logger_result:
+    result, main_logger = logger.Logger.create("main")
+    if not result:
         print("Error creating main logger")
         return -1
 
@@ -246,6 +246,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Video Input", frame)
         return -1
+
     worker_managers.append(video_input_manager)
 
     result, detect_target_manager = worker_manager.WorkerManager.create(*detect_target_worker_args)
@@ -253,6 +254,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Detect Target", frame)
         return -1
+
     worker_managers.append(detect_target_manager)
 
     result, flight_interface_manager = worker_manager.WorkerManager.create(
@@ -262,13 +264,15 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Flight Interface", frame)
         return -1
+
     worker_managers.append(flight_interface_manager)
 
     result, data_merge_manager = worker_manager.WorkerManager.create(*data_merge_worker_args)
     if not result:
         frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Date Merge", frame)
+        main_logger.error("Failed to create manager for Data Merge", frame)
         return -1
+
     worker_managers.append(data_merge_manager)
 
     result, geolocation_manager = worker_manager.WorkerManager.create(*geolocation_worker_args)
@@ -276,6 +280,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Geolocation", frame)
         return -1
+
     worker_managers.append(geolocation_manager)
 
     # Run
