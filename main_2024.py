@@ -171,12 +171,12 @@ def main() -> int:
 
     # Worker arguments
     # Format of each arg is as follows:
-        # count: int,
-        # target: "(...) -> object",
-        # class_args: tuple,
-        # input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-        # output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-        # controller: worker_controller.WorkerController,
+    #   count: int,
+    #   target: "(...) -> object",
+    #   class_args: tuple,
+    #   input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+    #   output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+    #   controller: worker_controller.WorkerController,
     video_input_worker_args = (
         1,
         video_input_worker.video_input_worker,
@@ -255,7 +255,9 @@ def main() -> int:
         return -1
     worker_managers.append(detect_target_manager)
 
-    result, flight_interface_manager = worker_manager.WorkerManager.create(*flight_interface_worker_args)
+    result, flight_interface_manager = worker_manager.WorkerManager.create(
+        *flight_interface_worker_args
+    )
     if not result:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Flight Interface", frame)

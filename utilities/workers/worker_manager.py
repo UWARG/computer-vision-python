@@ -89,7 +89,7 @@ class WorkerManager:
         return class_args + tuple(input_queues) + tuple(output_queues) + (controller,)
 
     @staticmethod
-    def create_single_worker(target: "(...) -> object", args: tuple, worker_manager_logger: logger) -> Tuple[bool, mp.Process]: #type: ignore
+    def create_single_worker(target: "(...) -> object", args: tuple, worker_manager_logger: logger) -> Tuple[bool, mp.Process]:  # type: ignore
         """
         Creates a single worker.
 
@@ -101,7 +101,7 @@ class WorkerManager:
         """
         try:
             worker = mp.Process(target=target, args=args)
-        except Exception as e: # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-exception-caught
             frame = inspect.currentframe()
             worker_manager_logger.error(f"Exception raised while creating a worker: {e}", frame)
             return False, None
