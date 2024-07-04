@@ -143,3 +143,80 @@ class WorkerManager:
         """
         for worker in self.__workers:
             worker.join()
+
+
+class WorkerProperties:
+    """
+    Worker Properties for a worker.
+    """
+
+    __create_key = object()
+
+    @classmethod
+    def create(
+        cls,
+        count: int,
+        target: "(...) -> object",  # type: ignore
+        worker_args: "tuple",
+        input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        controller: worker_controller.WorkerController,
+    ) -> "tuple[WorkerProperties]":
+        """
+        Creates worker properties.
+
+        count: Number of workers.
+        target: Function.
+        class_args: Arguments for worker internals.
+        input_queues: Input queues.
+        output_queues: Output queues.
+        controller: Worker controller.
+
+        Returns the WorkerProperties object.
+        """
+        return WorkerProperties(
+            cls.__create_key,
+            count,
+            target,
+            worker_args,
+            input_queues,
+            output_queues,
+            controller,
+        )
+
+    def __init__(
+        self,
+        class_private_create_key: object,
+        count: int,
+        target: "(...) -> object",  # type: ignore
+        worker_args: "tuple",
+        input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
+        controller: worker_controller.WorkerController,
+    ) -> None:
+        """
+        Private constructor, use create() method.
+        """
+        assert class_private_create_key is WorkerProperties.__create_key, "Use create() method"
+
+        self.__count = count
+        self.__target = target
+        self.__worker_args = worker_args
+        self.__input_queues = input_queues
+        self.__output_queues = output_queues
+        self.__controller = controller
+
+    def get_worker_properties(self) -> ...:
+        """
+        Concatenates the worker properties into a tuple.
+
+        Returns the worker properties as a tuple.
+        """
+        return (
+            (self.__count,)
+            + (self.__target,)
+            + self.__worker_args
+            + (self.__input_queues,)
+            + (self.__output_queues,)
+            + (self.__controller,)
+        )

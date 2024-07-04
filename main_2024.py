@@ -170,14 +170,7 @@ def main() -> int:
         return -1
 
     # Worker arguments
-    # Format of each arg is as follows:
-    #   count: int,
-    #   target: "(...) -> object",
-    #   class_args: tuple,
-    #   input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-    #   output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
-    #   controller: worker_controller.WorkerController,
-    video_input_worker_args = (
+    video_input_worker_args = worker_manager.WorkerProperties.create(
         1,
         video_input_worker.video_input_worker,
         (
@@ -189,7 +182,7 @@ def main() -> int:
         [video_input_to_detect_target_queue],
         controller,
     )
-    detect_target_worker_args = (
+    detect_target_worker_args = worker_manager.WorkerProperties.create(
         DETECT_TARGET_WORKER_COUNT,
         detect_target_worker.detect_target_worker,
         (
@@ -203,7 +196,7 @@ def main() -> int:
         [detect_target_to_data_merge_queue],
         controller,
     )
-    flight_interface_worker_args = (
+    flight_interface_worker_args = worker_manager.WorkerProperties.create(
         1,
         flight_interface_worker.flight_interface_worker,
         (
@@ -215,7 +208,7 @@ def main() -> int:
         [flight_interface_to_data_merge_queue],
         controller,
     )
-    data_merge_worker_args = (
+    data_merge_worker_args = worker_manager.WorkerProperties.create(
         1,
         data_merge_worker.data_merge_worker,
         (DATA_MERGE_TIMEOUT,),
@@ -226,7 +219,7 @@ def main() -> int:
         [data_merge_to_geolocation_queue],
         controller,
     )
-    geolocation_worker_args = (
+    geolocation_worker_args = worker_manager.WorkerProperties.create(
         1,
         geolocation_worker.geolocation_worker,
         (
@@ -241,7 +234,9 @@ def main() -> int:
     # Create managers
     worker_managers = []
 
-    result, video_input_manager = worker_manager.WorkerManager.create(*video_input_worker_args)
+    result, video_input_manager = worker_manager.WorkerManager.create(
+        *video_input_worker_args.get_worker_properties()
+    )
     if not result:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Video Input", frame)
@@ -249,7 +244,9 @@ def main() -> int:
 
     worker_managers.append(video_input_manager)
 
-    result, detect_target_manager = worker_manager.WorkerManager.create(*detect_target_worker_args)
+    result, detect_target_manager = worker_manager.WorkerManager.create(
+        *detect_target_worker_args.get_worker_properties()
+    )
     if not result:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Detect Target", frame)
@@ -258,7 +255,7 @@ def main() -> int:
     worker_managers.append(detect_target_manager)
 
     result, flight_interface_manager = worker_manager.WorkerManager.create(
-        *flight_interface_worker_args
+        *flight_interface_worker_args.get_worker_properties()
     )
     if not result:
         frame = inspect.currentframe()
@@ -267,7 +264,9 @@ def main() -> int:
 
     worker_managers.append(flight_interface_manager)
 
-    result, data_merge_manager = worker_manager.WorkerManager.create(*data_merge_worker_args)
+    result, data_merge_manager = worker_manager.WorkerManager.create(
+        *data_merge_worker_args.get_worker_properties()
+    )
     if not result:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Data Merge", frame)
@@ -275,7 +274,9 @@ def main() -> int:
 
     worker_managers.append(data_merge_manager)
 
-    result, geolocation_manager = worker_manager.WorkerManager.create(*geolocation_worker_args)
+    result, geolocation_manager = worker_manager.WorkerManager.create(
+        *geolocation_worker_args.get_worker_properties()
+    )
     if not result:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Geolocation", frame)
