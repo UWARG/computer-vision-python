@@ -7,9 +7,14 @@ import inspect
 import logging
 import pathlib
 import os
+
+# Used in type annotation of logger parameters
+# pylint: disable-next=unused-import
 import types
-import typing
 import yaml
+
+from utilities import yaml
+
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
@@ -26,21 +31,13 @@ class Logger:
         """
         Create and configure a logger.
         """
+        # Configuration settings
+        result, config = yaml.open_yaml_file(CONFIG_FILE_PATH)
+        if not result:
+            print("ERROR: Failed to load configuration file")
+            return False, None
 
-        # Open config file.
-        try:
-            with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
-                try:
-                    config = yaml.safe_load(file)
-                except yaml.YAMLError as exc:
-                    print(f"Error parsing YAML file: {exc}")
-                    return -1
-        except FileNotFoundError:
-            print(f"File not found: {CONFIG_FILE_PATH}")
-            return False, None
-        except IOError as exc:
-            print(f"Error when opening file: {exc}")
-            return False, None
+        assert config is not None
 
         try:
             log_directory_path = config["logger"]["directory_path"]
@@ -53,6 +50,11 @@ class Logger:
 
         # Get the path to the logs directory.
         entries = os.listdir(log_directory_path)
+
+        if len(entries) == 0:
+            print("ERROR: Must create a new log directory for this run")
+            return False, None
+
         log_names = [
             entry for entry in entries if os.path.isdir(os.path.join(log_directory_path, entry))
         ]
@@ -65,10 +67,10 @@ class Logger:
             ),
         )
 
-        filename = f"{log_directory_path}/{log_path}/{name}.log"
+        filepath = pathlib.Path(log_directory_path, log_path, f"{name}.log")
 
         # Formatting configurations for the logger.
-        file_handler = logging.FileHandler(filename=filename, mode="w")  # Handles logging to file.
+        file_handler = logging.FileHandler(filename=filepath, mode="w")  # Handles logging to file.
         stream_handler = logging.StreamHandler()  # Handles logging to terminal.
 
         formatter = logging.Formatter(
@@ -96,45 +98,50 @@ class Logger:
         self.logger = logger
 
     @staticmethod
-    def message_and_metadata(message: str, frame: typing.Optional[types.FrameType]) -> str:
+    def message_and_metadata(message: str, frame: "types.FrameType | None") -> str:
         """
         Extracts metadata from frame and appends it to the message.
         """
+        if frame is None:
+            return f"[No frame data] {message}"
+
+        assert frame is not None
+
         function_name = frame.f_code.co_name
         filename = frame.f_code.co_filename
         line_number = inspect.getframeinfo(frame).lineno
 
         return f"[{filename} | {function_name} | {line_number}] {message}"
 
-    def debug(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
+    def debug(self, message: str, frame: "types.FrameType | None") -> None:
         """
         Logs a debug level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.debug(message)
 
-    def info(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
+    def info(self, message: str, frame: "types.FrameType | None") -> None:
         """
         Logs an info level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.info(message)
 
-    def warning(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
+    def warning(self, message: str, frame: "types.FrameType | None") -> None:
         """
         Logs a warning level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.warning(message)
 
-    def error(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
+    def error(self, message: str, frame: "types.FrameType | None") -> None:
         """
         Logs an error level message.
         """
         message = self.message_and_metadata(message, frame)
         self.logger.error(message)
 
-    def critical(self, message: str, frame: typing.Optional[types.FrameType]) -> None:
+    def critical(self, message: str, frame: "types.FrameType | None") -> None:
         """
         Logs a critical level message.
         """
