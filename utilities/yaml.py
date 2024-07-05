@@ -6,7 +6,7 @@ import pathlib
 import yaml
 
 
-def open_yaml_file(file_path: pathlib.Path) -> "tuple[bool, dict | None]":
+def open_config(file_path: pathlib.Path) -> "tuple[bool, dict | None]":
     """
     Open and decode YAML file.
     """

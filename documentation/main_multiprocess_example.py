@@ -37,7 +37,7 @@ def main() -> int:
     Main function.
     """
     # Configuration settings
-    result, config = yaml.open_yaml_file(CONFIG_FILE_PATH)
+    result, config = yaml.open_config(CONFIG_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1
