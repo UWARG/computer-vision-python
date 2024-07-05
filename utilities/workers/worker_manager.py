@@ -26,7 +26,7 @@ class WorkerProperties:
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
-        main_logger: logger,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, WorkerProperties | None]":
         """
         Creates worker properties.
@@ -37,13 +37,13 @@ class WorkerProperties:
         input_queues: Input queues.
         output_queues: Output queues.
         controller: Worker controller.
-        main_logger: Main logger.
+        local_logger: Main logger.
 
         Returns the WorkerProperties object.
         """
         if count <= 0:
             frame = inspect.currentframe()
-            main_logger.error(
+            local_logger.error(
                 "Worker count requested is less than or equal to zero, no workers were created",
                 frame,
             )
@@ -119,13 +119,13 @@ class WorkerManager:
     def create(
         cls,
         worker_properties: WorkerProperties,
-        main_logger: logger,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, WorkerManager | None]":
         """
         Create identical workers and append them to a workers list.
 
         worker_properties: Worker properties.
-        main_logger: Main logger.
+        local_logger: Main logger.
 
         Returns whether the workers were able to be created and the Worker Manager.
         """
@@ -134,11 +134,11 @@ class WorkerManager:
             result, worker = WorkerManager.__create_single_worker(
                 worker_properties.get_worker_target(),
                 worker_properties.get_worker_arguments(),
-                main_logger,
+                local_logger,
             )
             if not result:
                 frame = inspect.currentframe()
-                main_logger.error("Failed to create worker", frame)
+                local_logger.error("Failed to create worker", frame)
                 return False, None
 
             workers.append(worker)
@@ -161,13 +161,13 @@ class WorkerManager:
         self.__workers = workers
 
     @staticmethod
-    def __create_single_worker(target: "(...) -> object", args: "tuple", main_logger: logger) -> "tuple[bool, mp.Process | None]":  # type: ignore
+    def __create_single_worker(target: "(...) -> object", args: "tuple", local_logger: logger.Logger) -> "tuple[bool, mp.Process | None]":  # type: ignore
         """
         Creates a single worker.
 
         target: Function.
         args: Target function arguments.
-        main_logger: Main logger.
+        local_logger: Main logger.
 
         Returns whether a worker was created and the worker.
         """
@@ -175,7 +175,7 @@ class WorkerManager:
             worker = mp.Process(target=target, args=args)
         except Exception as e:  # pylint: disable=broad-exception-caught
             frame = inspect.currentframe()
-            main_logger.error(f"Exception raised while creating a worker: {e}", frame)
+            local_logger.error(f"Exception raised while creating a worker: {e}", frame)
             return False, None
 
         return True, worker
