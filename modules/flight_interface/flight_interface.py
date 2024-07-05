@@ -19,10 +19,11 @@ class FlightInterface:
     __create_key = object()
 
     @classmethod
-    def create(cls, address: str, timeout_home: float) -> "tuple[bool, FlightInterface | None]":
+    def create(cls, address: str, timeout_home: float, baud_rate: int) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP address or port.
         timeout_home: Timeout for home location in seconds.
+        baud_rate: Baud rate for the connection.
         """
         result, flight_interface_logger = logger.Logger.create("flight_interface")
         if not result:
@@ -34,7 +35,7 @@ class FlightInterface:
         frame = inspect.currentframe()
         flight_interface_logger.info("flight interface logger initialized", frame)
 
-        result, controller = flight_controller.FlightController.create(address)
+        result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
             frame = inspect.currentframe()
             flight_interface_logger.error("controller could not be created", frame)

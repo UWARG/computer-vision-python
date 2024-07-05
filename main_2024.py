@@ -88,6 +88,7 @@ def main() -> int:
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
+        FLIGHT_INTERFACE_BAUD_RATE = config["flight_interface"]["baud_rate"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
@@ -176,6 +177,7 @@ def main() -> int:
         (
             FLIGHT_INTERFACE_ADDRESS,
             FLIGHT_INTERFACE_TIMEOUT,
+            FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             flight_interface_to_data_merge_queue,
             controller,

@@ -22,6 +22,7 @@ detect_target:
 flight_interface:
     address: "tcp:127.0.0.1:14550"
     timeout: 10.0  # seconds
+    baud_rate: 57600  # symbol rate 
     worker_period: 0.1  # seconds
 
 data_merge:
