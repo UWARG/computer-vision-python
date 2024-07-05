@@ -36,7 +36,7 @@ class Geolocation:
         if not result:
             return False, None
 
-        # Get Pylance to stop complaining 
+        # Get Pylance to stop complaining
         assert geolocation_logger is not None
 
         frame = inspect.currentframe()
@@ -58,7 +58,9 @@ class Geolocation:
             result, value = camera_intrinsics.camera_space_from_image_space(source[0], source[1])
             if not result:
                 frame = inspect.currentframe()
-                geolocation_logger.error(f"rotated source vector could not be created for source: {source}", frame)
+                geolocation_logger.error(
+                    f"rotated source vector could not be created for source: {source}", frame
+                )
                 return False, None
 
             # Get Pylance to stop complaining
