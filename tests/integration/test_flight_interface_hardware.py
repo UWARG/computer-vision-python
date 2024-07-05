@@ -7,6 +7,7 @@ from modules.flight_interface import flight_interface
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
+FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 
 
 def main() -> int:
@@ -17,6 +18,7 @@ def main() -> int:
     result, interface = flight_interface.FlightInterface.create(
         MAVLINK_CONNECTION_ADDRESS,
         FLIGHT_INTERFACE_TIMEOUT,
+        FLIGHT_INTERFACE_BAUD_RATE,
     )
     assert result
     assert interface is not None

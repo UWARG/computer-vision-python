@@ -12,6 +12,7 @@ from . import flight_interface
 def flight_interface_worker(
     address: str,
     timeout: float,
+    baud_rate: int,
     period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -27,7 +28,7 @@ def flight_interface_worker(
     # TODO: Error handling
     # TODO: Logging
 
-    result, interface = flight_interface.FlightInterface.create(address, timeout)
+    result, interface = flight_interface.FlightInterface.create(address, timeout, baud_rate)
     if not result:
         print("ERROR: Worker failed to create class object")
         return
