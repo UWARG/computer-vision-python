@@ -5,12 +5,14 @@ python -m documentation.main_multiprocess_example
 ```
 """
 
+import inspect
 import multiprocessing as mp
 import time
 
 from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
+from modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -31,6 +33,15 @@ def main() -> int:
     """
     Main function.
     """
+    # Setup logger
+    result, main_logger = logger.Logger.create("main")
+    if not result:
+        print("Error creating main logger")
+        return -1
+
+    frame = inspect.currentframe()
+    main_logger.info("main logger initialized", frame)
+
     # Main is managing all worker processes and is responsible
     # for creating supporting interprocess communication
     controller = worker_controller.WorkerController()
@@ -52,8 +63,8 @@ def main() -> int:
         ADD_RANDOM_TO_CONCATENATOR_QUEUE_MAX_SIZE,
     )
 
-    # Worker arguments
-    result, countup_worker_args = worker_manager.WorkerProperties.create(
+    # Worker properties
+    result, countup_worker_properties = worker_manager.WorkerProperties.create(
         COUNTUP_WORKER_COUNT,
         countup_worker.countup_worker,
         (
@@ -63,12 +74,13 @@ def main() -> int:
         [],
         [countup_to_add_random_queue],
         controller,
+        main_logger,
     )
     if not result:
         print("Failed to create arguments for Countup")
         return -1
 
-    result, add_random_worker_args = worker_manager.WorkerProperties.create(
+    result, add_random_worker_properties = worker_manager.WorkerProperties.create(
         ADD_RANDOM_WORKER_COUNT,
         add_random_worker.add_random_worker,
         (
@@ -79,12 +91,13 @@ def main() -> int:
         [countup_to_add_random_queue],
         [add_random_to_concatenator_queue],
         controller,
+        main_logger,
     )
     if not result:
         print("Failed to create arguments for Add Random")
         return -1
 
-    result, concatenator_worker_args = worker_manager.WorkerProperties.create(
+    result, concatenator_worker_properties = worker_manager.WorkerProperties.create(
         CONCATENATOR_WORKER_COUNT,
         concatenator_worker.concatenator_worker,
         (
@@ -94,6 +107,7 @@ def main() -> int:
         [add_random_to_concatenator_queue],
         [],
         controller,
+        main_logger,
     )
     if not result:
         print("Failed to create arguments for Concatenator")
@@ -103,21 +117,30 @@ def main() -> int:
     # Data path: countup_worker to add_random_worker to concatenator_workers
     worker_managers = []
 
-    result, countup_manager = worker_manager.WorkerManager.create(countup_worker_args)
+    result, countup_manager = worker_manager.WorkerManager.create(
+        countup_worker_properties,
+        main_logger,
+    )
     if not result:
         print("Failed to create manager for Countup")
         return -1
 
     worker_managers.append(countup_manager)
 
-    result, add_random_manager = worker_manager.WorkerManager.create(add_random_worker_args)
+    result, add_random_manager = worker_manager.WorkerManager.create(
+        add_random_worker_properties,
+        main_logger,
+    )
     if not result:
         print("Failed to create manager for Add Random")
         return -1
 
     worker_managers.append(add_random_manager)
 
-    result, concatenator_manager = worker_manager.WorkerManager.create(concatenator_worker_args)
+    result, concatenator_manager = worker_manager.WorkerManager.create(
+        concatenator_worker_properties,
+        main_logger,
+    )
     if not result:
         print("Failed to create manager for Concatenator")
         return -1
