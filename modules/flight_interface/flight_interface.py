@@ -19,7 +19,9 @@ class FlightInterface:
     __create_key = object()
 
     @classmethod
-    def create(cls, address: str, timeout_home: float, baud_rate: int) -> "tuple[bool, FlightInterface | None]":
+    def create(
+        cls, address: str, timeout_home: float, baud_rate: int
+    ) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP address or port.
         timeout_home: Timeout for home location in seconds.
