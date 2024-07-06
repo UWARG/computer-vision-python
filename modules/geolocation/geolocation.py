@@ -181,10 +181,16 @@ class Geolocation:
                 dst,
             )
         # All exceptions must be caught and logged as early as possible
-        # pylint: disable-next=bare-except
-        except:
+        # pylint: disable-next=catching-non-exception
+        except cv2.error as e:
             frame = inspect.currentframe()
-            self.__logger.error("could not get perspective transform matrix", frame)
+            self.__logger.error(f"could not get perspective transform matrix: {e}", frame)
+            return False, None
+        # All exceptions must be caught and logged as early as possible
+        # pylint: disable-next=broad-exception-caught
+        except Exception as e:
+            frame = inspect.currentframe()
+            self.__logger.error(f"could not get perspective transform matrix: {e}", frame)
             return False, None
 
         return True, matrix
@@ -319,11 +325,7 @@ class Geolocation:
                 self.__logger("could not convert detection to world from image", frame)
                 return False, None
             detections_in_world.append(detection_world)
-
-        # Disable pylint to redefine 'detection_in_world' 
-        # pylint: disable-next=[W0621]
-        for detection_in_world in detections_in_world:
             frame = inspect.currentframe()
-            self.__logger.info(detection_in_world, frame)
+            self.__logger.info(detection_world, frame)
 
         return True, detections_in_world
