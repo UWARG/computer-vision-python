@@ -46,5 +46,5 @@ jobs:
       # Run unit tests with PyTest
       - name: Run unit tests
         run:  |
-          mkdir logs
+          mkdir logs && cd logs && mkdir 1997-01-01_00-00-00
           pytest -vv
