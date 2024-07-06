@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 
 from . import camera_properties
-from .. import detection_in_world
 from .. import detections_and_time
+from .. import detection_in_world
 from .. import merged_odometry_detections
 from ..logger import logger
 
@@ -320,6 +320,8 @@ class Geolocation:
                 return False, None
             detections_in_world.append(detection_world)
 
+        # Disable pylint to redefine 'detection_in_world' 
+        # pylint: disable-next=[W0621]
         for detection_in_world in detections_in_world:
             frame = inspect.currentframe()
             self.__logger.info(detection_in_world, frame)
