@@ -59,7 +59,7 @@ class Geolocation:
             if not result:
                 frame = inspect.currentframe()
                 geolocation_logger.error(
-                    f"rotated source vector could not be created for source: {source}", frame
+                    f"Rotated source vector could not be created for source: {source}", frame
                 )
                 return False, None
 
@@ -138,12 +138,12 @@ class Geolocation:
         """
         if not camera_properties.is_matrix_r3x3(drone_rotation_matrix):
             frame = inspect.currentframe()
-            self.__logger.error("drone rotation matrix is not a 3 x 3 matrix", frame)
+            self.__logger.error("Drone rotation matrix is not a 3 x 3 matrix", frame)
             return False, None
 
         if not camera_properties.is_vector_r3(drone_position_ned):
             frame = inspect.currentframe()
-            self.__logger.error("drone position ned is not a vector in R3", frame)
+            self.__logger.error("Drone position ned is not a vector in R3", frame)
             return False, None
 
         # Get the vectors in world space
@@ -167,7 +167,7 @@ class Geolocation:
             )
             if not result:
                 frame = inspect.currentframe()
-                self.__logger.error("could not get ground intersection from vector", frame)
+                self.__logger.error("Could not get ground intersection from vector", frame)
                 return False, None
 
             ground_points.append(ground_point)
@@ -184,13 +184,13 @@ class Geolocation:
         # pylint: disable-next=catching-non-exception
         except cv2.error as e:
             frame = inspect.currentframe()
-            self.__logger.error(f"could not get perspective transform matrix: {e}", frame)
+            self.__logger.error(f"Could not get perspective transform matrix: {e}", frame)
             return False, None
         # All exceptions must be caught and logged as early as possible
         # pylint: disable-next=broad-exception-caught
         except Exception as e:
             frame = inspect.currentframe()
-            self.__logger.error(f"could not get perspective transform matrix: {e}", frame)
+            self.__logger.error(f"Could not get perspective transform matrix: {e}", frame)
             return False, None
 
         return True, matrix
@@ -276,7 +276,7 @@ class Geolocation:
         # Cannot be underground
         if detections.odometry_local.position.down >= 0.0:
             frame = inspect.currentframe()
-            self.__logger.error("drone is underground", frame)
+            self.__logger.error("Drone is underground", frame)
             return False, None
 
         drone_position_ned = np.array(
@@ -297,7 +297,7 @@ class Geolocation:
         )
         if not result:
             frame = inspect.currentframe()
-            self.__logger.error("drone rotation matrix could not be created", frame)
+            self.__logger.error("Drone rotation matrix could not be created", frame)
             return False, None
 
         # Get Pylance to stop complaining
@@ -322,7 +322,7 @@ class Geolocation:
             # Partial data not allowed
             if not result:
                 frame = inspect.currentframe()
-                self.__logger("could not convert detection to world from image", frame)
+                self.__logger("Could not convert detection to world from image", frame)
                 return False, None
             detections_in_world.append(detection_world)
             frame = inspect.currentframe()
