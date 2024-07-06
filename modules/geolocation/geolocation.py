@@ -2,8 +2,8 @@
 Converts image space into world space.
 """
 
-import cv2
 import inspect
+import cv2
 import numpy as np
 
 from . import camera_properties
