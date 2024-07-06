@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 
 from . import camera_properties
-from .. import detections_and_time
 from .. import detection_in_world
+from .. import detections_and_time
 from .. import merged_odometry_detections
 from ..logger import logger
 
