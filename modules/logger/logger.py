@@ -104,7 +104,7 @@ class Logger:
         Extracts metadata from frame and appends it to the message.
         """
         if frame is None:
-            return f"[No frame data] {message}"
+            return message
 
         assert frame is not None
 
