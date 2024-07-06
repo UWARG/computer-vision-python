@@ -45,4 +45,6 @@ jobs:
 
       # Run unit tests with PyTest
       - name: Run unit tests
-        run: pytest -vv
+        run:  |
+          mkdir logs
+          pytest -vv
