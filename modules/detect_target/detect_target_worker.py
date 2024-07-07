@@ -11,6 +11,7 @@ def detect_target_worker(
     device: "str | int",
     model_path: str,
     override_full: bool,
+    use_classical_cv: bool,
     show_annotations: bool,
     save_name: str,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -24,10 +25,12 @@ def detect_target_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
+    print("Use classical CV for object detection:", use_classical_cv)
     detector = detect_target.DetectTarget(
         device,
         model_path,
         override_full,
+        use_classical_cv,
         show_annotations,
         save_name,
     )

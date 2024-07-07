@@ -16,7 +16,8 @@ video_input:
 detect_target:
     worker_count: 1
     device: 0
-    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
+    model_path: "tests/model_example/best-2s.pt"  # TODO: update
+    use_classical_cv: False
     save_prefix: "log_comp"
 
 flight_interface:

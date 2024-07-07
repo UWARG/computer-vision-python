@@ -21,9 +21,9 @@ class DetectTarget:
     def __init__(
         self,
         device: "str | int",
-        use_cv: bool,
         model_path: str,
         override_full: bool,
+        use_classical_cv: bool,
         show_annotations: bool = False,
         save_name: str = "",
     ) -> None:
@@ -35,7 +35,7 @@ class DetectTarget:
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = device
-        self.__use_cv = use_cv
+        self.__use_classical_cv = use_classical_cv
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
         self.__enable_half_precision = not self.__device == "cpu"
@@ -105,8 +105,7 @@ class DetectTarget:
         ]
 
         largest_contour = max(parent_circular_contours, key=cv2.contourArea, default=None)
-
-        if not largest_contour:
+        if largest_contour is None:
             return False, None, image
 
         # Create the DetectionsAndTime object
@@ -126,7 +125,8 @@ class DetectTarget:
 
         # Annotate the image
         image_annotated = copy.deepcopy(image)
-        cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        cv2.putText(image_annotated, "landing-pad", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
         return True, detections, image_annotated
 
@@ -189,7 +189,7 @@ class DetectTarget:
         image = data.image
         timestamp = data.timestamp
 
-        if self.__use_cv:
+        if self.__use_classical_cv:
             result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
         else:
             result, detections, image_annotated = self.detect_landing_pads_yolo(image, timestamp)
