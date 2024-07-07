@@ -25,7 +25,6 @@ def detect_target_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    print("Use classical CV for object detection:", use_classical_cv)
     detector = detect_target.DetectTarget(
         device,
         model_path,
