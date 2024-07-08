@@ -6,12 +6,15 @@ import inspect
 import os
 import pathlib
 import time
+import threading
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
 from ..logger import logger
 
+current_odometry = None
+odometry_mutex = threading.Lock()
 
 def flight_interface_worker(
     address: str,
@@ -63,5 +66,9 @@ def flight_interface_worker(
         result, value = interface.run()
         if not result:
             continue
+
+        with odometry_mutex:
+            global current_odometry
+            current_odometry = value
 
         output_queue.queue.put(value)
