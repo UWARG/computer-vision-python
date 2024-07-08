@@ -2,11 +2,15 @@
 Gets odometry information from drone.
 """
 
+import inspect
+import os
+import pathlib
 import time
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
+from ..logger import logger
 
 
 def flight_interface_worker(
@@ -26,11 +30,26 @@ def flight_interface_worker(
     controller is how the main process communicates to this worker process.
     """
     # TODO: Error handling
-    # TODO: Logging
 
-    result, interface = flight_interface.FlightInterface.create(address, timeout, baud_rate)
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
     if not result:
-        print("ERROR: Worker failed to create class object")
+        print("ERROR: Worker failed to create logger")
+        return
+
+    # Get Pylance to stop complaining
+    assert local_logger is not None
+
+    frame = inspect.currentframe()
+    local_logger.info("Logger initialized", frame)
+
+    result, interface = flight_interface.FlightInterface.create(
+        address, timeout, baud_rate, local_logger
+    )
+    if not result:
+        frame = inspect.currentframe()
+        local_logger.error("Worker failed to create class object", frame)
         return
 
     # Get Pylance to stop complaining

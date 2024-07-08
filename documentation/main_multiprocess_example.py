@@ -5,16 +5,22 @@ python -m documentation.main_multiprocess_example
 ```
 """
 
+import inspect
 import multiprocessing as mp
+import pathlib
 import time
 
 from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
+from modules.logger import logger_setup_main
+from utilities import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
+
+CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 
 # Play with these numbers to see queue bottlenecks
 COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5
@@ -26,6 +32,22 @@ def main() -> int:
     """
     Main function.
     """
+    # Configuration settings
+    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    assert config is not None
+
+    # Setup main logger
+    result, main_logger = logger_setup_main.setup_main_logger(config)
+    if not result:
+        print("ERROR: Failed to create main logger")
+        return -1
+
+    assert main_logger is not None
+
     # Main is managing all worker processes and is responsible
     # for creating supporting interprocess communication
     controller = worker_controller.WorkerController()
@@ -125,26 +147,43 @@ def main() -> int:
     add_random_manager.start_workers()
     concatenator_manager.start_workers()
 
+    frame = inspect.currentframe()
+    main_logger.info("Started", frame)
+
     # Run for some time and then pause
     time.sleep(2)
     controller.request_pause()
-    print("Paused")
+
+    frame = inspect.currentframe()
+    main_logger.info("Paused", frame)
+
     time.sleep(4)
-    print("Resumed")
     controller.request_resume()
+    frame = inspect.currentframe()
+    main_logger.info("Resumed", frame)
+
     time.sleep(2)
 
     # Stop the processes
     controller.request_exit()
 
+    frame = inspect.currentframe()
+    main_logger.info("Requested exit", frame)
+
     # Fill and drain queues from END TO START
     countup_to_add_random_queue.fill_and_drain_queue()
     add_random_to_concatenator_queue.fill_and_drain_queue()
+
+    frame = inspect.currentframe()
+    main_logger.info("Queues cleared", frame)
 
     # Clean up worker processes
     countup_manager.join_workers()
     add_random_manager.join_workers()
     concatenator_manager.join_workers()
+
+    frame = inspect.currentframe()
+    main_logger.info("Stopped", frame)
 
     # We can reset controller in case we want to reuse it
     # Alternatively, create a new WorkerController instance

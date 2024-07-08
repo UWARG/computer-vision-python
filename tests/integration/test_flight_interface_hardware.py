@@ -2,7 +2,10 @@
 Simple hardware test, requires drone connection.
 """
 
+import pathlib
+
 from modules.flight_interface import flight_interface
+from modules.logger import logger
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
@@ -14,11 +17,18 @@ def main() -> int:
     """
     Main function.
     """
+    # Logger
+    test_name = pathlib.Path(__file__).stem
+    result, local_logger = logger.Logger.create(test_name, False)
+    assert result
+    assert local_logger is not None
+
     # Setup
     result, interface = flight_interface.FlightInterface.create(
         MAVLINK_CONNECTION_ADDRESS,
         FLIGHT_INTERFACE_TIMEOUT,
         FLIGHT_INTERFACE_BAUD_RATE,
+        local_logger,
     )
     assert result
     assert interface is not None
