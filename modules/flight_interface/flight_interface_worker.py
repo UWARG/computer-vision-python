@@ -16,6 +16,7 @@ from ..logger import logger
 current_odometry = None
 odometry_mutex = threading.Lock()
 
+
 def flight_interface_worker(
     address: str,
     timeout: float,
