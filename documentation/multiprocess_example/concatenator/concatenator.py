@@ -2,8 +2,10 @@
 Contains the Concatenator class.
 """
 
+import inspect
 import time
 
+from modules.logger import logger
 from .. import intermediate_struct
 
 
@@ -12,12 +14,14 @@ class Concatenator:
     Concatenates a prefix and suffix to the object.
     """
 
-    def __init__(self, prefix: str, suffix: str) -> None:
+    def __init__(self, prefix: str, suffix: str, local_logger: logger.Logger) -> None:
         """
         Constructor sets the prefix and suffix.
         """
         self.__prefix = prefix
         self.__suffix = suffix
+
+        self.__logger = local_logger
 
     # The working function
     def run_concatenation(
@@ -26,6 +30,10 @@ class Concatenator:
         """
         Concatenate the prefix and suffix to the input.
         """
+        # Log
+        frame = inspect.currentframe()
+        self.__logger.debug("Run", frame)
+
         # The class is responsible for unpacking the intermediate type
         # Validate input
         input_number = middle.number
@@ -34,7 +42,7 @@ class Concatenator:
             # Function returns result and the output
             return False, ""
 
-        # Print string
+        # String to be printed
         concatenated_string = self.__prefix + str(input_number) + self.__suffix
 
         # Pretending this is hard at work
