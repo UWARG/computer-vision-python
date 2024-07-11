@@ -90,6 +90,7 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Countup")
         return -1
+
     # Get Pylance to stop complaining
     assert countup_worker_properties is not None
 
@@ -109,6 +110,7 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Add Random")
         return -1
+
     # Get Pylance to stop complaining
     assert add_random_worker_properties is not None
 
@@ -127,6 +129,7 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Concatenator")
         return -1
+
     # Get Pylance to stop complaining
     assert concatenator_worker_properties is not None
 
@@ -141,6 +144,7 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Countup")
         return -1
+
     # Get Pylance to stop complaining
     assert countup_manager is not None
 
@@ -153,6 +157,7 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Add Random")
         return -1
+
     # Get Pylance to stop complaining
     assert add_random_manager is not None
 
@@ -165,6 +170,7 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Concatenator")
         return -1
+
     # Get Pylance to stop complaining
     assert concatenator_manager is not None
 

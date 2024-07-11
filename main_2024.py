@@ -183,6 +183,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create arguments for Video Input", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert video_input_worker_properties is not None
 
@@ -205,6 +206,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create arguments for Detect Target", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert detect_target_worker_properties is not None
 
@@ -226,6 +228,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create arguments for Flight Interface", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert flight_interface_worker_properties is not None
 
@@ -245,6 +248,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create arguments for Data Merge", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert data_merge_worker_properties is not None
 
@@ -264,6 +268,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create arguments for Geolocation", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert geolocation_worker_properties is not None
 
@@ -278,6 +283,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Video Input", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert video_input_manager is not None
 
@@ -291,6 +297,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Detect Target", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert detect_target_manager is not None
 
@@ -304,6 +311,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Flight Interface", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert flight_interface_manager is not None
 
@@ -317,6 +325,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Data Merge", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert data_merge_manager is not None
 
@@ -330,6 +339,7 @@ def main() -> int:
         frame = inspect.currentframe()
         main_logger.error("Failed to create manager for Geolocation", frame)
         return -1
+
     # Get Pylance to stop complaining
     assert geolocation_manager is not None
 
