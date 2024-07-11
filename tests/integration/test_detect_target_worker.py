@@ -26,6 +26,7 @@ DELAY_FOR_CUDA_WARMUP = 20  # seconds
 
 MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 OVERRIDE_FULL = False
+USE_CLASSICAL_CV = FALSE
 SHOW_ANNOTATIONS = False
 SAVE_NAME = ""  # No need to save images
 
@@ -64,6 +65,7 @@ def main() -> int:
             device,
             MODEL_PATH,
             OVERRIDE_FULL,
+            USE_CLASSICAL_CV,
             SHOW_ANNOTATIONS,
             SAVE_NAME,
             image_in_queue,
