@@ -173,7 +173,9 @@ class WorkerManager:
         """
         try:
             worker = mp.Process(target=target, args=args)
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        # Catching all exceptions for library call
+        # pylint: disable-next=broad-exception-caught
+        except Exception as e:
             frame = inspect.currentframe()
             local_logger.error(f"Exception raised while creating a worker: {e}", frame)
             return False, None

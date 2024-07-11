@@ -90,6 +90,8 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Countup")
         return -1
+    # Get Pylance to stop complaining
+    assert countup_worker_properties is not None
 
     result, add_random_worker_properties = worker_manager.WorkerProperties.create(
         count=ADD_RANDOM_WORKER_COUNT,
@@ -107,6 +109,8 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Add Random")
         return -1
+    # Get Pylance to stop complaining
+    assert add_random_worker_properties is not None
 
     result, concatenator_worker_properties = worker_manager.WorkerProperties.create(
         count=CONCATENATOR_WORKER_COUNT,
@@ -123,6 +127,8 @@ def main() -> int:
     if not result:
         print("Failed to create arguments for Concatenator")
         return -1
+    # Get Pylance to stop complaining
+    assert concatenator_worker_properties is not None
 
     # Prepare processes
     # Data path: countup_worker to add_random_worker to concatenator_workers
@@ -135,6 +141,8 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Countup")
         return -1
+    # Get Pylance to stop complaining
+    assert countup_manager is not None
 
     worker_managers.append(countup_manager)
 
@@ -145,6 +153,8 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Add Random")
         return -1
+    # Get Pylance to stop complaining
+    assert add_random_manager is not None
 
     worker_managers.append(add_random_manager)
 
@@ -155,6 +165,8 @@ def main() -> int:
     if not result:
         print("Failed to create manager for Concatenator")
         return -1
+    # Get Pylance to stop complaining
+    assert concatenator_manager is not None
 
     worker_managers.append(concatenator_manager)
 
