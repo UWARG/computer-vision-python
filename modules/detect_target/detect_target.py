@@ -49,6 +49,7 @@ class DetectTarget:
     @staticmethod
     def is_contour_circular(contour: np.ndarray) -> bool:
         """
+        Helper function for detect_landing_pads_contours.
         Checks if the shape is close to circular.
 
         Return: True is the shape is circular, false if it is not.
@@ -67,6 +68,7 @@ class DetectTarget:
     @staticmethod
     def is_contour_large_enough(contour: np.ndarray, min_diameter: float) -> bool:
         """
+        Helper function for detect_landing_pads_contours.
         Checks if the shape is larger than the provided diameter.
 
         Return: True if it is, false if it not.
