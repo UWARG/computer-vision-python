@@ -167,17 +167,17 @@ def main() -> int:
 
     # Worker properties
     result, video_input_worker_properties = worker_manager.WorkerProperties.create(
-        1,
-        video_input_worker.video_input_worker,
-        (
+        count=1,
+        target=video_input_worker.video_input_worker,
+        work_arguments=(
             VIDEO_INPUT_CAMERA_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
             VIDEO_INPUT_SAVE_PREFIX,
         ),
-        [],
-        [video_input_to_detect_target_queue],
-        controller,
-        main_logger,
+        input_queues=[],
+        output_queues=[video_input_to_detect_target_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -185,19 +185,19 @@ def main() -> int:
         return -1
 
     result, detect_target_worker_properties = worker_manager.WorkerProperties.create(
-        DETECT_TARGET_WORKER_COUNT,
-        detect_target_worker.detect_target_worker,
-        (
+        count=DETECT_TARGET_WORKER_COUNT,
+        target=detect_target_worker.detect_target_worker,
+        work_arguments=(
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
         ),
-        [video_input_to_detect_target_queue],
-        [detect_target_to_data_merge_queue],
-        controller,
-        main_logger,
+        input_queues=[video_input_to_detect_target_queue],
+        output_queues=[detect_target_to_data_merge_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -205,18 +205,18 @@ def main() -> int:
         return -1
 
     result, flight_interface_worker_properties = worker_manager.WorkerProperties.create(
-        1,
-        flight_interface_worker.flight_interface_worker,
-        (
+        count=1,
+        target=flight_interface_worker.flight_interface_worker,
+        work_arguments=(
             FLIGHT_INTERFACE_ADDRESS,
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
-        [],
-        [flight_interface_to_data_merge_queue],
-        controller,
-        main_logger,
+        input_queues=[],
+        output_queues=[flight_interface_to_data_merge_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -224,16 +224,16 @@ def main() -> int:
         return -1
 
     result, data_merge_worker_properties = worker_manager.WorkerProperties.create(
-        1,
-        data_merge_worker.data_merge_worker,
-        (DATA_MERGE_TIMEOUT,),
-        [
+        count=1,
+        target=data_merge_worker.data_merge_worker,
+        work_arguments=(DATA_MERGE_TIMEOUT,),
+        input_queues=[
             detect_target_to_data_merge_queue,
             flight_interface_to_data_merge_queue,
         ],
-        [data_merge_to_geolocation_queue],
-        controller,
-        main_logger,
+        output_queues=[data_merge_to_geolocation_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -241,16 +241,16 @@ def main() -> int:
         return -1
 
     result, geolocation_worker_properties = worker_manager.WorkerProperties.create(
-        1,
-        geolocation_worker.geolocation_worker,
-        (
+        count=1,
+        target=geolocation_worker.geolocation_worker,
+        work_arguments=(
             camera_intrinsics,
             camera_extrinsics,
         ),
-        [data_merge_to_geolocation_queue],
-        [geolocation_to_main_queue],
-        controller,
-        main_logger,
+        input_queues=[data_merge_to_geolocation_queue],
+        output_queues=[geolocation_to_main_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -261,8 +261,8 @@ def main() -> int:
     worker_managers = []
 
     result, video_input_manager = worker_manager.WorkerManager.create(
-        video_input_worker_properties,
-        main_logger,
+        worker_properties=video_input_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -272,8 +272,8 @@ def main() -> int:
     worker_managers.append(video_input_manager)
 
     result, detect_target_manager = worker_manager.WorkerManager.create(
-        detect_target_worker_properties,
-        main_logger,
+        worker_properties=detect_target_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -283,8 +283,8 @@ def main() -> int:
     worker_managers.append(detect_target_manager)
 
     result, flight_interface_manager = worker_manager.WorkerManager.create(
-        flight_interface_worker_properties,
-        main_logger,
+        worker_properties=flight_interface_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -294,8 +294,8 @@ def main() -> int:
     worker_managers.append(flight_interface_manager)
 
     result, data_merge_manager = worker_manager.WorkerManager.create(
-        data_merge_worker_properties,
-        main_logger,
+        worker_properties=data_merge_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
@@ -305,8 +305,8 @@ def main() -> int:
     worker_managers.append(data_merge_manager)
 
     result, geolocation_manager = worker_manager.WorkerManager.create(
-        geolocation_worker_properties,
-        main_logger,
+        worker_properties=geolocation_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         frame = inspect.currentframe()
