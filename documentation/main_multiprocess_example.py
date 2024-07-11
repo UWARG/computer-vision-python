@@ -76,49 +76,49 @@ def main() -> int:
 
     # Worker properties
     result, countup_worker_properties = worker_manager.WorkerProperties.create(
-        COUNTUP_WORKER_COUNT,
-        countup_worker.countup_worker,
-        (
+        count=COUNTUP_WORKER_COUNT,
+        target=countup_worker.countup_worker,
+        work_arguments=(
             3,
             100,
         ),
-        [],
-        [countup_to_add_random_queue],
-        controller,
-        main_logger,
+        input_queues=[],
+        output_queues=[countup_to_add_random_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create arguments for Countup")
         return -1
 
     result, add_random_worker_properties = worker_manager.WorkerProperties.create(
-        ADD_RANDOM_WORKER_COUNT,
-        add_random_worker.add_random_worker,
-        (
+        count=ADD_RANDOM_WORKER_COUNT,
+        target=add_random_worker.add_random_worker,
+        work_arguments=(
             252,
             10,
             5,
         ),
-        [countup_to_add_random_queue],
-        [add_random_to_concatenator_queue],
-        controller,
-        main_logger,
+        input_queues=[countup_to_add_random_queue],
+        output_queues=[add_random_to_concatenator_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create arguments for Add Random")
         return -1
 
     result, concatenator_worker_properties = worker_manager.WorkerProperties.create(
-        CONCATENATOR_WORKER_COUNT,
-        concatenator_worker.concatenator_worker,
-        (
+        count=CONCATENATOR_WORKER_COUNT,
+        target=concatenator_worker.concatenator_worker,
+        work_arguments=(
             "Hello ",
             " world!",
         ),
-        [add_random_to_concatenator_queue],
-        [],
-        controller,
-        main_logger,
+        input_queues=[add_random_to_concatenator_queue],
+        output_queues=[],
+        controller=controller,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create arguments for Concatenator")
@@ -129,8 +129,8 @@ def main() -> int:
     worker_managers = []
 
     result, countup_manager = worker_manager.WorkerManager.create(
-        countup_worker_properties,
-        main_logger,
+        worker_properties=countup_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create manager for Countup")
@@ -139,8 +139,8 @@ def main() -> int:
     worker_managers.append(countup_manager)
 
     result, add_random_manager = worker_manager.WorkerManager.create(
-        add_random_worker_properties,
-        main_logger,
+        worker_properties=add_random_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create manager for Add Random")
@@ -149,8 +149,8 @@ def main() -> int:
     worker_managers.append(add_random_manager)
 
     result, concatenator_manager = worker_manager.WorkerManager.create(
-        concatenator_worker_properties,
-        main_logger,
+        worker_properties=concatenator_worker_properties,
+        local_logger=main_logger,
     )
     if not result:
         print("Failed to create manager for Concatenator")
