@@ -105,39 +105,86 @@ def main() -> int:
         QUEUE_MAX_SIZE,
     )
 
-    video_input_manager = worker_manager.WorkerManager()
-    video_input_manager.create_workers(
-        1,
-        video_input_worker.video_input_worker,
-        (
+    # Worker properties
+    result, video_input_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=video_input_worker.video_input_worker,
+        work_arguments=(
             VIDEO_INPUT_CAMERA_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
             VIDEO_INPUT_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            controller,
         ),
+        input_queues=[],
+        output_queues=[video_input_to_detect_target_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Video Input", frame)
+        return -1
 
-    detect_target_manager = worker_manager.WorkerManager()
-    detect_target_manager.create_workers(
-        DETECT_TARGET_WORKER_COUNT,
-        detect_target_worker.detect_target_worker,
-        (
+    # Get Pylance to stop complaining
+    assert video_input_worker_properties is not None
+
+    result, detect_target_worker_properties = worker_manager.WorkerProperties.create(
+        count=DETECT_TARGET_WORKER_COUNT,
+        target=detect_target_worker.detect_target_worker,
+        work_arguments=(
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
             DETECT_TARGET_USE_CLASSICAL_CV,
             DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            detect_target_to_main_queue,
-            controller,
         ),
+        input_queues=[video_input_to_detect_target_queue],
+        output_queues=[detect_target_to_data_merge_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Detect Target", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert detect_target_worker_properties is not None
+
+    # Create managers
+    worker_managers = []
+
+    result, video_input_manager = worker_manager.WorkerManager.create(
+        worker_properties=video_input_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Video Input", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert video_input_manager is not None
+
+    worker_managers.append(video_input_manager)
+
+    result, detect_target_manager = worker_manager.WorkerManager.create(
+        worker_properties=detect_target_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Detect Target", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert detect_target_manager is not None
+
+    worker_managers.append(detect_target_manager)
 
     # Run
-    video_input_manager.start_workers()
-    detect_target_manager.start_workers()
+    for manager in worker_managers:
+        manager.start_workers()
 
     while True:
         # TODO: add frame and main_logger debugs
