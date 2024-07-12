@@ -14,7 +14,8 @@ import yaml
 
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
-from modules.logger import logger
+from modules.logger import logger_setup_main
+from utilities import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -29,21 +30,6 @@ def main() -> int:
     """
     Main function.
     """
-    # Open config file
-    try:
-        with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
-            try:
-                config = yaml.safe_load(file)
-            except yaml.YAMLError as exc:
-                print(f"Error parsing YAML file: {exc}")
-                return -1
-    except FileNotFoundError:
-        print(f"File not found: {CONFIG_FILE_PATH}")
-        return -1
-    except IOError as exc:
-        print(f"Error when opening file: {exc}")
-        return -1
-
     # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
@@ -55,21 +41,40 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    # Set constants
+    # Configuration settings
+    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    assert config is not None
+
+    # Setup main logger
+    result, main_logger = logger_setup_main.setup_main_logger(config)
+    if not result:
+        print("ERROR: Failed to create main logger")
+        return -1
+
+    assert main_logger is not None
+
+    # Get settings
     try:
         # Local constants
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        LOG_DIRECTORY_PATH = config["logger"]["directory_path"]
-        start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        log_directory_path = config["logger"]["directory_path"]
+        log_path_format = config["logger"]["file_datetime_format"]
+        start_time = datetime.datetime.now().strftime(log_path_format)
 
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
         VIDEO_INPUT_SAVE_PREFIX = (
-            f"{LOG_DIRECTORY_PATH}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
+            f"{log_directory_path}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
         )
+
+        print("Save prefix", VIDEO_INPUT_SAVE_PREFIX)
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
@@ -78,21 +83,14 @@ def main() -> int:
         DETECT_TARGET_USE_CLASSICAL_CV = config["detect_target"]["use_classical_cv"]
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
         DETECT_TARGET_SAVE_PREFIX = (
-            f"{LOG_DIRECTORY_PATH}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
+            f"{log_directory_path}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
         )
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
         # pylint: enable=invalid-name
-    except KeyError:
-        print("Config key(s) not found")
-        return -1
-
-    pathlib.Path(LOG_DIRECTORY_PATH).mkdir(exist_ok=True)
-    pathlib.Path(f"{LOG_DIRECTORY_PATH}/{start_time}").mkdir()
-
-    result, main_logger = logger.Logger.create("main")
-    if result:
+    except KeyError as exception:
         frame = inspect.currentframe()
-        main_logger.info("main logger initialized", frame)
+        main_logger.error(f"ERROR: Config key(s) not found: {exception}", frame)
+        return -1
 
     # Setup
     controller = worker_controller.WorkerController()
@@ -142,6 +140,7 @@ def main() -> int:
     detect_target_manager.start_workers()
 
     while True:
+        # TODO: add frame and main_logger debugs
         detections_and_time = detect_target_to_main_queue.queue.get()
         if detections_and_time is None:
             break
