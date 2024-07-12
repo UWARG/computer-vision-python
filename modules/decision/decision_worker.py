@@ -47,7 +47,7 @@ def decision_worker(
     while not controller.is_exit_requested():
         controller.check_pause()
         
-        curr_state = odometry_input_queue.queue.get_nowait()
+        curr_state = odometry_input_queue.queue.get()
 
         if curr_state is None:
             continue
