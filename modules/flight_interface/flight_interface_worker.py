@@ -6,15 +6,13 @@ import inspect
 import os
 import pathlib
 import time
-import threading
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
 from ..logger import logger
 
-current_odometry = None
-odometry_mutex = threading.Lock()
+
 
 
 def flight_interface_worker(
@@ -55,6 +53,8 @@ def flight_interface_worker(
         frame = inspect.currentframe()
         local_logger.error("Worker failed to create class object", frame)
         return
+    
+    odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(maxsize=1)
 
     # Get Pylance to stop complaining
     assert interface is not None
@@ -68,8 +68,10 @@ def flight_interface_worker(
         if not result:
             continue
 
-        with odometry_mutex:
-            global current_odometry
-            current_odometry = value
-
+        try:
+            odometry_queue.queue.get_nowait()
+        except queue_proxy_wrapper.queue.Empty:
+            pass 
+        
+        odometry_queue.queue.put(value)
         output_queue.queue.put(value)
