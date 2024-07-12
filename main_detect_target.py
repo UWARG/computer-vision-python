@@ -74,8 +74,6 @@ def main() -> int:
             f"{log_directory_path}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
         )
 
-        print("Save prefix", VIDEO_INPUT_SAVE_PREFIX)
-
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
@@ -139,7 +137,7 @@ def main() -> int:
             DETECT_TARGET_SAVE_PREFIX,
         ),
         input_queues=[video_input_to_detect_target_queue],
-        output_queues=[detect_target_to_data_merge_queue],
+        output_queues=[detect_target_to_main_queue],
         controller=controller,
         local_logger=main_logger,
     )
