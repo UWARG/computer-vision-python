@@ -173,7 +173,9 @@ class DetectTarget:
             confidence = float(boxes.conf[i])
             result, detection = detections_and_time.Detection.create(bounds, label, confidence)
             if result:
+                # Get Pylance to stop complaining
                 assert detection is not None
+
                 detections.append(detection)
 
         return True, detections, image_annotated
