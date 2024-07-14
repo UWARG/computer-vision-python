@@ -185,14 +185,15 @@ def main() -> int:
         manager.start_workers()
 
     while True:
-        # TODO: add frame and main_logger debugs
+        # Use main_logger for debugging
+        frame = inspect.currentframe()
         detections_and_time = detect_target_to_main_queue.queue.get()
         if detections_and_time is None:
             break
-        print("Timestamp:" + str(detections_and_time.timestamp))
-        print("Num detections:" + str(len(detections_and_time.detections)))
+        main_logger.debug(f"Timestamp: {detections_and_time.timestamp}", frame)
+        main_logger.debug(f"Num detections: {len(detections_and_time.detections)}", frame)
         for detection in detections_and_time.detections:
-            print("Detection:" + str(detection))
+            main_logger.debug(f"Detection: {detection}", frame)
 
     # Teardown
     controller.request_exit()
