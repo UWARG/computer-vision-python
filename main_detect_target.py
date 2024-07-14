@@ -3,7 +3,6 @@ For 2022-2023 UAS competition.
 """
 
 import argparse
-import datetime
 import inspect
 import multiprocessing as mp
 import pathlib
@@ -47,15 +46,18 @@ def main() -> int:
         print("ERROR: Failed to load configuration file")
         return -1
 
+    # Get Pylance to stop complaining
     assert config is not None
 
     # Setup main logger
-    result, main_logger = logger_setup_main.setup_main_logger(config)
+    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
 
+    # Get Pylance to stop complaining
     assert main_logger is not None
+    assert logging_path is not None
 
     # Get settings
     try:
@@ -63,16 +65,10 @@ def main() -> int:
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        log_directory_path = config["logger"]["directory_path"]
-        log_path_format = config["logger"]["file_datetime_format"]
-        start_time = datetime.datetime.now().strftime(log_path_format)
-
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
-        VIDEO_INPUT_SAVE_PREFIX = (
-            f"{log_directory_path}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
-        )
+        VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
@@ -80,9 +76,7 @@ def main() -> int:
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_USE_CLASSICAL_CV = config["detect_target"]["use_classical_cv"]
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_SAVE_PREFIX = (
-            f"{log_directory_path}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
-        )
+        DETECT_TARGET_SAVE_PREFIX = str(pathlib.Path(logging_path, DETECT_TARGET_SAVE_NAME_PREFIX))
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
         # pylint: enable=invalid-name
     except KeyError as exception:
