@@ -36,6 +36,7 @@ class Logger:
             print("ERROR: Failed to load configuration file")
             return False, None
 
+        # Get Pylance to stop complaining
         assert config is not None
 
         try:
@@ -106,6 +107,7 @@ class Logger:
         if frame is None:
             return message
 
+        # Get Pylance to stop complaining
         assert frame is not None
 
         function_name = frame.f_code.co_name

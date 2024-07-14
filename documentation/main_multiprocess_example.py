@@ -43,14 +43,16 @@ def main() -> int:
         print("ERROR: Failed to load configuration file")
         return -1
 
+    # Get Pylance to stop complaining
     assert config is not None
 
     # Setup main logger
-    result, main_logger = logger_setup_main.setup_main_logger(config)
+    result, main_logger, _ = logger_setup_main.setup_main_logger(config)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
 
+    # Get Pylance to stop complaining
     assert main_logger is not None
 
     # Main is managing all worker processes and is responsible
