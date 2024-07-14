@@ -52,3 +52,9 @@ class DetectionInWorld:
         self.centre = centre
         self.label = label
         self.confidence = confidence
+
+    def __str__(self) -> str:
+        """
+        To string.
+        """
+        return f"{self.__class__}, vertices: {self.vertices.tolist()}, centre: {self.centre}, label: {self.label}, confidence: {self.confidence}"
