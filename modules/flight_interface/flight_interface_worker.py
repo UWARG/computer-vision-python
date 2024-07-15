@@ -54,6 +54,7 @@ def flight_interface_worker(
         local_logger.error("Worker failed to create class object", frame)
         return
     
+    #Initalize queue with a maximum size of 1 to only hold latest odometry data
     odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(maxsize=1)
 
     # Get Pylance to stop complaining
@@ -68,6 +69,7 @@ def flight_interface_worker(
         if not result:
             continue
 
+        # Attempt to remove latest odometry data from queue 
         try:
             odometry_queue.queue.get_nowait()
         except queue_proxy_wrapper.queue.Empty:
