@@ -139,6 +139,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    flight_interface_decision_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
 
     video_input_manager = worker_manager.WorkerManager()
     video_input_manager.create_workers(
@@ -178,6 +182,7 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             flight_interface_to_data_merge_queue,
+            flight_interface_decision_queue,
             controller,
         ),
     )
@@ -267,6 +272,7 @@ def main() -> int:
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_main_queue.fill_and_drain_queue()
+    flight_interface_decision_queue.fill_and_drain_queue()
 
     video_input_manager.join_workers()
     detect_target_manager.join_workers()

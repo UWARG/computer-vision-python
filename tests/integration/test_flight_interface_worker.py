@@ -27,6 +27,7 @@ def main() -> int:
     mp_manager = mp.Manager()
 
     out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    decision_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
@@ -35,6 +36,7 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             out_queue,
+            decision_queue,
             controller,
         ),
     )
