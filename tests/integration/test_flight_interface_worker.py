@@ -14,6 +14,7 @@ from utilities.workers import worker_controller
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
+FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
@@ -34,6 +35,7 @@ def main() -> int:
         args=(
             MAVLINK_CONNECTION_ADDRESS,
             FLIGHT_INTERFACE_TIMEOUT,
+            FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             out_queue,
             decision_queue,

@@ -2,9 +2,11 @@
 Contains the AddRandom class.
 """
 
+import inspect
 import time
 import random
 
+from modules.logger import logger
 from .. import intermediate_struct
 
 
@@ -12,10 +14,12 @@ class AddRandom:
     """
     Adds a random number to the input.
 
-    A new random number is generated every `__ADD_SWITCH_COUNT` times.
+    A new random number is generated every `__add_change_count` times.
     """
 
-    def __init__(self, seed: int, max_random_term: int, add_change_count: int) -> None:
+    def __init__(
+        self, seed: int, max_random_term: int, add_change_count: int, local_logger: logger.Logger
+    ) -> None:
         """
         Constructor seeds the RNG and sets the max add and
         number of adds before a new random number is chosen.
@@ -30,6 +34,8 @@ class AddRandom:
         self.__current_random_term = self.__generate_random_number(0, self.__max_random_term)
         self.__add_count = 0
 
+        self.__logger = local_logger
+
     @staticmethod
     def __generate_random_number(min_value: int, max_value: int) -> int:
         """
@@ -41,6 +47,10 @@ class AddRandom:
         """
         Adds a random number to the input and returns the sum.
         """
+        # Log
+        frame = inspect.currentframe()
+        self.__logger.debug("Run", frame)
+
         add_sum = term + self.__current_random_term
 
         # Change the random term if the add count has been reached

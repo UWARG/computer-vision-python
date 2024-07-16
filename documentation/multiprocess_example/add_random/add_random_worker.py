@@ -2,6 +2,11 @@
 Intermediate worker that adds a random number to the input.
 """
 
+import inspect
+import os
+import pathlib
+
+from modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import add_random
@@ -22,8 +27,24 @@ def add_random_worker(
     input_queue and output_queue are the data queues.
     controller is how the main process communicates to this worker process.
     """
+    # Instantiate logger
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
+    if not result:
+        print("ERROR: Worker failed to create logger")
+        return
+
+    # Get Pylance to stop complaining
+    assert local_logger is not None
+
+    frame = inspect.currentframe()
+    local_logger.info("Logger initialized", frame)
+
     # Instantiate class object
-    add_random_instance = add_random.AddRandom(seed, max_random_term, add_change_count)
+    add_random_instance = add_random.AddRandom(
+        seed, max_random_term, add_change_count, local_logger
+    )
 
     # Loop forever until exit has been requested or sentinel value (consumer)
     while not controller.is_exit_requested():

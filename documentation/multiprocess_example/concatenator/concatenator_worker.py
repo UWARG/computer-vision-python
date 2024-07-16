@@ -2,6 +2,11 @@
 Ending worker that concatenates a prefix and suffix and then prints the result.
 """
 
+import inspect
+import os
+import pathlib
+
+from modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import concatenator
@@ -20,8 +25,22 @@ def concatenator_worker(
     input_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
+    # Instantiate logger
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
+    if not result:
+        print("ERROR: Worker failed to create logger")
+        return
+
+    # Get Pylance to stop complaining
+    assert local_logger is not None
+
+    frame = inspect.currentframe()
+    local_logger.info("Logger initialized", frame)
+
     # Instantiate class object
-    concatenator_instance = concatenator.Concatenator(prefix, suffix)
+    concatenator_instance = concatenator.Concatenator(prefix, suffix, local_logger)
 
     # Loop forever until exit has been requested or sentinel value (consumer)
     while not controller.is_exit_requested():
@@ -46,5 +65,5 @@ def concatenator_worker(
         if not result:
             continue
 
-        # Print the string
-        print(value)
+        # Print just the string
+        local_logger.info(str(value), None)
