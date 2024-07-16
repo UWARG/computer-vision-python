@@ -3,7 +3,6 @@ For 2023-2024 UAS competition.
 """
 
 import argparse
-import datetime
 import inspect
 import multiprocessing as mp
 import pathlib
@@ -21,7 +20,8 @@ from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
-from modules.logger import logger
+from modules.logger import logger_setup_main
+from utilities import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -34,21 +34,6 @@ def main() -> int:
     """
     Main function.
     """
-    # Open config file
-    try:
-        with CONFIG_FILE_PATH.open("r", encoding="utf8") as file:
-            try:
-                config = yaml.safe_load(file)
-            except yaml.YAMLError as exc:
-                print(f"Error parsing YAML file: {exc}")
-                return -1
-    except FileNotFoundError:
-        print(f"File not found: {CONFIG_FILE_PATH}")
-        return -1
-    except IOError as exc:
-        print(f"Error when opening file: {exc}")
-        return -1
-
     # Parse whether or not to force cpu from command line
     parser = argparse.ArgumentParser()
     parser.add_argument("--cpu", action="store_true", help="option to force cpu")
@@ -60,34 +45,47 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    # Set constants
+    # Configuration settings
+    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    # Get Pylance to stop complaining
+    assert config is not None
+
+    # Setup main logger
+    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config)
+    if not result:
+        print("ERROR: Failed to create main logger")
+        return -1
+
+    # Get Pylance to stop complaining
+    assert main_logger is not None
+    assert logging_path is not None
+
+    # Get settings
     try:
         # Local constants
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        LOG_DIRECTORY_PATH = config["logger"]["directory_path"]
-        start_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
-        VIDEO_INPUT_SAVE_PREFIX = (
-            f"{LOG_DIRECTORY_PATH}/{start_time}/{VIDEO_INPUT_SAVE_NAME_PREFIX}"
-        )
+        VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_SAVE_PREFIX = (
-            f"{LOG_DIRECTORY_PATH}/{start_time}/{DETECT_TARGET_SAVE_NAME_PREFIX}"
-        )
+        DETECT_TARGET_SAVE_PREFIX = str(pathlib.Path(logging_path, DETECT_TARGET_SAVE_NAME_PREFIX))
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
+        FLIGHT_INTERFACE_BAUD_RATE = config["flight_interface"]["baud_rate"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
@@ -103,17 +101,10 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
         # pylint: enable=invalid-name
-    except KeyError:
-        print("Config key(s) not found")
-        return -1
-
-    pathlib.Path(LOG_DIRECTORY_PATH).mkdir(exist_ok=True)
-    pathlib.Path(f"{LOG_DIRECTORY_PATH}/{start_time}").mkdir()
-
-    result, main_logger = logger.Logger.create("main")
-    if result:
+    except KeyError as exception:
         frame = inspect.currentframe()
-        main_logger.info("main logger initialized", frame)
+        main_logger.error(f"ERROR: Config key(s) not found: {exception}", frame)
+        return -1
 
     # Setup
     controller = worker_controller.WorkerController()
@@ -144,62 +135,6 @@ def main() -> int:
         QUEUE_MAX_SIZE,
     )
 
-    video_input_manager = worker_manager.WorkerManager()
-    video_input_manager.create_workers(
-        1,
-        video_input_worker.video_input_worker,
-        (
-            VIDEO_INPUT_CAMERA_NAME,
-            VIDEO_INPUT_WORKER_PERIOD,
-            VIDEO_INPUT_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            controller,
-        ),
-    )
-
-    detect_target_manager = worker_manager.WorkerManager()
-    detect_target_manager.create_workers(
-        DETECT_TARGET_WORKER_COUNT,
-        detect_target_worker.detect_target_worker,
-        (
-            DETECT_TARGET_DEVICE,
-            DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SHOW_ANNOTATED,
-            DETECT_TARGET_SAVE_PREFIX,
-            video_input_to_detect_target_queue,
-            detect_target_to_data_merge_queue,
-            controller,
-        ),
-    )
-
-    flight_interface_manager = worker_manager.WorkerManager()
-    flight_interface_manager.create_workers(
-        1,
-        flight_interface_worker.flight_interface_worker,
-        (
-            FLIGHT_INTERFACE_ADDRESS,
-            FLIGHT_INTERFACE_TIMEOUT,
-            FLIGHT_INTERFACE_WORKER_PERIOD,
-            flight_interface_to_data_merge_queue,
-            flight_interface_decision_queue,
-            controller,
-        ),
-    )
-
-    data_merge_manager = worker_manager.WorkerManager()
-    data_merge_manager.create_workers(
-        1,
-        data_merge_worker.data_merge_worker,
-        (
-            DATA_MERGE_TIMEOUT,
-            detect_target_to_data_merge_queue,
-            flight_interface_to_data_merge_queue,
-            data_merge_to_geolocation_queue,
-            controller,
-        ),
-    )
-
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
         GEOLOCATION_RESOLUTION_Y,
@@ -207,7 +142,8 @@ def main() -> int:
         GEOLOCATION_FOV_Y,
     )
     if not result:
-        print("Error creating camera intrinsics")
+        frame = inspect.currentframe()
+        main_logger.error("Error creating camera intrinsics", frame)
         return -1
 
     result, camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
@@ -223,28 +159,196 @@ def main() -> int:
         ),
     )
     if not result:
-        print("Error creating camera extrinsics")
+        frame = inspect.currentframe()
+        main_logger.error("Error creating camera extrinsics", frame)
         return -1
 
-    geolocation_manager = worker_manager.WorkerManager()
-    geolocation_manager.create_workers(
-        1,
-        geolocation_worker.geolocation_worker,
-        (
-            camera_intrinsics,
-            camera_extrinsics,
-            data_merge_to_geolocation_queue,
-            geolocation_to_main_queue,
+    # Worker properties
+    result, video_input_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=video_input_worker.video_input_worker,
+        work_arguments=(
+            VIDEO_INPUT_CAMERA_NAME,
+            VIDEO_INPUT_WORKER_PERIOD,
+            VIDEO_INPUT_SAVE_PREFIX,
+        ),
+        input_queues=[],
+        output_queues=[video_input_to_detect_target_queue],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Video Input", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert video_input_worker_properties is not None
+
+    result, detect_target_worker_properties = worker_manager.WorkerProperties.create(
+        count=DETECT_TARGET_WORKER_COUNT,
+        target=detect_target_worker.detect_target_worker,
+        work_arguments=(
+            DETECT_TARGET_DEVICE,
+            DETECT_TARGET_MODEL_PATH,
+            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
+            DETECT_TARGET_SHOW_ANNOTATED,
+            DETECT_TARGET_SAVE_PREFIX,
+        ),
+        input_queues=[video_input_to_detect_target_queue],
+        output_queues=[detect_target_to_data_merge_queue],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Detect Target", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert detect_target_worker_properties is not None
+
+    result, flight_interface_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=flight_interface_worker.flight_interface_worker,
+        work_arguments=(
+            FLIGHT_INTERFACE_ADDRESS,
+            FLIGHT_INTERFACE_TIMEOUT,
+            FLIGHT_INTERFACE_BAUD_RATE,
+            FLIGHT_INTERFACE_WORKER_PERIOD,
+            flight_interface_to_data_merge_queue,
+            flight_interface_decision_queue,
             controller,
         ),
+        input_queues=[],
+        output_queues=[flight_interface_to_data_merge_queue],
+        controller=controller,
+        local_logger=main_logger,
     )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Flight Interface", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert flight_interface_worker_properties is not None
+
+    result, data_merge_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=data_merge_worker.data_merge_worker,
+        work_arguments=(DATA_MERGE_TIMEOUT,),
+        input_queues=[
+            detect_target_to_data_merge_queue,
+            flight_interface_to_data_merge_queue,
+        ],
+        output_queues=[data_merge_to_geolocation_queue],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Data Merge", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert data_merge_worker_properties is not None
+
+    result, geolocation_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=geolocation_worker.geolocation_worker,
+        work_arguments=(
+            camera_intrinsics,
+            camera_extrinsics,
+        ),
+        input_queues=[data_merge_to_geolocation_queue],
+        output_queues=[geolocation_to_main_queue],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create arguments for Geolocation", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert geolocation_worker_properties is not None
+
+    # Create managers
+    worker_managers = []
+
+    result, video_input_manager = worker_manager.WorkerManager.create(
+        worker_properties=video_input_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Video Input", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert video_input_manager is not None
+
+    worker_managers.append(video_input_manager)
+
+    result, detect_target_manager = worker_manager.WorkerManager.create(
+        worker_properties=detect_target_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Detect Target", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert detect_target_manager is not None
+
+    worker_managers.append(detect_target_manager)
+
+    result, flight_interface_manager = worker_manager.WorkerManager.create(
+        worker_properties=flight_interface_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Flight Interface", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert flight_interface_manager is not None
+
+    worker_managers.append(flight_interface_manager)
+
+    result, data_merge_manager = worker_manager.WorkerManager.create(
+        worker_properties=data_merge_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Data Merge", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert data_merge_manager is not None
+
+    worker_managers.append(data_merge_manager)
+
+    result, geolocation_manager = worker_manager.WorkerManager.create(
+        worker_properties=geolocation_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        frame = inspect.currentframe()
+        main_logger.error("Failed to create manager for Geolocation", frame)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert geolocation_manager is not None
+
+    worker_managers.append(geolocation_manager)
 
     # Run
-    video_input_manager.start_workers()
-    detect_target_manager.start_workers()
-    flight_interface_manager.start_workers()
-    data_merge_manager.start_workers()
-    geolocation_manager.start_workers()
+    for manager in worker_managers:
+        manager.start_workers()
 
     while True:
         try:
@@ -254,14 +358,22 @@ def main() -> int:
 
         if geolocation_data is not None:
             for detection_world in geolocation_data:
-                print("geolocation vertices: " + str(detection_world.vertices.tolist()))
-                print("geolocation centre: " + str(detection_world.centre.tolist()))
-                print("geolocation label: " + str(detection_world.label))
-                print("geolocation confidence: " + str(detection_world.confidence))
-                print("")
+                frame = inspect.currentframe()
+                main_logger.debug("Detection in world:", frame)
+                main_logger.debug(
+                    "geolocation vertices: " + str(detection_world.vertices.tolist()), frame
+                )
+                main_logger.debug(
+                    "geolocation centre: " + str(detection_world.centre.tolist()), frame
+                )
+                main_logger.debug("geolocation label: " + str(detection_world.label), frame)
+                main_logger.debug(
+                    "geolocation confidence: " + str(detection_world.confidence), frame
+                )
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
-            print("Exiting main loop")
+            frame = inspect.currentframe()
+            main_logger.info("Exiting main loop", frame)
             break
 
     # Teardown
@@ -274,11 +386,8 @@ def main() -> int:
     geolocation_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
 
-    video_input_manager.join_workers()
-    detect_target_manager.join_workers()
-    flight_interface_manager.join_workers()
-    data_merge_manager.join_workers()
-    geolocation_manager.join_workers()
+    for manager in worker_managers:
+        manager.join_workers()
 
     cv2.destroyAllWindows()  # type: ignore
 

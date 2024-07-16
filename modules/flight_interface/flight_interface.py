@@ -2,8 +2,11 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
+import inspect
+
 from . import local_global_conversion
 from .. import odometry_and_time
+from ..logger import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
 from ..decision_command import DecisionCommand
@@ -23,13 +26,18 @@ class FlightInterface:
     LAND_AT_ABSOLUTE_POSITION = 4
 
     @classmethod
-    def create(cls, address: str, timeout_home: float) -> "tuple[bool, FlightInterface | None]":
+    def create(
+        cls, address: str, timeout_home: float, baud_rate: int, local_logger: logger.Logger
+    ) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP address or port.
         timeout_home: Timeout for home location in seconds.
+        baud_rate: Baud rate for the connection.
         """
-        result, controller = flight_controller.FlightController.create(address)
+        result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
+            frame = inspect.currentframe()
+            local_logger.error("controller could not be created", frame)
             return False, None
 
         # Get Pylance to stop complaining
@@ -37,18 +45,21 @@ class FlightInterface:
 
         result, home_location = controller.get_home_location(timeout_home)
         if not result:
+            frame = inspect.currentframe()
+            local_logger.error("home_location could not be created", frame)
             return False, None
 
         # Get Pylance to stop complaining
         assert home_location is not None
 
-        return True, FlightInterface(cls.__create_key, controller, home_location)
+        return True, FlightInterface(cls.__create_key, controller, home_location, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
         controller: flight_controller.FlightController,
         home_location: drone_odometry.DronePosition,
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -57,6 +68,10 @@ class FlightInterface:
 
         self.controller = controller
         self.__home_location = home_location
+        self.__logger = local_logger
+
+        frame = inspect.currentframe()
+        self.__logger.info(str(self.__home_location), frame)
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
