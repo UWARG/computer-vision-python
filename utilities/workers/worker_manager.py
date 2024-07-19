@@ -27,6 +27,7 @@ class WorkerProperties:
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
         local_logger: logger.Logger,
+        worker_name: str,
     ) -> "tuple[bool, WorkerProperties | None]":
         """
         Creates worker properties.
@@ -38,6 +39,7 @@ class WorkerProperties:
         output_queues: Output queues.
         controller: Worker controller.
         local_logger: Existing logger from process.
+        worker_name: Name of the worker type.
 
         Returns the WorkerProperties object.
         """
@@ -57,6 +59,7 @@ class WorkerProperties:
             input_queues,
             output_queues,
             controller,
+            worker_name,
         )
 
     def __init__(
@@ -68,6 +71,7 @@ class WorkerProperties:
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
+        worker_name: str,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -80,6 +84,7 @@ class WorkerProperties:
         self.__input_queues = input_queues
         self.__output_queues = output_queues
         self.__controller = controller
+        self.__worker_name = worker_name
 
     def get_worker_arguments(self) -> "tuple":
         """
@@ -105,6 +110,18 @@ class WorkerProperties:
         Returns the worker target.
         """
         return self.__target
+
+    def get_input_queues(self) -> "list[queue_proxy_wrapper.QueueProxyWrapper]":
+        """
+        Returns the input queues.
+        """
+        return self.__input_queues
+
+    def get_worker_name(self) -> str:
+        """
+        Returns the name of the worker type.
+        """
+        return self.__worker_name
 
 
 class WorkerManager:
@@ -146,12 +163,16 @@ class WorkerManager:
         return True, WorkerManager(
             cls.__create_key,
             workers,
+            worker_properties,
+            local_logger,
         )
 
     def __init__(
         self,
         class_private_create_key: object,
         workers: "list[mp.Process]",
+        worker_properties: WorkerProperties,
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -159,6 +180,8 @@ class WorkerManager:
         assert class_private_create_key is WorkerManager.__create_key, "Use create() method"
 
         self.__workers = workers
+        self.__worker_properties = worker_properties
+        self.__local_logger = local_logger
 
     @staticmethod
     def __create_single_worker(target: "(...) -> object", args: "tuple", local_logger: logger.Logger) -> "tuple[bool, mp.Process | None]":  # type: ignore
@@ -195,3 +218,34 @@ class WorkerManager:
         """
         for worker in self.__workers:
             worker.join()
+
+    def check_and_restart_dead_workers(self) -> None:
+        """
+        Check and restart dead workers.
+        """
+        for worker in self.__workers:
+            if not worker.is_alive():
+                # Log the error
+                frame = inspect.currentframe()
+                worker_name_string = self.__worker_properties.get_worker_name() + " worker"
+                self.__local_logger.error("Worker died, restarting " + worker_name_string, frame)
+
+                # Terminate and join worker
+                worker.terminate()
+                worker.join()
+
+                # Drain the preceding queues
+                input_queues = self.__worker_properties.get_input_queues()
+                for queue in input_queues:
+                    queue.drain_queue()
+
+                # Create a new worker
+                result, worker = WorkerManager.__create_single_worker(
+                    self.__worker_properties.get_worker_target(),
+                    self.__worker_properties.get_worker_arguments(),
+                    self.__local_logger,
+                )
+                if not result:
+                    frame = inspect.currentframe()
+                    self.__local_logger.error("Failed to restart " + worker_name_string, frame)
+                    return False, None
