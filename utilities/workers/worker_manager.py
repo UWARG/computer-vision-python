@@ -250,4 +250,3 @@ class WorkerManager:
                 if not result:
                     frame = inspect.currentframe()
                     self.__local_logger.error("Failed to restart " + worker_name_string, frame)
-                    return False, None
