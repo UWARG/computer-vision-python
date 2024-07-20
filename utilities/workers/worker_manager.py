@@ -233,6 +233,8 @@ class WorkerManager:
                 # Terminate and join worker
                 worker.terminate()
                 worker.join()
+                del worker
+                worker = None
 
                 # Drain the preceding queues
                 input_queues = self.__worker_properties.get_input_queues()
