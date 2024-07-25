@@ -236,11 +236,6 @@ class WorkerManager:
                 del worker
                 worker = None
 
-                # Drain the preceding queues
-                input_queues = self.__worker_properties.get_input_queues()
-                for queue in input_queues:
-                    queue.drain_queue()
-
                 # Create a new worker
                 result, worker = WorkerManager.__create_single_worker(
                     self.__worker_properties.get_worker_target(),
@@ -250,3 +245,8 @@ class WorkerManager:
                 if not result:
                     frame = inspect.currentframe()
                     self.__local_logger.error("Failed to restart " + worker_name_string, frame)
+
+        # Drain the preceding queues
+        input_queues = self.__worker_properties.get_input_queues()
+        for queue in input_queues:
+            queue.drain_queue()
