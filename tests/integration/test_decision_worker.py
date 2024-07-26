@@ -6,15 +6,15 @@ import multiprocessing as mp
 import time
 
 from modules.cluster_estimation import cluster_estimation
-from modules.decision import decision_worker
 from modules.decision import decision
-from modules import drone_odometry_local
 from modules import odometry_and_time
+from modules import drone_odometry_local
+from modules.decision import decision_worker
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
 
-DISTANCE_SQUARED_THRESHOLD = 25  # unit of area
+DISTANCE_SQUARED_THRESHOLD = 25  # Square root of this is meters
 
 TOLERANCE = 0.1  # meters
 
@@ -26,7 +26,8 @@ SEARCH_OVERLAP = 0.2
 
 SMALL_ADJUSTMENT = 0.5  # meters
 
-DECISION_COUNT = 2
+
+DECISION_COUNT = 10
 
 def simulate_cluster_estimation_worker(
     min_activation_threshold: int,
@@ -112,30 +113,25 @@ def main():
     # Starts the decision worker
     worker.start()
 
-    # Simulate odometry data
+    # Simulate odometry data and cluster estimation 
     for i in range(0, 5):
         simulate_flight_interface_worker(i, odometry_input_queue)
-
-    # Simulate cluster estimation
-    simulate_cluster_estimation_worker(1, 1, 1, cluster_input_queue)
+        simulate_cluster_estimation_worker(1, 1, 1, cluster_input_queue)
 
     time.sleep(1)
 
     for i in range(0, 5):
-        simulate_flight_interface_worker(i, odometry_input_queue)
-
-    simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
+        simulate_flight_interface_worker(i, odometry_input_queue)   
+        simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
 
     controller.request_exit()
 
     # Test
-    try:
-        for i in range(0, DECISION_COUNT):
-            decision_output: decision.Decision = decision_output_queue.queue.get_nowait()
-            print(f"Decision output: {decision_output}")
-            assert decision_output is not None
-    except queue_proxy_wrapper.queue.Empty:
-        pass
+    for i in range(0, DECISION_COUNT):
+        decision_output: decision.Decision = decision_output_queue.queue.get_nowait()
+        print(f"Decision output: {decision_output}")
+        assert decision_output is not None
+
 
     # Teardown
     odometry_input_queue.fill_and_drain_queue()
