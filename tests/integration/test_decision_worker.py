@@ -5,16 +5,16 @@ Test worker process.
 import multiprocessing as mp
 import time
 
-from modules.decision import decision_worker
-from modules import drone_odometry_local
 from modules.cluster_estimation import cluster_estimation
-from modules import odometry_and_time
+from modules.decision import decision_worker
 from modules.decision import decision
+from modules import drone_odometry_local
+from modules import odometry_and_time
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
 
-DISTANCE_SQUARED_THRESHOLD = 25  # squared meters
+DISTANCE_SQUARED_THRESHOLD = 25  # unit of area
 
 TOLERANCE = 0.1  # meters
 
@@ -26,6 +26,7 @@ SEARCH_OVERLAP = 0.2
 
 SMALL_ADJUSTMENT = 0.5  # meters
 
+DECISION_COUNT = 2
 
 def simulate_cluster_estimation_worker(
     min_activation_threshold: int,
@@ -112,7 +113,7 @@ def main():
     worker.start()
 
     # Simulate odometry data
-    for i in range(1, 5):
+    for i in range(0, 5):
         simulate_flight_interface_worker(i, odometry_input_queue)
 
     # Simulate cluster estimation
@@ -120,11 +121,16 @@ def main():
 
     time.sleep(1)
 
+    for i in range(0, 5):
+        simulate_flight_interface_worker(i, odometry_input_queue)
+
+    simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
+
     controller.request_exit()
 
     # Test
     try:
-        while True:
+        for i in range(0, DECISION_COUNT):
             decision_output: decision.Decision = decision_output_queue.queue.get_nowait()
             print(f"Decision output: {decision_output}")
             assert decision_output is not None
