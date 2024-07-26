@@ -13,8 +13,6 @@ from . import flight_interface
 from ..logger import logger
 
 
-
-
 def flight_interface_worker(
     address: str,
     timeout: float,
