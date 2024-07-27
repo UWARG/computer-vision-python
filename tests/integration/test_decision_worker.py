@@ -7,9 +7,9 @@ import time
 
 from modules.cluster_estimation import cluster_estimation
 from modules.decision import decision
-from modules import odometry_and_time
 from modules import drone_odometry_local
 from modules.decision import decision_worker
+from modules import odometry_and_time
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
@@ -26,8 +26,10 @@ SEARCH_OVERLAP = 0.2
 
 SMALL_ADJUSTMENT = 0.5  # meters
 
+WORK_COUNT = 5
 
 DECISION_COUNT = 10
+
 
 def simulate_cluster_estimation_worker(
     min_activation_threshold: int,
@@ -114,13 +116,13 @@ def main():
     worker.start()
 
     # Simulate odometry data and cluster estimation 
-    for i in range(0, 5):
+    for i in range(0, WORK_COUNT):
         simulate_flight_interface_worker(i, odometry_input_queue)
         simulate_cluster_estimation_worker(1, 1, 1, cluster_input_queue)
 
     time.sleep(1)
 
-    for i in range(0, 5):
+    for i in range(0, WORK_COUNT):
         simulate_flight_interface_worker(i, odometry_input_queue)   
         simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
 
