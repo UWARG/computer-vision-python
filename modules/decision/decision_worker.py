@@ -27,7 +27,7 @@ def decision_worker(
 
     PARAMETERS
     ----------
-        - camera_fov_forwards, camera_fov_sideways, search_height, search_overlap, distance_squared_threshold, 
+        - camera_fov_forwards, camera_fov_sideways, search_height, search_overlap, distance_squared_threshold,
           and small_adjustment are arguments for the constructors below.
         - cluster_input_queue and output_queue are the data queues.
         - controller is how the main process communicates to this worker.
@@ -46,7 +46,7 @@ def decision_worker(
 
     while not controller.is_exit_requested():
         controller.check_pause()
-        
+
         curr_state = odometry_input_queue.queue.get()
 
         if curr_state is None:

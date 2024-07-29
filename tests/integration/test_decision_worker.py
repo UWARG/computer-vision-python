@@ -113,7 +113,7 @@ def main():
     # Starts the decision worker
     worker.start()
 
-    # Simulate odometry data and cluster estimation 
+    # Simulate odometry data and cluster estimation
     for i in range(0, WORK_COUNT):
         simulate_flight_interface_worker(i, odometry_input_queue)
         simulate_cluster_estimation_worker(1, 1, 1, cluster_input_queue)
@@ -121,7 +121,7 @@ def main():
     time.sleep(1)
 
     for i in range(0, WORK_COUNT):
-        simulate_flight_interface_worker(i, odometry_input_queue)   
+        simulate_flight_interface_worker(i, odometry_input_queue)
         simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
 
     controller.request_exit()
@@ -131,7 +131,6 @@ def main():
         decision_output: decision.Decision = decision_output_queue.queue.get_nowait()
         print(f"Decision output: {decision_output}")
         assert decision_output is not None
-
 
     # Teardown
     odometry_input_queue.fill_and_drain_queue()
