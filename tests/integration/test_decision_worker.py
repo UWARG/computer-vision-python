@@ -82,7 +82,7 @@ def simulate_flight_interface_worker(
     odometry_queue.queue.put(drone_odometry_and_time)
 
 
-def main():
+def main() -> int:
     """
     Main function.
     """
