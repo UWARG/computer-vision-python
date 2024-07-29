@@ -6,7 +6,7 @@ import inspect
 import os
 import pathlib
 import time
-import multiprocessing as mp 
+import multiprocessing as mp
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
