@@ -2,11 +2,11 @@
 Retrieves list of landing pads from cluster estimation and outputs decision to the flight controller.
 """
 
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 from . import decision
 from . import landing_pad_tracking
 from . import search_pattern
-from utilities.workers import queue_proxy_wrapper
-from utilities.workers import worker_controller
 
 
 def decision_worker(
@@ -40,6 +40,8 @@ def decision_worker(
         camera_fov_sideways,
         search_height,
         search_overlap,
+        current_position_x=0.0,
+        current_position_y=0.0,
         distance_squared_threshold=distance_squared_threshold,
         small_adjustment=small_adjustment,
     )
