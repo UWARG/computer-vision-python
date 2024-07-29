@@ -6,6 +6,7 @@ import inspect
 import os
 import pathlib
 import time
+import multiprocessing as mp 
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -53,7 +54,7 @@ def flight_interface_worker(
         return
 
     # Initalize queue with a maximum size of 1 to only hold latest odometry data
-    odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(maxsize=1)
+    odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(mp.Manager(), maxsize=1)
 
     # Get Pylance to stop complaining
     assert interface is not None
