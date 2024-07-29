@@ -51,7 +51,7 @@ def flight_interface_worker(
         frame = inspect.currentframe()
         local_logger.error("Worker failed to create class object", frame)
         return
-    
+
     # Initalize queue with a maximum size of 1 to only hold latest odometry data
     odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(maxsize=1)
 
@@ -71,7 +71,7 @@ def flight_interface_worker(
         try:
             odometry_queue.queue.get_nowait()
         except queue_proxy_wrapper.queue.Empty:
-            pass 
-        
+            pass
+
         odometry_queue.queue.put(value)
         output_queue.queue.put(value)
