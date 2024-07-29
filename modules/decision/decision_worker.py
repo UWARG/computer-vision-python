@@ -32,6 +32,7 @@ def decision_worker(
         - cluster_input_queue and output_queue are the data queues.
         - controller is how the main process communicates to this worker.
     """
+    # TODO: Need to rework how we get odometry data
 
     landing_pads = landing_pad_tracking.LandingPadTracking(distance_squared_threshold)
     decision_maker = decision.Decision(tolerance)
