@@ -38,14 +38,13 @@ def simulate_cluster_estimation_worker(
     """
 
     fake_objects = [
-        object_in_world.ObjectInWorld.create(1.0,2.0,0.9)[1],
-        object_in_world.ObjectInWorld.create(4.5,3.0,2.0)[1],
-        object_in_world.ObjectInWorld.create(7.2,2.9,4.6)[1],
+        object_in_world.ObjectInWorld.create(1.0, 2.0, 0.9)[1],
+        object_in_world.ObjectInWorld.create(4.5, 3.0, 2.0)[1],
+        object_in_world.ObjectInWorld.create(7.2, 2.9, 4.6)[1],
     ]
 
     for obj in fake_objects:
         assert obj is not None
-
 
     input_queue.queue.put(fake_objects)
 
