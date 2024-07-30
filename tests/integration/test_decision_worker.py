@@ -8,7 +8,6 @@ import time
 from modules import drone_odometry_local
 from modules import object_in_world
 from modules import odometry_and_time
-from modules.cluster_estimation import cluster_estimation
 from modules.decision import decision
 from modules.decision import decision_worker
 from utilities.workers import worker_controller
