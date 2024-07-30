@@ -6,6 +6,7 @@ import multiprocessing as mp
 import time
 
 from modules import drone_odometry_local
+from modules import object_in_world
 from modules import odometry_and_time
 from modules.cluster_estimation import cluster_estimation
 from modules.decision import decision
@@ -30,26 +31,23 @@ WORK_COUNT = 5
 
 
 def simulate_cluster_estimation_worker(
-    min_activation_threshold: int,
-    min_new_points_to_run: int,
-    random_state: int,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
 ) -> None:
     """
     Places list of detected landing pads into the queue.
     """
 
-    result, estimator = cluster_estimation.ClusterEstimation.create(
-        min_activation_threshold, min_new_points_to_run, random_state
-    )
-    assert result
-    assert estimator is not None
+    fake_objects = [
+        object_in_world.ObjectInWorld.create(1.0,2.0,0.9)[1],
+        object_in_world.ObjectInWorld.create(4.5,3.0,2.0)[1],
+        object_in_world.ObjectInWorld.create(7.2,2.9,4.6)[1],
+    ]
 
-    result, cluster_pads = estimator.run(input_queue, False)
-    assert result
-    assert cluster_pads is not None
+    for obj in fake_objects:
+        assert obj is not None
 
-    input_queue.queue.put(cluster_pads)
+
+    input_queue.queue.put(fake_objects)
 
 
 def simulate_flight_interface_worker(
@@ -116,13 +114,13 @@ def main() -> int:
     # Simulate odometry data and cluster estimation
     for i in range(0, WORK_COUNT):
         simulate_flight_interface_worker(i, odometry_input_queue)
-        simulate_cluster_estimation_worker(1, 1, 1, cluster_input_queue)
+        simulate_cluster_estimation_worker(cluster_input_queue)
 
     time.sleep(1)
 
     for i in range(0, WORK_COUNT):
         simulate_flight_interface_worker(i, odometry_input_queue)
-        simulate_cluster_estimation_worker(2, 2, 2, cluster_input_queue)
+        simulate_cluster_estimation_worker(cluster_input_queue)
 
     controller.request_exit()
 
