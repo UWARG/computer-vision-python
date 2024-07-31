@@ -36,16 +36,21 @@ def simulate_cluster_estimation_worker(
     Places list of detected landing pads into the queue.
     """
 
-    fake_objects = [
-        object_in_world.ObjectInWorld.create(1.0, 2.0, 0.9)[1],
-        object_in_world.ObjectInWorld.create(4.5, 3.0, 2.0)[1],
-        object_in_world.ObjectInWorld.create(7.2, 2.9, 4.6)[1],
-    ]
+    result, object1 = object_in_world.ObjectInWorld.create(1.0, 2.0, 0.9)
+    assert result
+    assert object1 is not None
 
-    for obj in fake_objects:
-        assert obj is not None
+    result, object2 = object_in_world.ObjectInWorld.create(4.5, 3.0, 2.0)
+    assert result
+    assert object2 is not None
 
-    input_queue.queue.put(fake_objects)
+    result, object3 = object_in_world.ObjectInWorld.create(7.2, 2.9, 4.6)
+    assert result
+    assert object3 is not None
+
+    objects = [object1, object2, object3]
+
+    input_queue.queue.put(objects)
 
 
 def simulate_flight_interface_worker(

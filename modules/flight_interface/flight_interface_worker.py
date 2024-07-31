@@ -20,6 +20,7 @@ def flight_interface_worker(
     baud_rate: int,
     period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    odometry_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -30,6 +31,10 @@ def flight_interface_worker(
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
+    if len(odometry_queue) > 1:
+        print("ERROR: Queue should have a maximum size of 1")
+        return
+
     # TODO: Error handling
 
     worker_name = pathlib.Path(__file__).stem
@@ -52,9 +57,6 @@ def flight_interface_worker(
         frame = inspect.currentframe()
         local_logger.error("Worker failed to create class object", frame)
         return
-
-    # Initalize queue with a maximum size of 1 to only hold latest odometry data
-    odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(mp.Manager(), maxsize=1)
 
     # Get Pylance to stop complaining
     assert interface is not None
