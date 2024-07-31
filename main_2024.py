@@ -122,6 +122,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    odometry_to_data_merge_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
@@ -214,7 +218,7 @@ def main() -> int:
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
         input_queues=[],
-        output_queues=[flight_interface_to_data_merge_queue],
+        output_queues=[flight_interface_to_data_merge_queue, odometry_to_data_merge_queue],
         controller=controller,
         local_logger=main_logger,
     )
@@ -382,6 +386,7 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    odometry_to_data_merge_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_main_queue.fill_and_drain_queue()
 
