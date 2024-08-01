@@ -5,8 +5,8 @@ Gets odometry information from drone.
 import inspect
 import os
 import pathlib
+import queue
 import time
-import multiprocessing as mp
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -20,7 +20,7 @@ def flight_interface_worker(
     baud_rate: int,
     period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-    odometry_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    most_recent_odometry_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -31,8 +31,8 @@ def flight_interface_worker(
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    if len(odometry_queue) > 1:
-        print("ERROR: Queue should have a maximum size of 1")
+    if most_recent_odometry_queue.maxsize != 1:
+        print("ERROR: most_recent_odometry_queue must have a maximum size of 1")
         return
 
     # TODO: Error handling
@@ -72,9 +72,9 @@ def flight_interface_worker(
 
         # Replace any existing odometry data with the latest odometry data
         try:
-            odometry_queue.queue.get_nowait()
-        except queue_proxy_wrapper.queue.Empty:
+            most_recent_odometry_queue.queue.get_nowait()
+        except queue.Empty:
             pass
 
-        odometry_queue.queue.put(value)
+        most_recent_odometry_queue.queue.put(value)
         output_queue.queue.put(value)
