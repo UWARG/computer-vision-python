@@ -229,9 +229,6 @@ class WorkerManager:
         for worker in self.__workers:
             if worker.is_alive():
                 new_workers.append(worker)
-            else:
-                worker.terminate()
-                worker.join()
 
         del self.__workers
         self.__workers = new_workers
@@ -254,43 +251,7 @@ class WorkerManager:
                 return False
 
             # Append the new worker
-            new_workers.append(new_worker)
-
-        # for worker in self.__workers:
-        #     if not worker.is_alive():
-        #         # Log the error
-        #         frame = inspect.currentframe()
-        #         worker_name_string = self.__worker_properties.get_worker_name() + " worker"
-        #         self.__local_logger.error("Worker died, restarting " + worker_name_string, frame)
-
-        #         del worker
-        #         worker = None
-
-        #         # Create a new worker
-        #         result, new_worker = WorkerManager.__create_single_worker(
-        #             self.__worker_properties.get_worker_target(),
-        #             self.__worker_properties.get_worker_arguments(),
-        #             self.__local_logger,
-        #         )
-        #         if not result:
-        #             frame = inspect.currentframe()
-        #             self.__local_logger.error("Failed to restart " + worker_name_string, frame)
-        #             return False
-
-        #         # Append the new worker
-        #         new_workers.append(new_worker)
-
-        #     else:
-        #         new_workers.append(worker)
-
-        # Delete the old workers list and set it to the new list
-        # for worker in self.__workers:
-        #     # Terminate and join worker
-        #     worker.terminate()
-        #     worker.join()
-
-        # del self.__workers
-        # self.__workers = new_workers
+            self.__workers.append(new_worker)
 
         # Drain the preceding queues
         input_queues = self.__worker_properties.get_input_queues()
