@@ -224,30 +224,31 @@ class WorkerManager:
         for worker in self.__workers:
             if worker.is_alive():
                 new_workers.append(worker)
-            else:
-                # Log the error
+                continue
+
+            # Log the error
+            frame = inspect.currentframe()
+            target_and_worker_name = (
+                self.__worker_properties.get_target_name() + " " + worker.name
+            )
+            self.__local_logger.warning(
+                "Worker died, restarting " + target_and_worker_name,
+                frame,
+            )
+
+            # Create a new worker
+            result, new_worker = WorkerManager.__create_single_worker(
+                self.__worker_properties.get_worker_target(),
+                self.__worker_properties.get_worker_arguments(),
+                self.__local_logger,
+            )
+            if not result:
                 frame = inspect.currentframe()
-                target_and_worker_name = (
-                    self.__worker_properties.get_target_name() + " " + worker.name
-                )
-                self.__local_logger.error(
-                    "Worker died, restarting " + target_and_worker_name,
-                    frame,
-                )
+                self.__local_logger.error("Failed to restart " + target_and_worker_name, frame)
+                return False
 
-                # Create a new worker
-                result, new_worker = WorkerManager.__create_single_worker(
-                    self.__worker_properties.get_worker_target(),
-                    self.__worker_properties.get_worker_arguments(),
-                    self.__local_logger,
-                )
-                if not result:
-                    frame = inspect.currentframe()
-                    self.__local_logger.error("Failed to restart " + target_and_worker_name, frame)
-                    return False
-
-                # Append the new worker
-                new_workers.append(new_worker)
+            # Append the new worker
+            new_workers.append(new_worker)
 
         self.__workers = new_workers
 
