@@ -228,9 +228,7 @@ class WorkerManager:
 
             # Log the error
             frame = inspect.currentframe()
-            target_and_worker_name = (
-                self.__worker_properties.get_target_name() + " " + worker.name
-            )
+            target_and_worker_name = self.__worker_properties.get_target_name() + " " + worker.name
             self.__local_logger.warning(
                 "Worker died, restarting " + target_and_worker_name,
                 frame,
