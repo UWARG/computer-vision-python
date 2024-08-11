@@ -344,6 +344,13 @@ def main() -> int:
         manager.start_workers()
 
     while True:
+        for manager in worker_managers:
+            result = manager.check_and_restart_dead_workers()
+            if not result:
+                frame = inspect.currentframe()
+                main_logger.error("Failed to restart workers", frame)
+                return -1
+
         try:
             geolocation_data = geolocation_to_main_queue.queue.get_nowait()
         except queue.Empty:
