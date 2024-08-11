@@ -5,7 +5,7 @@ For managing workers.
 import inspect
 import multiprocessing as mp
 
-from modules.logger import logger
+from modules.common.logger import logger
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 

@@ -10,7 +10,7 @@ import time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
-from ..logger import logger
+from ..common.logger import logger
 
 
 def flight_interface_worker(

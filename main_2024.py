@@ -20,7 +20,7 @@ from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
-from modules.logger import logger_setup_main
+from modules.common.logger import logger_setup_main
 from utilities import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
