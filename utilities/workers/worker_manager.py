@@ -226,11 +226,11 @@ class WorkerManager:
                 new_workers.append(worker)
                 continue
 
-            # Log the error
+            # Log dead worker
             frame = inspect.currentframe()
-            target_and_worker_name = self.__worker_properties.get_target_name() + " " + worker.name
+            target_and_worker_name = f"{self.__worker_properties.get_target_name()} {worker.name}"
             self.__local_logger.warning(
-                "Worker died, restarting " + target_and_worker_name,
+                f"Worker died, restarting {target_and_worker_name}",
                 frame,
             )
 
@@ -242,7 +242,7 @@ class WorkerManager:
             )
             if not result:
                 frame = inspect.currentframe()
-                self.__local_logger.error("Failed to restart " + target_and_worker_name, frame)
+                self.__local_logger.error(f"Failed to restart {target_and_worker_name}", frame)
                 return False
 
             # Append the new worker
