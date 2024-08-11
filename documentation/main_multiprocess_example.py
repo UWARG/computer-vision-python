@@ -88,7 +88,6 @@ def main() -> int:
         output_queues=[countup_to_add_random_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Countup",
     )
     if not result:
         print("Failed to create arguments for Countup")
@@ -109,7 +108,6 @@ def main() -> int:
         output_queues=[add_random_to_concatenator_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Add Random",
     )
     if not result:
         print("Failed to create arguments for Add Random")
@@ -129,7 +127,6 @@ def main() -> int:
         output_queues=[],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Concatenator",
     )
     if not result:
         print("Failed to create arguments for Concatenator")

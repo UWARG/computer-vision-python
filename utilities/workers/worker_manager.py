@@ -27,7 +27,6 @@ class WorkerProperties:
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
         local_logger: logger.Logger,
-        worker_name: str,
     ) -> "tuple[bool, WorkerProperties | None]":
         """
         Creates worker properties.
@@ -39,7 +38,6 @@ class WorkerProperties:
         output_queues: Output queues.
         controller: Worker controller.
         local_logger: Existing logger from process.
-        worker_name: Name of the worker type.
 
         Returns the WorkerProperties object.
         """
@@ -59,7 +57,6 @@ class WorkerProperties:
             input_queues,
             output_queues,
             controller,
-            worker_name,
         )
 
     def __init__(
@@ -71,7 +68,6 @@ class WorkerProperties:
         input_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         output_queues: "list[queue_proxy_wrapper.QueueProxyWrapper]",
         controller: worker_controller.WorkerController,
-        worker_name: str,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -84,7 +80,6 @@ class WorkerProperties:
         self.__input_queues = input_queues
         self.__output_queues = output_queues
         self.__controller = controller
-        self.__worker_name = worker_name
 
     def get_worker_arguments(self) -> "tuple":
         """
@@ -117,11 +112,11 @@ class WorkerProperties:
         """
         return self.__input_queues
 
-    def get_worker_name(self) -> str:
+    def get_target_name(self) -> str:
         """
-        Returns the name of the worker type.
+        Returns the name of the target.
         """
-        return self.__worker_name
+        return self.__target.__name__
 
 
 class WorkerManager:
@@ -229,31 +224,36 @@ class WorkerManager:
         for worker in self.__workers:
             if worker.is_alive():
                 new_workers.append(worker)
+            else:
+                # Log the error
+                frame = inspect.currentframe()
+                target_and_worker_name = (
+                    self.__worker_properties.get_target_name() + " " + worker.name
+                )
+                self.__local_logger.error(
+                    "Worker died, restarting " + target_and_worker_name,
+                    frame,
+                )
 
-        del self.__workers
+                # Create a new worker
+                result, new_worker = WorkerManager.__create_single_worker(
+                    self.__worker_properties.get_worker_target(),
+                    self.__worker_properties.get_worker_arguments(),
+                    self.__local_logger,
+                )
+                if not result:
+                    frame = inspect.currentframe()
+                    self.__local_logger.error("Failed to restart " + target_and_worker_name, frame)
+                    return False
+
+                # Append the new worker
+                new_workers.append(new_worker)
+
         self.__workers = new_workers
 
-        while len(self.__workers) < self.__worker_properties.get_worker_count():
-            # Log the error
-            frame = inspect.currentframe()
-            worker_name_string = self.__worker_properties.get_worker_name() + " worker"
-            self.__local_logger.error("Worker died, restarting " + worker_name_string, frame)
-
-            # Create a new worker
-            result, new_worker = WorkerManager.__create_single_worker(
-                self.__worker_properties.get_worker_target(),
-                self.__worker_properties.get_worker_arguments(),
-                self.__local_logger,
-            )
-            if not result:
-                frame = inspect.currentframe()
-                self.__local_logger.error("Failed to restart " + worker_name_string, frame)
-                return False
-
-            # Append the new worker
-            self.__workers.append(new_worker)
-
-        # Drain the preceding queues
+        # Draining the preceding queue ensures that the preceding queue data wasn't what
+        # caused the worker to fail. Draining the succeeding queues is not needed
+        # because a worker that died would not have put bad data into the queue.
         input_queues = self.__worker_properties.get_input_queues()
         for queue in input_queues:
             queue.drain_queue()

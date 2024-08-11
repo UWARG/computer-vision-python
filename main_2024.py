@@ -172,7 +172,6 @@ def main() -> int:
         output_queues=[video_input_to_detect_target_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Video Input",
     )
     if not result:
         frame = inspect.currentframe()
@@ -196,7 +195,6 @@ def main() -> int:
         output_queues=[detect_target_to_data_merge_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Detect Target",
     )
     if not result:
         frame = inspect.currentframe()
@@ -219,7 +217,6 @@ def main() -> int:
         output_queues=[flight_interface_to_data_merge_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Flight Interface",
     )
     if not result:
         frame = inspect.currentframe()
@@ -240,7 +237,6 @@ def main() -> int:
         output_queues=[data_merge_to_geolocation_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Data Merge",
     )
     if not result:
         frame = inspect.currentframe()
@@ -261,7 +257,6 @@ def main() -> int:
         output_queues=[geolocation_to_main_queue],
         controller=controller,
         local_logger=main_logger,
-        worker_name="Geolocation",
     )
     if not result:
         frame = inspect.currentframe()
