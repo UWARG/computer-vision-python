@@ -21,13 +21,14 @@ from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
 from modules.common.logger import logger_setup_main
-from utilities import yaml
+from modules.common import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
+CONFIG_LOGGER_FILE_PATH = pathlib.Path("config_logger.yaml")
 
 
 def main() -> int:
@@ -54,8 +55,17 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert config is not None
 
+    # Logger configuration settings
+    result, config_logger = yaml.open_config(CONFIG_LOGGER_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    # Get Pylance to stop complaining
+    assert config_logger is not None
+
     # Setup main logger
-    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config)
+    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config_logger)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1

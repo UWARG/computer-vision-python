@@ -14,13 +14,13 @@ from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
 from modules.common.logger import logger_setup_main
-from utilities import yaml
+from modules.common import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 
-CONFIG_FILE_PATH = pathlib.Path("config.yaml")
+CONFIG_FILE_PATH = pathlib.Path("config_logger.yaml")
 
 # Play with these numbers to see queue bottlenecks
 COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5

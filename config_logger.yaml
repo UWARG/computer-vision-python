@@ -1,0 +1,7 @@
+# Global constants for logger
+
+logger:
+    directory_path: "logs"
+    file_datetime_format: "%Y-%m-%d_%H-%M-%S"
+    format: "%(asctime)s: [%(levelname)s] %(message)s"
+    datetime_format: "%I:%M:%S"
