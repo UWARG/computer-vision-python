@@ -14,7 +14,7 @@ from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
 from modules.common.logger import logger_setup_main
-from modules.common import yaml
+from modules.common.read_yaml import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager

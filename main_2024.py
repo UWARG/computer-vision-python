@@ -21,7 +21,7 @@ from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
 from modules.common.logger import logger_setup_main
-from modules.common import yaml
+from modules.common.read_yaml import yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
