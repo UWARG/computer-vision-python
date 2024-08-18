@@ -6,7 +6,7 @@ import inspect
 import os
 import pathlib
 
-from modules.common.logger import logger
+from modules.common.logger.modules import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import add_random

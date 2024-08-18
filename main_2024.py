@@ -9,7 +9,6 @@ import pathlib
 import queue
 
 import cv2
-import yaml
 
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
@@ -20,8 +19,8 @@ from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
-from modules.common.logger import logger_setup_main
-from modules.common.read_yaml import yaml
+from modules.common.logger.modules import logger_setup_main
+from modules.common.read_yaml.modules import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -47,7 +46,7 @@ def main() -> int:
     args = parser.parse_args()
 
     # Configuration settings
-    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    result, config = read_yaml.open_config(CONFIG_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1
@@ -56,7 +55,7 @@ def main() -> int:
     assert config is not None
 
     # Logger configuration settings
-    result, config_logger = yaml.open_config(CONFIG_LOGGER_FILE_PATH)
+    result, config_logger = read_yaml.open_config(CONFIG_LOGGER_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1

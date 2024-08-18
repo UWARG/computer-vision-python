@@ -6,7 +6,7 @@ import inspect
 
 from . import local_global_conversion
 from .. import odometry_and_time
-from ..common.logger import logger
+from ..common.logger.modules import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
 

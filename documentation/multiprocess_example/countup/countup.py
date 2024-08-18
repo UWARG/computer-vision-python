@@ -5,7 +5,7 @@ Contains the Countup class.
 import inspect
 import time
 
-from modules.common.logger import logger
+from modules.common.logger.modules import logger
 
 
 class Countup:

@@ -6,7 +6,7 @@ import inspect
 import time
 import random
 
-from modules.common.logger import logger
+from modules.common.logger.modules import logger
 from .. import intermediate_struct
 
 
