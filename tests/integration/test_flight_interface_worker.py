@@ -16,6 +16,7 @@ MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
+LATEST_ODOMETRY_QUEUE_MAX_SIZE = 1  # Max items allowed in latest odometry queue
 
 
 def main() -> int:
@@ -28,6 +29,9 @@ def main() -> int:
     mp_manager = mp.Manager()
 
     out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    latest_odometry_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager, LATEST_ODOMETRY_QUEUE_MAX_SIZE
+    )
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
@@ -37,6 +41,7 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             out_queue,
+            latest_odometry_queue,
             controller,
         ),
     )

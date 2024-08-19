@@ -54,7 +54,7 @@ class LandingPadTracking:
 
     def run(
         self, detections: "list[object_in_world.ObjectInWorld]"
-    ) -> "tuple[bool, object_in_world.ObjectInWorld | None]":
+    ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
         Updates the list of unconfirmed positives and returns the a first confirmed positive if
         one exists, else the unconfirmed positive with the lowest variance.
@@ -82,9 +82,9 @@ class LandingPadTracking:
             # If new landing pad, add to list of unconfirmed positives
             self.__unconfirmed_positives.append(detection)
 
-        # If there are confirmed positives, return the first one
+        # If there are confirmed positives, return the entire list
         if len(self.__confirmed_positives) > 0:
-            return True, self.__confirmed_positives[0]
+            return True, self.__confirmed_positives
 
         # If the list is empty, all landing pads have been visited, none are viable
         if len(self.__unconfirmed_positives) == 0:
@@ -93,5 +93,5 @@ class LandingPadTracking:
         # Sort list by variance in ascending order
         self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
 
-        # Return detection with lowest variance
-        return True, self.__unconfirmed_positives[0]
+        # Return all detections
+        return True, self.__unconfirmed_positives
