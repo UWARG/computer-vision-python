@@ -28,7 +28,7 @@ jobs = 0
 
 # Minimum Python version to use for version dependent checks. Will default to the
 # version used to run pylint.
-py-version = "3.8"
+py-version = "3.11"
 
 # Discover python modules and packages in the file system subtree.
 recursive = true
@@ -105,7 +105,7 @@ addopts = "--ignore=modules/common/"
 
 [tool.black]
 line-length = 100
-target-version = ["py38"]
+target-version = ["py311"]
 # Excludes files or directories in addition to the defaults
 # Submodules
 extend-exclude = "modules/common/*"
