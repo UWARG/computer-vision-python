@@ -9,7 +9,8 @@ from .. import odometry_and_time
 from ..logger import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
-from ..decision_command import DecisionCommand
+from ..decision_command import decision_command
+
 
 
 class FlightInterface:
@@ -19,11 +20,6 @@ class FlightInterface:
 
     __create_key = object()
 
-    MOVE_TO_RELATIVE_POSITION = 0
-    MOVE_TO_ABSOLUTE_POSITION = 1
-    LAND_AT_CURRENT_POSITION = 2
-    LAND_AT_RELATIVE_POSITION = 3
-    LAND_AT_ABSOLUTE_POSITION = 4
 
     @classmethod
     def create(
