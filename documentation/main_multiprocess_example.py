@@ -7,20 +7,18 @@ python -m documentation.main_multiprocess_example
 
 import inspect
 import multiprocessing as mp
-import pathlib
 import time
 
 from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
+from modules.common.logger.modules import logger
 from modules.common.logger.modules import logger_setup_main
 from modules.common.logger.read_yaml.modules import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
-
-CONFIG_FILE_PATH = pathlib.Path("config_logger.yaml")
 
 # Play with these numbers to see queue bottlenecks
 COUNTUP_TO_ADD_RANDOM_QUEUE_MAX_SIZE = 5
@@ -38,7 +36,7 @@ def main() -> int:
     Main function.
     """
     # Configuration settings
-    result, config = read_yaml.open_config(CONFIG_FILE_PATH)
+    result, config = read_yaml.open_config(logger.CONFIG_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1
