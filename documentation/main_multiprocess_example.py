@@ -5,7 +5,6 @@ python -m documentation.main_multiprocess_example
 ```
 """
 
-import inspect
 import multiprocessing as mp
 import time
 
@@ -180,42 +179,36 @@ def main() -> int:
     for manager in worker_managers:
         manager.start_workers()
 
-    frame = inspect.currentframe()
-    main_logger.info("Started", frame)
+    main_logger.info("Started", True)
 
     # Run for some time and then pause
     time.sleep(2)
     controller.request_pause()
 
-    frame = inspect.currentframe()
-    main_logger.info("Paused", frame)
+    main_logger.info("Paused", True)
 
     time.sleep(4)
     controller.request_resume()
-    frame = inspect.currentframe()
-    main_logger.info("Resumed", frame)
+    main_logger.info("Resumed", True)
 
     time.sleep(2)
 
     # Stop the processes
     controller.request_exit()
 
-    frame = inspect.currentframe()
-    main_logger.info("Requested exit", frame)
+    main_logger.info("Requested exit", True)
 
     # Fill and drain queues from END TO START
     countup_to_add_random_queue.fill_and_drain_queue()
     add_random_to_concatenator_queue.fill_and_drain_queue()
 
-    frame = inspect.currentframe()
-    main_logger.info("Queues cleared", frame)
+    main_logger.info("Queues cleared", True)
 
     # Clean up worker processes
     for manager in worker_managers:
         manager.join_workers()
 
-    frame = inspect.currentframe()
-    main_logger.info("Stopped", frame)
+    main_logger.info("Stopped", True)
 
     # We can reset controller in case we want to reuse it
     # Alternatively, create a new WorkerController instance

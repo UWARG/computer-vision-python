@@ -2,7 +2,6 @@
 Ending worker that concatenates a prefix and suffix and then prints the result.
 """
 
-import inspect
 import os
 import pathlib
 
@@ -36,8 +35,7 @@ def concatenator_worker(
     # Get Pylance to stop complaining
     assert local_logger is not None
 
-    frame = inspect.currentframe()
-    local_logger.info("Logger initialized", frame)
+    local_logger.info("Logger initialized", True)
 
     # Instantiate class object
     concatenator_instance = concatenator.Concatenator(prefix, suffix, local_logger)

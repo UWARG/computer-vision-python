@@ -2,7 +2,6 @@
 Contains the Countup class.
 """
 
-import inspect
 import time
 
 from modules.common.logger.modules import logger
@@ -30,8 +29,7 @@ class Countup:
         Counts upward.
         """
         # Log
-        frame = inspect.currentframe()
-        self.__logger.debug("Run", frame)
+        self.__logger.debug("Run", True)
 
         # Increment counter
         self.__current_count += 1

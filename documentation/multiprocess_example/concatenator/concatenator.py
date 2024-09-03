@@ -2,7 +2,6 @@
 Contains the Concatenator class.
 """
 
-import inspect
 import time
 
 from modules.common.logger.modules import logger
@@ -31,8 +30,7 @@ class Concatenator:
         Concatenate the prefix and suffix to the input.
         """
         # Log
-        frame = inspect.currentframe()
-        self.__logger.debug("Run", frame)
+        self.__logger.debug("Run", True)
 
         # The class is responsible for unpacking the intermediate type
         # Validate input

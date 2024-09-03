@@ -2,7 +2,6 @@
 Intermediate worker that adds a random number to the input.
 """
 
-import inspect
 import os
 import pathlib
 
@@ -38,8 +37,7 @@ def add_random_worker(
     # Get Pylance to stop complaining
     assert local_logger is not None
 
-    frame = inspect.currentframe()
-    local_logger.info("Logger initialized", frame)
+    local_logger.info("Logger initialized", True)
 
     # Instantiate class object
     add_random_instance = add_random.AddRandom(

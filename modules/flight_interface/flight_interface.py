@@ -2,8 +2,6 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
-import inspect
-
 from . import local_global_conversion
 from .. import odometry_and_time
 from ..common.logger.modules import logger
@@ -29,8 +27,7 @@ class FlightInterface:
         """
         result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
-            frame = inspect.currentframe()
-            local_logger.error("controller could not be created", frame)
+            local_logger.error("controller could not be created", True)
             return False, None
 
         # Get Pylance to stop complaining
@@ -38,8 +35,7 @@ class FlightInterface:
 
         result, home_location = controller.get_home_location(timeout_home)
         if not result:
-            frame = inspect.currentframe()
-            local_logger.error("home_location could not be created", frame)
+            local_logger.error("home_location could not be created", True)
             return False, None
 
         # Get Pylance to stop complaining
@@ -63,8 +59,7 @@ class FlightInterface:
         self.__home_location = home_location
         self.__logger = local_logger
 
-        frame = inspect.currentframe()
-        self.__logger.info(str(self.__home_location), frame)
+        self.__logger.info(str(self.__home_location), True)
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """

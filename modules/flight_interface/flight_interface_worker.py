@@ -2,7 +2,6 @@
 Gets odometry information from drone.
 """
 
-import inspect
 import os
 import pathlib
 import time
@@ -41,15 +40,13 @@ def flight_interface_worker(
     # Get Pylance to stop complaining
     assert local_logger is not None
 
-    frame = inspect.currentframe()
-    local_logger.info("Logger initialized", frame)
+    local_logger.info("Logger initialized", True)
 
     result, interface = flight_interface.FlightInterface.create(
         address, timeout, baud_rate, local_logger
     )
     if not result:
-        frame = inspect.currentframe()
-        local_logger.error("Worker failed to create class object", frame)
+        local_logger.error("Worker failed to create class object", True)
         return
 
     # Get Pylance to stop complaining
