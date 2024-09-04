@@ -2,11 +2,10 @@
 Contains the AddRandom class.
 """
 
-import inspect
 import time
 import random
 
-from modules.logger import logger
+from modules.common.logger.modules import logger
 from .. import intermediate_struct
 
 
@@ -48,8 +47,7 @@ class AddRandom:
         Adds a random number to the input and returns the sum.
         """
         # Log
-        frame = inspect.currentframe()
-        self.__logger.debug("Run", frame)
+        self.__logger.debug("Run", True)
 
         add_sum = term + self.__current_random_term
 
