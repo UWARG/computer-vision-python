@@ -216,7 +216,6 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
-            controller,
         ),
         input_queues=[flight_interface_decision_queue],
         output_queues=[flight_interface_to_data_merge_queue],
