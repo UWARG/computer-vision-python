@@ -32,9 +32,7 @@ class FlightInterface:
         timeout_home: Timeout for home location in seconds.
         baud_rate: Baud rate for the connection.
         """
-        result, controller = flight_controller.FlightController.create(
-            address, baud_rate
-        )
+        result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
             frame = inspect.currentframe()
             local_logger.error("controller could not be created", frame)
@@ -52,9 +50,7 @@ class FlightInterface:
 
         assert home_location is not None
 
-        return True, FlightInterface(
-            cls.__create_key, controller, home_location, local_logger
-        )
+        return True, FlightInterface(cls.__create_key, controller, home_location, local_logger)
 
     def __init__(
         self,
@@ -66,9 +62,7 @@ class FlightInterface:
         """
         Private constructor, use create() method.
         """
-        assert (
-            class_private_create_key is FlightInterface.__create_key
-        ), "Use create() method"
+        assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
 
         self.controller = controller
         self.__home_location = home_location
@@ -88,11 +82,9 @@ class FlightInterface:
 
         assert odometry is not None
 
-        result, odometry_local = (
-            local_global_conversion.drone_odometry_local_from_global(
-                odometry,
-                self.__home_location,
-            )
+        result, odometry_local = local_global_conversion.drone_odometry_local_from_global(
+            odometry,
+            self.__home_location,
         )
         if not result:
             return False, None
