@@ -32,7 +32,7 @@ class FlightInterface:
         timeout_home: Timeout for home location in seconds.
         baud_rate: Baud rate for the connection.
         """
-        result, controller = flight_controller.FlightController.create(address)
+        result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
             frame = inspect.currentframe()
             local_logger.error("controller could not be created", frame)
