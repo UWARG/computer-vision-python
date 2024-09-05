@@ -6,10 +6,10 @@ import inspect
 
 from . import local_global_conversion
 from .. import odometry_and_time
+from .. import decision_command
 from ..logger import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
-from ..decision_command import decision_command
 
 
 class FlightInterface:
@@ -32,7 +32,7 @@ class FlightInterface:
         timeout_home: Timeout for home location in seconds.
         baud_rate: Baud rate for the connection.
         """
-        result, controller = flight_controller.FlightController.create(address, baud_rate)
+        result, controller = flight_controller.FlightController.create(address)
         if not result:
             frame = inspect.currentframe()
             local_logger.error("controller could not be created", frame)
@@ -94,8 +94,8 @@ class FlightInterface:
 
         return odometry_and_time.OdometryAndTime.create(odometry_local)
 
-    def apply_decision(self, decision_command: DecisionCommand) -> None:
+    def apply_decision(self, decision: decision_command.DecisionCommand) -> None:
         """
         Apply the given decision command to the flight controller.
         """
-        self.controller.upload_commands(decision_command)
+        self.controller.upload_commands(decision)
