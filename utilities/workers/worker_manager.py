@@ -2,10 +2,9 @@
 For managing workers.
 """
 
-import inspect
 import multiprocessing as mp
 
-from modules.logger import logger
+from modules.common.logger.modules import logger
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
@@ -42,10 +41,9 @@ class WorkerProperties:
         Returns the WorkerProperties object.
         """
         if count <= 0:
-            frame = inspect.currentframe()
             local_logger.error(
                 "Worker count requested is less than or equal to zero, no workers were created",
-                frame,
+                True,
             )
             return False, None
 
@@ -149,8 +147,7 @@ class WorkerManager:
                 local_logger,
             )
             if not result:
-                frame = inspect.currentframe()
-                local_logger.error("Failed to create worker", frame)
+                local_logger.error("Failed to create worker", True)
                 return False, None
 
             workers.append(worker)
@@ -194,8 +191,7 @@ class WorkerManager:
         # Catching all exceptions for library call
         # pylint: disable-next=broad-exception-caught
         except Exception as e:
-            frame = inspect.currentframe()
-            local_logger.error(f"Exception raised while creating a worker: {e}", frame)
+            local_logger.error(f"Exception raised while creating a worker: {e}", True)
             return False, None
 
         return True, worker
@@ -227,11 +223,10 @@ class WorkerManager:
                 continue
 
             # Log dead worker
-            frame = inspect.currentframe()
             target_and_worker_name = f"{self.__worker_properties.get_target_name()} {worker.name}"
             self.__local_logger.warning(
                 f"Worker died, restarting {target_and_worker_name}",
-                frame,
+                True,
             )
 
             # Create a new worker
@@ -241,8 +236,7 @@ class WorkerManager:
                 self.__local_logger,
             )
             if not result:
-                frame = inspect.currentframe()
-                self.__local_logger.error(f"Failed to restart {target_and_worker_name}", frame)
+                self.__local_logger.error(f"Failed to restart {target_and_worker_name}", True)
                 return False
 
             # Append the new worker

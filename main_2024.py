@@ -3,13 +3,11 @@ For 2023-2024 UAS competition.
 """
 
 import argparse
-import inspect
 import multiprocessing as mp
 import pathlib
 import queue
 
 import cv2
-import yaml
 
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
@@ -20,8 +18,9 @@ from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
-from modules.logger import logger_setup_main
-from utilities import yaml
+from modules.common.logger.modules import logger
+from modules.common.logger.modules import logger_setup_main
+from modules.common.logger.read_yaml.modules import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -46,7 +45,7 @@ def main() -> int:
     args = parser.parse_args()
 
     # Configuration settings
-    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    result, config = read_yaml.open_config(CONFIG_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1
@@ -54,8 +53,17 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert config is not None
 
+    # Logger configuration settings
+    result, config_logger = read_yaml.open_config(logger.CONFIG_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    # Get Pylance to stop complaining
+    assert config_logger is not None
+
     # Setup main logger
-    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config)
+    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config_logger)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
@@ -102,8 +110,7 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
         # pylint: enable=invalid-name
     except KeyError as exception:
-        frame = inspect.currentframe()
-        main_logger.error(f"ERROR: Config key(s) not found: {exception}", frame)
+        main_logger.error(f"ERROR: Config key(s) not found: {exception}", True)
         return -1
 
     # Setup
@@ -138,8 +145,7 @@ def main() -> int:
         GEOLOCATION_FOV_Y,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Error creating camera intrinsics", frame)
+        main_logger.error("Error creating camera intrinsics", True)
         return -1
 
     result, camera_extrinsics = camera_properties.CameraDroneExtrinsics.create(
@@ -155,8 +161,7 @@ def main() -> int:
         ),
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Error creating camera extrinsics", frame)
+        main_logger.error("Error creating camera extrinsics", True)
         return -1
 
     # Worker properties
@@ -174,8 +179,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Video Input", frame)
+        main_logger.error("Failed to create arguments for Video Input", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -197,8 +201,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Detect Target", frame)
+        main_logger.error("Failed to create arguments for Detect Target", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -219,8 +222,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Flight Interface", frame)
+        main_logger.error("Failed to create arguments for Flight Interface", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -239,8 +241,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Data Merge", frame)
+        main_logger.error("Failed to create arguments for Data Merge", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -259,8 +260,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Geolocation", frame)
+        main_logger.error("Failed to create arguments for Geolocation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -274,8 +274,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Video Input", frame)
+        main_logger.error("Failed to create manager for Video Input", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -288,8 +287,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Detect Target", frame)
+        main_logger.error("Failed to create manager for Detect Target", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -302,8 +300,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Flight Interface", frame)
+        main_logger.error("Failed to create manager for Flight Interface", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -316,8 +313,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Data Merge", frame)
+        main_logger.error("Failed to create manager for Data Merge", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -330,8 +326,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Geolocation", frame)
+        main_logger.error("Failed to create manager for Geolocation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -347,8 +342,7 @@ def main() -> int:
         for manager in worker_managers:
             result = manager.check_and_restart_dead_workers()
             if not result:
-                frame = inspect.currentframe()
-                main_logger.error("Failed to restart workers", frame)
+                main_logger.error("Failed to restart workers", True)
                 return -1
 
         try:
@@ -358,22 +352,20 @@ def main() -> int:
 
         if geolocation_data is not None:
             for detection_world in geolocation_data:
-                frame = inspect.currentframe()
-                main_logger.debug("Detection in world:", frame)
+                main_logger.debug("Detection in world:", True)
                 main_logger.debug(
-                    "geolocation vertices: " + str(detection_world.vertices.tolist()), frame
+                    "geolocation vertices: " + str(detection_world.vertices.tolist()), True
                 )
                 main_logger.debug(
-                    "geolocation centre: " + str(detection_world.centre.tolist()), frame
+                    "geolocation centre: " + str(detection_world.centre.tolist()), True
                 )
-                main_logger.debug("geolocation label: " + str(detection_world.label), frame)
+                main_logger.debug("geolocation label: " + str(detection_world.label), True)
                 main_logger.debug(
-                    "geolocation confidence: " + str(detection_world.confidence), frame
+                    "geolocation confidence: " + str(detection_world.confidence), True
                 )
 
         if cv2.waitKey(1) == ord("q"):  # type: ignore
-            frame = inspect.currentframe()
-            main_logger.info("Exiting main loop", frame)
+            main_logger.info("Exiting main loop", True)
             break
 
     # Teardown
