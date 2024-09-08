@@ -2,10 +2,14 @@
 Convert bounding box data into ground data.
 """
 
+import os
+import pathlib
+
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import camera_properties
 from . import geolocation
+from ..common.logger.modules import logger
 
 
 def geolocation_worker(
@@ -24,12 +28,24 @@ def geolocation_worker(
     # TODO: Logging?
     # TODO: Handle errors better
 
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
+    if not result:
+        print("ERROR: Worker failed to create logger")
+        return
+
+    assert local_logger is not None
+
+    local_logger.info("Logger initialized")
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_drone_extrinsics,
+        local_logger,
     )
     if not result:
-        print("Worker failed to create class object")
+        local_logger.error("Worker failed to create class object")
         return
 
     # Get Pylance to stop complaining

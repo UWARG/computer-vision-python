@@ -9,6 +9,7 @@ from . import camera_properties
 from .. import detection_in_world
 from .. import detections_and_time
 from .. import merged_odometry_detections
+from ..common.logger.modules import logger
 
 
 class Geolocation:
@@ -25,6 +26,7 @@ class Geolocation:
         cls,
         camera_intrinsics: camera_properties.CameraIntrinsics,
         camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, Geolocation | None]":
         """
         camera_intrinsics: Camera information without any outside space.
@@ -59,6 +61,7 @@ class Geolocation:
             camera_drone_extrinsics,
             perspective_transform_sources,
             rotated_source_vectors,
+            local_logger,
         )
 
     def __init__(
@@ -67,6 +70,7 @@ class Geolocation:
         camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
         perspective_transform_sources: "list[list[float]]",
         rotated_source_vectors: "list[np.ndarray]",
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -76,6 +80,7 @@ class Geolocation:
         self.__camera_drone_extrinsics = camera_drone_extrinsics
         self.__perspective_transform_sources = perspective_transform_sources
         self.__rotated_source_vectors = rotated_source_vectors
+        self.__logger = local_logger
 
     @staticmethod
     def __ground_intersection_from_vector(
