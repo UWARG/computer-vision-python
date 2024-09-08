@@ -47,6 +47,9 @@ class Geolocation:
             # Image space to camera space
             result, value = camera_intrinsics.camera_space_from_image_space(source[0], source[1])
             if not result:
+                local_logger.error(
+                    f"Rotated source vector could not be created for source: {source}"
+                )
                 return False, None
 
             # Get Pylance to stop complaining
@@ -123,9 +126,11 @@ class Geolocation:
         Calculates the destination points, then uses OpenCV to get the matrix.
         """
         if not camera_properties.is_matrix_r3x3(drone_rotation_matrix):
+            self.__logger.error("Drone rotation matrix is not a 3 x 3 matrix")
             return False, None
 
         if not camera_properties.is_vector_r3(drone_position_ned):
+            self.__logger.error("Drone position is not a vector in R3")
             return False, None
 
         # Get the vectors in world space
@@ -148,6 +153,7 @@ class Geolocation:
                 vec_down,
             )
             if not result:
+                self.__logger.error("Could not get ground intersection from vector")
                 return False, None
 
             ground_points.append(ground_point)
@@ -161,10 +167,14 @@ class Geolocation:
                 dst,
             )
         # All exceptions must be caught and logged as early as possible
-        # pylint: disable-next=bare-except
-        except:
-            # TODO: Logging
+        # pylint: disable-next=catching-non-exception
+        except cv2.error as e:
+            self.__logger.error(f"Could not get perspective transform matrix: {e}")
             return False, None
+        # All exceptions must be caught and logged as early as possible
+        # pylint: disable-next=broad-exception-caught
+        except Exception as e:
+            self.__logger.error(f"Could not get perspective transform matrix: {e}")
 
         return True, matrix
 
@@ -248,6 +258,7 @@ class Geolocation:
         # Camera position in world (NED system)
         # Cannot be underground
         if detections.odometry_local.position.down >= 0.0:
+            self.__logger.error("Drone is underground")
             return False, None
 
         drone_position_ned = np.array(
@@ -267,6 +278,7 @@ class Geolocation:
             detections.odometry_local.orientation.orientation.roll,
         )
         if not result:
+            self.__logger.error("Drone rotation matrix could not be created")
             return False, None
 
         # Get Pylance to stop complaining
@@ -290,7 +302,9 @@ class Geolocation:
             )
             # Partial data not allowed
             if not result:
+                self.__logger("Could not convert detection to world from image")
                 return False, None
             detections_in_world.append(detection_world)
+            self.__logger.info(detection_world)
 
         return True, detections_in_world

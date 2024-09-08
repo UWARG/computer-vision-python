@@ -11,6 +11,7 @@ from modules import drone_odometry_local
 from modules import merged_odometry_detections
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation
+from modules.common.logger.modules import logger
 
 
 FLOAT_PRECISION_TOLERANCE = 4
@@ -42,9 +43,14 @@ def basic_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -73,9 +79,14 @@ def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -105,9 +116,14 @@ def advanced_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -242,9 +258,14 @@ class TestGeolocationCreate:
         assert result
         assert camera_extrinsics is not None
 
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         result, locator = geolocation.Geolocation.create(
             camera_intrinsics,
             camera_extrinsics,
+            test_logger,
         )
         assert result
         assert locator is not None
