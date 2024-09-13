@@ -99,7 +99,7 @@ class Geolocation:
             return False, None
 
         if not camera_properties.is_vector_r3(vec_down):
-            logger.error("Rotated source vector in world space is not a vector in R3")
+            local_logger.error("Rotated source vector in world space is not a vector in R3")
             return False, None
 
         # Check camera above ground
@@ -176,14 +176,10 @@ class Geolocation:
                 dst,
             )
         # All exceptions must be caught and logged as early as possible
-        # pylint: disable-next=catching-non-exception
-        except cv2.error as e:
-            self.__logger.error(f"Could not get perspective transform matrix: {e}")
-            return False, None
-        # All exceptions must be caught and logged as early as possible
         # pylint: disable-next=broad-exception-caught
         except Exception as e:
             self.__logger.error(f"Could not get perspective transform matrix: {e}")
+            return False, None
 
         return True, matrix
 

@@ -25,7 +25,6 @@ def geolocation_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    # TODO: Logging?
     # TODO: Handle errors better
 
     worker_name = pathlib.Path(__file__).stem
