@@ -2,12 +2,6 @@
 
 queue_max_size: 10
 
-logger:
-    directory_path: "logs"
-    file_datetime_format: "%Y-%m-%d_%H-%M-%S"
-    format: "%(asctime)s: [%(levelname)s] %(message)s"
-    datetime_format: "%I:%M:%S"
-
 video_input:
     camera_name: 0
     worker_period: 1.0  # seconds
@@ -30,13 +24,13 @@ data_merge:
     timeout: 10.0  # seconds
 
 geolocation:
-    resolution_x: 2000
-    resolution_y: 2000
-    fov_x: 1.57079632679
-    fov_y: 1.57079632679
+    resolution_x: 1920
+    resolution_y: 1200 
+    fov_x: 0.64889
+    fov_y: 0.41438
     camera_position_x: 0.0
     camera_position_y: 0.0
     camera_position_z: 0.0
     camera_orientation_yaw: 0.0
-    camera_orientation_pitch: 0.0
+    camera_orientation_pitch: -1.57079632679
     camera_orientation_roll: 0.0

@@ -2,10 +2,9 @@
 For managing workers.
 """
 
-import inspect
 import multiprocessing as mp
 
-from modules.logger import logger
+from modules.common.logger.modules import logger
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
 
@@ -42,10 +41,9 @@ class WorkerProperties:
         Returns the WorkerProperties object.
         """
         if count <= 0:
-            frame = inspect.currentframe()
             local_logger.error(
                 "Worker count requested is less than or equal to zero, no workers were created",
-                frame,
+                True,
             )
             return False, None
 
@@ -106,6 +104,18 @@ class WorkerProperties:
         """
         return self.__target
 
+    def get_input_queues(self) -> "list[queue_proxy_wrapper.QueueProxyWrapper]":
+        """
+        Returns the input queues.
+        """
+        return self.__input_queues
+
+    def get_target_name(self) -> str:
+        """
+        Returns the name of the target.
+        """
+        return self.__target.__name__
+
 
 class WorkerManager:
     """
@@ -137,8 +147,7 @@ class WorkerManager:
                 local_logger,
             )
             if not result:
-                frame = inspect.currentframe()
-                local_logger.error("Failed to create worker", frame)
+                local_logger.error("Failed to create worker", True)
                 return False, None
 
             workers.append(worker)
@@ -146,12 +155,16 @@ class WorkerManager:
         return True, WorkerManager(
             cls.__create_key,
             workers,
+            worker_properties,
+            local_logger,
         )
 
     def __init__(
         self,
         class_private_create_key: object,
         workers: "list[mp.Process]",
+        worker_properties: WorkerProperties,
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -159,6 +172,8 @@ class WorkerManager:
         assert class_private_create_key is WorkerManager.__create_key, "Use create() method"
 
         self.__workers = workers
+        self.__worker_properties = worker_properties
+        self.__local_logger = local_logger
 
     @staticmethod
     def __create_single_worker(target: "(...) -> object", args: "tuple", local_logger: logger.Logger) -> "tuple[bool, mp.Process | None]":  # type: ignore
@@ -176,8 +191,7 @@ class WorkerManager:
         # Catching all exceptions for library call
         # pylint: disable-next=broad-exception-caught
         except Exception as e:
-            frame = inspect.currentframe()
-            local_logger.error(f"Exception raised while creating a worker: {e}", frame)
+            local_logger.error(f"Exception raised while creating a worker: {e}", True)
             return False, None
 
         return True, worker
@@ -195,3 +209,46 @@ class WorkerManager:
         """
         for worker in self.__workers:
             worker.join()
+
+    def check_and_restart_dead_workers(self) -> bool:
+        """
+        Check and restart dead workers.
+
+        Returns whether the dead workers were able to be restarted.
+        """
+        new_workers = []
+        for worker in self.__workers:
+            if worker.is_alive():
+                new_workers.append(worker)
+                continue
+
+            # Log dead worker
+            target_and_worker_name = f"{self.__worker_properties.get_target_name()} {worker.name}"
+            self.__local_logger.warning(
+                f"Worker died, restarting {target_and_worker_name}",
+                True,
+            )
+
+            # Create a new worker
+            result, new_worker = WorkerManager.__create_single_worker(
+                self.__worker_properties.get_worker_target(),
+                self.__worker_properties.get_worker_arguments(),
+                self.__local_logger,
+            )
+            if not result:
+                self.__local_logger.error(f"Failed to restart {target_and_worker_name}", True)
+                return False
+
+            # Append the new worker
+            new_workers.append(new_worker)
+
+        self.__workers = new_workers
+
+        # Draining the preceding queue ensures that the preceding queue data wasn't what
+        # caused the worker to fail. Draining the succeeding queues is not needed
+        # because a worker that died would not have put bad data into the queue.
+        input_queues = self.__worker_properties.get_input_queues()
+        for queue in input_queues:
+            queue.drain_queue()
+
+        return True

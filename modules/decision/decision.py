@@ -100,10 +100,10 @@ class Decision:
         # Get Pylance to stop complaining
         assert self.__best_landing_pad is not None
 
-        distance_to_best_bad = self.__distance_to_pad(self.__best_landing_pad, curr_state)
+        distance_to_best_pad = self.__distance_to_pad(self.__best_landing_pad, curr_state)
 
         # Issue a landing command if over the landing pad
-        if distance_to_best_bad <= self.__distance_tolerance:
+        if distance_to_best_pad <= self.__distance_tolerance:
             return (
                 True,
                 decision_command.DecisionCommand.create_land_at_absolute_position_command(
