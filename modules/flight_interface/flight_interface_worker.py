@@ -6,6 +6,7 @@ import os
 import pathlib
 import time
 
+# Usual imports
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
@@ -28,13 +29,12 @@ def flight_interface_worker(
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    # TODO: Error handling
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
     if not result:
-        print("ERROR: Worker failed to create logger")
+        print("Error: Couldn't create logger")
         return
 
     # Get Pylance to stop complaining
@@ -42,6 +42,7 @@ def flight_interface_worker(
 
     local_logger.info("Logger initialized", True)
 
+    # Adjusted my own implementation's line-spacing to match WARG style
     result, interface = flight_interface.FlightInterface.create(
         address, timeout, baud_rate, local_logger
     )
@@ -54,11 +55,12 @@ def flight_interface_worker(
 
     while not controller.is_exit_requested():
         controller.check_pause()
-
         time.sleep(period)
 
-        result, value = interface.run()
+        # Store output in tuple
+        result, val = interface.run()
         if not result:
             continue
 
-        output_queue.queue.put(value)
+        # Like a stream of odeometry data being output
+        output_queue.queue.put(val)

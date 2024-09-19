@@ -25,20 +25,23 @@ class FlightInterface:
         timeout_home: Timeout for home location in seconds.
         baud_rate: Baud rate for the connection.
         """
+
+        # Using create to initialise our interface
         result, controller = flight_controller.FlightController.create(address, baud_rate)
         if not result:
-            local_logger.error("controller could not be created", True)
+            local_logger.error("Controller initialization failed", True)
             return False, None
 
-        # Get Pylance to stop complaining
+        # Get Pylance to stop complaining (redundant, but for linter)
         assert controller is not None
 
+        # Same pattern to create home location
         result, home_location = controller.get_home_location(timeout_home)
         if not result:
             local_logger.error("home_location could not be created", True)
             return False, None
 
-        # Get Pylance to stop complaining
+        # Get Pylance to stop complaining (redundant, but for linter)
         assert home_location is not None
 
         return True, FlightInterface(cls.__create_key, controller, home_location, local_logger)
@@ -53,6 +56,8 @@ class FlightInterface:
         """
         Private constructor, use create() method.
         """
+
+        # Ensuring create method is always called to initialise objects
         assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
 
         self.controller = controller
@@ -79,7 +84,8 @@ class FlightInterface:
         if not result:
             return False, None
 
-        # Get Pylance to stop complaining
+        # Get Pylance to stop complaining (again)
         assert odometry_local is not None
 
+        # Returning odometry information
         return odometry_and_time.OdometryAndTime.create(odometry_local)

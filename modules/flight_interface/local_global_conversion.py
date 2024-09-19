@@ -16,6 +16,7 @@ def drone_position_global_from_local(
     Local coordinates to global coordinates.
     Return: Drone position in WGS 84.
     """
+
     latitude, longitude, altitude = pm.ned2geodetic(
         drone_position_local.north,
         drone_position_local.east,
@@ -25,7 +26,8 @@ def drone_position_global_from_local(
         home_location.altitude,
     )
 
-    result, drone_position = drone_odometry.DronePosition.create(
+    # Create DronePosition object with odometry data
+    result, drone_pos = drone_odometry.DronePosition.create(
         latitude,
         longitude,
         altitude,
@@ -34,9 +36,9 @@ def drone_position_global_from_local(
         return False, None
 
     # Get Pylance to stop complaining
-    assert drone_position is not None
+    assert drone_pos is not None
 
-    return True, drone_position
+    return True, drone_pos
 
 
 def __drone_position_local_from_global(
@@ -46,7 +48,7 @@ def __drone_position_local_from_global(
     Global coordinates to local coordinates.
     Return: Drone position relative to home location (NED system).
     """
-    north, east, down = pm.geodetic2ned(
+    north_local, east_local, down_local = pm.geodetic2ned(
         drone_position.latitude,
         drone_position.longitude,
         drone_position.altitude,
@@ -55,18 +57,19 @@ def __drone_position_local_from_global(
         home_location.altitude,
     )
 
-    result, drone_position_local = drone_odometry_local.DronePositionLocal.create(
-        north,
-        east,
-        down,
+    # Create DronePosLocal object
+    result, drone_pos_local = drone_odometry_local.DronePositionLocal.create(
+        north_local,
+        east_local,
+        down_local,
     )
     if not result:
         return False, None
 
     # Get Pylance to stop complaining
-    assert drone_position_local is not None
+    assert drone_pos_local is not None
 
-    return True, drone_position_local
+    return True, drone_pos_local
 
 
 def drone_odometry_local_from_global(
@@ -75,18 +78,19 @@ def drone_odometry_local_from_global(
     """
     Converts global odometry to local.
     """
-    result, drone_position_local = __drone_position_local_from_global(
+
+    result, drone_pos_local = __drone_position_local_from_global(
         home_location,
         odometry.position,
     )
     if not result:
         return False, None
 
-    # Get Pylance to stop complaining
-    assert drone_position_local is not None
+    # Get Pylance to stop complaining (again)
+    assert drone_pos_local is not None
 
     result, drone_orientation_local = drone_odometry_local.DroneOrientationLocal.create_wrap(
-        odometry.orientation,
+        odometry.orientation
     )
     if not result:
         return False, None
@@ -95,6 +99,6 @@ def drone_odometry_local_from_global(
     assert drone_orientation_local is not None
 
     return drone_odometry_local.DroneOdometryLocal.create(
-        drone_position_local,
+        drone_pos_local,
         drone_orientation_local,
     )
