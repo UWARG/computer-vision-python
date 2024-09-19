@@ -3,8 +3,9 @@ Drone odometry in local space and timestamp.
 """
 
 import time
-
 from . import drone_odometry_local
+
+# Not much to reimplement in this module
 
 
 class OdometryAndTime:
@@ -25,8 +26,8 @@ class OdometryAndTime:
         if odometry_data is None:
             return False, None
 
+        # Creating the timestamp
         timestamp = time.time()
-
         return True, OdometryAndTime(cls.__create_key, odometry_data, timestamp)
 
     def __init__(
@@ -38,6 +39,8 @@ class OdometryAndTime:
         """
         Private constructor, use create() method.
         """
+
+        # Same style to use create() method
         assert class_private_create_key is OdometryAndTime.__create_key, "Use create() method"
 
         self.odometry_data = odometry_data
@@ -47,4 +50,10 @@ class OdometryAndTime:
         """
         To string.
         """
-        return f"{self.__class__}, time: {int(self.timestamp)}\n" + f"{self.odometry_data}"
+        return (
+            str(self.__class__)
+            + ", time: "
+            + str(int(self.timestamp))
+            + "\n"
+            + str(self.odometry_data)
+        )
