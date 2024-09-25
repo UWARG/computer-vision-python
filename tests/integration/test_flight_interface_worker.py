@@ -18,7 +18,7 @@ FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
-def test_apply_decision(
+def apply_decision_test(
     in_queue: queue_proxy_wrapper.QueueProxyWrapper,
     out_queue: queue_proxy_wrapper.QueueProxyWrapper,
 ) -> bool:
@@ -126,7 +126,7 @@ def main() -> int:
     # Test
 
     # Run the apply_decision tests
-    test_result = test_apply_decision(in_queue, out_queue)
+    test_result = apply_decision_test(in_queue, out_queue)
     if not test_result:
         print("apply_decision tests failed.")
         worker.terminate()
