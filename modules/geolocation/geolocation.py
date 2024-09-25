@@ -9,6 +9,7 @@ from . import camera_properties
 from .. import detection_in_world
 from .. import detections_and_time
 from .. import merged_odometry_detections
+from ..common.logger.modules import logger
 
 
 class Geolocation:
@@ -25,6 +26,7 @@ class Geolocation:
         cls,
         camera_intrinsics: camera_properties.CameraIntrinsics,
         camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, Geolocation | None]":
         """
         camera_intrinsics: Camera information without any outside space.
@@ -45,6 +47,9 @@ class Geolocation:
             # Image space to camera space
             result, value = camera_intrinsics.camera_space_from_image_space(source[0], source[1])
             if not result:
+                local_logger.error(
+                    f"Rotated source vector could not be created for source: {source}"
+                )
                 return False, None
 
             # Get Pylance to stop complaining
@@ -59,6 +64,7 @@ class Geolocation:
             camera_drone_extrinsics,
             perspective_transform_sources,
             rotated_source_vectors,
+            local_logger,
         )
 
     def __init__(
@@ -67,6 +73,7 @@ class Geolocation:
         camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
         perspective_transform_sources: "list[list[float]]",
         rotated_source_vectors: "list[np.ndarray]",
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -76,22 +83,28 @@ class Geolocation:
         self.__camera_drone_extrinsics = camera_drone_extrinsics
         self.__perspective_transform_sources = perspective_transform_sources
         self.__rotated_source_vectors = rotated_source_vectors
+        self.__logger = local_logger
 
     @staticmethod
     def __ground_intersection_from_vector(
-        vec_camera_in_world_position: np.ndarray, vec_down: np.ndarray
+        vec_camera_in_world_position: np.ndarray,
+        vec_down: np.ndarray,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, np.ndarray | None]":
         """
         Get 2D coordinates of where the downwards pointing vector intersects the ground.
         """
         if not camera_properties.is_vector_r3(vec_camera_in_world_position):
+            local_logger.error("Camera position in world space is not a vector in R3")
             return False, None
 
         if not camera_properties.is_vector_r3(vec_down):
+            local_logger.error("Rotated source vector in world space is not a vector in R3")
             return False, None
 
         # Check camera above ground
         if vec_camera_in_world_position[2] > 0.0:
+            local_logger.error("Camera is underground")
             return False, None
 
         # Ensure vector is pointing down by checking angle
@@ -99,12 +112,16 @@ class Geolocation:
         vec_z = np.array([0.0, 0.0, 1.0], dtype=np.float32)
         cos_angle = np.dot(vec_down, vec_z) / np.linalg.norm(vec_down)
         if cos_angle < Geolocation.__MIN_DOWN_COS_ANGLE:
+            local_logger.error(
+                f"Rotated source vector in world space is not pointing down, cos(angle) = {cos_angle}"
+            )
             return False, None
 
         # Find scalar multiple for the vector to touch the ground (z/3rd component is 0)
         # Solve for s: o3 + s * d3 = 0
         scaling = -vec_camera_in_world_position[2] / vec_down[2]
         if scaling < 0.0:
+            local_logger.error(f"Scaling value is negative, scaling = {scaling}")
             return False, None
 
         vec_ground = vec_camera_in_world_position + scaling * vec_down
@@ -118,9 +135,11 @@ class Geolocation:
         Calculates the destination points, then uses OpenCV to get the matrix.
         """
         if not camera_properties.is_matrix_r3x3(drone_rotation_matrix):
+            self.__logger.error("Drone rotation matrix is not a 3 x 3 matrix")
             return False, None
 
         if not camera_properties.is_vector_r3(drone_position_ned):
+            self.__logger.error("Drone position in local space is not a vector in R3")
             return False, None
 
         # Get the vectors in world space
@@ -141,6 +160,7 @@ class Geolocation:
             result, ground_point = self.__ground_intersection_from_vector(
                 vec_camera_position,
                 vec_down,
+                self.__logger,
             )
             if not result:
                 return False, None
@@ -156,25 +176,31 @@ class Geolocation:
                 dst,
             )
         # All exceptions must be caught and logged as early as possible
-        # pylint: disable-next=bare-except
-        except:
-            # TODO: Logging
+        # pylint: disable-next=broad-exception-caught
+        except Exception as e:
+            self.__logger.error(f"Could not get perspective transform matrix: {e}")
             return False, None
 
         return True, matrix
 
     @staticmethod
     def __convert_detection_to_world_from_image(
-        detection: detections_and_time.Detection, perspective_transform_matrix: np.ndarray
+        detection: detections_and_time.Detection,
+        perspective_transform_matrix: np.ndarray,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, detection_in_world.DetectionInWorld | None]":
         """
         Applies the transform matrix to the detection.
         perspective_transform_matrix: Element in last row and column must be 1 .
         """
         if not camera_properties.is_matrix_r3x3(perspective_transform_matrix):
+            local_logger.error("Perspective transform matrix is not a 3 x 3 matrix")
             return False, None
 
         if not np.allclose(perspective_transform_matrix[2][2], 1.0):
+            local_logger.error(
+                "Perspective transform matrix bottom right element is not close to 1.0"
+            )
             return False, None
 
         centre = detection.get_centre()
@@ -218,6 +244,7 @@ class Geolocation:
         # https://www.w3resource.com/python-exercises/numpy/python-numpy-exercise-96.php
         output_normalized = output_vertices / vec_last_element[:, None]
         if not np.isfinite(output_normalized).all():
+            local_logger.error("Normalized output is infinite")
             return False, None
 
         # Slice to remove the last element of each row
@@ -243,6 +270,7 @@ class Geolocation:
         # Camera position in world (NED system)
         # Cannot be underground
         if detections.odometry_local.position.down >= 0.0:
+            self.__logger.error("Drone is underground")
             return False, None
 
         drone_position_ned = np.array(
@@ -262,6 +290,7 @@ class Geolocation:
             detections.odometry_local.orientation.orientation.roll,
         )
         if not result:
+            self.__logger.error("Drone rotation matrix could not be created")
             return False, None
 
         # Get Pylance to stop complaining
@@ -282,10 +311,12 @@ class Geolocation:
             result, detection_world = self.__convert_detection_to_world_from_image(
                 detection,
                 perspective_transform_matrix,
+                self.__logger,
             )
             # Partial data not allowed
             if not result:
                 return False, None
             detections_in_world.append(detection_world)
+            self.__logger.info(detection_world)
 
         return True, detections_in_world
