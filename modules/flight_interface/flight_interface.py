@@ -140,7 +140,7 @@ class FlightInterface:
             # Move to target global position.
             return self.controller.move_to_position(target_global_position)
 
-        elif command_type == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION:
+        if command_type == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION:
             # Move to absolute position.
             # Note that command_position[2] is the absolute altitude not relative altitude.
             result, target_position = drone_odometry.DronePosition.create(
@@ -152,11 +152,11 @@ class FlightInterface:
 
             return self.controller.move_to_position(target_position)
 
-        elif command_type == decision_command.DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION:
+        if command_type == decision_command.DecisionCommand.CommandType.LAND_AT_CURRENT_POSITION:
             # Simply switch flight mode to LAND.
             return self.controller.set_flight_mode("LAND")
 
-        elif command_type == decision_command.DecisionCommand.CommandType.LAND_AT_RELATIVE_POSITION:
+        if command_type == decision_command.DecisionCommand.CommandType.LAND_AT_RELATIVE_POSITION:
             # Land at relative position.
             # Get current position.
             result, current_odometry = self.controller.get_odometry()
@@ -200,7 +200,7 @@ class FlightInterface:
 
             return self.controller.set_flight_mode("AUTO")
 
-        elif command_type == decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION:
+        if command_type == decision_command.DecisionCommand.CommandType.LAND_AT_ABSOLUTE_POSITION:
             # Land at absolute position in local NED coordinates
             result = self.controller.upload_land_command(command_position[0], command_position[1])
             if not result:
@@ -208,6 +208,5 @@ class FlightInterface:
 
             return self.controller.set_flight_mode("AUTO")
 
-        else:
-            # Unsupported commands
-            return False
+        # Unsupported commands
+        return False
