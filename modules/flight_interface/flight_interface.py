@@ -6,7 +6,7 @@ from . import local_global_conversion
 from .. import drone_odometry_local
 from .. import odometry_and_time
 from .. import decision_command
-from ..logger import logger
+from ..common.logger.modules import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import flight_controller
 
