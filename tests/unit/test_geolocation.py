@@ -11,6 +11,7 @@ from modules import drone_odometry_local
 from modules import merged_odometry_detections
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation
+from modules.common.logger.modules import logger
 
 
 FLOAT_PRECISION_TOLERANCE = 4
@@ -42,9 +43,14 @@ def basic_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -73,9 +79,14 @@ def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -105,9 +116,14 @@ def advanced_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert camera_extrinsics is not None
 
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
         camera_extrinsics,
+        test_logger,
     )
     assert result
     assert locator is not None
@@ -242,9 +258,14 @@ class TestGeolocationCreate:
         assert result
         assert camera_extrinsics is not None
 
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         result, locator = geolocation.Geolocation.create(
             camera_intrinsics,
             camera_extrinsics,
+            test_logger,
         )
         assert result
         assert locator is not None
@@ -260,6 +281,10 @@ class TestGroundIntersection:
         Above origin, directly down.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([0.0, 0.0, -100.0], dtype=np.float32)
         vec_down = np.array([0.0, 0.0, 1.0], dtype=np.float32)
 
@@ -272,6 +297,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
+            test_logger,
         )
 
         # Test
@@ -284,6 +310,10 @@ class TestGroundIntersection:
         Directly down.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([100.0, -100.0, -100.0], dtype=np.float32)
         vec_down = np.array([0.0, 0.0, 1.0], dtype=np.float32)
 
@@ -296,6 +326,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
+            test_logger,
         )
 
         # Test
@@ -308,6 +339,10 @@ class TestGroundIntersection:
         Above origin, angled down towards positive.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([0.0, 0.0, -100.0], dtype=np.float32)
         vec_down = np.array([1.0, 1.0, 1.0], dtype=np.float32)
 
@@ -320,6 +355,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
+            test_logger,
         )
 
         # Test
@@ -332,6 +368,10 @@ class TestGroundIntersection:
         Angled down towards origin.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([100.0, -100.0, -100.0], dtype=np.float32)
         vec_down = np.array([-1.0, 1.0, 1.0], dtype=np.float32)
 
@@ -344,6 +384,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
+            test_logger,
         )
 
         # Test
@@ -356,6 +397,10 @@ class TestGroundIntersection:
         False, None .
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([0.0, 0.0, -100.0], dtype=np.float32)
         vec_horizontal = np.array([10.0, 0.0, 1.0], dtype=np.float32)
 
@@ -366,6 +411,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_horizontal,
+            test_logger,
         )
 
         # Test
@@ -377,6 +423,10 @@ class TestGroundIntersection:
         False, None .
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_camera_in_world_position = np.array([0.0, 0.0, -100.0], dtype=np.float32)
         vec_up = np.array([0.0, 0.0, -1.0], dtype=np.float32)
 
@@ -387,6 +437,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_up,
+            test_logger,
         )
 
         # Test
@@ -398,6 +449,10 @@ class TestGroundIntersection:
         False, None .
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         vec_underground = np.array([0.0, 0.0, 1.0], dtype=np.float32)
         vec_down = np.array([0.0, 0.0, 1.0], dtype=np.float32)
 
@@ -408,6 +463,7 @@ class TestGroundIntersection:
         ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_underground,
             vec_down,
+            test_logger,
         )
 
         # Test
@@ -647,6 +703,10 @@ class TestGeolocationConvertDetection:
         Normal detection and matrix.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         result, expected = detection_in_world.DetectionInWorld.create(
             # fmt: off
             np.array(
@@ -676,6 +736,7 @@ class TestGeolocationConvertDetection:
         ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_1,
             affine_matrix,
+            test_logger,
         )
 
         # Test
@@ -694,6 +755,10 @@ class TestGeolocationConvertDetection:
         Normal detection and matrix.
         """
         # Setup
+        result, test_logger = logger.Logger.create("test_logger", False)
+        assert result
+        assert test_logger is not None
+
         result, expected = detection_in_world.DetectionInWorld.create(
             # fmt: off
             np.array(
@@ -723,6 +788,7 @@ class TestGeolocationConvertDetection:
         ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_2,
             affine_matrix,
+            test_logger,
         )
 
         # Test
