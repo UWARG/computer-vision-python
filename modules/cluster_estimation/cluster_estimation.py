@@ -124,7 +124,7 @@ class ClusterEstimation:
 
     def run(
         self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool
-    ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
+    ) -> "tuple[bool, object_in_world.ObjectInWorld | None]":
         """
         Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
@@ -193,14 +193,16 @@ class ClusterEstimation:
         # Create output list of remaining valid clusters
         detections_in_world = []
         for cluster in model_output:
-            result, landing_pad = object_in_world.ObjectInWorld.create(
+
+            result, object = object_in_world.ObjectInWorld.create(
                 cluster[0][0],
                 cluster[0][1],
                 cluster[2],
+                "object"
             )
 
             if result:
-                detections_in_world.append(landing_pad)
+                detections_in_world.append([object])
 
         return True, detections_in_world
 
