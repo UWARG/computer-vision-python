@@ -11,8 +11,9 @@ import yaml
 
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
-from modules.logger import logger_setup_main
-from utilities import yaml
+from modules.common.logger.modules import logger
+from modules.common.logger.modules import logger_setup_main
+from modules.common.logger.read_yaml.modules import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -39,7 +40,7 @@ def main() -> int:
     args = parser.parse_args()
 
     # Configuration settings
-    result, config = yaml.open_config(CONFIG_FILE_PATH)
+    result, config = read_yaml.open_config(CONFIG_FILE_PATH)
     if not result:
         print("ERROR: Failed to load configuration file")
         return -1
@@ -47,8 +48,17 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert config is not None
 
+    # Logger configuration settings
+    result, config_logger = read_yaml.open_config(logger.CONFIG_FILE_PATH)
+    if not result:
+        print("ERROR: Failed to load configuration file")
+        return -1
+
+    # Get Pylance to stop complaining
+    assert config_logger is not None
+
     # Setup main logger
-    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config)
+    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config_logger)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
@@ -78,8 +88,7 @@ def main() -> int:
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
         # pylint: enable=invalid-name
     except KeyError as exception:
-        frame = inspect.currentframe()
-        main_logger.error(f"ERROR: Config key(s) not found: {exception}", frame)
+        main_logger.error(f"ERROR: Config key(s) not found: {exception}", True)
         return -1
 
     # Setup
@@ -110,8 +119,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Video Input", frame)
+        main_logger.error("Failed to create arguments for Video Input", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -134,8 +142,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create arguments for Detect Target", frame)
+        main_logger.error("Failed to create arguments for Detect Target", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -149,8 +156,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Video Input", frame)
+        main_logger.error("Failed to create manager for Video Input", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -163,8 +169,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        frame = inspect.currentframe()
-        main_logger.error("Failed to create manager for Detect Target", frame)
+        main_logger.error("Failed to create manager for Detect Target", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -178,14 +183,13 @@ def main() -> int:
 
     while True:
         # Use main_logger for debugging
-        frame = inspect.currentframe()
         detections_and_time = detect_target_to_main_queue.queue.get()
         if detections_and_time is None:
             break
-        main_logger.debug(f"Timestamp: {detections_and_time.timestamp}", frame)
-        main_logger.debug(f"Num detections: {len(detections_and_time.detections)}", frame)
+        main_logger.debug(f"Timestamp: {detections_and_time.timestamp}", True)
+        main_logger.debug(f"Num detections: {len(detections_and_time.detections)}", True)
         for detection in detections_and_time.detections:
-            main_logger.debug(f"Detection: {detection}", frame)
+            main_logger.debug(f"Detection: {detection}", True)
 
     # Teardown
     controller.request_exit()
