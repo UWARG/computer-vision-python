@@ -26,7 +26,7 @@ DELAY_FOR_CUDA_WARMUP = 20  # seconds
 
 MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 OVERRIDE_FULL = False
-USE_CLASSICAL_CV = FALSE
+USE_CLASSICAL_CV = False
 SHOW_ANNOTATIONS = False
 SAVE_NAME = ""  # No need to save images
 

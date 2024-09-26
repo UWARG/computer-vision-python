@@ -19,6 +19,7 @@ TEST_PATH = pathlib.Path("tests", "model_example")
 DEVICE = 0 if torch.cuda.is_available() else "cpu"
 MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 OVERRIDE_FULL = not torch.cuda.is_available()  # CPU does not support half precision
+USE_CLASSICAL_CV = False
 IMAGE_BUS_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
 BOUNDING_BOX_BUS_PATH = pathlib.Path(TEST_PATH, "bounding_box_bus.txt")
 IMAGE_ZIDANE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
@@ -108,7 +109,7 @@ def detector() -> detect_target.DetectTarget:  # type: ignore
     """
     Construct DetectTarget.
     """
-    detection = detect_target.DetectTarget(DEVICE, str(MODEL_PATH), OVERRIDE_FULL)
+    detection = detect_target.DetectTarget(DEVICE, str(MODEL_PATH), OVERRIDE_FULL, USE_CLASSICAL_CV)
     yield detection  # type: ignore
 
 

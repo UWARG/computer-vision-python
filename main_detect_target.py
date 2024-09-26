@@ -6,9 +6,7 @@ import argparse
 import inspect
 import multiprocessing as mp
 import pathlib
-import queue
 
-import cv2
 import yaml
 
 from modules.detect_target import detect_target_worker
@@ -195,8 +193,8 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_main_queue.fill_and_drain_queue()
 
-    video_input_manager.join_workers()
-    detect_target_manager.join_workers()
+    for manager in worker_managers:
+        manager.join_workers()
 
     return 0
 

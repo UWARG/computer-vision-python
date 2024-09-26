@@ -54,7 +54,7 @@ class DetectTarget:
 
         Return: True is the shape is circular, false if it is not.
         """
-        CONTOUR_MINIMUM = 0.8
+        contour_minimum = 0.8
         perimeter = cv2.arcLength(contour, True)
 
         # Check if the perimeter is zero
@@ -63,7 +63,7 @@ class DetectTarget:
 
         area = cv2.contourArea(contour)
         circularity = 4 * np.pi * (area / (perimeter * perimeter))
-        return circularity > CONTOUR_MINIMUM
+        return circularity > contour_minimum
 
     @staticmethod
     def is_contour_large_enough(contour: np.ndarray, min_diameter: float) -> bool:
@@ -77,7 +77,9 @@ class DetectTarget:
         diameter = radius * 2
         return diameter >= min_diameter
 
-    def detect_landing_pads_contours(self, image: "np.ndarray", timestamp: float) -> "tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]":
+    def detect_landing_pads_contours(
+        self, image: "np.ndarray", timestamp: float
+    ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]":
         """
         Detects landing pads using contours/classical cv.
 
@@ -128,11 +130,21 @@ class DetectTarget:
         # Annotate the image
         image_annotated = copy.deepcopy(image)
         cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.putText(image_annotated, "landing-pad", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+        cv2.putText(
+            image_annotated,
+            "landing-pad",
+            (x, y - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.9,
+            (0, 0, 255),
+            2,
+        )
 
         return True, detections, image_annotated
 
-    def detect_landing_pads_yolo(self, image: "np.ndarray", timestamp: "float") -> "tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]":
+    def detect_landing_pads_yolo(
+        self, image: "np.ndarray", timestamp: "float"
+    ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]":
         """
         Detects landing pads using YOLO model.
 
@@ -194,7 +206,9 @@ class DetectTarget:
         timestamp = data.timestamp
 
         if self.__use_classical_cv:
-            result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
+            result, detections, image_annotated = self.detect_landing_pads_contours(
+                image, timestamp
+            )
         else:
             result, detections, image_annotated = self.detect_landing_pads_yolo(image, timestamp)
         if not result:
