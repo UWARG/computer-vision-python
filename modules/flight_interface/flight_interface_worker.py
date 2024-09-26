@@ -18,6 +18,7 @@ def flight_interface_worker(
     baud_rate: int,
     period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -62,3 +63,9 @@ def flight_interface_worker(
             continue
 
         output_queue.queue.put(value)
+
+        # Check for decision commands
+        if not input_queue.queue.empty():
+            command = input_queue.queue.get()
+            # Pass the decision command to the flight controller
+            interface.apply_decision(command)
