@@ -194,7 +194,7 @@ class ClusterEstimation:
         detections_in_world = []
         for cluster in model_output:
 
-            result, object = object_in_world.ObjectInWorld.create(
+            result, temp_object = object_in_world.ObjectInWorld.create(
                 cluster[0][0],
                 cluster[0][1],
                 cluster[2],
@@ -202,7 +202,7 @@ class ClusterEstimation:
             )
 
             if result:
-                detections_in_world.append([object])
+                detections_in_world.append([temp_object])
 
         return True, detections_in_world
 
