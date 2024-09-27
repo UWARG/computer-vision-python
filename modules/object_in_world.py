@@ -17,11 +17,14 @@ class ObjectInWorld:
         """
         location_x, location_y: Location of the object.
         spherical_variance: Uncertainty of the location.
+        object_type: type of object in real world.
         """
         if spherical_variance < 0.0:
             return False, None
 
-        return True, ObjectInWorld(cls.__create_key, location_x, location_y, spherical_variance, object_type)
+        return True, ObjectInWorld(
+            cls.__create_key, location_x, location_y, spherical_variance, object_type
+        )
 
     def __init__(
         self,
@@ -29,7 +32,7 @@ class ObjectInWorld:
         location_x: float,
         location_y: float,
         spherical_variance: float,
-        object_type: str
+        object_type: str,
     ) -> None:
         """
         Private constructor, use create() method.
