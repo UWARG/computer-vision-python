@@ -40,4 +40,3 @@ class ObjectInWorld:
         self.location_y = location_y
         self.spherical_variance = spherical_variance
         self.object_type = object_type
-
