@@ -9,7 +9,7 @@ video_input:
 
 detect_target:
     worker_count: 1
-    option: 0  # 0 is for Ultralytics (from detect_target_factory.py)
+    option: 1  # 0 is for Ultralytics (from detect_target_factory.py)
     device: 0
     model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
     save_prefix: "log_comp"
