@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 import torch
 
-from modules.detect_target import detect_target
+from modules.detect_target import detect_target_ultralytics
 from modules import image_and_time
 from modules import detections_and_time
 
@@ -104,11 +104,13 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
 
 
 @pytest.fixture()
-def detector() -> detect_target.DetectTarget:  # type: ignore
+def detector() -> detect_target_ultralytics.DetectTargetUltralytics:  # type: ignore
     """
-    Construct DetectTarget.
+    Construct DetectTargetUltralytics.
     """
-    detection = detect_target.DetectTarget(DEVICE, str(MODEL_PATH), OVERRIDE_FULL)
+    detection = detect_target_ultralytics.DetectTargetUltralytics(
+        DEVICE, str(MODEL_PATH), OVERRIDE_FULL
+    )
     yield detection  # type: ignore
 
 
@@ -161,7 +163,7 @@ class TestDetector:
 
     def test_single_bus_image(
         self,
-        detector: detect_target.DetectTarget,
+        detector: detect_target_ultralytics.DetectTargetUltralytics,
         image_bus: image_and_time.ImageAndTime,
         expected_bus: detections_and_time.DetectionsAndTime,
     ) -> None:
@@ -179,7 +181,7 @@ class TestDetector:
 
     def test_single_zidane_image(
         self,
-        detector: detect_target.DetectTarget,
+        detector: detect_target_ultralytics.DetectTargetUltralytics,
         image_zidane: image_and_time.ImageAndTime,
         expected_zidane: detections_and_time.DetectionsAndTime,
     ) -> None:
@@ -197,7 +199,7 @@ class TestDetector:
 
     def test_multiple_zidane_image(
         self,
-        detector: detect_target.DetectTarget,
+        detector: detect_target_ultralytics.DetectTargetUltralytics,
         image_zidane: image_and_time.ImageAndTime,
         expected_zidane: detections_and_time.DetectionsAndTime,
     ) -> None:

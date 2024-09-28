@@ -7,11 +7,12 @@ import time
 import cv2
 import ultralytics
 
+from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
 
 
-class DetectTarget:
+class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
     """
     Contains the YOLOv8 model for prediction.
     """
