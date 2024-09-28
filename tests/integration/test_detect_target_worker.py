@@ -9,6 +9,7 @@ import time
 import cv2
 import torch
 
+from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
 from modules import image_and_time
 from modules import detections_and_time
@@ -24,6 +25,7 @@ WORK_COUNT = 3
 DELAY_FOR_SIMULATED_WORKERS = 1  # seconds
 DELAY_FOR_CUDA_WARMUP = 20  # seconds
 
+OPTION = detect_target_factory.DetectTargetOption.ML_ULTRALYTICS
 MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
 OVERRIDE_FULL = False
 SHOW_ANNOTATIONS = False
@@ -61,6 +63,7 @@ def main() -> int:
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
         args=(
+            OPTION,
             device,
             MODEL_PATH,
             OVERRIDE_FULL,
