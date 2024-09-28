@@ -113,11 +113,11 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
         # pylint: enable=invalid-name
     except KeyError as exception:
-        main_logger.error(f"ERROR: Config key(s) not found: {exception}", True)
+        main_logger.error(f"Config key(s) not found: {exception}", True)
         return -1
     except ValueError as exception:
         main_logger.error(
-            f"ERROR: Could not convert detect target option into enum: {exception}", True
+            f"Could not convert detect target option into enum: {exception}", True
         )
         return -1
 
