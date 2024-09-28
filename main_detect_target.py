@@ -82,7 +82,6 @@ def main() -> int:
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
-        DETECT_TARGET_USE_CLASSICAL_CV = config["detect_target"]["use_classical_cv"]
         DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
         DETECT_TARGET_SAVE_PREFIX = str(pathlib.Path(logging_path, DETECT_TARGET_SAVE_NAME_PREFIX))
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
@@ -133,7 +132,6 @@ def main() -> int:
             DETECT_TARGET_DEVICE,
             DETECT_TARGET_MODEL_PATH,
             DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_USE_CLASSICAL_CV,
             DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
         ),
