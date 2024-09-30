@@ -137,6 +137,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    flight_interface_decision_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
 
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
@@ -216,7 +220,7 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
-        input_queues=[],
+        input_queues=[flight_interface_decision_queue],
         output_queues=[flight_interface_to_data_merge_queue],
         controller=controller,
         local_logger=main_logger,
@@ -376,6 +380,7 @@ def main() -> int:
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_main_queue.fill_and_drain_queue()
+    flight_interface_decision_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()
