@@ -41,9 +41,7 @@ def best_pad_within_tolerance() -> object_in_world.ObjectInWorld:  # type: ignor
     location_x = BEST_PAD_LOCATION_X
     location_y = BEST_PAD_LOCATION_Y
     spherical_variance = 1.0
-    result, pad = object_in_world.ObjectInWorld.create(
-        location_x, location_y, spherical_variance, "object"
-    )
+    result, pad = object_in_world.ObjectInWorld.create(location_x, location_y, spherical_variance)
     assert result
     assert pad is not None
 
@@ -58,9 +56,7 @@ def best_pad_outside_tolerance() -> object_in_world.ObjectInWorld:  # type: igno
     location_x = 100.0
     location_y = 200.0
     spherical_variance = 5.0  # variance outside tolerance
-    result, pad = object_in_world.ObjectInWorld.create(
-        location_x, location_y, spherical_variance, "object"
-    )
+    result, pad = object_in_world.ObjectInWorld.create(location_x, location_y, spherical_variance)
     assert result
     assert pad is not None
 
@@ -72,15 +68,15 @@ def pads() -> "list[object_in_world.ObjectInWorld]":  # type: ignore
     """
     Create a list of ObjectInWorld instances for the landing pads.
     """
-    result, pad_1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0, "object")
+    result, pad_1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)
     assert result
     assert pad_1 is not None
 
-    result, pad_2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0, "object")
+    result, pad_2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)
     assert result
     assert pad_2 is not None
 
-    result, pad_3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0, "object")
+    result, pad_3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0)
     assert result
     assert pad_3 is not None
 
