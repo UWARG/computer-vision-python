@@ -34,3 +34,9 @@ geolocation:
     camera_orientation_yaw: 0.0
     camera_orientation_pitch: -1.57079632679
     camera_orientation_roll: 0.0
+
+# default values set
+cluster_merge:
+    min_activation_threshold: 0
+    min_new_points_to_run: 0
+    random_state: 0
