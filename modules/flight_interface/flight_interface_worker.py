@@ -17,8 +17,8 @@ def flight_interface_worker(
     timeout: float,
     baud_rate: int,
     period: float,
-    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """

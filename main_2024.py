@@ -116,9 +116,7 @@ def main() -> int:
         main_logger.error(f"Config key(s) not found: {exception}", True)
         return -1
     except ValueError as exception:
-        main_logger.error(
-            f"Could not convert detect target option into enum: {exception}", True
-        )
+        main_logger.error(f"Could not convert detect target option into enum: {exception}", True)
         return -1
 
     # Setup
