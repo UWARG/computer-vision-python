@@ -12,12 +12,12 @@ class ObjectInWorld:
 
     @classmethod
     def create(
-        cls, location_x: float, location_y: float, spherical_variance: float, label=0
+        cls, location_x: float, location_y: float, spherical_variance: float, label: int
     ) -> "tuple[bool, ObjectInWorld | None]":
         """
         location_x, location_y: Location of the object.
         spherical_variance: Uncertainty of the location.
-        label: type of object in real world.
+        label: Type of object in real world.
         """
         if spherical_variance < 0.0:
             return False, None
@@ -32,7 +32,7 @@ class ObjectInWorld:
         location_x: float,
         location_y: float,
         spherical_variance: float,
-        label=0,
+        label: int,
     ) -> None:
         """
         Private constructor, use create() method.
