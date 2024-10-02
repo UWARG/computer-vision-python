@@ -63,6 +63,7 @@ def flight_interface_worker(
             continue
 
         output_queue.queue.put(value)
+
         # Check for decision commands
         if not input_queue.queue.empty():
             command = input_queue.queue.get()
