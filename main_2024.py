@@ -11,6 +11,7 @@ import cv2
 
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
+from modules import odometry_and_time
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
@@ -399,4 +400,5 @@ if __name__ == "__main__":
     result_main = main()
     if result_main < 0:
         print(f"ERROR: Status code: {result_main}")
+    
     print("Done!")
