@@ -86,8 +86,8 @@ def main() -> int:
         VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        detect_target_option_int = config["detect_target"]["option"]
-        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(detect_target_option_int)
+        DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(DETECT_TARGET_OPTION_INT)
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
@@ -113,9 +113,9 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
 
-        MIN_ACTIVATION_THRESHOLD = config
-        MIN_NEW_POINTS_TO_RUN = config
-        RANDOM_STATE = config
+        MIN_ACTIVATION_THRESHOLD = config["cluster_merge"]["min_activation_threshold"]
+        MIN_NEW_POINTS_TO_RUN = config["cluster_merge"]["min_new_points_to_run"]
+        RANDOM_STATE = config["cluster_merge"]["random_state"]
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
@@ -419,10 +419,10 @@ def main() -> int:
             cluster_estimations = None
         if cluster_estimations is not None:
             for cluster in cluster_estimations:
-                main_logger.debug("Cluser in world: ", True)
+                main_logger.debug("Cluser in world: True")
                 main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: "+str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: "+str(cluster.spherical_variance))
+                main_logger.debug("Cluster location y: " + str(cluster.location_y))
+                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break

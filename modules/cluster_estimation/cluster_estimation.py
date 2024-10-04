@@ -1,6 +1,6 @@
 """
 Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
-Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
+Returns an array of classes, each containing the x coordinate, y coordinate, and spherical
 covariance of each landing pad estimation.
 """
 
