@@ -153,7 +153,6 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    cluster_estimation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
     flight_interface_decision_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
