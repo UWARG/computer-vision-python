@@ -11,6 +11,8 @@ import cv2
 
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
+from modules import odometry_and_time
+from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
@@ -84,7 +86,7 @@ def main() -> int:
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         detect_target_option_int = config["detect_target"]["option"]
-        DETECT_TARGET_OPTION = detect_target_worker.DetectTargetOption(detect_target_option_int)
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(detect_target_option_int)
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
@@ -399,5 +401,5 @@ if __name__ == "__main__":
     result_main = main()
     if result_main < 0:
         print(f"ERROR: Status code: {result_main}")
-    
+
     print("Done!")
