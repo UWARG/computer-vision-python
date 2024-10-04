@@ -20,7 +20,6 @@ from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
 from modules.cluster_estimation import cluster_estimation_worker
-from modules.cluster_estimation import cluster_estimation_worker
 from modules.common.logger.modules import logger
 from modules.common.logger.modules import logger_setup_main
 from modules.common.logger.read_yaml.modules import read_yaml

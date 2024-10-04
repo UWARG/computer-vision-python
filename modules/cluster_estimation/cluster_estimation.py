@@ -198,6 +198,7 @@ class ClusterEstimation:
                 cluster[0][0],
                 cluster[0][1],
                 cluster[2],
+                0,
             )
 
             if result:
