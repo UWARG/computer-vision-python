@@ -285,7 +285,6 @@ def main() -> int:
         ),
         input_queues=[data_merge_to_geolocation_queue],
         output_queues=[geolocation_to_cluster_estimation_queue],
-        output_queues=[geolocation_to_cluster_estimation_queue],
         controller=controller,
         local_logger=main_logger,
     )
@@ -295,22 +294,6 @@ def main() -> int:
 
     # Get Pylance to stop complaining
     assert geolocation_worker_properties is not None
-
-    result, cluster_estimation_worker_properties = worker_manager.WorkerProperties.create(
-        count=1,
-        target=cluster_estimation_worker.cluster_estimation_worker,
-        work_arguments=(MIN_ACTIVATION_THRESHOLD, MIN_NEW_POINTS_TO_RUN, RANDOM_STATE),
-        input_queues=[geolocation_to_cluster_estimation_queue],
-        output_queues=[cluster_estimation_to_main_queue],
-        controller=controller,
-        local_logger=main_logger,
-    )
-    if not result:
-        main_logger.error("Failed to create arguments for Video Input", True)
-        return -1
-
-    # Get Pylance to stop complaining
-    assert cluster_estimation_worker_properties is not None
 
     result, cluster_estimation_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
@@ -478,6 +461,7 @@ def main() -> int:
     flight_interface_decision_queue.fill_and_drain_queue()
     geolocation_to_cluster_estimation_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
+    cluster_estimation_to_main_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()
