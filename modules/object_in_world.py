@@ -23,7 +23,7 @@ class ObjectInWorld:
             return False, None
 
         return True, ObjectInWorld(
-            cls.__create_key, location_x, location_y, spherical_variance, label: int
+            cls.__create_key, location_x, location_y, spherical_variance, label
         )
 
     def __init__(
