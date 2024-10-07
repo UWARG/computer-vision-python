@@ -54,10 +54,14 @@ class LandingPadTracking:
 
     def run(
         self, detections: "list[object_in_world.ObjectInWorld]"
-    ) -> "tuple[bool, object_in_world.ObjectInWorld | None]":
+    ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
-        Updates the list of unconfirmed positives and returns the a first confirmed positive if
-        one exists, else the unconfirmed positive with the lowest variance.
+        Updates the list of unconfirmed positives and returns the confirmed positives if
+        they exist, otherwise returns the unconfirmed positives.
+
+        detections: New detections.
+
+        Return: List of confirmed/unconfirmed positives.
         """
         for detection in detections:
             match_found = False
@@ -82,16 +86,16 @@ class LandingPadTracking:
             # If new landing pad, add to list of unconfirmed positives
             self.__unconfirmed_positives.append(detection)
 
-        # If there are confirmed positives, return the first one
+        # If there are confirmed positives, return them
         if len(self.__confirmed_positives) > 0:
-            return True, self.__confirmed_positives[0]
+            return True, self.__confirmed_positives
 
-        # If the list is empty, all landing pads have been visited, none are viable
-        if len(self.__unconfirmed_positives) == 0:
-            return False, None
+        # If there are unconfirmed positives, return them
+        if len(self.__unconfirmed_positives) > 0:
+            # Sort list by variance in ascending order
+            self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
 
-        # Sort list by variance in ascending order
-        self.__unconfirmed_positives.sort(key=lambda x: x.spherical_variance)
+            return True, self.__unconfirmed_positives
 
-        # Return detection with lowest variance
-        return True, self.__unconfirmed_positives[0]
+        # All landing pads have been visited, none are viable
+        return False, None
