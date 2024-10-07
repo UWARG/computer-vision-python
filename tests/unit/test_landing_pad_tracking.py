@@ -384,7 +384,10 @@ class TestLandingPadTracking:
         """
         Test run method with empty detections list.
         """
+        # Run
         result, actual = tracker.run([])
+
+        # Check
         assert not result
         assert actual is None
 
@@ -396,8 +399,8 @@ class TestLandingPadTracking:
         """
         Test run with only 1 input.
         """
-        expected_output = detections_1[2]
-        expected_unconfirmed_positives = [
+        # Setup
+        expected = [
             detections_1[2],
             detections_1[1],
             detections_1[4],
@@ -405,11 +408,12 @@ class TestLandingPadTracking:
             detections_1[3],
         ]
 
+        # Run
         result, actual = tracker.run(detections_1)
 
+        # Check
         assert result
-        assert actual == expected_output
-        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives  # type: ignore
+        assert actual == expected
 
     def test_run_one_input_similar_detections(
         self,
@@ -419,19 +423,20 @@ class TestLandingPadTracking:
         """
         Test run with only 1 input where 2 landing pads are similar.
         """
-        expected_output = detections_3[2]
-        expected_unconfirmed_positives = [
+        # Setup
+        expected = [
             detections_3[2],
             detections_3[1],
             detections_3[4],
             detections_3[3],
         ]
 
+        # Run
         result, actual = tracker.run(detections_3)
 
+        # Check
         assert result
-        assert actual == expected_output
-        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives  # type: ignore
+        assert actual == expected
 
     def test_run_multiple_inputs(
         self,
@@ -442,8 +447,8 @@ class TestLandingPadTracking:
         """
         Test run with 2 inputs where some landing pads are similar.
         """
-        expected_output = detections_2[0]
-        expected_unconfirmed_positives = [
+        # Setup
+        expected = [
             detections_2[0],
             detections_1[2],
             detections_2[1],
@@ -454,12 +459,15 @@ class TestLandingPadTracking:
             detections_1[3],
         ]
 
-        tracker.run(detections_1)
+        # Run
+        result, _ = tracker.run(detections_1)
+        assert result
+
         result, actual = tracker.run(detections_2)
 
+        # Check
         assert result
-        assert actual == expected_output
-        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives  # type: ignore
+        assert actual == expected
 
     def test_run_with_confirmed_positive(
         self,
@@ -469,14 +477,18 @@ class TestLandingPadTracking:
         """
         Test run when there is a confirmed positive.
         """
-        _, confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
+        # Setup
+        result, confirmed_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
+        assert result
         assert confirmed_positive is not None
 
         tracker._LandingPadTracking__confirmed_positives.append(confirmed_positive)  # type: ignore
-        expected = confirmed_positive
+        expected = [confirmed_positive]
 
+        # Run
         result, actual = tracker.run(detections_1)
 
+        # Check
         assert result
         assert actual == expected
 
@@ -488,12 +500,17 @@ class TestLandingPadTracking:
         """
         Test to see if run function doesn't add landing pads that are similar to false positives.
         """
-        _, false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
+        # Setup
+        result, false_positive = object_in_world.ObjectInWorld.create(1, 1, 1)
+        assert result
         assert false_positive is not None
 
         tracker._LandingPadTracking__false_positives.append(false_positive)  # type: ignore
-        expected_unconfirmed_positives = [detections_2[3], detections_2[2], detections_2[4]]
+        expected = [detections_2[3], detections_2[2], detections_2[4]]
 
-        tracker.run(detections_2)
+        # Run
+        result, actual = tracker.run(detections_2)
 
-        assert tracker._LandingPadTracking__unconfirmed_positives == expected_unconfirmed_positives  # type: ignore
+        # Check
+        assert result
+        assert actual == expected
