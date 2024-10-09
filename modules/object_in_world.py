@@ -22,7 +22,9 @@ class ObjectInWorld:
         if spherical_variance < 0.0:
             return False, None
 
-        return True, ObjectInWorld(cls.__create_key, location_x, location_y, spherical_variance, label)
+        return True, ObjectInWorld(
+            cls.__create_key, location_x, location_y, spherical_variance, label
+        )
 
     def __init__(
         self,
