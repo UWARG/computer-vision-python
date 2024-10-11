@@ -2,6 +2,7 @@
 Test DetectTarget module.
 
 """
+
 import pathlib
 
 import cv2
