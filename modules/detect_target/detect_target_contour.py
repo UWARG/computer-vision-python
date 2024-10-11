@@ -14,19 +14,12 @@ from .. import detections_and_time
 
 
 class DetectTargetContour(base_detect_target.BaseDetectTarget):
-    """
-    Contains the YOLOv8 model for prediction.
-    """
-
     def __init__(
         self,
         show_annotations: bool = False,
         save_name: str = "",
     ) -> None:
         """
-        device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
-        model_path: path to the YOLOv8 model.
-        override_full: Force full precision floating point calculations.
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
