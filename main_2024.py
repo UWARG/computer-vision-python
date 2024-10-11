@@ -113,9 +113,9 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
 
-        MIN_ACTIVATION_THRESHOLD = config["cluster_merge"]["min_activation_threshold"]
-        MIN_NEW_POINTS_TO_RUN = config["cluster_merge"]["min_new_points_to_run"]
-        RANDOM_STATE = config["cluster_merge"]["random_state"]
+        MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
+        MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        RANDOM_STATE = config["cluster_estimation"]["random_state"]
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
@@ -305,7 +305,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create arguments for Video Input", True)
+        main_logger.error("Failed to create arguments for Cluster Estimation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -384,7 +384,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create manager for Flight Interface", True)
+        main_logger.error("Failed to create manager for Cluster Estimation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -417,35 +417,13 @@ def main() -> int:
                 return -1
 
         try:
-            geolocation_data = geolocation_to_cluster_estimation_queue.queue.get_nowait()
-            geolocation_data = geolocation_to_cluster_estimation_queue.queue.get_nowait()
+            cluster_estimation_data = cluster_estimation_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            geolocation_data = None
+            cluster_estimation_data = None
 
-        if geolocation_data is not None:
-            for detection_world in geolocation_data:
-                main_logger.debug("Detection in world:", True)
-                main_logger.debug(
-                    "geolocation vertices: " + str(detection_world.vertices.tolist()), True
-                )
-                main_logger.debug(
-                    "geolocation centre: " + str(detection_world.centre.tolist()), True
-                )
-                main_logger.debug("geolocation label: " + str(detection_world.label), True)
-                main_logger.debug(
-                    "geolocation confidence: " + str(detection_world.confidence), True
-                )
-
-        try:
-            cluster_estimations = cluster_estimation_to_main_queue.queue.get_nowait()
-        except queue.Empty:
-            cluster_estimations = None
-        if cluster_estimations is not None:
-            for cluster in cluster_estimations:
-                main_logger.debug("Cluser in world: True")
-                main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: " + str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
+        if cluster_estimation_data is not None:
+            for object_in_world in cluster_estimation_data:
+                main_logger.debug(object_in_world.__str__)
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break

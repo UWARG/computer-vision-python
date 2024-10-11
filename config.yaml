@@ -36,7 +36,7 @@ geolocation:
     camera_orientation_roll: 0.0
 
 # default values set
-cluster_merge:
+cluster_estimation:
     min_activation_threshold: 0
     min_new_points_to_run: 0
     random_state: 0
