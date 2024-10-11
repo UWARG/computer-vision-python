@@ -296,7 +296,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create arguments for Video Input", True)
+        main_logger.error("Failed to create arguments for Cluster Estimation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -375,7 +375,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create manager for Flight Interface", True)
+        main_logger.error("Failed to create manager for Cluster Estimation", True)
         return -1
 
     # Get Pylance to stop complaining
@@ -395,33 +395,14 @@ def main() -> int:
                 return -1
 
         try:
-            geolocation_data = geolocation_to_cluster_estimation_queue.queue.get_nowait()
+            cluster_estimation_data = cluster_estimation_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            geolocation_data = None
-
-        if geolocation_data is not None:
-            for detection_world in geolocation_data:
-                main_logger.debug("Detection in world:", True)
-                main_logger.debug(
-                    "geolocation vertices: " + str(detection_world.vertices.tolist()), True
-                )
-                main_logger.debug(
-                    "geolocation centre: " + str(detection_world.centre.tolist()), True
-                )
-                main_logger.debug("geolocation label: " + str(detection_world.label), True)
-                main_logger.debug(
-                    "geolocation confidence: " + str(detection_world.confidence), True
-                )
-        try:
-            cluster_estimations = cluster_estimation_to_main_queue.queue.get_nowait()
-        except queue.Empty:
-            cluster_estimations = None
-        if cluster_estimations is not None:
-            for cluster in cluster_estimations:
-                main_logger.debug("Cluser in world: True")
-                main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: " + str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
+            cluster_estimation_data = None
+        
+        if cluster_estimation_data is not None:
+            for object_in_world in cluster_estimation_data:
+                main_logger.debug("Cluster in world: ", True)
+                main_logger.debug(object_in_world.__str__)
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break
