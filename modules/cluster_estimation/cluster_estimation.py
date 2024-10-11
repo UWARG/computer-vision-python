@@ -193,14 +193,15 @@ class ClusterEstimation:
         # Create output list of remaining valid clusters
         detections_in_world = []
         for cluster in model_output:
-            result, landing_pad = object_in_world.ObjectInWorld.create(
+            result, cluster_object = object_in_world.ObjectInWorld.create(
                 cluster[0][0],
                 cluster[0][1],
                 cluster[2],
+                0,
             )
 
             if result:
-                detections_in_world.append(landing_pad)
+                detections_in_world.append(cluster_object)
 
         return True, detections_in_world
 
