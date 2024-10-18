@@ -1,0 +1,102 @@
+import re
+import pymap3d as pm
+from pykml.factory import KML_ElementMaker as KML
+from lxml import etree
+from ..common.mavlink.modules import drone_odometry_local, drone_odometry
+
+def parse_logs(flight_log, geolocation_log):
+    # Extract home location (WGS84) from flight interface log
+    home_location = extract_home_location(flight_log)
+    
+    # Extract target detections from geolocation log
+    detections = extract_ned_coordinates(geolocation_log)
+
+    # Convert NED to WGS84
+    converted_positions = []
+    for detection in detections:
+        ned_position = drone_odometry_local.DronePositionLocal(
+            north=detection['north'], 
+            east=detection['east'], 
+            down=detection['down']
+        )
+        success, global_position = drone_position_global_from_local(home_location, ned_position)
+        if success:
+            converted_positions.append(global_position)
+
+    # Create KML file
+    create_kml(converted_positions)
+
+def extract_home_location(flight_log):
+    # Regular expression to match the home location (latitude, longitude, altitude) in WGS84
+    home_pattern = r"Logger initialized at home \[lat: ([\d.-]+), lng: ([\d.-]+), alt: ([\d.-]+)\]"
+    match = re.search(home_pattern, flight_log)
+    
+    if match:
+        home_lat = float(match.group(1))
+        home_lng = float(match.group(2))
+        home_alt = float(match.group(3))
+        
+        # Create DronePosition object
+        home_location = drone_odometry.DronePosition.create(home_lat, home_lng, home_alt)
+        return home_location[1]  # Returning the created DronePosition object
+
+    raise ValueError("Home location not found in the log.")
+
+def extract_ned_coordinates(geolocation_log):
+    # Regular expression to match NED coordinates in the geolocation log
+    ned_pattern = r"centre: \[\s*(-?[\d.]+)\s+(-?[\d.]+)\s*\]"
+    
+    detections = []
+    for match in re.finditer(ned_pattern, geolocation_log):
+        north = float(match.group(1))
+        east = float(match.group(2))
+        down = 0  # Assuming altitude (down) is 0 if not available
+        
+        detections.append({'north': north, 'east': east, 'down': down})
+    
+    return detections
+
+def create_kml(positions):
+    kml_doc = KML.kml(
+        KML.Document(
+            KML.Name("Detected Targets"),
+            *[KML.Placemark(
+                KML.name(f"Target {i+1}"),
+                KML.Point(
+                    KML.coordinates(f"{position.longitude},{position.latitude},{position.altitude}")
+                )
+            ) for i, position in enumerate(positions)]
+        )
+    )
+
+    # Write KML to file
+    with open("detections.kml", "wb") as file:
+        file.write(etree.tostring(kml_doc, pretty_print=True))
+
+# Integrate the conversion function
+def drone_position_global_from_local(
+    home_location: drone_odometry.DronePosition,
+    drone_position_local: drone_odometry_local.DronePositionLocal,
+) -> "tuple[bool, drone_odometry.DronePosition | None]":
+    """
+    Local coordinates to global coordinates.
+    Return: Drone position in WGS 84.
+    """
+    latitude, longitude, altitude = pm.ned2geodetic(
+        drone_position_local.north,
+        drone_position_local.east,
+        drone_position_local.down,
+        home_location.latitude,
+        home_location.longitude,
+        home_location.altitude,
+    )
+
+    result, drone_position = drone_odometry.DronePosition.create(
+        latitude,
+        longitude,
+        altitude,
+    )
+    if not result:
+        return False, None
+
+    return True, drone_position
