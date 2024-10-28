@@ -38,3 +38,9 @@ class ObjectInWorld:
         self.location_x = location_x
         self.location_y = location_y
         self.spherical_variance = spherical_variance
+
+    def __str__(self) -> str:
+        """
+        To string.
+        """
+        return f"{self.__class__}, location_x: {self.location_x}, location_y: {self.location_y}, spherical_variance: {self.spherical_variance}"
