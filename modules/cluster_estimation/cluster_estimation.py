@@ -62,7 +62,7 @@ class ClusterEstimation:
     __MAX_MODEL_ITERATIONS = 1000
 
     # Real-world scenario Hyperparameters
-    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
+    __MAX_NUM_COMPONENTS = 1  # assumed maximum number of real landing pads
 
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
