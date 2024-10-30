@@ -3,7 +3,7 @@ Drone odometry and object detections.
 """
 
 from . import detections_and_time
-from .common.mavlink.modules import drone_odometry_local
+from .common.kml.modules import drone_odometry_local
 
 
 class MergedOdometryDetections:

@@ -8,7 +8,7 @@ from modules.decision import decision
 from modules import decision_command
 from modules import object_in_world
 from modules import odometry_and_time
-from modules.common.mavlink.modules import drone_odometry_local
+from modules.common.kml.modules import drone_odometry_local
 
 
 LANDING_PAD_LOCATION_TOLERANCE = 2
