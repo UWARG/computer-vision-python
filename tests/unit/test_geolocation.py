@@ -7,7 +7,7 @@ import pytest
 
 from modules import detection_in_world
 from modules import detections_and_time
-from modules import drone_odometry_local
+from modules.common.mavlink.modules import drone_odometry_local
 from modules import merged_odometry_detections
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation
