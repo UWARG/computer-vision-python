@@ -49,6 +49,7 @@ def detect_target_worker(
         override_full,
         show_annotations,
         save_name,
+        local_logger,
     )
 
     if not result:
