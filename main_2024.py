@@ -398,7 +398,7 @@ def main() -> int:
             cluster_estimation_data = cluster_estimation_to_main_queue.queue.get_nowait()
         except queue.Empty:
             cluster_estimation_data = None
-        
+
         if cluster_estimation_data is not None:
             for object_in_world in cluster_estimation_data:
                 main_logger.debug("Cluster in world: ", True)
