@@ -4,17 +4,13 @@ Base class for detect target.
 
 from .. import image_and_time
 from .. import detections_and_time
-from ..common.logger.modules import logger
 
 class BaseDetectTarget:
     """
     Abstract class for detect target implementations.
     """
 
-    def __init__(
-        self, 
-        local_logger: logger.Logger
-    ) -> None:
+    def __init__(self) -> None:
         """
         Virtual method.
         """
