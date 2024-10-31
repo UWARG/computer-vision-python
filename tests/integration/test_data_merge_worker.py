@@ -7,7 +7,7 @@ import time
 
 import numpy as np
 
-from modules.common.kml.modules import drone_odometry_local
+from modules.common.mavlink.modules import drone_odometry_local
 from modules import detections_and_time
 from modules import merged_odometry_detections
 from modules import odometry_and_time
