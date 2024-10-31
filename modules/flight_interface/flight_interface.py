@@ -84,7 +84,7 @@ class FlightInterface:
         )
         if not result:
             return False, None
-        
+
         odometry_with_time = odometry_and_time.OdometryAndTime.create(odometry_local)
 
         self.__logger.info(str(odometry_with_time), True)
