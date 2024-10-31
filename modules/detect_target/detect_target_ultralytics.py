@@ -10,7 +10,7 @@ import ultralytics
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
-
+from ..common.logger.modules import logger
 
 class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
     """
@@ -19,6 +19,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
     def __init__(
         self,
+        local_logger: logger.Logger,
         device: "str | int",
         model_path: str,
         override_full: bool,
@@ -54,6 +55,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         Return: Success and the detections.
         """
         image = data.image
+        start_time = time.time()
         predictions = self.__model.predict(
             source=image,
             half=self.__enable_half_precision,
@@ -107,5 +109,8 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)  # type: ignore
+
+        end_time = time.time()
+        self.local_logger.log(f"{time.gmtime()}: Target detection took {end_time - start_time} seconds")
 
         return True, detections
