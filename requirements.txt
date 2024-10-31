@@ -1,7 +1,6 @@
 # Packages listed in alphabetical order
 numpy
 opencv-python
-pymap3d
 pytest
 pyyaml
 scikit-learn
