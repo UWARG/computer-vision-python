@@ -19,10 +19,10 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
     def __init__(
         self,
-        local_logger: logger.Logger,
         device: "str | int",
         model_path: str,
         override_full: bool,
+        local_logger: logger.Logger,
         show_annotations: bool = False,
         save_name: str = "",
     ) -> None:
@@ -38,6 +38,8 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__counter = 0
         self.__enable_half_precision = not self.__device == "cpu"
         self.__show_annotations = show_annotations
+        self.__logger = local_logger
+
         if override_full:
             self.__enable_half_precision = False
         self.__filename_prefix = ""
@@ -111,6 +113,5 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
         end_time = time.time()
-        self.local_logger.log(f"{time.gmtime()}: Target detection took {end_time - start_time} seconds")
-
+        self.__logger.info(f"{time.gmtime()}: Target detection took {end_time - start_time} seconds")
         return True, detections
