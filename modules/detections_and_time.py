@@ -111,6 +111,12 @@ class DetectionsAndTime:
             f"{self.__class__}, time: {self.timestamp}, size: {len(self)}\n" + f"{self.detections}"
         )
 
+    def __repr__(self) -> str:
+        """
+        For collections (e.g. list).
+        """
+        return str(self)
+
     def __len__(self) -> int:
         """
         Gets the number of detected objects.
