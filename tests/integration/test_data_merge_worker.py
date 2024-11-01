@@ -12,7 +12,8 @@ from modules import merged_odometry_detections
 from modules import odometry_and_time
 from modules.common.mavlink.modules import drone_odometry_local
 from modules.data_merge import data_merge_worker
-from utilities.workers import queue_proxy_wrapper, worker_controller
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
