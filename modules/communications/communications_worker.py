@@ -1,34 +1,26 @@
 """
-Gets odometry information from drone.
+Logs data and forwards it.
 """
 
 import os
 import pathlib
-import time
 
+from modules.communications import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-from . import flight_interface
 from ..common.logger.modules import logger
 
 
-def flight_interface_worker(
-    address: str,
-    timeout: float,
-    baud_rate: int,
-    period: float,
+def communications_worker(
+    home_location_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-    communications_ouutput_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
     Worker process.
 
-    address, timeout is initial setting.
-    period is minimum period between loops.
-    output_queue is the data queue.
-    controller is how the main process communicates to this worker process.
+    home_location: get home_location for init
     """
     # TODO: Error handling
 
@@ -44,32 +36,23 @@ def flight_interface_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, interface = flight_interface.FlightInterface.create(
-        address, timeout, baud_rate, local_logger
-    )
+    result, comm = communications.Communications.create(local_logger)
     if not result:
         local_logger.error("Worker failed to create class object", True)
         return
 
     # Get Pylance to stop complaining
-    assert interface is not None
+    assert comm is not None
 
-    home_location_sent = False
+    home_location = None
+
     while not controller.is_exit_requested():
         controller.check_pause()
 
-        time.sleep(period)
-
-        result, value, home_location = interface.run()
+        if not home_location:
+            home_location = home_location_queue.queue.get()
+        result, value = comm.run(input_queue.queue.get(), home_location)
         if not result:
             continue
 
         output_queue.queue.put(value)
-        if not home_location_sent:
-            communications_ouutput_queue.put(home_location)
-
-        # Check for decision commands
-        if not input_queue.queue.empty():
-            command = input_queue.queue.get()
-            # Pass the decision command to the flight controller
-            interface.apply_decision(command)
