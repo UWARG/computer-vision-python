@@ -12,6 +12,7 @@ import cv2
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
 from modules import odometry_and_time
+from modules.communications import communications_worker
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
@@ -141,6 +142,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    flight_interface_to_communcations_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
@@ -238,7 +243,10 @@ def main() -> int:
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
         input_queues=[flight_interface_decision_queue],
-        output_queues=[flight_interface_to_data_merge_queue],
+        output_queues=[
+            flight_interface_to_data_merge_queue,
+            flight_interface_to_communcations_queue
+        ],
         controller=controller,
         local_logger=main_logger,
     )
@@ -416,6 +424,7 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_communcations_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_cluster_estimation_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
