@@ -7,10 +7,13 @@ import time
 
 import numpy as np
 
-from modules import detections_and_time, merged_odometry_detections
+from modules import detections_and_time
+from modules import merged_odometry_detections
 from modules.common.mavlink.modules import drone_odometry_local
-from modules.geolocation import camera_properties, geolocation_worker
-from utilities.workers import queue_proxy_wrapper, worker_controller
+from modules.geolocation import camera_properties
+from modules.geolocation import geolocation_worker
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 
 WORK_COUNT = 3
 

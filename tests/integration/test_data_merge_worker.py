@@ -7,7 +7,9 @@ import time
 
 import numpy as np
 
-from modules import detections_and_time, merged_odometry_detections, odometry_and_time
+from modules import detections_and_time
+from modules import merged_odometry_detections
+from modules import odometry_and_time
 from modules.common.mavlink.modules import drone_odometry_local
 from modules.data_merge import data_merge_worker
 from utilities.workers import queue_proxy_wrapper, worker_controller
