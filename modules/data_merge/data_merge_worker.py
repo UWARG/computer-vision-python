@@ -31,7 +31,6 @@ def data_merge_worker(
     Merge work is done in the worker process as the queues and control mechanisms
     are naturally available.
     """
-
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
