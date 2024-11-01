@@ -2,7 +2,8 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
-from .. import decision_command, odometry_and_time
+from .. import decision_command
+from .. import odometry_and_time
 from ..common.logger.modules import logger
 from ..common.mavlink.modules import drone_odometry
 from ..common.mavlink.modules import drone_odometry_local
