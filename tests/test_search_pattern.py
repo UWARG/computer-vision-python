@@ -7,7 +7,7 @@ import pytest
 
 from modules import decision_command
 from modules import odometry_and_time
-from modules import drone_odometry_local
+from modules.common.mavlink.modules import drone_odometry_local
 from modules.decision import search_pattern
 
 DISTANCE_SQUARED_THRESHOLD = 2.0
