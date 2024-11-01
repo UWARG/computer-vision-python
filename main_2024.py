@@ -113,9 +113,9 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
 
-        MIN_ACTIVATION_THRESHOLD = config["cluster_merge"]["min_activation_threshold"]
-        MIN_NEW_POINTS_TO_RUN = config["cluster_merge"]["min_new_points_to_run"]
-        RANDOM_STATE = config["cluster_merge"]["random_state"]
+        MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
+        MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        RANDOM_STATE = config["cluster_estimation"]["random_state"]
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
@@ -401,8 +401,8 @@ def main() -> int:
 
         if cluster_estimation_data is not None:
             for object_in_world in cluster_estimation_data:
-                main_logger.debug("Cluster in world: ", True)
-                main_logger.debug(object_in_world.__str__)
+                main_logger.debug("Cluster in world: ", (object_in_world is not None))
+                main_logger.debug(str(object_in_world))
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break
