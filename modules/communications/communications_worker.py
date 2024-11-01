@@ -5,7 +5,7 @@ Logs data and forwards it.
 import os
 import pathlib
 
-from modules.communications import communications
+from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from ..common.logger.modules import logger
