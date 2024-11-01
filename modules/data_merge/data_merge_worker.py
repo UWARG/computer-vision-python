@@ -3,12 +3,15 @@ Merges detections and telemetry by time.
 """
 
 import queue
+import pathlib
+import os
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from .. import detections_and_time
 from .. import merged_odometry_detections
 from .. import odometry_and_time
+from ..common.logger.modules import logger
 
 
 def data_merge_worker(
@@ -30,6 +33,15 @@ def data_merge_worker(
     """
     # TODO: Logging?
 
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
+    if not result:
+        print("ERROR: Worker failed to create logger")
+        return
+
+    assert local_logger is not None
+
     # Mitigate potential deadlock caused by early program exit
     try:
         previous_odometry: odometry_and_time.OdometryAndTime = odometry_input_queue.queue.get(
@@ -39,7 +51,7 @@ def data_merge_worker(
             timeout=timeout,
         )
     except queue.Empty:
-        print("ERROR: Queue timed out on startup")
+        local_logger.error("Queue timed out on startup", True)
         return
 
     while not controller.is_exit_requested():
@@ -72,14 +84,24 @@ def data_merge_worker(
                 previous_odometry.odometry_data,
                 detections.detections,
             )
+            odometry_timestamp = previous_odometry.timestamp
         else:
             result, merged = merged_odometry_detections.MergedOdometryDetections.create(
                 current_odometry.odometry_data,
                 detections.detections,
             )
+            odometry_timestamp = current_odometry.timestamp
+
+        local_logger.info(
+            f"Odometry timestamp: {odometry_timestamp}, detections timestamp: {detections.timestamp}, detections - odometry: {detections.timestamp - odometry_timestamp}",
+            True,
+        )
 
         if not result:
+            local_logger.warning("Failed to create merged odometry and detections", True)
             continue
+
+        local_logger.info(str(merged), True)
 
         # Get Pylance to stop complaining
         assert merged is not None

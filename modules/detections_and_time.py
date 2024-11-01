@@ -108,8 +108,7 @@ class DetectionsAndTime:
         To string.
         """
         return (
-            f"{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}\n"
-            + f"{self.detections}"
+            f"{self.__class__}, time: {self.timestamp}, size: {len(self)}\n" + f"{self.detections}"
         )
 
     def __len__(self) -> int:

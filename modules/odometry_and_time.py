@@ -47,4 +47,4 @@ class OdometryAndTime:
         """
         To string.
         """
-        return f"{self.__class__}, time: {int(self.timestamp)}\n" + f"{self.odometry_data}"
+        return f"{self.__class__}, time: {self.timestamp}\n" + f"{self.odometry_data}"

@@ -87,7 +87,17 @@ class FlightInterface:
 
         # Get Pylance to stop complaining
         assert odometry_local is not None
-        return odometry_and_time.OdometryAndTime.create(odometry_local)
+
+        result, odometry_and_time_object = odometry_and_time.OdometryAndTime.create(odometry_local)
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry_and_time_object is not None
+
+        self.__logger.info(str(odometry_and_time_object), True)
+
+        return True, odometry_and_time_object
 
     def apply_decision(self, cmd: decision_command.DecisionCommand) -> bool:
         """
