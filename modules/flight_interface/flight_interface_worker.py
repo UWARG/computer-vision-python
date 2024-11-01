@@ -19,7 +19,7 @@ def flight_interface_worker(
     period: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-    communications_ouutput_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    communications_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -66,7 +66,7 @@ def flight_interface_worker(
 
         output_queue.queue.put(value)
         if not home_location_sent:
-            communications_ouutput_queue.put(home_location)
+            communications_output_queue.queue.put(home_location)
 
         # Check for decision commands
         if not input_queue.queue.empty():

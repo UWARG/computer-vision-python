@@ -73,7 +73,7 @@ class FlightInterface:
         """
         result, odometry = self.controller.get_odometry()
         if not result:
-            return False, None
+            return False, None, None
 
         # Get Pylance to stop complaining
         assert odometry is not None
