@@ -12,6 +12,7 @@ import cv2
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
 from modules import odometry_and_time
+from modules.communications import communications_worker
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
 from modules.flight_interface import flight_interface_worker
@@ -135,11 +136,19 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    flight_interface_to_communcations_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    geolocation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    geolocation_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    communications_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -228,7 +237,10 @@ def main() -> int:
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
         input_queues=[flight_interface_decision_queue],
-        output_queues=[flight_interface_to_data_merge_queue],
+        output_queues=[
+            flight_interface_to_data_merge_queue,
+            flight_interface_to_communcations_queue
+        ],
         controller=controller,
         local_logger=main_logger,
     )
@@ -266,7 +278,7 @@ def main() -> int:
             camera_extrinsics,
         ),
         input_queues=[data_merge_to_geolocation_queue],
-        output_queues=[geolocation_to_main_queue],
+        output_queues=[geolocation_to_communications_queue],
         controller=controller,
         local_logger=main_logger,
     )
@@ -277,6 +289,24 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert geolocation_worker_properties is not None
 
+    result, communications_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=communications_worker.communications_worker,
+        work_arguments=(),
+        input_queues=[
+            flight_interface_to_communcations_queue,
+            geolocation_to_communications_queue
+        ],
+        output_queues=[communications_to_main_queue],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        main_logger.error("Failed to create arguments for Video Input", True)
+        return -1
+
+    assert communications_worker_properties is not None
+    
     # Create managers
     worker_managers = []
 
@@ -345,6 +375,19 @@ def main() -> int:
 
     worker_managers.append(geolocation_manager)
 
+    result, communications_manager = worker_manager.WorkerManager.create(
+        worker_properties=communications_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        main_logger.error("Failed to create manager for Communications", True)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert communications_manager is not None
+
+    worker_managers.append(communications_manager)
+
     # Run
     for manager in worker_managers:
         manager.start_workers()
@@ -357,7 +400,7 @@ def main() -> int:
                 return -1
 
         try:
-            geolocation_data = geolocation_to_main_queue.queue.get_nowait()
+            geolocation_data = communications_to_main_queue.queue.get_nowait()
         except queue.Empty:
             geolocation_data = None
 
@@ -385,8 +428,10 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_communcations_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
-    geolocation_to_main_queue.fill_and_drain_queue()
+    geolocation_to_communications_queue.fill_and_drain_queue()
+    communications_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
 
     for manager in worker_managers:

@@ -19,6 +19,7 @@ def flight_interface_worker(
     period: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    communications_ouutput_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -53,16 +54,19 @@ def flight_interface_worker(
     # Get Pylance to stop complaining
     assert interface is not None
 
+    home_location_sent = False
     while not controller.is_exit_requested():
         controller.check_pause()
 
         time.sleep(period)
 
-        result, value = interface.run()
+        result, value, home_location = interface.run()
         if not result:
             continue
 
         output_queue.queue.put(value)
+        if not home_location_sent:
+            communications_ouutput_queue.put(home_location)
 
         # Check for decision commands
         if not input_queue.queue.empty():
