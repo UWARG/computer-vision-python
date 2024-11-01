@@ -2,9 +2,9 @@
 Merges detections and telemetry by time.
 """
 
-import queue
-import pathlib
 import os
+import pathlib
+import queue
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -31,7 +31,6 @@ def data_merge_worker(
     Merge work is done in the worker process as the queues and control mechanisms
     are naturally available.
     """
-    # TODO: Logging?
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -84,12 +83,14 @@ def data_merge_worker(
                 previous_odometry.odometry_data,
                 detections.detections,
             )
+
             odometry_timestamp = previous_odometry.timestamp
         else:
             result, merged = merged_odometry_detections.MergedOdometryDetections.create(
                 current_odometry.odometry_data,
                 detections.detections,
             )
+
             odometry_timestamp = current_odometry.timestamp
 
         local_logger.info(
