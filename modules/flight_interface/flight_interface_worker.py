@@ -54,19 +54,19 @@ def flight_interface_worker(
     # Get Pylance to stop complaining
     assert interface is not None
 
-    home_location_sent = False
+    home_location = interface.get_home_location()
+    communications_output_queue.queue.put(home_location)
+
     while not controller.is_exit_requested():
         controller.check_pause()
 
         time.sleep(period)
 
-        result, value, home_location = interface.run()
+        result, value = interface.run()
         if not result:
             continue
 
         output_queue.queue.put(value)
-        if not home_location_sent:
-            communications_output_queue.queue.put(home_location)
 
         # Check for decision commands
         if not input_queue.queue.empty():

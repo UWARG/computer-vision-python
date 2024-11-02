@@ -136,7 +136,7 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    flight_interface_to_communcations_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    flight_interface_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -239,7 +239,7 @@ def main() -> int:
         input_queues=[flight_interface_decision_queue],
         output_queues=[
             flight_interface_to_data_merge_queue,
-            flight_interface_to_communcations_queue
+            flight_interface_to_communications_queue,
         ],
         controller=controller,
         local_logger=main_logger,
@@ -294,8 +294,8 @@ def main() -> int:
         target=communications_worker.communications_worker,
         work_arguments=(),
         input_queues=[
-            flight_interface_to_communcations_queue,
-            geolocation_to_communications_queue
+            flight_interface_to_communications_queue,
+            geolocation_to_communications_queue,
         ],
         output_queues=[communications_to_main_queue],
         controller=controller,
@@ -306,7 +306,7 @@ def main() -> int:
         return -1
 
     assert communications_worker_properties is not None
-    
+
     # Create managers
     worker_managers = []
 
@@ -428,7 +428,7 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
-    flight_interface_to_communcations_queue.fill_and_drain_queue()
+    flight_interface_to_communications_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_communications_queue.fill_and_drain_queue()
     communications_to_main_queue.fill_and_drain_queue()
