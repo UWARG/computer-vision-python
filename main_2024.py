@@ -401,7 +401,7 @@ def main() -> int:
 
         if cluster_estimation_data is not None:
             for object_in_world in cluster_estimation_data:
-                main_logger.debug("Cluster in world: ", (object_in_world is not None))
+                main_logger.debug("Cluster in world: ", True)
                 main_logger.debug(str(object_in_world))
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
