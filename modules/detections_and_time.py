@@ -57,6 +57,12 @@ class Detection:
         """
         return f"cls: {self.label}, conf: {self.confidence}, bounds: {self.x_1} {self.y_1} {self.x_2} {self.y_2}"
 
+    def __repr__(self) -> str:
+        """
+        For collections (e.g. list).
+        """
+        return str(self)
+
     def get_centre(self) -> "tuple[float, float]":
         """
         Gets the xy centre of the bounding box.
