@@ -22,7 +22,6 @@ def communications_worker(
 
     home_location: get home_location for init
     """
-    # TODO: Error handling
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -36,7 +35,10 @@ def communications_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, comm = communications.Communications.create(local_logger)
+    # Get home location
+    home_location = home_location_queue.queue.get()
+
+    result, comm = communications.Communications.create(home_location, local_logger)
     if not result:
         local_logger.error("Worker failed to create class object", True)
         return
@@ -44,14 +46,10 @@ def communications_worker(
     # Get Pylance to stop complaining
     assert comm is not None
 
-    home_location = None
-
     while not controller.is_exit_requested():
         controller.check_pause()
 
-        if not home_location:
-            home_location = home_location_queue.queue.get()
-        result, value = comm.run(input_queue.queue.get(), home_location)
+        result, value = comm.run(input_queue.queue.get())
         if not result:
             continue
 
