@@ -117,4 +117,5 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__logger.info(
             f"{time.time()}: Target detection took {end_time - start_time} seconds"
         )
+
         return True, detections
