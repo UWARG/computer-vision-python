@@ -109,13 +109,12 @@ def detector() -> detect_target_ultralytics.DetectTargetUltralytics:  # type: ig
     """
     Construct DetectTargetUltralytics.
     """
-
     _, test_logger = logger.Logger.create("test_logger", False)
 
     assert test_logger is not None
 
     detection = detect_target_ultralytics.DetectTargetUltralytics(
-        DEVICE, str(MODEL_PATH), OVERRIDE_FULL, test_logger
+        DEVICE, str(MODEL_PATH), OVERRIDE_FULL
     )
     yield detection  # type: ignore
 
