@@ -22,6 +22,7 @@ def create_detect_target(
     device: "str | int",
     model_path: str,
     override_full: bool,
+    local_logger: logger.Logger,
     show_annotations: bool,
     save_name: str,
     local_logger: logger.Logger,

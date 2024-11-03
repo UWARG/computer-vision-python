@@ -4,7 +4,7 @@ Drone odometry in local space and timestamp.
 
 import time
 
-from . import drone_odometry_local
+from .common.mavlink.modules import drone_odometry_local
 
 
 class OdometryAndTime:
@@ -47,4 +47,4 @@ class OdometryAndTime:
         """
         To string.
         """
-        return f"{self.__class__}, time: {int(self.timestamp)}\n" + f"{self.odometry_data}"
+        return f"{self.__class__}, time: {self.timestamp}\n" + f"{self.odometry_data}"

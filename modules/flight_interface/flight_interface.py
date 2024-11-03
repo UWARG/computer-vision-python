@@ -2,13 +2,13 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
-from . import local_global_conversion
-from .. import drone_odometry_local
-from .. import odometry_and_time
 from .. import decision_command
+from .. import odometry_and_time
 from ..common.logger.modules import logger
 from ..common.mavlink.modules import drone_odometry
+from ..common.mavlink.modules import drone_odometry_local
 from ..common.mavlink.modules import flight_controller
+from ..common.mavlink.modules import local_global_conversion
 
 
 class FlightInterface:
@@ -87,7 +87,17 @@ class FlightInterface:
 
         # Get Pylance to stop complaining
         assert odometry_local is not None
-        return odometry_and_time.OdometryAndTime.create(odometry_local)
+
+        result, odometry_and_time_object = odometry_and_time.OdometryAndTime.create(odometry_local)
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry_and_time_object is not None
+
+        self.__logger.info(str(odometry_and_time_object), True)
+
+        return True, odometry_and_time_object
 
     def apply_decision(self, cmd: decision_command.DecisionCommand) -> bool:
         """

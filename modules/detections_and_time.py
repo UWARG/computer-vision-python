@@ -108,9 +108,14 @@ class DetectionsAndTime:
         To string.
         """
         return (
-            f"{self.__class__}, time: {int(self.timestamp)}, size: {len(self)}\n"
-            + f"{self.detections}"
+            f"{self.__class__}, time: {self.timestamp}, size: {len(self)}\n" + f"{self.detections}"
         )
+
+    def __repr__(self) -> str:
+        """
+        For collections (e.g. list).
+        """
+        return str(self)
 
     def __len__(self) -> int:
         """
