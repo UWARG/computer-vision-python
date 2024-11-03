@@ -5,6 +5,7 @@ Base class for detect target.
 from .. import image_and_time
 from .. import detections_and_time
 
+
 class BaseDetectTarget:
     """
     Abstract class for detect target implementations.

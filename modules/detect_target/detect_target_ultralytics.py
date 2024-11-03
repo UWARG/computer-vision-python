@@ -12,6 +12,7 @@ from .. import image_and_time
 from .. import detections_and_time
 from ..common.logger.modules import logger
 
+
 class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
     """
     Contains the YOLOv8 model for prediction.
@@ -113,5 +114,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
         end_time = time.time()
-        self.__logger.info(f"{time.localtime()}: Target detection took {round(end_time - start_time, 3)} seconds")
+        self.__logger.info(
+            f"{time.localtime()}: Target detection took {round(end_time - start_time, 3)} seconds"
+        )
         return True, detections
