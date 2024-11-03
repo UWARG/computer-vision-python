@@ -9,7 +9,7 @@ from . import camera_properties
 from .. import detection_in_world
 from .. import detections_and_time
 from .. import merged_odometry_detections
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 class Geolocation:

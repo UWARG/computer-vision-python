@@ -1,5 +1,5 @@
 """
-Test geolocation.
+Test rudimentary_geolocation.
 """
 
 import numpy as np
@@ -8,10 +8,10 @@ import pytest
 from modules import detection_in_world
 from modules import detections_and_time
 from modules import merged_odometry_detections
-from modules.common.modules import logger
-from modules.common.modules import drone_odometry_local
+from modules.common.modules.logger import logger
+from modules.common.modules.mavlink import drone_odometry_local
 from modules.geolocation import camera_properties
-from modules.geolocation import geolocation
+from modules.geolocation import rudimentary_geolocation
 
 FLOAT_PRECISION_TOLERANCE = 4
 
@@ -22,7 +22,7 @@ FLOAT_PRECISION_TOLERANCE = 4
 
 
 @pytest.fixture
-def basic_locator() -> geolocation.Geolocation:  # type: ignore
+def basic_locator() -> rudimentary_geolocation.RudimentaryGeolocation:  # type: ignore
     """
     Forwards pointing camera.
     """
@@ -46,7 +46,7 @@ def basic_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert test_logger is not None
 
-    result, locator = geolocation.Geolocation.create(
+    result, locator = rudimentary_geolocation.RudimentaryGeolocation.create(
         camera_intrinsics,
         camera_extrinsics,
         test_logger,
@@ -58,7 +58,7 @@ def basic_locator() -> geolocation.Geolocation:  # type: ignore
 
 
 @pytest.fixture
-def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
+def intermediate_locator() -> rudimentary_geolocation.RudimentaryGeolocation:  # type: ignore
     """
     Downwards pointing camera offset towards front of drone.
     """
@@ -82,7 +82,7 @@ def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert test_logger is not None
 
-    result, locator = geolocation.Geolocation.create(
+    result, locator = rudimentary_geolocation.RudimentaryGeolocation.create(
         camera_intrinsics,
         camera_extrinsics,
         test_logger,
@@ -94,7 +94,7 @@ def intermediate_locator() -> geolocation.Geolocation:  # type: ignore
 
 
 @pytest.fixture
-def advanced_locator() -> geolocation.Geolocation:  # type: ignore
+def advanced_locator() -> rudimentary_geolocation.RudimentaryGeolocation:  # type: ignore
     """
     Camera angled at 75° upward.
     Drone is expected to rotate it downwards.
@@ -119,7 +119,7 @@ def advanced_locator() -> geolocation.Geolocation:  # type: ignore
     assert result
     assert test_logger is not None
 
-    result, locator = geolocation.Geolocation.create(
+    result, locator = rudimentary_geolocation.RudimentaryGeolocation.create(
         camera_intrinsics,
         camera_extrinsics,
         test_logger,
@@ -232,7 +232,7 @@ def non_affine_matrix() -> np.ndarray:  # type: ignore
     yield matrix  # type: ignore
 
 
-class TestGeolocationCreate:
+class TestRudimentaryGeolocationCreate:
     """
     Test constructor.
     """
@@ -261,7 +261,7 @@ class TestGeolocationCreate:
         assert result
         assert test_logger is not None
 
-        result, locator = geolocation.Geolocation.create(
+        result, locator = rudimentary_geolocation.RudimentaryGeolocation.create(
             camera_intrinsics,
             camera_extrinsics,
             test_logger,
@@ -293,7 +293,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -322,7 +322,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -351,7 +351,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -380,7 +380,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -407,7 +407,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_horizontal,
             test_logger,
@@ -433,7 +433,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_up,
             test_logger,
@@ -459,7 +459,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
             vec_underground,
             vec_down,
             test_logger,
@@ -475,7 +475,7 @@ class TestPerspectiveTransformMatrix:
     Test perspective transform creation.
     """
 
-    def test_basic_above_origin_pointed_down(self, basic_locator: geolocation.Geolocation) -> None:
+    def test_basic_above_origin_pointed_down(self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
         """
         Above origin, directly down.
         """
@@ -496,7 +496,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = basic_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -514,7 +514,7 @@ class TestPerspectiveTransformMatrix:
         )
 
     def test_intermediate_above_origin_pointing_north(
-        self, intermediate_locator: geolocation.Geolocation
+        self, intermediate_locator: rudimentary_geolocation.RudimentaryGeolocation
     ) -> None:
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
@@ -536,7 +536,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = intermediate_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -554,7 +554,7 @@ class TestPerspectiveTransformMatrix:
         )
 
     def test_intermediate_above_origin_pointing_west(
-        self, intermediate_locator: geolocation.Geolocation
+        self, intermediate_locator: rudimentary_geolocation.RudimentaryGeolocation
     ) -> None:
         """
         Positioned so that the camera is above the origin directly down (but the drone is not).
@@ -576,7 +576,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = intermediate_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -593,7 +593,7 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_advanced(self, advanced_locator: geolocation.Geolocation) -> None:
+    def test_advanced(self, advanced_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
         """
         Camera is north of origin with an angle from vertical. Also rotated.
         """
@@ -629,7 +629,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = advanced_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = advanced_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -654,7 +654,7 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_bad_direction(self, basic_locator: geolocation.Geolocation) -> None:
+    def test_bad_direction(self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
         """
         Camera pointing forward.
         """
@@ -680,7 +680,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = basic_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -690,7 +690,7 @@ class TestPerspectiveTransformMatrix:
         assert actual is None
 
 
-class TestGeolocationConvertDetection:
+class TestRudimentaryGeolocationConvertDetection:
     """
     Test extract and convert.
     """
@@ -732,7 +732,7 @@ class TestGeolocationConvertDetection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_1,
             affine_matrix,
             test_logger,
@@ -784,7 +784,7 @@ class TestGeolocationConvertDetection:
         (
             result,
             actual,
-        ) = geolocation.Geolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_2,
             affine_matrix,
             test_logger,
@@ -800,14 +800,14 @@ class TestGeolocationConvertDetection:
         np.testing.assert_almost_equal(actual.confidence, expected.confidence)
 
 
-class TestGeolocationRun:
+class TestRudimentaryGeolocationRun:
     """
     Run.
     """
 
     def test_basic(
         self,
-        basic_locator: geolocation.Geolocation,
+        basic_locator: rudimentary_geolocation.RudimentaryGeolocation,
         detection_1: detections_and_time.Detection,
         detection_2: detections_and_time.Detection,
     ) -> None:
@@ -913,7 +913,7 @@ class TestGeolocationRun:
 
     def test_advanced(
         self,
-        advanced_locator: geolocation.Geolocation,
+        advanced_locator: rudimentary_geolocation.RudimentaryGeolocation,
         detection_bottom_right_point: detections_and_time.Detection,
         detection_centre_left_point: detections_and_time.Detection,
     ) -> None:
@@ -1026,7 +1026,7 @@ class TestGeolocationRun:
             np.testing.assert_almost_equal(actual.confidence, expected_list[i].confidence)
 
     def test_bad_direction(
-        self, basic_locator: geolocation.Geolocation, detection_1: detections_and_time.Detection
+        self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation, detection_1: detections_and_time.Detection
     ) -> None:
         """
         Bad direction.
