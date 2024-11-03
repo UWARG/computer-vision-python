@@ -121,8 +121,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
         end_time = time.time()
-        self.__logger.info(
-            f"{time.time()}: Target detection took {end_time - start_time} seconds"
-        )
+        self.__logger.info(f"{time.time()}: Target detection took {end_time - start_time} seconds")
 
         return True, detections
