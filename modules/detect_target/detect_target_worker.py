@@ -47,9 +47,9 @@ def detect_target_worker(
         device,
         model_path,
         override_full,
+        local_logger,
         show_annotations,
         save_name,
-        local_logger,
     )
 
     if not result:
