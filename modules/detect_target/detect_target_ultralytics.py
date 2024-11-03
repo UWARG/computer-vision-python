@@ -10,6 +10,7 @@ import ultralytics
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
+from ..common.logger.modules import logger
 
 
 class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
@@ -22,6 +23,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         device: "str | int",
         model_path: str,
         override_full: bool,
+        local_logger: logger.Logger,
         show_annotations: bool = False,
         save_name: str = "",
     ) -> None:
@@ -36,6 +38,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
         self.__enable_half_precision = not self.__device == "cpu"
+        self.__local_logger = local_logger
         self.__show_annotations = show_annotations
         if override_full:
             self.__enable_half_precision = False
@@ -54,6 +57,8 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         Return: Success and the detections.
         """
         image = data.image
+        start_time = time.time()
+
         predictions = self.__model.predict(
             source=image,
             half=self.__enable_half_precision,
@@ -91,6 +96,11 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
                 detections.append(detection)
 
+        end_time = time.time()
+
+        self.__local_logger.info(
+            f"{time.localtime()}: Object detection took {round(end_time - start_time, 3)} seconds"
+        )
         # Logging
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
