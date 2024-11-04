@@ -9,7 +9,9 @@ import numpy as np
 
 from modules import detections_and_time
 from modules import merged_odometry_detections
-from modules.common.mavlink.modules import drone_odometry_local
+from modules.common.modules import orientation
+from modules.common.modules import position_local
+from modules.common.modules.mavlink import drone_odometry_local
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation_worker
 from utilities.workers import queue_proxy_wrapper
@@ -22,7 +24,7 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper) ->
     """
     Place the image into the queue.
     """
-    result_simulate, drone_position = drone_odometry_local.DronePositionLocal.create(
+    result_simulate, drone_position = position_local.PositionLocal.create(
         0.0,
         0.0,
         -100.0,
@@ -30,7 +32,7 @@ def simulate_previous_worker(in_queue: queue_proxy_wrapper.QueueProxyWrapper) ->
     assert result_simulate
     assert drone_position is not None
 
-    result_simulate, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+    result_simulate, drone_orientation = orientation.Orientation.create(
         0.0,
         -np.pi / 2,
         0.0,

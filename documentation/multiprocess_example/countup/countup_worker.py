@@ -5,7 +5,7 @@ Beginning worker that counts up from a starting value.
 import os
 import pathlib
 
-from modules.common.logger.modules import logger
+from modules.common.modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import countup

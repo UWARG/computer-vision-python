@@ -2,8 +2,8 @@
 Combines image and timestamp together.
 """
 
-from ..common.camera.modules import camera_device
 from .. import image_and_time
+from ..common.modules.camera import camera_device
 
 
 class VideoInput:
