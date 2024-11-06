@@ -7,7 +7,9 @@ import pytest
 
 from modules import decision_command
 from modules import odometry_and_time
-from modules.common.mavlink.modules import drone_odometry_local
+from modules.common.modules import orientation
+from modules.common.modules import position_local
+from modules.common.modules.mavlink import drone_odometry_local
 from modules.decision import search_pattern
 
 DISTANCE_SQUARED_THRESHOLD = 2.0
@@ -65,9 +67,11 @@ def drone_odometry() -> Generator[odometry_and_time.OdometryAndTime, None, None]
         """
         Creates an OdometryAndTime instance representing the drone's current position.
         """
-        position = drone_odometry_local.DronePositionLocal.create(pos_y, pos_x, -depth)[1]
-        orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)[1]
-        odometry_data = drone_odometry_local.DroneOdometryLocal.create(position, orientation)[1]
+        drone_position = position_local.PositionLocal.create(pos_y, pos_x, -depth)[1]
+        drone_orientation = orientation.Orientation.create(0.0, 0.0, 0.0)[1]
+        odometry_data = drone_odometry_local.DroneOdometryLocal.create(
+            drone_position, drone_orientation
+        )[1]
 
         odometry = odometry_and_time.OdometryAndTime.create(odometry_data)[1]
         return odometry

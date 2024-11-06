@@ -11,7 +11,7 @@ from utilities.workers import worker_controller
 from .. import detections_and_time
 from .. import merged_odometry_detections
 from .. import odometry_and_time
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 def data_merge_worker(
