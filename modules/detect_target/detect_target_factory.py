@@ -6,7 +6,7 @@ import enum
 
 from . import base_detect_target
 from . import detect_target_ultralytics
-from ..common.modules.logger import logger
+from ..common.logger.modules import logger
 
 
 class DetectTargetOption(enum.Enum):

@@ -50,6 +50,7 @@ def detect_target_worker(
         local_logger,
         show_annotations,
         save_name,
+        local_logger,
     )
 
     if not result:
