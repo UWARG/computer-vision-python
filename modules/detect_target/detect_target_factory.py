@@ -6,7 +6,7 @@ import enum
 
 from . import base_detect_target
 from . import detect_target_ultralytics
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 class DetectTargetOption(enum.Enum):
@@ -25,7 +25,6 @@ def create_detect_target(
     local_logger: logger.Logger,
     show_annotations: bool,
     save_name: str,
-    local_logger: logger.Logger,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
     """
     Construct detect target class at runtime.

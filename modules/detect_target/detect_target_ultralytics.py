@@ -10,7 +10,7 @@ import ultralytics
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
@@ -40,7 +40,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__enable_half_precision = not self.__device == "cpu"
         self.__local_logger = local_logger
         self.__show_annotations = show_annotations
-        self.__logger = local_logger
 
         if override_full:
             self.__enable_half_precision = False
@@ -63,7 +62,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
         predictions = self.__model.predict(
             source=image,
-            half=self.__enable_half_precision,
+            half=__enable_half_precision,
             device=self.__device,
             stream=False,
         )
