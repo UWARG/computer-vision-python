@@ -10,7 +10,7 @@ import ultralytics
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
-
+from ..common.modules.logger import logger
 
 class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
     """
