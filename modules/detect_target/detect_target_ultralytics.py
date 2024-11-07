@@ -62,7 +62,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
         predictions = self.__model.predict(
             source=image,
-            half=__enable_half_precision,
+            half=self.__enable_half_precision,
             device=self.__device,
             stream=False,
         )
