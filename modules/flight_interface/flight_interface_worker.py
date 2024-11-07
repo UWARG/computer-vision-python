@@ -54,8 +54,8 @@ def flight_interface_worker(
     # Get Pylance to stop complaining
     assert interface is not None
 
-    home_location = interface.get_home_location()
-    communications_output_queue.queue.put(home_location)
+    home_position = interface.get_home_position()
+    communications_output_queue.queue.put(home_position)
 
     while not controller.is_exit_requested():
         controller.check_pause()

@@ -86,8 +86,8 @@ def main() -> int:
         VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        detect_target_option_int = config["detect_target"]["option"]
-        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(detect_target_option_int)
+        DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(DETECT_TARGET_OPTION_INT)
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
