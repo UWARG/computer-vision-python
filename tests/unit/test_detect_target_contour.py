@@ -45,7 +45,7 @@ def blur_img(
 
     alpha = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR) / 255.0
     fg = np.zeros(bg.shape, np.uint8)
-    fg[:, :, :] = [200, 10, 200]
+    fg[:, :, :] = [0, 0, 0]
 
     blended = cv2.convertScaleAbs(bg * (1 - alpha) + fg * alpha)
     return blended
@@ -91,7 +91,7 @@ def draw_ellipse(
         image = blur_img(image, center, axis_length=axis_length, angle=angle, circle_check=False)
         return image, top_left, bottom_right
 
-    image = cv2.ellipse(image, center, axis_length, angle, 0, 360, (215, 158, 115), -1)
+    image = cv2.ellipse(image, center, axis_length, angle, 0, 360, (0, 0, 0), -1)
     return image, top_left, bottom_right
 
 
@@ -101,18 +101,18 @@ def create_test_case(
     """
     Genereates test cases given a data set.
     """
-    image = np.zeros(shape=(800, 1800, 3), dtype=np.int16)
+    image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.int16)
 
     boxes_list = []
     for center, radius, blur, ellipse_data in circle_data:
         if ellipse_data[0]:
             _, axis_length, angle = ellipse_data
             image, top_left, bottom_right = draw_ellipse(image, center, axis_length, angle, blur)
-            boxes_list.append([1, 0] + [point for point in top_left + bottom_right])
+            boxes_list.append([1, 0] + list(top_left + bottom_right))
             continue
 
         image, top_left, bottom_right = draw_circle(image, center, radius, blur)
-        boxes_list.append([1, 0] + [point for point in top_left + bottom_right])
+        boxes_list.append([1, 0] + list(top_left + bottom_right))
 
     boxes_list = np.array(boxes_list)
     return (image.astype(np.uint8), boxes_list)
@@ -193,7 +193,7 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
     """
     Construct DetectTargetContour.
     """
-    detection = detect_target_contour.DetectTargetContour()
+    detection = detect_target_contour.DetectTargetContour(True, "bob")
     yield detection  # type: ignore
 
 
@@ -203,10 +203,10 @@ def image_easy() -> image_and_time.ImageAndTime:  # type: ignore
     Load easy image.
     """
 
-    circle_data = [[(1000, 400), 200, False, [False, None, None]]]
+    circle_data = [[(900, 500), 400, False, [False, None, None]]]
 
-    image = create_test_case(circle_data)
-    result, actual_image = image_and_time.ImageAndTime.create(image[0])
+    image, _ = create_test_case(circle_data)
+    result, actual_image = image_and_time.ImageAndTime.create(image)
     print((result, actual_image))
     assert result
     assert actual_image is not None
@@ -220,7 +220,7 @@ def expected_easy() -> image_and_time.ImageAndTime:  # type: ignore
     """
 
     circle_data = [
-        [(500, 1000), 400, False, [False, None, None]],
+        [(1000, 400), 200, False, [False, None, None]],
     ]
 
     _, expected = create_test_case(circle_data)
