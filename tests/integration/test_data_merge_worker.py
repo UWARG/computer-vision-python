@@ -7,14 +7,15 @@ import time
 
 import numpy as np
 
-from modules import drone_odometry_local
 from modules import detections_and_time
 from modules import merged_odometry_detections
 from modules import odometry_and_time
+from modules.common.modules import orientation
+from modules.common.modules import position_local
+from modules.common.modules.mavlink import drone_odometry_local
 from modules.data_merge import data_merge_worker
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-
 
 DATA_MERGE_WORKER_TIMEOUT = 10.0  # seconds
 
@@ -45,15 +46,17 @@ def simulate_flight_input_worker(
     Place the odometry into the queue.
     """
     # Timestamp is stored in latitude
-    result, position = drone_odometry_local.DronePositionLocal.create(timestamp, 0.0, -1.0)
+    result, drone_position = position_local.PositionLocal.create(timestamp, 0.0, -1.0)
     assert result
-    assert position is not None
+    assert drone_position is not None
 
-    result, orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)
+    result, drone_orientation = orientation.Orientation.create(0.0, 0.0, 0.0)
     assert result
-    assert orientation is not None
+    assert drone_orientation is not None
 
-    result, odometry = drone_odometry_local.DroneOdometryLocal.create(position, orientation)
+    result, odometry = drone_odometry_local.DroneOdometryLocal.create(
+        drone_position, drone_orientation
+    )
     assert result
     assert odometry is not None
 

@@ -11,9 +11,9 @@ import time
 from documentation.multiprocess_example.add_random import add_random_worker
 from documentation.multiprocess_example.concatenator import concatenator_worker
 from documentation.multiprocess_example.countup import countup_worker
-from modules.common.logger.modules import logger
-from modules.common.logger.modules import logger_setup_main
-from modules.common.logger.read_yaml.modules import read_yaml
+from modules.common.modules.logger import logger
+from modules.common.modules.logger import logger_main_setup
+from modules.common.modules.read_yaml import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -44,7 +44,7 @@ def main() -> int:
     assert config is not None
 
     # Setup main logger
-    result, main_logger, _ = logger_setup_main.setup_main_logger(config)
+    result, main_logger, _ = logger_main_setup.setup_main_logger(config)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1

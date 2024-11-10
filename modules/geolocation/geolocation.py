@@ -9,7 +9,7 @@ from . import camera_properties
 from .. import detection_in_world
 from .. import detections_and_time
 from .. import merged_odometry_detections
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 class Geolocation:
@@ -285,9 +285,9 @@ class Geolocation:
         # Generate projective perspective matrix
         # Camera rotation in world
         result, drone_rotation_matrix = camera_properties.create_rotation_matrix_from_orientation(
-            detections.odometry_local.orientation.orientation.yaw,
-            detections.odometry_local.orientation.orientation.pitch,
-            detections.odometry_local.orientation.orientation.roll,
+            detections.odometry_local.orientation.yaw,
+            detections.odometry_local.orientation.pitch,
+            detections.odometry_local.orientation.roll,
         )
         if not result:
             self.__logger.error("Drone rotation matrix could not be created")

@@ -8,7 +8,9 @@ from modules.decision import decision
 from modules import decision_command
 from modules import object_in_world
 from modules import odometry_and_time
-from modules import drone_odometry_local
+from modules.common.modules import orientation
+from modules.common.modules import position_local
+from modules.common.modules.mavlink import drone_odometry_local
 
 
 LANDING_PAD_LOCATION_TOLERANCE = 2
@@ -93,19 +95,21 @@ def drone_odometry_and_time() -> odometry_and_time.OdometryAndTime:  # type: ign
     Create an OdometryAndTime instance with the drone positioned within tolerance of landing pad.
     """
     # Creating the position within tolerance of the specified landing pad.
-    result, position = drone_odometry_local.DronePositionLocal.create(
+    result, drone_position = position_local.PositionLocal.create(
         BEST_PAD_LOCATION_X - DRONE_OFFSET_FROM_PAD,
         BEST_PAD_LOCATION_Y - DRONE_OFFSET_FROM_PAD,
         -5.0,
     )
     assert result
-    assert position is not None
+    assert drone_position is not None
 
-    result, orientation = drone_odometry_local.DroneOrientationLocal.create_new(0.0, 0.0, 0.0)
+    result, drone_orientation = orientation.Orientation.create(0.0, 0.0, 0.0)
     assert result
-    assert orientation is not None
+    assert drone_orientation is not None
 
-    result, odometry_data = drone_odometry_local.DroneOdometryLocal.create(position, orientation)
+    result, odometry_data = drone_odometry_local.DroneOdometryLocal.create(
+        drone_position, drone_orientation
+    )
     assert result
     assert odometry_data is not None
 

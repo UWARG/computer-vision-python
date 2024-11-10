@@ -65,7 +65,7 @@ def main() -> int:
     assert config_logger is not None
 
     # Setup main logger
-    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config_logger)
+    result, main_logger, logging_path = logger_main_setup.setup_main_logger(config_logger)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
@@ -86,6 +86,8 @@ def main() -> int:
         VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
+        DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(DETECT_TARGET_OPTION_INT)
         DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
         DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(DETECT_TARGET_OPTION_INT)
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
@@ -113,9 +115,13 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
 
-        MIN_ACTIVATION_THRESHOLD = config["cluster_merge"]["min_activation_threshold"]
-        MIN_NEW_POINTS_TO_RUN = config["cluster_merge"]["min_new_points_to_run"]
-        RANDOM_STATE = config["cluster_merge"]["random_state"]
+        MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
+        MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        RANDOM_STATE = config["cluster_estimation"]["random_state"]
+
+        MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
+        MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        RANDOM_STATE = config["cluster_estimation"]["random_state"]
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
@@ -420,7 +426,8 @@ def main() -> int:
             geolocation_data = geolocation_to_cluster_estimation_queue.queue.get_nowait()
             geolocation_data = geolocation_to_cluster_estimation_queue.queue.get_nowait()
         except queue.Empty:
-            geolocation_data = None
+            cluster_estimation_data = None
+            cluster_estimation_data = None
 
         if geolocation_data is not None:
             for detection_world in geolocation_data:

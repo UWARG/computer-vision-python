@@ -8,7 +8,7 @@ import pathlib
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import detect_target_factory
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 def detect_target_worker(

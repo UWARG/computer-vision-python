@@ -9,7 +9,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import camera_properties
 from . import geolocation
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 def geolocation_worker(

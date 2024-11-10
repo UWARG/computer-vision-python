@@ -5,7 +5,7 @@ Contains the AddRandom class.
 import time
 import random
 
-from modules.common.logger.modules import logger
+from modules.common.modules.logger import logger
 from .. import intermediate_struct
 
 

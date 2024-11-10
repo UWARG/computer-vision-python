@@ -5,7 +5,7 @@ Ending worker that concatenates a prefix and suffix and then prints the result.
 import os
 import pathlib
 
-from modules.common.logger.modules import logger
+from modules.common.modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import concatenator

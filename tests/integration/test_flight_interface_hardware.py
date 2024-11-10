@@ -5,7 +5,7 @@ Simple hardware test, requires drone connection.
 import pathlib
 
 from modules.flight_interface import flight_interface
-from modules.common.logger.modules import logger
+from modules.common.modules.logger import logger
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"

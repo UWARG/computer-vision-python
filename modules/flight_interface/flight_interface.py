@@ -2,13 +2,13 @@
 Creates flight controller and combines odometry data and timestamp.
 """
 
-from . import local_global_conversion
-from .. import drone_odometry_local
-from .. import odometry_and_time
 from .. import decision_command
-from ..common.logger.modules import logger
-from ..common.mavlink.modules import drone_odometry
-from ..common.mavlink.modules import flight_controller
+from .. import odometry_and_time
+from ..common.modules.logger import logger
+from ..common.modules import position_global
+from ..common.modules import position_local
+from ..common.modules.mavlink import flight_controller
+from ..common.modules.mavlink import local_global_conversion
 
 
 class FlightInterface:
@@ -39,21 +39,23 @@ class FlightInterface:
         # Get Pylance to stop complaining
         assert controller is not None
 
-        result, home_location = controller.get_home_location(timeout_home)
+        result, home_position = controller.get_home_position(timeout_home)
         if not result:
-            local_logger.error("home_location could not be created", True)
+            local_logger.error("home_position could not be created", True)
             return False, None
 
         # Get Pylance to stop complaining
-        assert home_location is not None
+        assert home_position is not None
 
-        return True, FlightInterface(cls.__create_key, controller, home_location, local_logger)
+        local_logger.info(str(home_position), True)
+
+        return True, FlightInterface(cls.__create_key, controller, home_position, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
         controller: flight_controller.FlightController,
-        home_location: drone_odometry.DronePosition,
+        home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -62,10 +64,8 @@ class FlightInterface:
         assert class_private_create_key is FlightInterface.__create_key, "Use create() method"
 
         self.controller = controller
-        self.__home_location = home_location
+        self.__home_position = home_position
         self.__logger = local_logger
-
-        self.__logger.info(str(self.__home_location), True)
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
@@ -79,15 +79,25 @@ class FlightInterface:
         assert odometry is not None
 
         result, odometry_local = local_global_conversion.drone_odometry_local_from_global(
+            self.__home_position,
             odometry,
-            self.__home_location,
         )
         if not result:
             return False, None
 
         # Get Pylance to stop complaining
         assert odometry_local is not None
-        return odometry_and_time.OdometryAndTime.create(odometry_local)
+
+        result, odometry_and_time_object = odometry_and_time.OdometryAndTime.create(odometry_local)
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry_and_time_object is not None
+
+        self.__logger.info(str(odometry_and_time_object), True)
+
+        return True, odometry_and_time_object
 
     def apply_decision(self, cmd: decision_command.DecisionCommand) -> bool:
         """
@@ -107,7 +117,7 @@ class FlightInterface:
             # Convert current global position to local NED coordinates.
             result, current_local_odometry = (
                 local_global_conversion.drone_odometry_local_from_global(
-                    current_odometry, self.__home_location
+                    self.__home_position, current_odometry
                 )
             )
             if not result or current_local_odometry is None:
@@ -118,15 +128,15 @@ class FlightInterface:
             target_east = current_local_odometry.position.east + command_position[1]
             target_down = current_local_odometry.position.down + command_position[2]
 
-            result, target_local_position = drone_odometry_local.DronePositionLocal.create(
+            result, target_local_position = position_local.PositionLocal.create(
                 target_north, target_east, target_down
             )
             if not result or target_local_position is None:
                 return False
 
             result, target_global_position = (
-                local_global_conversion.drone_position_global_from_local(
-                    self.__home_location, target_local_position
+                local_global_conversion.position_global_from_position_local(
+                    self.__home_position, target_local_position
                 )
             )
             if not result or target_global_position is None:
@@ -138,7 +148,7 @@ class FlightInterface:
         if command_type == decision_command.DecisionCommand.CommandType.MOVE_TO_ABSOLUTE_POSITION:
             # Move to absolute position.
             # Note that command_position[2] is the absolute altitude not relative altitude.
-            result, target_position = drone_odometry.DronePosition.create(
+            result, target_position = position_global.PositionGlobal.create(
                 command_position[0], command_position[1], command_position[2]
             )
 
@@ -161,7 +171,7 @@ class FlightInterface:
             # Convert current global position to local NED coordinates
             result, current_local_odometry = (
                 local_global_conversion.drone_odometry_local_from_global(
-                    current_odometry, self.__home_location
+                    self.__home_position, current_odometry
                 )
             )
             if not result or current_local_odometry is None:
@@ -173,15 +183,15 @@ class FlightInterface:
             target_down = current_local_odometry.position.down + command_position[2]
 
             # Create target local position.
-            result, target_local_position = drone_odometry_local.DronePositionLocal.create(
+            result, target_local_position = position_local.PositionLocal.create(
                 target_north, target_east, target_down
             )
             if not result or target_local_position is None:
                 return False
             # Convert target local position to global position.
             result, target_global_position = (
-                local_global_conversion.drone_position_global_from_local(
-                    self.__home_location, target_local_position
+                local_global_conversion.position_global_from_position_local(
+                    self.__home_position, target_local_position
                 )
             )
             if not result or target_global_position is None:

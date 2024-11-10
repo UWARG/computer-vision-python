@@ -7,11 +7,13 @@ import pytest
 
 from modules import detection_in_world
 from modules import detections_and_time
-from modules import drone_odometry_local
 from modules import merged_odometry_detections
+from modules.common.modules import orientation
+from modules.common.modules import position_local
+from modules.common.modules.logger import logger
+from modules.common.modules.mavlink import drone_odometry_local
 from modules.geolocation import camera_properties
 from modules.geolocation import geolocation
-from modules.common.logger.modules import logger
 
 
 FLOAT_PRECISION_TOLERANCE = 4
@@ -816,7 +818,7 @@ class TestGeolocationRun:
         2 detections.
         """
         # Setup
-        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+        result, drone_position = position_local.PositionLocal.create(
             0.0,
             0.0,
             -100.0,
@@ -824,7 +826,7 @@ class TestGeolocationRun:
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+        result, drone_orientation = orientation.Orientation.create(
             0.0,
             -np.pi / 2,
             0.0,
@@ -922,7 +924,7 @@ class TestGeolocationRun:
         2 point detections.
         """
         # Setup
-        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+        result, drone_position = position_local.PositionLocal.create(
             10.0 - np.cos(-np.pi / 12),  # Camera at 10m north, drone at relative
             0.0,
             -100.0 - np.sin(-np.pi / 12),  # Camera at 100m above ground
@@ -930,7 +932,7 @@ class TestGeolocationRun:
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+        result, drone_orientation = orientation.Orientation.create(
             0.0,
             np.pi / 12,
             -np.pi,
@@ -1033,7 +1035,7 @@ class TestGeolocationRun:
         Bad direction.
         """
         # Setup
-        result, drone_position = drone_odometry_local.DronePositionLocal.create(
+        result, drone_position = position_local.PositionLocal.create(
             0.0,
             0.0,
             -100.0,
@@ -1041,7 +1043,7 @@ class TestGeolocationRun:
         assert result
         assert drone_position is not None
 
-        result, drone_orientation = drone_odometry_local.DroneOrientationLocal.create_new(
+        result, drone_orientation = orientation.Orientation.create(
             0.0,
             0.0,
             0.0,
