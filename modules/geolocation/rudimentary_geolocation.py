@@ -50,7 +50,7 @@ class RudimentaryGeolocation(Geolocation):
         )
         if not result:
             return False, None
-        
+
         # Get Pylance to stop complaining
         assert perspective_transform_matrix is not None
 
