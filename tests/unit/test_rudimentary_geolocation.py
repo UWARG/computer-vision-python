@@ -295,7 +295,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -324,7 +324,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -353,7 +353,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -382,7 +382,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_down,
             test_logger,
@@ -409,7 +409,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_horizontal,
             test_logger,
@@ -435,7 +435,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_camera_in_world_position,
             vec_up,
             test_logger,
@@ -461,7 +461,7 @@ class TestGroundIntersection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__ground_intersection_from_vector(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__ground_intersection_from_vector(  # type: ignore
             vec_underground,
             vec_down,
             test_logger,
@@ -498,7 +498,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = basic_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -538,7 +538,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = intermediate_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -578,7 +578,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = intermediate_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = intermediate_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -631,7 +631,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = advanced_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = advanced_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -682,7 +682,7 @@ class TestPerspectiveTransformMatrix:
         (
             result,
             actual,
-        ) = basic_locator._RudimentaryGeolocation__get_perspective_transform_matrix(  # type: ignore
+        ) = basic_locator._Geolocation__get_perspective_transform_matrix(  # type: ignore
             drone_rotation_matrix,
             drone_position_ned,
         )
@@ -734,7 +734,7 @@ class TestRudimentaryGeolocationConvertDetection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__convert_detection_to_world_from_image(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_1,
             affine_matrix,
             test_logger,
@@ -786,7 +786,7 @@ class TestRudimentaryGeolocationConvertDetection:
         (
             result,
             actual,
-        ) = rudimentary_geolocation.RudimentaryGeolocation._RudimentaryGeolocation__convert_detection_to_world_from_image(  # type: ignore
+        ) = rudimentary_geolocation.RudimentaryGeolocation._Geolocation__convert_detection_to_world_from_image(  # type: ignore
             detection_2,
             affine_matrix,
             test_logger,
