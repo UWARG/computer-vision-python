@@ -6,8 +6,8 @@ import numpy as np
 
 from .. import detection_in_world
 from .. import merged_odometry_detections
-from ..common.modules.logger import logger
 from .geolocation import Geolocation
+
 
 class RudimentaryGeolocation(Geolocation):
     """
@@ -37,7 +37,7 @@ class RudimentaryGeolocation(Geolocation):
         # Calculated assuming pitch=-pi/2 and yaw=roll=0
         drone_rotation_matrix = np.array(
             [
-                [0.0, 0.0,-1.0],
+                [0.0, 0.0, -1.0],
                 [0.0, 1.0, 0.0],
                 [1.0, 0.0, 0.0],
             ],
