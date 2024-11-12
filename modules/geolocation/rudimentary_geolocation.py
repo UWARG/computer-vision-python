@@ -50,7 +50,11 @@ class RudimentaryGeolocation(Geolocation):
         )
         if not result:
             return False, None
+        
+        # Get Pylance to stop complaining
+        assert perspective_transform_matrix is not None
 
+        # pylint: disable=duplicate-code
         detections_in_world = []
         for detection in detections.detections:
             result, detection_world = self.__convert_detection_to_world_from_image(
