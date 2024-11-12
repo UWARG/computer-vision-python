@@ -477,7 +477,9 @@ class TestPerspectiveTransformMatrix:
     Test perspective transform creation.
     """
 
-    def test_basic_above_origin_pointed_down(self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
+    def test_basic_above_origin_pointed_down(
+        self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation
+    ) -> None:
         """
         Above origin, directly down.
         """
@@ -595,7 +597,9 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_advanced(self, advanced_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
+    def test_advanced(
+        self, advanced_locator: rudimentary_geolocation.RudimentaryGeolocation
+    ) -> None:
         """
         Camera is north of origin with an angle from vertical. Also rotated.
         """
@@ -656,7 +660,9 @@ class TestPerspectiveTransformMatrix:
             decimal=FLOAT_PRECISION_TOLERANCE,
         )
 
-    def test_bad_direction(self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation) -> None:
+    def test_bad_direction(
+        self, basic_locator: rudimentary_geolocation.RudimentaryGeolocation
+    ) -> None:
         """
         Camera pointing forward.
         """
