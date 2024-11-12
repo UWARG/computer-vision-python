@@ -82,6 +82,7 @@ def main() -> int:
         VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
+        VIDEO_INPUT_USE_PC2 = config["video_input"]["use_pc2"]
         VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
@@ -182,6 +183,7 @@ def main() -> int:
             VIDEO_INPUT_CAMERA_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
             VIDEO_INPUT_SAVE_PREFIX,
+            VIDEO_INPUT_USE_PC2,
         ),
         input_queues=[],
         output_queues=[video_input_to_detect_target_queue],

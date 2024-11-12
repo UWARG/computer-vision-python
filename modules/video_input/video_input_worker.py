@@ -13,6 +13,7 @@ def video_input_worker(
     camera_name: "int | str",
     period: float,
     save_name: str,
+    use_pc2: bool,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
@@ -25,7 +26,7 @@ def video_input_worker(
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    input_device = video_input.VideoInput(camera_name, save_name)
+    input_device = video_input.VideoInput(camera_name, save_name, use_pc2)
 
     while not controller.is_exit_requested():
         controller.check_pause()
