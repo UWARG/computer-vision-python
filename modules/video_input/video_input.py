@@ -12,9 +12,9 @@ class VideoInput:
     """
 
     def __init__(
-        self, camera_name: "int | str", save_name: str = "", use_pc2: bool = False
+        self, camera_name: "int | str", save_name: str = "", use_picamera: bool = False
     ) -> None:
-        self.device = camera_device.CameraDevice(camera_name, 1, save_name, use_pc2)
+        self.device = camera_device.CameraDevice(use_picamera, camera_name, 1, save_name)
 
     def run(self) -> "tuple[bool, image_and_time.ImageAndTime | None]":
         """
