@@ -20,7 +20,6 @@ from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
 from modules.geolocation import geolocation_worker
 from modules.geolocation import camera_properties
-from modules.cluster_estimation import cluster_estimation_worker
 from modules.common.modules.logger import logger
 from modules.common.modules.logger import logger_main_setup
 from modules.common.modules.read_yaml import read_yaml
@@ -113,11 +112,6 @@ def main() -> int:
         GEOLOCATION_CAMERA_ORIENTATION_YAW = config["geolocation"]["camera_orientation_yaw"]
         GEOLOCATION_CAMERA_ORIENTATION_PITCH = config["geolocation"]["camera_orientation_pitch"]
         GEOLOCATION_CAMERA_ORIENTATION_ROLL = config["geolocation"]["camera_orientation_roll"]
-
-        MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
-        MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
-        RANDOM_STATE = config["cluster_estimation"]["random_state"]
-
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
@@ -150,15 +144,15 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    geolocation_to_cluster_estimation_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    geolocation_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    communications_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
     flight_interface_decision_queue = queue_proxy_wrapper.QueueProxyWrapper(
-        mp_manager,
-        QUEUE_MAX_SIZE,
-    )
-    cluster_estimation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -284,7 +278,7 @@ def main() -> int:
             camera_extrinsics,
         ),
         input_queues=[data_merge_to_geolocation_queue],
-        output_queues=[geolocation_to_cluster_estimation_queue],
+        output_queues=[geolocation_to_communications_queue],
         controller=controller,
         local_logger=main_logger,
     )
@@ -295,21 +289,23 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert geolocation_worker_properties is not None
 
-    result, cluster_estimation_worker_properties = worker_manager.WorkerProperties.create(
+    result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
-        target=cluster_estimation_worker.cluster_estimation_worker,
-        work_arguments=(MIN_ACTIVATION_THRESHOLD, MIN_NEW_POINTS_TO_RUN, RANDOM_STATE),
-        input_queues=[geolocation_to_cluster_estimation_queue],
-        output_queues=[cluster_estimation_to_main_queue],
+        target=communications_worker.communications_worker,
+        work_arguments=(),
+        input_queues=[
+            flight_interface_to_communications_queue,
+            geolocation_to_communications_queue,
+        ],
+        output_queues=[communications_to_main_queue],
         controller=controller,
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create arguments for Cluster Estimation", True)
+        main_logger.error("Failed to create arguments for Video Input", True)
         return -1
 
-    # Get Pylance to stop complaining
-    assert cluster_estimation_worker_properties is not None
+    assert communications_worker_properties is not None
 
     # Create managers
     worker_managers = []
@@ -379,18 +375,18 @@ def main() -> int:
 
     worker_managers.append(geolocation_manager)
 
-    result, cluster_estimation_manager = worker_manager.WorkerManager.create(
-        worker_properties=cluster_estimation_worker_properties,
+    result, communications_manager = worker_manager.WorkerManager.create(
+        worker_properties=communications_worker_properties,
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create manager for Cluster Estimation", True)
+        main_logger.error("Failed to create manager for Communications", True)
         return -1
 
     # Get Pylance to stop complaining
-    assert cluster_estimation_manager is not None
+    assert communications_manager is not None
 
-    worker_managers.append(cluster_estimation_manager)
+    worker_managers.append(communications_manager)
 
     # Run
     for manager in worker_managers:
@@ -404,16 +400,24 @@ def main() -> int:
                 return -1
 
         try:
-            cluster_estimations = cluster_estimation_to_main_queue.queue.get_nowait()
+            geolocation_data = communications_to_main_queue.queue.get_nowait()
         except queue.Empty:
-            cluster_estimations = None
+            geolocation_data = None
 
-        if cluster_estimations is not None:
-            for cluster in cluster_estimations:
-                main_logger.debug("Cluster in world: " + True)
-                main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: " + str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
+        if geolocation_data is not None:
+            for detection_world in geolocation_data:
+                main_logger.debug("Detection in world:", True)
+                main_logger.debug(
+                    "geolocation vertices: " + str(detection_world.vertices.tolist()), True
+                )
+                main_logger.debug(
+                    "geolocation centre: " + str(detection_world.centre.tolist()), True
+                )
+                main_logger.debug("geolocation label: " + str(detection_world.label), True)
+                main_logger.debug(
+                    "geolocation confidence: " + str(detection_world.confidence), True
+                )
+
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break
@@ -426,9 +430,9 @@ def main() -> int:
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_communications_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
-    geolocation_to_cluster_estimation_queue.fill_and_drain_queue()
+    geolocation_to_communications_queue.fill_and_drain_queue()
+    communications_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
-    cluster_estimation_to_main_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()
