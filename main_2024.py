@@ -297,7 +297,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create arguments for Video Input", True)
+        main_logger.error("Failed to create arguments for Cluster Estimation", True)
         return -1
 
     # Get Pylance to stop complaining
