@@ -13,6 +13,7 @@ import torch
 from modules.detect_target import detect_target_ultralytics
 from modules import image_and_time
 from modules import detections_and_time
+from modules.common.modules.logger import logger
 
 
 TEST_PATH = pathlib.Path("tests", "model_example")
@@ -108,8 +109,13 @@ def detector() -> detect_target_ultralytics.DetectTargetUltralytics:  # type: ig
     """
     Construct DetectTargetUltralytics.
     """
+    result, test_logger = logger.Logger.create("test_logger", False)
+
+    assert result
+    assert test_logger is not None
+
     detection = detect_target_ultralytics.DetectTargetUltralytics(
-        DEVICE, str(MODEL_PATH), OVERRIDE_FULL
+        DEVICE, str(MODEL_PATH), OVERRIDE_FULL, test_logger
     )
     yield detection  # type: ignore
 

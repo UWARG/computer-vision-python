@@ -6,6 +6,7 @@ import enum
 
 from . import base_detect_target
 from . import detect_target_ultralytics
+from ..common.modules.logger import logger
 
 
 class DetectTargetOption(enum.Enum):
@@ -21,6 +22,7 @@ def create_detect_target(
     device: "str | int",
     model_path: str,
     override_full: bool,
+    local_logger: logger.Logger,
     show_annotations: bool,
     save_name: str,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
@@ -33,6 +35,7 @@ def create_detect_target(
                 device,
                 model_path,
                 override_full,
+                local_logger,
                 show_annotations,
                 save_name,
             )
