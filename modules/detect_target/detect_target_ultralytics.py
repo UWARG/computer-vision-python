@@ -96,6 +96,11 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
                 detections.append(detection)
 
+        end_time = time.time()
+        self.__local_logger.info(
+            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Detected {len(detections)} objects, {repr(detections)}."
+        )
+
         # Logging
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
@@ -113,9 +118,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
-        end_time = time.time()
-        self.__local_logger.info(
-            f"{time.time()}: Target detection took {end_time - start_time} seconds"
-        )
+        
 
         return True, detections
