@@ -98,17 +98,12 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
         end_time = time.time()
         self.__local_logger.info(
-            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Detected {len(detections)} objects, {repr(detections)}."
+            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {repr(detections)}."
         )
 
         # Logging
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
-
-            # Object detections
-            with open(filename + ".txt", "w", encoding="utf-8") as file:
-                # Use internal string representation
-                file.write(repr(detections))
 
             # Annotated image
             cv2.imwrite(filename + ".png", image_annotated)  # type: ignore
