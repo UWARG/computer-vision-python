@@ -110,7 +110,7 @@ def detector() -> detect_target_ultralytics.DetectTargetUltralytics:  # type: ig
     Construct DetectTargetUltralytics.
     """
     result, test_logger = logger.Logger.create("test_logger", False)
-    
+
     assert result
     assert test_logger is not None
 
