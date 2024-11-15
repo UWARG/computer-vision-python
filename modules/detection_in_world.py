@@ -53,8 +53,16 @@ class DetectionInWorld:
         self.label = label
         self.confidence = confidence
 
+    def __repr__(self) -> str:
+        """
+        For collections (e.g. list).
+        """
+        return str(self)
+
     def __str__(self) -> str:
         """
         To string.
         """
         return f"{self.__class__}, vertices: {self.vertices.tolist()}, centre: {self.centre}, label: {self.label}, confidence: {self.confidence}"
+    
+    
