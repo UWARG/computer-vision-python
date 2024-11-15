@@ -118,6 +118,4 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
-        
-
         return True, detections
