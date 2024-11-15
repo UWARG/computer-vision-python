@@ -98,7 +98,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
 
         end_time = time.time()
         self.__local_logger.info(
-            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {repr(detections)}."
+            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
         )
 
         # Logging
