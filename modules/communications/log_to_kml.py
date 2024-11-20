@@ -5,7 +5,7 @@ Convert log file to KML file.
 import pathlib
 import re
 
-from modules.common.modules.kml.locations_to_kml import locations_to_kml
+from modules.common.modules.kml.kml_conversion import locations_to_kml
 from modules.common.modules.location_global import LocationGlobal
 
 
