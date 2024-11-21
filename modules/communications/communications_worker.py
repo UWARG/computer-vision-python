@@ -37,6 +37,7 @@ def communications_worker(
 
     # Get home position
     home_position = home_position_queue.queue.get()
+    local_logger.info(f"Home position received: {home_position}", True)
 
     result, comm = communications.Communications.create(home_position, local_logger)
     if not result:
