@@ -76,7 +76,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         if len(contours) == 0:
             return False, None, image
 
-        contours_with_children = set(i for i, hier in enumerate(hierarchy[0]) if hier[2] != -1)
+        contours_with_children = set(i for i, hier in enumerate(hierarchy[0]) if hier[3] != -1)
         parent_circular_contours = [
             cnt
             for i, cnt in enumerate(contours)
@@ -85,8 +85,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
             and i in contours_with_children
         ]
 
-        largest_contour = max(parent_circular_contours, key=cv2.contourArea, default=None)
-        if largest_contour is None:
+        if not len(parent_circular_contours):
             return False, None, image
 
         # Create the DetectionsAndTime object
@@ -94,28 +93,30 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         if not result:
             return False, None, image
 
-        x, y, w, h = cv2.boundingRect(largest_contour)
-        bounds = np.array([x, y, x + w, y + h])
-        confidence = 1.0  # Confidence for classical CV is often set to a constant value
-        label = 0  # Label can be set to a constant or derived from some logic
-
-        # Create a Detection object and append it to detections
-        result, detection = detections_and_time.Detection.create(bounds, label, confidence)
-        if result:
-            detections.append(detection)
-
-        # Annotate the image
+        sorted_contour = sorted(parent_circular_contours, key=cv2.contourArea, reverse=True)
         image_annotated = copy.deepcopy(image)
-        cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.putText(
-            image_annotated,
-            "landing-pad",
-            (x, y - 10),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.9,
-            (0, 0, 255),
-            2,
-        )
+        for i, contour in enumerate(sorted_contour):
+            x, y, w, h = cv2.boundingRect(contour)
+            bounds = np.array([x, y, x + w, y + h])
+            confidence = 1.0  # Confidence for classical CV is often set to a constant value
+            label = 0  # Label can be set to a constant or derived from some logic
+
+            # Create a Detection object and append it to detections
+            result, detection = detections_and_time.Detection.create(bounds, label, confidence)
+            if result:
+                detections.append(detection)
+
+            # Annotate the image
+            cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(
+                image_annotated,
+                f"landing-pad {i+1}",
+                (x, y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.9,
+                (0, 0, 255),
+                2
+            )
 
         return True, detections, image_annotated
 
