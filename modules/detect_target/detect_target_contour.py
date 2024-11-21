@@ -115,7 +115,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.9,
                 (0, 0, 255),
-                2
+                2,
             )
 
         return True, detections, image_annotated
