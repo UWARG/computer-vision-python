@@ -327,7 +327,7 @@ def main() -> int:
         local_logger=main_logger,
     )
     if not result:
-        main_logger.error("Failed to create arguments for Video Input", True)
+        main_logger.error("Failed to create arguments for Communications Worker", True)
         return -1
 
     assert communications_worker_properties is not None
@@ -412,6 +412,19 @@ def main() -> int:
     assert cluster_estimation_manager is not None
 
     worker_managers.append(cluster_estimation_manager)
+    
+    result, communications_manager = worker_manager.WorkerManager.create(
+        worker_properties=communications_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        main_logger.error("Failed to create manager for Communications Worker", True)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert communications_manager is not None
+
+    worker_managers.append(communications_manager)
 
     # Run
     for manager in worker_managers:
@@ -431,7 +444,7 @@ def main() -> int:
 
         if cluster_estimations is not None:
             for cluster in cluster_estimations:
-                main_logger.debug("Cluster in world: " + True)
+                main_logger.debug("Cluster in world: ", True)
                 main_logger.debug("Cluster location x: " + str(cluster.location_x))
                 main_logger.debug("Cluster location y: " + str(cluster.location_y))
                 main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
