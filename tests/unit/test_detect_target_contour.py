@@ -3,12 +3,12 @@ Test DetectTarget module.
 
 """
 
+from typing import NamedTuple
 import math
 import cv2
 import numpy as np
 import pytest
 
-from typing import NamedTuple
 from modules.detect_target import detect_target_contour
 from modules import image_and_time
 from modules import detections_and_time
@@ -22,6 +22,10 @@ CONFIDENCE_PRECISION_TOLERANCE = 2
 
 
 class LandingPadData(NamedTuple):
+    """
+    Landing Pad information struct
+    """
+
     center: tuple[int, int]
     radius: int | tuple[int, int]
     blur: bool = False
@@ -228,7 +232,7 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
     """
     Construct DetectTargetContour.
     """
-    detection = detect_target_contour.DetectTargetContour(True, "bob")
+    detection = detect_target_contour.DetectTargetContour(True)
     yield detection  # type: ignore
 
 
