@@ -438,7 +438,7 @@ def main() -> int:
                 return -1
 
         try:
-            cluster_estimations = cluster_estimation_to_communications_queue.queue.get_nowait()
+            cluster_estimations = communications_to_main_queue.queue.get_nowait()
         except queue.Empty:
             cluster_estimations = None
 
