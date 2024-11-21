@@ -72,7 +72,7 @@ class Communications:
                 return False, None
 
             result, object_in_world_global = (
-                local_global_conversion.drone_position_global_from_local(
+                local_global_conversion.position_global_from_position_local(
                     self.__home_position, object_position_local
                 )
             )
