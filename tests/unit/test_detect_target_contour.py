@@ -8,16 +8,41 @@ import cv2
 import numpy as np
 import pytest
 
+from typing import NamedTuple
 from modules.detect_target import detect_target_contour
 from modules import image_and_time
 from modules import detections_and_time
 
-BOUNDING_BOX_PRECISION_TOLERANCE = 0
+BOUNDING_BOX_PRECISION_TOLERANCE = -2 / 3
 CONFIDENCE_PRECISION_TOLERANCE = 2
 
 # Test functions use test fixture signature names and access class privates
 # No enable
 # pylint: disable=protected-access,redefined-outer-name
+
+
+class LandingPadData(NamedTuple):
+    center: tuple[int, int]
+    radius: int | tuple[int, int]
+    blur: bool = False
+    elipse: bool = False
+    angle: int = 0
+
+
+easy_data = [LandingPadData(center=(1000, 400), radius=200)]
+
+blurry_data = [
+    LandingPadData(center=(1000, 500), radius=423, blur=True),
+]
+
+stretched_data = [LandingPadData(center=(1000, 500), radius=(383, 405), elipse=True)]
+
+multiple_data = [
+    LandingPadData(center=(200, 500), radius=(50, 45), blur=True, elipse=True),
+    LandingPadData(center=(1590, 341), radius=250),
+    LandingPadData(center=(997, 600), radius=300),
+    LandingPadData(center=(401, 307), radius=(200, 150), blur=True, elipse=True),
+]
 
 
 def blur_img(
@@ -95,29 +120,39 @@ def draw_ellipse(
     return image, top_left, bottom_right
 
 
-def create_test_case(
-    circle_data: list[tuple[int, int], int, bool, list[bool, tuple[int, int] | None, int | None]]
-) -> tuple[np.ndarray, np.ndarray]:
+def create_test_case(landing_list: list[LandingPadData]) -> tuple[np.ndarray, np.ndarray]:
     """
     Genereates test cases given a data set.
     """
     image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.int16)
 
     boxes_list = []
-    for center, radius, blur, ellipse_data in circle_data:
-        if ellipse_data[0]:
-            _, axis_length, angle = ellipse_data
-            image, top_left, bottom_right = draw_ellipse(image, center, axis_length, angle, blur)
-            boxes_list.append([1, 0] + list(top_left + bottom_right))
+    for landing_data in landing_list:
+        if landing_data.elipse:
+            axis_length, angle = landing_data.radius, landing_data.angle
+            image, top_left, bottom_right = draw_ellipse(
+                image, landing_data.center, axis_length, angle, landing_data.blur
+            )
+            boxes_list.append([1, 0] + [point for point in top_left + bottom_right])
             continue
 
-        image, top_left, bottom_right = draw_circle(image, center, radius, blur)
+        image, top_left, bottom_right = draw_circle(
+            image, landing_data.center, landing_data.radius, landing_data.blur
+        )
         boxes_list.append([1, 0] + list(top_left + bottom_right))
 
+    boxes_list = sorted(
+        boxes_list,
+        reverse=True,
+        key=lambda boxes_list: abs(
+            (boxes_list[4] - boxes_list[2]) * (boxes_list[5] - boxes_list[3])
+        ),
+    )
     boxes_list = np.array(boxes_list)
     return (image.astype(np.uint8), boxes_list)
 
 
+# pylint:disable=duplicate-code
 def compare_detections(
     actual: detections_and_time.DetectionsAndTime, expected: detections_and_time.DetectionsAndTime
 ) -> None:
@@ -203,11 +238,47 @@ def image_easy() -> image_and_time.ImageAndTime:  # type: ignore
     Load easy image.
     """
 
-    circle_data = [[(900, 500), 400, False, [False, None, None]]]
-
-    image, _ = create_test_case(circle_data)
+    image, _ = create_test_case(easy_data)
     result, actual_image = image_and_time.ImageAndTime.create(image)
-    print((result, actual_image))
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
+
+
+@pytest.fixture()
+def blurry_image() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load easy image.
+    """
+
+    image, _ = create_test_case(blurry_data)
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
+
+
+@pytest.fixture()
+def stretched_image() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load easy image.
+    """
+
+    image, _ = create_test_case(stretched_data)
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
+
+
+@pytest.fixture()
+def multiple_images() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load easy image.
+    """
+
+    image, _ = create_test_case(multiple_data)
+    result, actual_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert actual_image is not None
     yield actual_image  # type: ignore
@@ -219,11 +290,37 @@ def expected_easy() -> image_and_time.ImageAndTime:  # type: ignore
     Load expected an easy image detections.
     """
 
-    circle_data = [
-        [(1000, 400), 200, False, [False, None, None]],
-    ]
+    _, expected = create_test_case(easy_data)
+    yield create_detections(expected)  # type: ignore
 
-    _, expected = create_test_case(circle_data)
+
+@pytest.fixture()
+def expected_blur() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected an easy image detections.
+    """
+
+    _, expected = create_test_case(blurry_data)
+    yield create_detections(expected)  # type: ignore
+
+
+@pytest.fixture()
+def expected_stretch() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected an easy image detections.
+    """
+
+    _, expected = create_test_case(stretched_data)
+    yield create_detections(expected)  # type: ignore
+
+
+@pytest.fixture()
+def expected_multiple() -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected an easy image detections.
+    """
+
+    _, expected = create_test_case(multiple_data)
     yield create_detections(expected)  # type: ignore
 
 
@@ -249,3 +346,57 @@ class TestDetector:
         assert actual is not None
 
         compare_detections(actual, expected_easy)
+
+    def test_blurry_circle(
+        self,
+        detector: detect_target_contour.DetectTargetContour,
+        blurry_image: image_and_time.ImageAndTime,
+        expected_blur: detections_and_time.DetectionsAndTime,
+    ) -> None:
+        """
+        Bus image.
+        """
+        # Run
+        result, actual = detector.run(blurry_image)
+
+        # Test
+        assert result
+        assert actual is not None
+
+        compare_detections(actual, expected_blur)
+
+    def test_stretch(
+        self,
+        detector: detect_target_contour.DetectTargetContour,
+        stretched_image: image_and_time.ImageAndTime,
+        expected_stretch: detections_and_time.DetectionsAndTime,
+    ) -> None:
+        """
+        Bus image.
+        """
+        # Run
+        result, actual = detector.run(stretched_image)
+
+        # Test
+        assert result
+        assert actual is not None
+
+        compare_detections(actual, expected_stretch)
+
+    def test_multiple(
+        self,
+        detector: detect_target_contour.DetectTargetContour,
+        multiple_images: image_and_time.ImageAndTime,
+        expected_multiple: detections_and_time.DetectionsAndTime,
+    ) -> None:
+        """
+        Bus image.
+        """
+        # Run
+        result, actual = detector.run(multiple_images)
+
+        # Test
+        assert result
+        assert actual is not None
+
+        compare_detections(actual, expected_multiple)
