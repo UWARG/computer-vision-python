@@ -49,7 +49,8 @@ class Communications:
         self.__logger = local_logger
 
     def run(
-        self, objects_in_world: list[object_in_world.ObjectInWorld],
+        self,
+        objects_in_world: list[object_in_world.ObjectInWorld],
     ) -> tuple[bool, list[object_in_world.ObjectInWorld] | None]:
 
         objects_in_world_global = []
