@@ -8,6 +8,7 @@ import sklearn.datasets
 
 from modules.cluster_estimation import cluster_estimation
 from modules import detection_in_world
+from modules.common.modules.logger import logger
 
 
 MIN_TOTAL_POINTS_THRESHOLD = 100
@@ -26,10 +27,15 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
     """
     Cluster estimation object.
     """
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
     result, model = cluster_estimation.ClusterEstimation.create(
         MIN_TOTAL_POINTS_THRESHOLD,
         MIN_NEW_POINTS_TO_RUN,
         RNG_SEED,
+        test_logger,
     )
     assert result
     assert model is not None

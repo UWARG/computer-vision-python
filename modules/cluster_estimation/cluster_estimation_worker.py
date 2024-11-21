@@ -51,10 +51,13 @@ def cluster_estimation_worker(
 
     assert local_logger is not None
 
+    local_logger.info("Logger initialized")
+
     result, estimator = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
         min_new_points_to_run,
         random_state,
+        local_logger,
     )
     if not result:
         local_logger.error("Worker failed to create class object", True)
