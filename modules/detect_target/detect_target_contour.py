@@ -14,6 +14,9 @@ from .. import detections_and_time
 
 
 class DetectTargetContour(base_detect_target.BaseDetectTarget):
+    """
+    Predicts annd locates landing pads using Classical Computer Vision
+    """
     def __init__(
         self,
         show_annotations: bool = False,
@@ -85,7 +88,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
             and i in contours_with_children
         ]
 
-        if not len(parent_circular_contours):
+        if len(parent_circular_contours) == 0:
             return False, None, image
 
         # Create the DetectionsAndTime object
