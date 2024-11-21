@@ -5,8 +5,8 @@ Convert log file to KML file.
 import pathlib
 import re
 
-from modules.common.modules.kml.kml_conversion import locations_to_kml
-from modules.common.modules.location_global import LocationGlobal
+from modules.common.modules.kml import kml_conversion
+from modules.common.modules import location_global
 
 
 def convert_log_to_kml(
@@ -45,12 +45,14 @@ def convert_log_to_kml(
                 longitudes = list(map(float, longitudes))
 
                 for i in range(len(latitudes)):
-                    success, location = LocationGlobal.create(latitudes[i], longitudes[i])
+                    success, location = location_global.LocationGlobal.create(
+                        latitudes[i], longitudes[i]
+                    )
                     if not success:
                         return False, None
                     locations.append(location)
 
-            return locations_to_kml(locations, document_name_prefix, save_directory)
+            return kml_conversion.locations_to_kml(locations, document_name_prefix, save_directory)
     except Exception as e:
         print(e.with_traceback())
         return False, None

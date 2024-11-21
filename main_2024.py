@@ -412,7 +412,7 @@ def main() -> int:
     assert cluster_estimation_manager is not None
 
     worker_managers.append(cluster_estimation_manager)
-    
+
     result, communications_manager = worker_manager.WorkerManager.create(
         worker_properties=communications_worker_properties,
         local_logger=main_logger,
