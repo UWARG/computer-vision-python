@@ -8,11 +8,11 @@ import pathlib
 from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-from ..common.logger.modules import logger
+from ..common.modules.logger import logger
 
 
 def communications_worker(
-    home_location_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    home_position_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -20,7 +20,7 @@ def communications_worker(
     """
     Worker process.
 
-    home_location: get home_location for init
+    home_position: get home_position for init
     """
 
     worker_name = pathlib.Path(__file__).stem
@@ -35,10 +35,10 @@ def communications_worker(
 
     local_logger.info("Logger initialized", True)
 
-    # Get home location
-    home_location = home_location_queue.queue.get()
+    # Get home position
+    home_position = home_position_queue.queue.get()
 
-    result, comm = communications.Communications.create(home_location, local_logger)
+    result, comm = communications.Communications.create(home_position, local_logger)
     if not result:
         local_logger.error("Worker failed to create class object", True)
         return
