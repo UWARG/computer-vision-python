@@ -7,8 +7,8 @@ import pytest
 import sklearn.datasets
 
 from modules.cluster_estimation import cluster_estimation
-from modules import detection_in_world
 from modules.common.modules.logger import logger
+from modules import detection_in_world
 
 
 MIN_TOTAL_POINTS_THRESHOLD = 100
