@@ -137,7 +137,7 @@ def create_test_case(landing_list: list[LandingPadData]) -> tuple[np.ndarray, np
             image, top_left, bottom_right = draw_ellipse(
                 image, landing_data.center, axis_length, angle, landing_data.blur
             )
-            boxes_list.append([1, 0] + [point for point in top_left + bottom_right])
+            boxes_list.append([1, 0] + list(top_left + bottom_right))
             continue
 
         image, top_left, bottom_right = draw_circle(
