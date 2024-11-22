@@ -20,7 +20,9 @@ def communications_worker(
     """
     Worker process.
 
-    home_position: get home_position for init
+    home_position_queue contains home positions for creating communications object.
+    input_queue and output_queue are data queues.
+    controller is how the main process communicates to this worker process.
     """
 
     worker_name = pathlib.Path(__file__).stem
@@ -36,7 +38,7 @@ def communications_worker(
     local_logger.info("Logger initialized", True)
 
     # Get home position
-    home_position = home_position_queue.queue.get()
+    home_position = home_position_queue.queue.get() 
     local_logger.info(f"Home position received: {home_position}", True)
 
     result, comm = communications.Communications.create(home_position, local_logger)

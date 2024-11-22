@@ -5,9 +5,9 @@ Logs data and forwards it.
 import time
 
 from .. import object_in_world
-from ..common.modules.logger import logger
 from ..common.modules import position_global
 from ..common.modules import position_local
+from ..common.modules.logger import logger
 from ..common.modules.mavlink import local_global_conversion
 
 
@@ -23,7 +23,7 @@ class Communications:
         cls,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-    ) -> "tuple[bool, Communications | None]":
+    ) -> "tuple[True, Communications] | tuple[False, None]":
         """
         Logs data and forwards it.
 
@@ -51,14 +51,13 @@ class Communications:
     def run(
         self,
         objects_in_world: list[object_in_world.ObjectInWorld],
-    ) -> tuple[bool, list[object_in_world.ObjectInWorld] | None]:
+    ) -> tuple[True, list[object_in_world.ObjectInWorld]] | tuple[False, None]:
 
         objects_in_world_global = []
         for object_in_world in objects_in_world:
-            # TODO: Change this when the conversion interface is changed
             north = object_in_world.location_x
             east = object_in_world.location_y
-            down = 0
+            down = 0.0
 
             result, object_position_local = position_local.PositionLocal.create(
                 north,
@@ -67,7 +66,7 @@ class Communications:
             )
             if not result:
                 self.__logger.warning(
-                    f"Could not convert ObjectInWorld to PositionLocal:\object in world: {object_in_world}"
+                    f"Could not convert ObjectInWorld to PositionLocal:\nobject in world: {object_in_world}"
                 )
                 return False, None
 
@@ -76,17 +75,15 @@ class Communications:
                     self.__home_position, object_position_local
                 )
             )
-
             if not result:
                 # Log nothing if at least one of the conversions failed
                 self.__logger.warning(
-                    f"drone_position_global_from_local conversion failed:\nhome_position: {self.__home_position}\ndrone_position_local: {object_position_local}"
+                    f"drone_position_global_from_local conversion failed:\nhome_position: {self.__home_position}\nobject_position_local: {object_position_local}"
                 )
                 return False, None
 
             objects_in_world_global.append(object_in_world_global)
 
-        timestamp = time.time()
-        self.__logger.info(f"{timestamp}: {objects_in_world_global}")
+        self.__logger.info(f"{time.time()}: {objects_in_world_global}")
 
         return True, objects_in_world
