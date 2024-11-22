@@ -41,11 +41,11 @@ def communications_worker(
 
     # Get home position
     try:
-        home_position = home_position_queue.queue.get(timeout=timeout) 
+        home_position = home_position_queue.queue.get(timeout=timeout)
     except queue.Empty:
         local_logger.error("Home position queue timed out on startup", True)
         return
-    
+
     local_logger.info(f"Home position received: {home_position}", True)
 
     result, comm = communications.Communications.create(home_position, local_logger)

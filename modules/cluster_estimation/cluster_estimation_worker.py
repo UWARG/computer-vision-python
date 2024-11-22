@@ -2,9 +2,13 @@
 Gets detections in world space and outputs estimations of objects.
 """
 
+import os
+import pathlib
+
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import cluster_estimation
+from ..common.modules.logger import logger
 
 
 def cluster_estimation_worker(
@@ -38,13 +42,25 @@ def cluster_estimation_worker(
     worker_controller: worker_controller.WorkerController
         How the main process communicates to this worker process.
     """
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
+    if not result:
+        print("ERROR: Worker failed to create logger")
+        return
+
+    assert local_logger is not None
+
+    local_logger.info("Logger initialized")
+
     result, estimator = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
         min_new_points_to_run,
         random_state,
+        local_logger,
     )
     if not result:
-        print("ERROR: Worker failed to create class object")
+        local_logger.error("Worker failed to create class object", True)
         return
 
     # Get Pylance to stop complaining

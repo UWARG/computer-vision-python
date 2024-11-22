@@ -117,7 +117,7 @@ def main() -> int:
         MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
         MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
-        
+
         COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
 
         # pylint: enable=invalid-name
