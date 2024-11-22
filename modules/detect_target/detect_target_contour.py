@@ -17,6 +17,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
     """
     Predicts annd locates landing pads using Classical Computer Vision
     """
+
     def __init__(
         self,
         show_annotations: bool = False,
