@@ -4,6 +4,7 @@ Logs data and forwards it.
 
 import os
 import pathlib
+import queue
 
 from . import communications
 from utilities.workers import queue_proxy_wrapper
@@ -12,6 +13,7 @@ from ..common.modules.logger import logger
 
 
 def communications_worker(
+    timeout: float,
     home_position_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -38,7 +40,12 @@ def communications_worker(
     local_logger.info("Logger initialized", True)
 
     # Get home position
-    home_position = home_position_queue.queue.get() 
+    try:
+        home_position = home_position_queue.queue.get(timeout=timeout) 
+    except queue.Empty:
+        local_logger.error("Home position queue timed out on startup", True)
+        return
+    
     local_logger.info(f"Home position received: {home_position}", True)
 
     result, comm = communications.Communications.create(home_position, local_logger)
