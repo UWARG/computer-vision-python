@@ -4,9 +4,18 @@ For managing workers.
 
 import multiprocessing as mp
 
+from modules import detection_in_world
+from modules import geolocation
 from modules.common.modules.logger import logger
 from utilities.workers import worker_controller
 from utilities.workers import queue_proxy_wrapper
+from modules.detect_target import detect_target_worker
+from modules.detections_and_time import DetectionsAndTime
+from modules.flight_interface import flight_interface_worker
+from modules.video_input import video_input_worker
+from modules.data_merge import data_merge_worker
+from modules.geolocation import geolocation_worker
+from modules.detect_target.detect_target_ultralytics import DetectTargetUltralytics
 
 
 class WorkerProperties:
@@ -248,7 +257,23 @@ class WorkerManager:
         # caused the worker to fail. Draining the succeeding queues is not needed
         # because a worker that died would not have put bad data into the queue.
         input_queues = self.__worker_properties.get_input_queues()
+
+        type = None
+        match self.__worker_properties.get_worker_target():
+            case detect_target_worker.detect_target_worker:
+                type = DetectionsAndTime
+            case geolocation_worker.geolocation_worker:
+                type = detection_in_world.DetectionInWorld
+            case _:
+                type = None
+
         for queue in input_queues:
-            queue.drain_queue()
+            # TODO: Implement the check for type of worker and check queue type
+            items = queue.get_queue_items()
+
+            if items is not None and type is not None:
+                for item in items:
+                    if isinstance(item, type):
+                        queue.queue.put(item)
 
         return True
