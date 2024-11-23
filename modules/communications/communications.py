@@ -78,7 +78,7 @@ class Communications:
             if not result:
                 # Log nothing if at least one of the conversions failed
                 self.__logger.warning(
-                    f"drone_position_global_from_local conversion failed:\nhome_position: {self.__home_position}\nobject_position_local: {object_position_local}"
+                    f"position_global_from_local conversion failed:\nhome_position: {self.__home_position}\nobject_position_local: {object_position_local}"
                 )
                 return False, None
 
