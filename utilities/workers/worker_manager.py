@@ -268,7 +268,7 @@ class WorkerManager:
                 type = None
 
         for queue in input_queues:
-            # TODO: Implement the check for type of worker and check queue type
+            # TODO: Implement the check for type of worker and check queue type for all queue types
             items = queue.get_queue_items()
 
             if items is not None and type is not None:
