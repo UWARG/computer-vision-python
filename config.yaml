@@ -41,4 +41,4 @@ cluster_estimation:
     random_state: 0
 
 communications:
-    timeout: 10.0  # seconds
+    timeout: 30.0  # seconds

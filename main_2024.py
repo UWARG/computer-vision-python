@@ -445,11 +445,7 @@ def main() -> int:
             cluster_estimations = None
 
         if cluster_estimations is not None:
-            for cluster in cluster_estimations:
-                main_logger.debug("Cluster in world: ", True)
-                main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: " + str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
+            main_logger.debug(f"Clusters: {cluster_estimations}")
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break
