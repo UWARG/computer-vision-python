@@ -47,7 +47,7 @@ class FlightInterface:
         # Get Pylance to stop complaining
         assert home_position is not None
 
-        local_logger.info(str(home_position), True)
+        local_logger.info(f"Home position: {home_position}", True)
 
         return True, FlightInterface(cls.__create_key, controller, home_position, local_logger)
 
@@ -66,6 +66,12 @@ class FlightInterface:
         self.controller = controller
         self.__home_position = home_position
         self.__logger = local_logger
+
+    def get_home_position(self) -> position_global.PositionGlobal:
+        """
+        Accessor for home position.
+        """
+        return self.__home_position
 
     def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """

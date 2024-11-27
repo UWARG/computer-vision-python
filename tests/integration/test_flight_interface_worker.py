@@ -103,6 +103,7 @@ def main() -> int:
     mp_manager = mp.Manager()
 
     out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    home_position_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
@@ -114,6 +115,7 @@ def main() -> int:
             FLIGHT_INTERFACE_WORKER_PERIOD,
             in_queue,  # Added input_queue
             out_queue,
+            home_position_out_queue,
             controller,
         ),
     )
@@ -124,6 +126,8 @@ def main() -> int:
     time.sleep(3)
 
     # Test
+    home_position = home_position_out_queue.queue.get()
+    assert home_position is not None
 
     # Run the apply_decision tests
     test_result = apply_decision_test(in_queue, out_queue)
