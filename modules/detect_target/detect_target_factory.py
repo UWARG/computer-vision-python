@@ -51,5 +51,10 @@ def create_detect_target(
                 show_annotations,
                 save_name,
             )
+        case DetectTargetOption.C_CONTOUR:
+            return True, detect_target_contour.DetectTargetContour(
+                show_annotations,
+                save_name,
+            )
 
     return False, None
