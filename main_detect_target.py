@@ -9,9 +9,9 @@ import pathlib
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
 from modules.video_input import video_input_worker
-from modules.common.logger.modules import logger
-from modules.common.logger.modules import logger_setup_main
-from modules.common.logger.read_yaml.modules import read_yaml
+from modules.common.modules.logger import logger
+from modules.common.modules.logger import logger_main_setup
+from modules.common.modules.read_yaml import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from utilities.workers import worker_manager
@@ -56,7 +56,7 @@ def main() -> int:
     assert config_logger is not None
 
     # Setup main logger
-    result, main_logger, logging_path = logger_setup_main.setup_main_logger(config_logger)
+    result, main_logger, logging_path = logger_main_setup.setup_main_logger(config_logger)
     if not result:
         print("ERROR: Failed to create main logger")
         return -1
