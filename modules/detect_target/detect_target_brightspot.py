@@ -10,9 +10,13 @@ import numpy as np
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
+from ..common.modules.logger import logger
 
 
-BRIGHTSPOT_THRESHOLD = 240
+BRIGHTSPOT_PERCENTILE = 99.9
+DETECTION_LABEL = 1
+# Confidence set to 1 by default because SimpleBlobDetector does not compute a reponse value during keypoint detection
+CONFIDENCE = 1
 
 
 class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
@@ -22,16 +26,21 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
     def __init__(
         self,
+        local_logger: logger.Logger,
         show_annotations: bool = False,
         save_name: str = "",
     ) -> None:
         """
         Initializes the bright spot detector.
 
+        device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
+        model_path: path to the YOLOv8 model.
+        override_full: Force full precision floating point calculations.
         show_annotations: Display annotated images.
         save_name: Filename prefix for logging detections and annotated images.
         """
         self.__counter = 0
+        self.__local_logger = local_logger
         self.__show_annotations = show_annotations
         self.__filename_prefix = ""
         if save_name != "":
@@ -47,24 +56,47 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         Return: Success, detections.
         """
+        start_time = time.time()
+
         image = data.image
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        try:
+            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Catching all exceptions for library call
+        # pylint: disable-next=broad-exception-caught
+        except Exception as exception:
+            self.__local_logger.error(f"{time.time()}: Failed to convert to grayscale.")
+            self.__local_logger.error(f"{exception}")
+            return False, None
+
+        brightspot_threshold = np.percentile(gray_image, BRIGHTSPOT_PERCENTILE)
+
+        print(brightspot_threshold)
 
         # Apply thresholding to isolate bright spots
-        _, bw_image = cv2.threshold(gray_image, BRIGHTSPOT_THRESHOLD, 255, cv2.THRESH_BINARY)
+        threshold_used, bw_image = cv2.threshold(
+            gray_image, brightspot_threshold, 255, cv2.THRESH_BINARY
+        )
+        if threshold_used == 0:
+            self.__local_logger.error(f"{time.time()}: Failed to threshold image.")
+            return False, None
 
         # Set up SimpleBlobDetector
         params = cv2.SimpleBlobDetector_Params()
         params.filterByColor = True
         params.blobColor = 255
-        params.filterByCircularity = True
-        params.minCircularity = 0.5
+        params.filterByCircularity = False
+        params.filterByInertia = True
+        params.minInertiaRatio = 0.2
+        params.filterByConvexity = False
+        params.filterByArea = True
+        params.minArea = 50
         detector = cv2.SimpleBlobDetector_create(params)
         keypoints = detector.detect(bw_image)
         if len(keypoints) == 0:
+            self.__local_logger.info(f"{time.time()}: No brightspots detected.")
             return False, None
 
-        # Annotate the image with detected keypoints
+        # Annotate the image (green circle) with detected keypoints
         image_annotated = cv2.drawKeypoints(
             image, keypoints, np.array([]), (0, 255, 0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS
         )
@@ -82,22 +114,25 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             x, y = keypoint.pt
             size = keypoint.size
             bounds = np.array([x - size / 2, y - size / 2, x + size / 2, y + size / 2])
-            confidence = keypoint.response
-            result, detection = detections_and_time.Detection.create(bounds, 1, confidence)
+            result, detection = detections_and_time.Detection.create(
+                bounds, DETECTION_LABEL, CONFIDENCE
+            )
             if result:
                 # Get Pylance to stop complaining
                 assert detections is not None
 
                 detections.append(detection)
 
+        # pylint: disable=duplicate-code
+        end_time = time.time()
+
         # Logging
+        self.__local_logger.info(
+            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
+        )
+
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
-
-            # Object detections
-            with open(filename + ".txt", "w", encoding="utf-8") as file:
-                # Use internal string representation
-                file.write(repr(detections))
 
             # Annotated image
             cv2.imwrite(filename + ".png", image_annotated)  # type: ignore

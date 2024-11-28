@@ -12,10 +12,11 @@ import pytest
 from modules.detect_target import detect_target_brightspot
 from modules import image_and_time
 from modules import detections_and_time
+from modules.common.modules.logger import logger
 
 
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_IR1_PATH = TEST_PATH / "ir.png"
+IMAGE_IR_PATH = pathlib.Path(TEST_PATH, "ir.png")
 EXPECTED_DETECTIONS_PATH = pathlib.Path(TEST_PATH, "bounding_box_ir.txt")
 
 BRIGHTSPOT_THRESHOLD = 240
@@ -25,7 +26,7 @@ CONFIDENCE_PRECISION_TOLERANCE = 6
 
 # Test functions use test fixture signature names and access class privates
 # No enable
-# pylint: disable=protected-access,redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,duplicate-code
 
 
 def compare_detections(
@@ -104,9 +105,12 @@ def detector() -> detect_target_brightspot.DetectTargetBrightspot:  # type: igno
     """
     Construct DetectTargetBrightspot.
     """
-    detection = detect_target_brightspot.DetectTargetBrightspot(
-        show_annotations=False, save_name=""
-    )
+    result, test_logger = logger.Logger.create("test_logger", False)
+
+    assert result
+    assert test_logger is not None
+
+    detection = detect_target_brightspot.DetectTargetBrightspot(test_logger)
     yield detection  # type: ignore
 
 
@@ -115,7 +119,7 @@ def image_ir() -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load ir.png image.
     """
-    image = cv2.imread(str(IMAGE_IR1_PATH))
+    image = cv2.imread(str(IMAGE_IR_PATH))
     result, ir_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert ir_image is not None
