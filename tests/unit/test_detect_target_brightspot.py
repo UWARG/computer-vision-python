@@ -3,7 +3,6 @@ Test DetectTargetBrightspot module.
 """
 
 import pathlib
-import copy
 
 import cv2
 import numpy as np
@@ -15,11 +14,15 @@ from modules import detections_and_time
 from modules.common.modules.logger import logger
 
 
+NUMBER_OF_IMAGES = 7
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_IR_PATH = pathlib.Path(TEST_PATH, "ir.png")
-EXPECTED_DETECTIONS_PATH = pathlib.Path(TEST_PATH, "bounding_box_ir.txt")
+IMAGE_FILES = [f"ir{i}.png" for i in range(1, NUMBER_OF_IMAGES + 1)]
+EXPECTED_DETECTIONS_PATHS = [
+    pathlib.Path(TEST_PATH, f"bounding_box_ir{i}.txt") for i in range(1, NUMBER_OF_IMAGES + 1)
+]
+TEST_CASES = list(zip(IMAGE_FILES, EXPECTED_DETECTIONS_PATHS))
 
-BRIGHTSPOT_THRESHOLD = 240
+
 BOUNDING_BOX_PRECISION_TOLERANCE = 3
 CONFIDENCE_PRECISION_TOLERANCE = 6
 
@@ -76,14 +79,19 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
     Create DetectionsAndTime from expected detections.
     Format: [confidence, label, x_1, y_1, x_2, y_2].
     """
-    if detections_from_file.ndim == 1:
-        detections_from_file = detections_from_file.reshape(1, -1)
-
-    assert detections_from_file.shape[1] == 6
-
     result, detections = detections_and_time.DetectionsAndTime.create(0)
     assert result
     assert detections is not None
+
+    if detections_from_file.size == 0:
+        return detections
+
+    if detections_from_file.ndim == 1:
+        detections_from_file = detections_from_file.reshape(1, -1)
+
+    assert (
+        detections_from_file.shape[1] == 6
+    ), f"Expected detections shape mismatch: {detections_from_file.shape}"
 
     for detection_data in detections_from_file:
         confidence, label, x_1, y_1, x_2, y_2 = detection_data
@@ -114,26 +122,28 @@ def detector() -> detect_target_brightspot.DetectTargetBrightspot:  # type: igno
     yield detection  # type: ignore
 
 
-@pytest.fixture()
-def image_ir() -> image_and_time.ImageAndTime:  # type: ignore
+@pytest.fixture(params=TEST_CASES)
+def image_ir(request: pytest.FixtureRequest) -> "tuple[image_and_time.ImageAndTime, detections_and_time.DetectionsAndTime]":  # type: ignore
     """
-    Load ir.png image.
+    Load image and its corresponding expected detections.
     """
-    image = cv2.imread(str(IMAGE_IR_PATH))
+    image_file, expected_detections_file = request.param
+
+    image_path = pathlib.Path(TEST_PATH, image_file)
+    image = cv2.imread(str(image_path))
     result, ir_image = image_and_time.ImageAndTime.create(image)
     assert result
     assert ir_image is not None
-    yield ir_image  # type: ignore
 
+    if expected_detections_file.exists():
+        expected = np.loadtxt(expected_detections_file)
+        detections = create_detections(expected)
+    else:
+        result, detections = detections_and_time.DetectionsAndTime.create(0)
+        assert result
+        assert detections is not None
 
-@pytest.fixture()
-def expected_detections() -> detections_and_time.DetectionsAndTime:  # type: ignore
-    """
-    Load expected detections from file.
-    """
-    expected = np.loadtxt(EXPECTED_DETECTIONS_PATH)
-    detections = create_detections(expected)
-    yield detections  # type: ignore
+    yield ir_image, detections  # type: ignore
 
 
 class TestBrightspotDetector:
@@ -141,34 +151,22 @@ class TestBrightspotDetector:
     Tests `DetectTargetBrightspot.run()`.
     """
 
-    def test_single_ir_image(
-        self,
-        detector: detect_target_brightspot.DetectTargetBrightspot,
-        image_ir: image_and_time.ImageAndTime,
-        expected_detections: detections_and_time.DetectionsAndTime,
-    ) -> None:
-        """
-        Test detection on a single IR image.
-        """
-        result, actual = detector.run(image_ir)
-        assert result
-        assert actual is not None
-        compare_detections(actual, expected_detections)
-
     def test_multiple_ir_images(
         self,
         detector: detect_target_brightspot.DetectTargetBrightspot,
-        image_ir: image_and_time.ImageAndTime,
-        expected_detections: detections_and_time.DetectionsAndTime,
+        image_ir: "tuple[image_and_time.ImageAndTime, detections_and_time.DetectionsAndTime]",
     ) -> None:
         """
-        Test detection on multiple copies of the IR image.
+        Test detection on multiple IR images.
         """
-        image_count = 4
-        input_images = [copy.deepcopy(image_ir) for _ in range(image_count)]
-        outputs = [detector.run(img) for img in input_images]
+        image, expected_detections = image_ir
 
-        for result, actual in outputs:
+        result, actual = detector.run(image)
+
+        if not expected_detections:
+            assert result is False
+            assert actual is None
+        else:
             assert result
             assert actual is not None
             compare_detections(actual, expected_detections)

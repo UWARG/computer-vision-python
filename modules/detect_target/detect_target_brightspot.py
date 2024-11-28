@@ -33,9 +33,6 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         """
         Initializes the bright spot detector.
 
-        device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
-        model_path: path to the YOLOv8 model.
-        override_full: Force full precision floating point calculations.
         show_annotations: Display annotated images.
         save_name: Filename prefix for logging detections and annotated images.
         """
@@ -69,8 +66,6 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             return False, None
 
         brightspot_threshold = np.percentile(gray_image, BRIGHTSPOT_PERCENTILE)
-
-        print(brightspot_threshold)
 
         # Apply thresholding to isolate bright spots
         threshold_used, bw_image = cv2.threshold(
