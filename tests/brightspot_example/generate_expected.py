@@ -7,14 +7,14 @@ import pathlib
 import cv2
 import numpy as np
 
-from modules.detect_target import detect_target_brightspot
 from modules import image_and_time
 from modules.common.modules.logger import logger
+from modules.detect_target import detect_target_brightspot
 
 
 NUMBER_OF_IMAGES = 7
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_FILES = [f"ir{i}.png" for i in range(1, NUMBER_OF_IMAGES + 1)]
+IMAGE_FILES = [pathlib.Path(f"ir{i}.png") for i in range(1, NUMBER_OF_IMAGES + 1)]
 ANNOTATED_IMAGE_PATHS = [
     pathlib.Path(TEST_PATH, f"ir{i}_annotated.png") for i in range(1, NUMBER_OF_IMAGES + 1)
 ]
@@ -42,14 +42,20 @@ def main() -> int:
         image_path = pathlib.Path(TEST_PATH, image_file)
         image = cv2.imread(str(image_path))  # type: ignore
         result, image_data = image_and_time.ImageAndTime.create(image)
-        if not result or image_data is None:
-            print(f"Failed to load image {image_path}.")
+        if not result:
+            temp_logger.error(f"Failed to load image {image_path}.")
             continue
 
-        success, detections = detector.run(image_data)
-        if not success or detections is None:
-            print(f"Detection failed or returned no detections for {image_path}.")
+        # Get Pylance to stop complaining
+        assert image_data is not None
+
+        result, detections = detector.run(image_data)
+        if not result:
+            temp_logger.error(f"Detection failed or returned no detections for {image_path}.")
             continue
+
+        # Get Pylance to stop complaining
+        assert detections is not None
 
         detections_list = []
         image_annotated = image.copy()
@@ -67,10 +73,14 @@ def main() -> int:
         detections_array = np.array(detections_list)
 
         np.savetxt(expected_detections_path, detections_array, fmt="%.6f")
-        print(f"Expected detections saved to {expected_detections_path}")
+        temp_logger.info(f"Expected detections saved to {expected_detections_path}.")
 
-        cv2.imwrite(str(annotated_image_path), image_annotated)  # type: ignore
-        print(f"Annotated image saved to {annotated_image_path}")
+        result = cv2.imwrite(str(annotated_image_path), image_annotated)  # type: ignore
+        if not result:
+            temp_logger.error(f"Failed to wrtie image to {annotated_image_path}.")
+            continue
+
+        temp_logger.info(f"Annotated image saved to {annotated_image_path}.")
 
     return 0
 
