@@ -123,6 +123,7 @@ def draw_ellipse(
     image = cv2.ellipse(image, center, axis_length, angle, 0, 360, (0, 0, 0), -1)
     return image, top_left, bottom_right
 
+
 def create_test_case(landing_list: list[LandingPadData]) -> tuple[np.ndarray, np.ndarray]:
     """
     Genereates test cases given a data set.
