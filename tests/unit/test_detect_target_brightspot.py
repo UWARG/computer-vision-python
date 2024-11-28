@@ -199,23 +199,3 @@ class TestBrightspotDetector:
 
         assert result is False
         assert actual is None
-
-    # def test_multiple_ir_images(
-    #     self,
-    #     detector: detect_target_brightspot.DetectTargetBrightspot,
-    #     image_ir: tuple[image_and_time.ImageAndTime, detections_and_time.DetectionsAndTime],
-    # ) -> None:
-    #     """
-    #     Test detection on multiple IR images.
-    #     """
-    #     image, expected_detections = image_ir
-
-    #     result, actual = detector.run(image)
-
-    #     if not expected_detections:
-    #         assert result is False
-    #         assert actual is None
-    #     else:
-    #         assert result
-    #         assert actual is not None
-    #         compare_detections(actual, expected_detections)

@@ -15,7 +15,7 @@ from ..common.modules.logger import logger
 
 BRIGHTSPOT_PERCENTILE = 99.9
 
-# Label for brightspots
+# Label for brightspots; is 1 since 0 is used for blue landing pads
 DETECTION_LABEL = 1
 # SimpleBlobDetector is a binary detector, so a detection has confidence 1.0 by default
 CONFIDENCE = 1
