@@ -6,6 +6,7 @@ import time
 
 import cv2
 import ultralytics
+import torch
 
 from . import base_detect_target
 from .. import image_and_time
@@ -58,7 +59,11 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         """
         image = data.image
         start_time = time.time()
-
+        # Fall back to CPU if no GPU is available
+        if device != "cpu" and not torch.cuda.is_available():
+            self.__local_logger.warning("CUDA not available. Falling back to CPU.")
+            device = "cpu"
+            
         predictions = self.__model.predict(
             source=image,
             half=self.__enable_half_precision,
@@ -111,12 +116,11 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             self.__counter += 1
 
         if self.__show_annotations:
-            if image_annotated is None:
-                self.__local_logger.error("Annotated image is invalid.")
-                return False, detections
-
-            # Display the annotated image in a named window
-            cv2.imshow("Annotated", image_annotated)
-            cv2.waitKey(1)  # Short delay to process GUI events
+            if image_annotated is not None:
+                # Display the annotated image in a named window
+                cv2.imshow("Annotated", image_annotated)
+                cv2.waitKey(1)  # Short delay to process GUI events
+            else:
+                self.__local_logger.warning("Annotated image is invalid.")
 
         return True, detections
