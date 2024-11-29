@@ -7,7 +7,6 @@ import time
 import cv2
 import ultralytics
 
-
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
@@ -115,7 +114,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             if image_annotated is None:
                 self.__local_logger.error("Annotated image is invalid.")
                 return False, detections
-
 
             # Display the annotated image in a named window
             cv2.imshow("Annotated", image_annotated)
