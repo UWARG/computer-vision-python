@@ -232,7 +232,7 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
     """
     Construct DetectTargetContour.
     """
-    detection = detect_target_contour.DetectTargetContour(True)
+    detection = detect_target_contour.DetectTargetContour(False)
     yield detection  # type: ignore
 
 
