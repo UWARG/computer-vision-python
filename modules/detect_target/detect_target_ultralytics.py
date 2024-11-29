@@ -3,9 +3,10 @@ Detects objects using the provided model.
 """
 
 import time
+
 import cv2
-import ultralytics
 import torch
+import ultralytics
 
 from . import base_detect_target
 from .. import image_and_time
@@ -45,6 +46,10 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
+        # Fall back to CPU if no GPU is available
+        if self.__device != "cpu" and not torch.cuda.is_available():
+            self.__local_logger.warning("CUDA not available. Falling back to CPU.")
+            self.__device = "cpu"
 
     def run(
         self, data: image_and_time.ImageAndTime

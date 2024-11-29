@@ -30,9 +30,8 @@ def create_detect_target(
     Factory function to create a detection target object.
 
     Returns:
-    Tuple containing success status and the instantiated detection object (if successful).
+    Success, detect target object.
     """
-
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:
             return True, detect_target_ultralytics.DetectTargetUltralytics(
@@ -43,5 +42,4 @@ def create_detect_target(
                 show_annotations,
                 save_name,
             )
-
     return False, None
