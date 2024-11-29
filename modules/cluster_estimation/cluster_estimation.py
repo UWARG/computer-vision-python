@@ -235,6 +235,7 @@ class ClusterEstimation:
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
 
+        label = 0
         # Create output list of remaining valid clusters
         objects_in_world = []
         for cluster in model_output:
