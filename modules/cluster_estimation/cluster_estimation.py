@@ -210,17 +210,17 @@ class ClusterEstimation:
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
 
+        label = 0
         # Create output list of remaining valid clusters
         detections_in_world = []
         for cluster in model_output:
             result, landing_pad = object_in_world.ObjectInWorld.create(
-                cluster[0][0],
-                cluster[0][1],
-                cluster[2],
+                cluster[0][0], cluster[0][1], cluster[2], label
             )
 
             if result:
                 detections_in_world.append(landing_pad)
+                label += 1
             else:
                 self.__logger.warning("Failed to create ObjectInWorld object")
 
