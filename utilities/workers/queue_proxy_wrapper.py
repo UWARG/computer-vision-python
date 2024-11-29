@@ -5,6 +5,7 @@ Queue.
 import multiprocessing.managers
 import queue
 import time
+from typing import Any
 
 
 class QueueProxyWrapper:
@@ -48,6 +49,23 @@ class QueueProxyWrapper:
             self.queue.get(timeout=timeout)
         except queue.Empty:
             return
+
+    def get_queue_items(self, timeout: float = 0.0) -> "list[Any] | None":
+        """
+        Gets items from the queue and returns them as a list.
+
+        timeout: Time waiting in seconds before giving up; must be greater than 0.
+        """
+        items = []
+
+        for item in range(0, self.queue.qsize()):
+            items.append(item)
+
+        if not items:
+            return None
+        else:
+            return items
+            
 
     def fill_and_drain_queue(self) -> None:
         """
