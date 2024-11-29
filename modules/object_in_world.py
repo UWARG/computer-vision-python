@@ -12,7 +12,7 @@ class ObjectInWorld:
 
     @classmethod
     def create(
-        cls, location_x: float, location_y: float, spherical_variance: float
+        cls, location_x: float, location_y: float, spherical_variance: float, label: int
     ) -> "tuple[bool, ObjectInWorld | None]":
         """
         location_x, location_y: Location of the object.
@@ -21,7 +21,9 @@ class ObjectInWorld:
         if spherical_variance < 0.0:
             return False, None
 
-        return True, ObjectInWorld(cls.__create_key, location_x, location_y, spherical_variance)
+        return True, ObjectInWorld(
+            cls.__create_key, location_x, location_y, spherical_variance, label
+        )
 
     def __init__(
         self,
@@ -29,6 +31,7 @@ class ObjectInWorld:
         location_x: float,
         location_y: float,
         spherical_variance: float,
+        label: int,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -38,12 +41,13 @@ class ObjectInWorld:
         self.location_x = location_x
         self.location_y = location_y
         self.spherical_variance = spherical_variance
+        self.label = label
 
     def __str__(self) -> str:
         """
         To string.
         """
-        return f"{self.__class__}, location_x: {self.location_x}, location_y: {self.location_y}, spherical_variance: {self.spherical_variance}"
+        return f"{self.__class__}, location_x: {self.location_x}, location_y: {self.location_y}, spherical_variance: {self.spherical_variance}, label: {self.label}"
 
     def __repr__(self) -> str:
         """
