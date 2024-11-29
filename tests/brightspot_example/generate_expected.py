@@ -12,14 +12,18 @@ from modules.common.modules.logger import logger
 from modules.detect_target import detect_target_brightspot
 
 
-NUMBER_OF_IMAGES = 7
+NUMBER_OF_IMAGES_DETECTIONS = 5
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_FILES = [pathlib.Path(f"ir{i}.png") for i in range(1, NUMBER_OF_IMAGES + 1)]
+IMAGE_DETECTIONS_FILES = [
+    pathlib.Path(f"ir_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
+]
 ANNOTATED_IMAGE_PATHS = [
-    pathlib.Path(TEST_PATH, f"ir{i}_annotated.png") for i in range(1, NUMBER_OF_IMAGES + 1)
+    pathlib.Path(TEST_PATH, f"ir_detections_{i}_annotated.png")
+    for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
 ]
 EXPECTED_DETECTIONS_PATHS = [
-    pathlib.Path(TEST_PATH, f"bounding_box_ir{i}.txt") for i in range(1, NUMBER_OF_IMAGES + 1)
+    pathlib.Path(TEST_PATH, f"bounding_box_ir_detections_{i}.txt")
+    for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
 ]
 
 
@@ -37,7 +41,7 @@ def main() -> int:
     )
 
     for image_file, annotated_image_path, expected_detections_path in zip(
-        IMAGE_FILES, ANNOTATED_IMAGE_PATHS, EXPECTED_DETECTIONS_PATHS
+        IMAGE_DETECTIONS_FILES, ANNOTATED_IMAGE_PATHS, EXPECTED_DETECTIONS_PATHS
     ):
         image_path = pathlib.Path(TEST_PATH, image_file)
         image = cv2.imread(str(image_path))  # type: ignore
@@ -51,7 +55,7 @@ def main() -> int:
 
         result, detections = detector.run(image_data)
         if not result:
-            temp_logger.error(f"Detection failed or returned no detections for {image_path}.")
+            temp_logger.error(f"Unable to get detections for {image_path}.")
             continue
 
         # Get Pylance to stop complaining
@@ -77,7 +81,7 @@ def main() -> int:
 
         result = cv2.imwrite(str(annotated_image_path), image_annotated)  # type: ignore
         if not result:
-            temp_logger.error(f"Failed to wrtie image to {annotated_image_path}.")
+            temp_logger.error(f"Failed to write image to {annotated_image_path}.")
             continue
 
         temp_logger.info(f"Annotated image saved to {annotated_image_path}.")

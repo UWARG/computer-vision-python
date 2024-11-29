@@ -14,20 +14,20 @@ from modules.common.modules.logger import logger
 from modules.detect_target import detect_target_brightspot
 
 
-NUMBER_OF_IMAGES = 7
+NUMBER_OF_IMAGES_DETECTIONS = 5
+NUMBER_OF_IMAGES_NO_DETECTIONS = 2
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_FILES = [pathlib.Path(f"ir{i}.png") for i in range(1, NUMBER_OF_IMAGES + 1)]
-EXPECTED_DETECTIONS_PATHS = [
-    pathlib.Path(TEST_PATH, f"bounding_box_ir{i}.txt") for i in range(1, NUMBER_OF_IMAGES + 1)
+IMAGE_DETECTIONS_FILES = [
+    pathlib.Path(f"ir_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
 ]
-
-DETECTION_TEST_CASES = []
-NO_DETECTION_TEST_CASES = []
-for image_file, expected_detections_file in zip(IMAGE_FILES, EXPECTED_DETECTIONS_PATHS):
-    if expected_detections_file.exists() and expected_detections_file.stat().st_size > 0:
-        DETECTION_TEST_CASES.append((image_file, expected_detections_file))
-    else:
-        NO_DETECTION_TEST_CASES.append(image_file)
+IMAGE_NO_DETECTIONS_FILES = [
+    pathlib.Path(f"ir_no_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_NO_DETECTIONS)
+]
+EXPECTED_DETECTIONS_PATHS = [
+    pathlib.Path(TEST_PATH, f"bounding_box_ir_detections_{i}.txt")
+    for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
+]
+DETECTION_TEST_CASES = list(zip(IMAGE_DETECTIONS_FILES, EXPECTED_DETECTIONS_PATHS))
 
 BOUNDING_BOX_PRECISION_TOLERANCE = 3
 CONFIDENCE_PRECISION_TOLERANCE = 6
@@ -143,7 +143,7 @@ def image_ir_detections(request: pytest.FixtureRequest) -> tuple[image_and_time.
     yield ir_image, detections  # type: ignore
 
 
-@pytest.fixture(params=NO_DETECTION_TEST_CASES)
+@pytest.fixture(params=IMAGE_NO_DETECTIONS_FILES)
 def image_ir_no_detections(request: pytest.FixtureRequest) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load image with no detections.

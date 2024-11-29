@@ -18,7 +18,7 @@ BRIGHTSPOT_PERCENTILE = 99.9
 # Label for brightspots; is 1 since 0 is used for blue landing pads
 DETECTION_LABEL = 1
 # SimpleBlobDetector is a binary detector, so a detection has confidence 1.0 by default
-CONFIDENCE = 1
+CONFIDENCE = 1.0
 
 
 class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
@@ -47,7 +47,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
     def run(
         self, data: image_and_time.ImageAndTime
-    ) -> "tuple[True, detections_and_time.DetectionsAndTime] | tuple[False, None]":
+    ) -> tuple[True, detections_and_time.DetectionsAndTime] | tuple[False, None]:
         """
         Runs brightspot detection on the provided image and returns the detections.
 
@@ -88,8 +88,11 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         params.filterByConvexity = False
         params.filterByArea = True
         params.minArea = 50  # pixels
+
         detector = cv2.SimpleBlobDetector_create(params)
         keypoints = detector.detect(bw_image)
+
+        # A lack of detections is not an error, but should still not be forwarded
         if len(keypoints) == 0:
             self.__local_logger.info(f"{time.time()}: No brightspots detected.")
             return False, None
@@ -125,7 +128,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
             detections.append(detection)
 
-        # Logging is identical to detect_target_ultralytics
+        # Logging is identical to detect_target_ultralytics.py
         # pylint: disable=duplicate-code
         end_time = time.time()
 

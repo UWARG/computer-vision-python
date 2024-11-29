@@ -5,8 +5,8 @@ Factory pattern for constructing detect target class at runtime.
 import enum
 
 from . import base_detect_target
-from . import detect_target_ultralytics
 from . import detect_target_brightspot
+from . import detect_target_ultralytics
 from ..common.modules.logger import logger
 
 
