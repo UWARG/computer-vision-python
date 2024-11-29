@@ -3,7 +3,6 @@ Factory pattern for constructing detect target class at runtime.
 """
 
 import enum
-import torch
 
 from . import base_detect_target
 from . import detect_target_ultralytics
@@ -33,7 +32,6 @@ def create_detect_target(
     Returns:
     Tuple containing success status and the instantiated detection object (if successful).
     """
-    
 
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:

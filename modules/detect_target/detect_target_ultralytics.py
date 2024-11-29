@@ -3,7 +3,6 @@ Detects objects using the provided model.
 """
 
 import time
-
 import cv2
 import ultralytics
 import torch
@@ -38,7 +37,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half_precision = not self.__device == "cpu"
+        self.__enable_half_precision = self.__device != "cpu"
         self.__local_logger = local_logger
         self.__show_annotations = show_annotations
         if override_full:
@@ -60,10 +59,10 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         image = data.image
         start_time = time.time()
         # Fall back to CPU if no GPU is available
-        if device != "cpu" and not torch.cuda.is_available():
+        if self.__device != "cpu" and not torch.cuda.is_available():
             self.__local_logger.warning("CUDA not available. Falling back to CPU.")
-            device = "cpu"
-            
+            self.__device = "cpu"
+
         predictions = self.__model.predict(
             source=image,
             half=self.__enable_half_precision,
