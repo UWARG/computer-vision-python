@@ -27,7 +27,10 @@ def create_detect_target(
     save_name: str,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
     """
-    Construct detect target class at runtime.
+    Factory function to create a detection target object.
+
+    Returns:
+    Success, detect target object.
     """
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:
@@ -39,5 +42,4 @@ def create_detect_target(
                 show_annotations,
                 save_name,
             )
-
     return False, None

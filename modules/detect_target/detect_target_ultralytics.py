@@ -5,6 +5,7 @@ Detects objects using the provided model.
 import time
 
 import cv2
+import torch
 import ultralytics
 
 from . import base_detect_target
@@ -37,7 +38,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__device = device
         self.__model = ultralytics.YOLO(model_path)
         self.__counter = 0
-        self.__enable_half_precision = not self.__device == "cpu"
+        self.__enable_half_precision = self.__device != "cpu"
         self.__local_logger = local_logger
         self.__show_annotations = show_annotations
         if override_full:
@@ -45,6 +46,9 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
+        if self.__device != "cpu" and not torch.cuda.is_available():
+            self.__local_logger.warning("CUDA not available. Falling back to CPU.")
+            self.__device = "cpu"
 
     def run(
         self, data: image_and_time.ImageAndTime
@@ -111,6 +115,11 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             self.__counter += 1
 
         if self.__show_annotations:
-            cv2.imshow("Annotated", image_annotated)  # type: ignore
+            if image_annotated is not None:
+                # Display the annotated image in a named window
+                cv2.imshow("Annotated", image_annotated)
+                cv2.waitKey(1)  # Short delay to process GUI events
+            else:
+                self.__local_logger.warning("Annotated image is invalid.")
 
         return True, detections
