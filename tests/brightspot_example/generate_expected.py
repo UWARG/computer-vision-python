@@ -12,8 +12,9 @@ from modules.common.modules.logger import logger
 from modules.detect_target import detect_target_brightspot
 
 
-NUMBER_OF_IMAGES_DETECTIONS = 5
 TEST_PATH = pathlib.Path("tests", "brightspot_example")
+
+NUMBER_OF_IMAGES_DETECTIONS = 5
 IMAGE_DETECTIONS_FILES = [
     pathlib.Path(f"ir_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
 ]
@@ -24,6 +25,11 @@ ANNOTATED_IMAGE_PATHS = [
 EXPECTED_DETECTIONS_PATHS = [
     pathlib.Path(TEST_PATH, f"bounding_box_ir_detections_{i}.txt")
     for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
+]
+
+NUMBER_OF_IMAGES_NO_DETECTIONS = 2
+IMAGE_NO_DETECTIONS_FILES = [
+    pathlib.Path(f"ir_no_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_NO_DETECTIONS)
 ]
 
 
@@ -85,6 +91,14 @@ def main() -> int:
             continue
 
         temp_logger.info(f"Annotated image saved to {annotated_image_path}.")
+
+    for image_file in IMAGE_NO_DETECTIONS_FILES:
+        result, detections = detector.run(image_data)
+        if result:
+            temp_logger.error(f"False positive detections in {image_path}.")
+            continue
+
+        assert detections is None
 
     return 0
 
