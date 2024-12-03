@@ -12,7 +12,8 @@ from . import video_input
 def video_input_worker(
     camera_name: "int | str",
     period: float,
-    save_name: str,
+    width: int,
+    height: int,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
@@ -21,11 +22,12 @@ def video_input_worker(
 
     camera_name is initial setting.
     period is minimum period between loops.
-    save_name is path for logging.
+    width is the width of the images the camera takes in pixels
+    height is the height of the images the camera takes in pixelss
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
-    input_device = video_input.VideoInput(camera_name, save_name)
+    input_device = video_input.VideoInput(camera_name, width, height)
 
     while not controller.is_exit_requested():
         controller.check_pause()

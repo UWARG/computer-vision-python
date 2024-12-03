@@ -6,6 +6,8 @@ from modules.video_input import video_input
 
 
 CAMERA = 0
+WIDTH = 1920
+HEIGHT = 1080
 
 
 def main() -> int:
@@ -14,9 +16,7 @@ def main() -> int:
     """
     # Setup
     # TODO: Common change logging option
-    camera = video_input.VideoInput(
-        CAMERA,
-    )
+    camera = video_input.VideoInput(CAMERA, WIDTH, HEIGHT)
 
     # Run
     result, image = camera.run()
