@@ -6,6 +6,10 @@ video_input:
     camera_name: 0
     worker_period: 1.0  # seconds
     save_prefix: "log_image"
+    camera_config:
+        ExposureTime: 250
+        Contrast: 1.0
+        AnalogueGain: 64.0
 
 detect_target:
     worker_count: 1
@@ -43,7 +47,3 @@ cluster_estimation:
 communications:
     timeout: 30.0  # seconds
 
-camera_config:
-    ExposureTime: 250
-    Contrast: 1.0
-    AnalogueGain: 64.0
