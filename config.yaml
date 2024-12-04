@@ -42,3 +42,8 @@ cluster_estimation:
 
 communications:
     timeout: 30.0  # seconds
+
+camera_config:
+    ExposureTime: 250
+    Contrast: 1.0
+    AnalogueGain: 64.0
