@@ -1,0 +1,49 @@
+# Global constants for main with CUDA
+
+queue_max_size: 10
+
+video_input:
+    camera_name: 0
+    worker_period: 1.0  # seconds
+    save_prefix: "log_image"
+
+detect_target:
+    worker_count: 1
+    option: 0  # 0 is for Ultralytics (from detect_target_factory.py)
+    device: 0
+    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
+    save_prefix: "log_comp"
+
+flight_interface:
+    address: "tcp:127.0.0.1:14550"
+    timeout: 10.0  # seconds
+    baud_rate: 57600  # symbol rate 
+    worker_period: 0.1  # seconds
+
+data_merge:
+    timeout: 10.0  # seconds
+
+geolocation:
+    resolution_x: 1920
+    resolution_y: 1200 
+    fov_x: 0.64889
+    fov_y: 0.41438
+    camera_position_x: 0.0
+    camera_position_y: 0.0
+    camera_position_z: 0.0
+    camera_orientation_yaw: 0.0
+    camera_orientation_pitch: -1.57079632679
+    camera_orientation_roll: 0.0
+
+cluster_estimation:
+    min_activation_threshold: 25
+    min_new_points_to_run: 5
+    random_state: 0
+
+communications:
+    timeout: 30.0  # seconds
+
+camera_config:
+    ExposureTime: 250
+    Contrast: 1.0
+    AnalogueGain: 64.0

@@ -1,0 +1,58 @@
+# This workflow will install Python dependencies and run tests with PyTest using Python 3.11
+# For more information see: https://docs.github.com/en/actions/about-github-actions
+
+name: Run tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Set Python version
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      # Upgrade pip
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip
+
+      # Set up submodules
+      - name: Set up all submodules and project dependencies
+        run: |
+          git submodule foreach --recursive "pip install -r requirements.txt"
+
+      # Install project dependencies
+      - name: Install project dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-pytorch.txt
+
+      # Install zbar library to resolve pyzbar import error
+      - name: Install zbar library
+        run: sudo apt-get install libzbar0
+
+      # Run linters and formatters
+      - name: Linters and formatters
+        run: |
+          black --check .
+          flake8 .
+          pylint .
+
+      # Run unit tests with PyTest
+      - name: Run unit tests
+        run: pytest -vv

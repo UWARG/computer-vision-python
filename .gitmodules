@@ -1,0 +1,3 @@
+[submodule "modules/common"]
+	path = modules/common
+	url = https://github.com/UWARG/common.git
