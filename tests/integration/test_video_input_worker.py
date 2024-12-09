@@ -6,14 +6,21 @@ import multiprocessing as mp
 import queue
 import time
 
+from modules.common.modules.camera import camera_configurations
+from modules.common.modules.camera import camera_factory
 from modules.video_input import video_input_worker
 from modules import image_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
+# Modify these settings as needed
 VIDEO_INPUT_WORKER_PERIOD = 1.0
-CAMERA = 0
+CAMERA = camera_factory.CameraOption.OPENCV
+WIDTH = 1280
+HEIGHT = 720
+CONFIG = camera_configurations.OpenCVCameraConfig()
+SAVE_PREFIX = ""  # Not saving any pictures
 
 
 def main() -> int:
@@ -29,7 +36,16 @@ def main() -> int:
 
     worker = mp.Process(
         target=video_input_worker.video_input_worker,
-        args=(CAMERA, VIDEO_INPUT_WORKER_PERIOD, "", out_queue, controller),
+        args=(
+            VIDEO_INPUT_WORKER_PERIOD,
+            CAMERA,
+            WIDTH,
+            HEIGHT,
+            CONFIG,
+            SAVE_PREFIX,
+            out_queue,
+            controller,
+        ),
     )
 
     # Run

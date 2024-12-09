@@ -12,6 +12,8 @@ import cv2
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
 from modules import odometry_and_time
+from modules.common.modules.camera import camera_configurations
+from modules.common.modules.camera import camera_factory
 from modules.communications import communications_worker
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
@@ -81,10 +83,20 @@ def main() -> int:
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-        VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
-        VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
+        VIDEO_INPUT_OPTION_INT = config["video_input"]["camera_option"]
+        VIDEO_INPUT_OPTION = camera_factory.CameraOption(VIDEO_INPUT_OPTION_INT)
+        VIDEO_INPUT_WIDTH = config["video_input"]["width"]
+        VIDEO_INPUT_HEIGHT = config["video_input"]["height"]
+        if VIDEO_INPUT_OPTION == camera_factory.CameraOption.OPENCV:
+            VIDEO_INPUT_CAMERA_CONFIG = camera_configurations.OpenCVCameraConfig(
+                **config["video_input"]["camera_config"]
+            )
+        elif VIDEO_INPUT_OPTION == camera_factory.CameraOption.PICAM2:
+            VIDEO_INPUT_CAMERA_CONFIG = camera_configurations.PiCameraConfig(
+                **config["video_input"]["camera_config"]
+            )
+        VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
@@ -199,8 +211,11 @@ def main() -> int:
         count=1,
         target=video_input_worker.video_input_worker,
         work_arguments=(
-            VIDEO_INPUT_CAMERA_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
+            VIDEO_INPUT_OPTION,
+            VIDEO_INPUT_WIDTH,
+            VIDEO_INPUT_HEIGHT,
+            VIDEO_INPUT_CAMERA_CONFIG,
             VIDEO_INPUT_SAVE_PREFIX,
         ),
         input_queues=[],

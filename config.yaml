@@ -3,25 +3,36 @@
 queue_max_size: 10
 
 video_input:
-    camera_name: 0
     worker_period: 1.0  # seconds
-    save_prefix: "log_image"
+    camera_option: 0  # 0 is for opencv camera (from camera_factory.py)
+    width: 1920
+    height: 1200
+    # camera_config:
+    #     exposure_time: 250  # microseconds
+    #     analogue_gain: 64.0  # Sets ISO, 1.0 for normal, 64.0 for max, 0.0 for min
+    #     contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
+    #     lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
+    camera_config:
+        device_index: 0
+    save_prefix: "log_image"  # Leave as empty string to not log any images
 
 detect_target:
     worker_count: 1
     option: 0  # 0 is for Ultralytics (from detect_target_factory.py)
     device: 0
-    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # TODO: update
+    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
     save_prefix: "log_comp"
 
 flight_interface:
-    address: "tcp:127.0.0.1:14550"
-    timeout: 10.0  # seconds
+    # port 5762 connects directly to the simulated auto pilot, which is more realistic
+    # than connecting to port 14550, which is the ground station
+    address: "tcp:localhost:5762"
+    timeout: 30.0  # seconds
     baud_rate: 57600  # symbol rate 
     worker_period: 0.1  # seconds
 
 data_merge:
-    timeout: 10.0  # seconds
+    timeout: 30.0  # seconds
 
 geolocation:
     resolution_x: 1920
