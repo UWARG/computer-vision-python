@@ -13,7 +13,9 @@ video_input:
     #     contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
     #     lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
     camera_config:
-        device_index: 0
+        ExposureTime: 250
+        Contrast: 1.0
+        AnalogueGain: 64.0
     save_prefix: "log_image"  # Leave as empty string to not log any images
 
 detect_target:
