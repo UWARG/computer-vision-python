@@ -14,6 +14,7 @@ from ..common.modules.logger import logger
 def cluster_estimation_worker(
     min_activation_threshold: int,
     min_new_points_to_run: int,
+    max_num_components: int,
     random_state: int,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -29,6 +30,9 @@ def cluster_estimation_worker(
 
     min_new_points_to_run: int
         Minimum number of new data points that must be collected before running model.
+
+    max_num_components: int
+        Max number of real landing pads.
 
     random_state: int
         Seed for randomizer, to get consistent results.
@@ -56,6 +60,7 @@ def cluster_estimation_worker(
     result, estimator = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
         min_new_points_to_run,
+        max_num_components,
         random_state,
         local_logger,
     )

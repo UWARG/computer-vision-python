@@ -38,6 +38,7 @@ geolocation:
 cluster_estimation:
     min_activation_threshold: 25
     min_new_points_to_run: 5
+    max_num_components: 10
     random_state: 0
 
 communications:
