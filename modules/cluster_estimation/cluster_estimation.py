@@ -28,6 +28,9 @@ class ClusterEstimation:
     min_new_points_to_run: int
         Minimum number of new data points that must be collected before running model.
 
+    max_num_components: int
+        Max number of real landing pads.
+
     random_state: int
         Seed for randomizer, to get consistent results.
 
@@ -62,8 +65,8 @@ class ClusterEstimation:
     __MEAN_PRECISION_PRIOR = 1e-6
     __MAX_MODEL_ITERATIONS = 1000
 
-    # Real-world scenario Hyperparameters
-    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
+    # # Real-world scenario Hyperparameters
+    # __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
 
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
@@ -74,6 +77,7 @@ class ClusterEstimation:
         cls,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> "tuple[bool, ClusterEstimation | None]":
@@ -92,6 +96,7 @@ class ClusterEstimation:
             cls.__create_key,
             min_activation_threshold,
             min_new_points_to_run,
+            max_num_components,
             random_state,
             local_logger,
         )
@@ -101,6 +106,7 @@ class ClusterEstimation:
         class_private_create_key: object,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int, 
         random_state: int,
         local_logger: logger.Logger,
     ) -> None:
@@ -112,7 +118,7 @@ class ClusterEstimation:
         # Initializes VGMM
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
             covariance_type=self.__COVAR_TYPE,
-            n_components=self.__MAX_NUM_COMPONENTS,
+            n_components = max_num_components,
             init_params=self.__MODEL_INIT_PARAM,
             weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
