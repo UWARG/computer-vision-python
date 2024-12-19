@@ -66,7 +66,6 @@ class ClusterEstimation:
 
     __filter_by_covariances()
         Removes any cluster with covariances much higher than the lowest covariance value.
-
     """
 
     # pylint: disable=too-many-instance-attributes
@@ -215,12 +214,13 @@ class ClusterEstimation:
 
         # init search parameters
         ptr = 0
-        max_label = self.__current_bucket[0][2]
 
-        # itterates through all possible labels
-        for label in reversed(range(max_label)):
+        # itterates through all points
+        while ptr <= len(self.__current_bucket):
+            # reference label
+            label = self.__current_bucket[ptr][2]
 
-            # creates bucket of labels
+            # creates bucket of points with the same label
             bucket_labelled = []
             while ptr < len(self.__current_bucket) and self.__current_bucket[ptr][2] == label:
                 bucket_labelled += [self.__current_bucket[ptr]]
@@ -236,7 +236,9 @@ class ClusterEstimation:
 
             # checks if cluster_by_label ran succssfully
             if not check:
-                self.__logger(f"did not add objects of label={label} to total object detections")
+                self.__logger.warning(
+                    f"did not add objects of label={label} to total object detections"
+                )
                 continue
 
             detections_in_world += labelled_detections_in_world
