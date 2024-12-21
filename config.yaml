@@ -7,12 +7,12 @@ video_input:
     camera_option: 0  # 0 is for opencv camera (from camera_factory.py)
     width: 1920
     height: 1200
-    # camera_config:
+    # camera_config:  # For Picamera
     #     exposure_time: 250  # microseconds
     #     analogue_gain: 64.0  # Sets ISO, 1.0 for normal, 64.0 for max, 0.0 for min
     #     contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
     #     lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
-    camera_config:
+    camera_config:  # For CV camera (regular cameras)
         device_index: 0
     save_prefix: "log_image"  # Leave as empty string to not log any images
 

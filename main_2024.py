@@ -12,8 +12,9 @@ import cv2
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
 from modules import odometry_and_time
-from modules.common.modules.camera import camera_configurations
 from modules.common.modules.camera import camera_factory
+from modules.common.modules.camera import camera_opencv
+from modules.common.modules.camera import camera_picamera2
 from modules.communications import communications_worker
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
@@ -84,23 +85,23 @@ def main() -> int:
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-        VIDEO_INPUT_OPTION_INT = config["video_input"]["camera_option"]
-        VIDEO_INPUT_OPTION = camera_factory.CameraOption(VIDEO_INPUT_OPTION_INT)
+        VIDEO_INPUT_OPTION = camera_factory.CameraOption(config["video_input"]["camera_option"])
         VIDEO_INPUT_WIDTH = config["video_input"]["width"]
         VIDEO_INPUT_HEIGHT = config["video_input"]["height"]
         if VIDEO_INPUT_OPTION == camera_factory.CameraOption.OPENCV:
-            VIDEO_INPUT_CAMERA_CONFIG = camera_configurations.OpenCVCameraConfig(
+            VIDEO_INPUT_CAMERA_CONFIG = camera_opencv.ConfigOpenCV(
                 **config["video_input"]["camera_config"]
             )
         elif VIDEO_INPUT_OPTION == camera_factory.CameraOption.PICAM2:
-            VIDEO_INPUT_CAMERA_CONFIG = camera_configurations.PiCameraConfig(
+            VIDEO_INPUT_CAMERA_CONFIG = camera_picamera2.ConfigPiCamera2(
                 **config["video_input"]["camera_config"]
             )
         VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        DETECT_TARGET_OPTION_INT = config["detect_target"]["option"]
-        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(DETECT_TARGET_OPTION_INT)
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(
+            config["detect_target"]["option"]
+        )
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full

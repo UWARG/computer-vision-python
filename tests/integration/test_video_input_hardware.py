@@ -4,17 +4,17 @@ Simple hardware test, requires camera.
 
 import pathlib
 
-from modules.common.modules.camera import camera_configurations
 from modules.common.modules.camera import camera_factory
+from modules.common.modules.camera import camera_opencv
 from modules.common.modules.logger import logger
 from modules.video_input import video_input
 
 
 # Modify as needed
 CAMERA = camera_factory.CameraOption.OPENCV
-WIDTH = 1280
-HEIGHT = 720
-CONFIG = camera_configurations.OpenCVCameraConfig()
+WIDTH = 1920
+HEIGHT = 1200
+CONFIG = camera_opencv.ConfigOpenCV(0)
 SAVE_PREFIX = ""  # Not saving any pictures
 
 

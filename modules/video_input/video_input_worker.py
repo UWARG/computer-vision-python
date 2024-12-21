@@ -10,7 +10,8 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import video_input
 from ..common.modules.camera import camera_factory
-from ..common.modules.camera import camera_configurations
+from ..common.modules.camera import camera_opencv
+from ..common.modules.camera import camera_picamera2
 from ..common.modules.logger import logger
 
 
@@ -19,7 +20,7 @@ def video_input_worker(
     camera_option: camera_factory.CameraOption,
     width: int,
     height: int,
-    camera_config: camera_configurations.OpenCVCameraConfig | camera_configurations.PiCameraConfig,
+    camera_config: camera_opencv.ConfigOpenCV | camera_picamera2.ConfigPiCamera2,
     save_prefix: str,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,

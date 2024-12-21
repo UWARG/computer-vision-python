@@ -6,8 +6,8 @@ import multiprocessing as mp
 import queue
 import time
 
-from modules.common.modules.camera import camera_configurations
 from modules.common.modules.camera import camera_factory
+from modules.common.modules.camera import camera_opencv
 from modules.video_input import video_input_worker
 from modules import image_and_time
 from utilities.workers import queue_proxy_wrapper
@@ -17,9 +17,9 @@ from utilities.workers import worker_controller
 # Modify these settings as needed
 VIDEO_INPUT_WORKER_PERIOD = 1.0
 CAMERA = camera_factory.CameraOption.OPENCV
-WIDTH = 1280
-HEIGHT = 720
-CONFIG = camera_configurations.OpenCVCameraConfig()
+WIDTH = 1920
+HEIGHT = 1200
+CONFIG = camera_opencv.ConfigOpenCV(0)
 SAVE_PREFIX = ""  # Not saving any pictures
 
 

@@ -4,8 +4,9 @@ Combines image and timestamp together.
 
 from .. import image_and_time
 from ..common.modules.camera import base_camera
-from ..common.modules.camera import camera_configurations
 from ..common.modules.camera import camera_factory
+from ..common.modules.camera import camera_opencv
+from ..common.modules.camera import camera_picamera2
 from ..common.modules.logger import logger
 
 
@@ -22,7 +23,7 @@ class VideoInput:
         camera_option: camera_factory.CameraOption,
         width: int,
         height: int,
-        config: camera_configurations.OpenCVCameraConfig | camera_configurations.PiCameraConfig,
+        config: camera_opencv.ConfigOpenCV | camera_picamera2.ConfigPiCamera2,
         save_prefix: str,
         local_logger: logger.Logger,
     ) -> "tuple[True, VideoInput] | tuple[False, None]":
@@ -35,6 +36,9 @@ class VideoInput:
         """
         result, camera = camera_factory.create_camera(camera_option, width, height, config)
         if not result:
+            local_logger.error(
+                f"camera factory failed. Current configs were: {camera_option=}, {width=}, {height=}, {config=}. Please try a different set of configs."
+            )
             return False, None
         return True, VideoInput(cls.__create_key, camera, save_prefix, local_logger)
 
