@@ -85,17 +85,18 @@ def main() -> int:
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-        VIDEO_INPUT_OPTION = camera_factory.CameraOption(config["video_input"]["camera_option"])
+        VIDEO_INPUT_OPTION = camera_factory.CameraOption(config["video_input"]["camera_enum"])
         VIDEO_INPUT_WIDTH = config["video_input"]["width"]
         VIDEO_INPUT_HEIGHT = config["video_input"]["height"]
-        if VIDEO_INPUT_OPTION == camera_factory.CameraOption.OPENCV:
-            VIDEO_INPUT_CAMERA_CONFIG = camera_opencv.ConfigOpenCV(
-                **config["video_input"]["camera_config"]
-            )
-        elif VIDEO_INPUT_OPTION == camera_factory.CameraOption.PICAM2:
-            VIDEO_INPUT_CAMERA_CONFIG = camera_picamera2.ConfigPiCamera2(
-                **config["video_input"]["camera_config"]
-            )
+        match VIDEO_INPUT_OPTION:
+            case camera_factory.CameraOption.OPENCV:
+                VIDEO_INPUT_CAMERA_CONFIG = camera_opencv.ConfigOpenCV(
+                    **config["video_input"]["camera_config"]
+                )
+            case camera_factory.CameraOption.PICAM2:
+                VIDEO_INPUT_CAMERA_CONFIG = camera_picamera2.ConfigPiCamera2(
+                    **config["video_input"]["camera_config"]
+                )
         VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]

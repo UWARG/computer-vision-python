@@ -15,7 +15,7 @@ CAMERA = camera_factory.CameraOption.OPENCV
 WIDTH = 1920
 HEIGHT = 1200
 CONFIG = camera_opencv.ConfigOpenCV(0)
-SAVE_PREFIX = ""  # Not saving any pictures
+IAMGE_NAME = None  # Not saving any pictures
 
 
 def main() -> int:
@@ -30,7 +30,7 @@ def main() -> int:
 
     # Setup
     result, camera = video_input.VideoInput.create(
-        CAMERA, WIDTH, HEIGHT, CONFIG, SAVE_PREFIX, local_logger
+        CAMERA, WIDTH, HEIGHT, CONFIG, IAMGE_NAME, local_logger
     )
     assert result
     assert camera is not None

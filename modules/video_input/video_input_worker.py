@@ -16,19 +16,19 @@ from ..common.modules.logger import logger
 
 
 def video_input_worker(
-    period: int,
+    period: float,
     camera_option: camera_factory.CameraOption,
     width: int,
     height: int,
     camera_config: camera_opencv.ConfigOpenCV | camera_picamera2.ConfigPiCamera2,
-    save_prefix: str,
+    maybe_image_name: str | None,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
     Worker process.
 
-    period is the minimum period between image captures.
+    period is the minimum period between image captures in seconds.
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
@@ -44,7 +44,7 @@ def video_input_worker(
     local_logger.info("Logger initialized")
 
     result, input_device = video_input.VideoInput.create(
-        camera_option, width, height, camera_config, save_prefix, local_logger
+        camera_option, width, height, camera_config, maybe_image_name, local_logger
     )
     if not result:
         local_logger.error("Worker failed to create class object")

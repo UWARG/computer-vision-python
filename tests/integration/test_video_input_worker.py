@@ -20,7 +20,7 @@ CAMERA = camera_factory.CameraOption.OPENCV
 WIDTH = 1920
 HEIGHT = 1200
 CONFIG = camera_opencv.ConfigOpenCV(0)
-SAVE_PREFIX = ""  # Not saving any pictures
+IMAGE_NAME = None  # Not saving any pictures
 
 
 def main() -> int:
@@ -42,7 +42,7 @@ def main() -> int:
             WIDTH,
             HEIGHT,
             CONFIG,
-            SAVE_PREFIX,
+            IMAGE_NAME,
             out_queue,
             controller,
         ),

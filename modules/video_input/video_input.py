@@ -24,7 +24,7 @@ class VideoInput:
         width: int,
         height: int,
         config: camera_opencv.ConfigOpenCV | camera_picamera2.ConfigPiCamera2,
-        save_prefix: str,
+        maybe_image_name: str | None,
         local_logger: logger.Logger,
     ) -> "tuple[True, VideoInput] | tuple[False, None]":
         """
@@ -40,13 +40,13 @@ class VideoInput:
                 f"camera factory failed. Current configs were: {camera_option=}, {width=}, {height=}, {config=}. Please try a different set of configs."
             )
             return False, None
-        return True, VideoInput(cls.__create_key, camera, save_prefix, local_logger)
+        return True, VideoInput(cls.__create_key, camera, maybe_image_name, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
         camera: base_camera.BaseCameraDevice,
-        save_prefix: str,
+        maybe_image_name: str | None,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -55,7 +55,7 @@ class VideoInput:
         assert class_private_create_key is VideoInput.__create_key, "Use create() method."
 
         self.__device = camera
-        self.__save_prefix = save_prefix
+        self.__maybe_image_name = maybe_image_name
         self.__logger = local_logger
 
     def run(self) -> "tuple[True, image_and_time.ImageAndTime] | tuple[False, None]":
@@ -67,8 +67,8 @@ class VideoInput:
             self.__logger.warning("Failed to take image")
             return False, None
 
-        # If __save_prefix is not empty string, then save image
-        if self.__save_prefix:
-            self.__logger.save_image(image, self.__save_prefix)
+        # If __maybe_image_name is not None, then save image
+        if self.__maybe_image_name is not None:
+            self.__logger.save_image(image, self.__maybe_image_name)
 
         return image_and_time.ImageAndTime.create(image)
