@@ -98,13 +98,12 @@ def main() -> int:
                     **config["video_input"]["camera_config"]
                 )
             case _:
-                raise ValueError(f"Inputted an invalid camera option: {VIDEO_INPUT_OPTION}")
-        if config["video_input"]["log_images"]:
-            VIDEO_INPUT_SAVE_PREFIX = None
-        else:
-            VIDEO_INPUT_SAVE_PREFIX = str(
-                pathlib.Path(logging_path, config["video_input"]["save_prefix"])
-            )
+                main_logger.error(f"Inputted an invalid camera option: {VIDEO_INPUT_OPTION}", True)
+                return -1
+
+        VIDEO_INPUT_IMAGE_NAME = (
+            config["video_input"]["image_name"] if config["video_input"]["log_images"] else None
+        )
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(
@@ -225,7 +224,7 @@ def main() -> int:
             VIDEO_INPUT_WIDTH,
             VIDEO_INPUT_HEIGHT,
             VIDEO_INPUT_CAMERA_CONFIG,
-            VIDEO_INPUT_SAVE_PREFIX,
+            VIDEO_INPUT_IMAGE_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
         ),
         input_queues=[],

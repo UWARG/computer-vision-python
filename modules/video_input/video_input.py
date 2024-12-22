@@ -32,7 +32,7 @@ class VideoInput:
         width is the width of the images the camera takes in pixels.
         height is the height of the images the camera takes in pixels.
         camera_config specifies camera settings.
-        maybe_image_name is name of iamge log files. Set to None to not log any images.
+        maybe_image_name is the filename to save the image as. Set to None to not log any images.
         """
         result, camera = camera_factory.create_camera(camera_option, width, height, config)
         if not result:
