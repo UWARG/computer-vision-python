@@ -17,8 +17,8 @@ from utilities.workers import worker_controller
 # Modify these settings as needed
 VIDEO_INPUT_WORKER_PERIOD = 1.0
 CAMERA = camera_factory.CameraOption.OPENCV
-WIDTH = 1920
-HEIGHT = 1200
+WIDTH = 640
+HEIGHT = 480
 CONFIG = camera_opencv.ConfigOpenCV(0)
 IMAGE_NAME = None  # Not saving any pictures
 
@@ -37,12 +37,12 @@ def main() -> int:
     worker = mp.Process(
         target=video_input_worker.video_input_worker,
         args=(
-            VIDEO_INPUT_WORKER_PERIOD,
             CAMERA,
             WIDTH,
             HEIGHT,
             CONFIG,
             IMAGE_NAME,
+            VIDEO_INPUT_WORKER_PERIOD,
             out_queue,
             controller,
         ),

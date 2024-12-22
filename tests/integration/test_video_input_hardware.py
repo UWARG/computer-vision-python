@@ -12,8 +12,8 @@ from modules.video_input import video_input
 
 # Modify as needed
 CAMERA = camera_factory.CameraOption.OPENCV
-WIDTH = 1920
-HEIGHT = 1200
+WIDTH = 640
+HEIGHT = 480
 CONFIG = camera_opencv.ConfigOpenCV(0)
 IMAGE_NAME = None  # Not saving any pictures
 
