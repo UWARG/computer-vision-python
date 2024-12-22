@@ -32,14 +32,15 @@ class VideoInput:
         width is the width of the images the camera takes in pixels.
         height is the height of the images the camera takes in pixels.
         camera_config specifies camera settings.
-        save_prefix is name of iamge log files. Leave as empty string for not logging the images.
+        maybe_image_name is name of iamge log files. Set to None to not log any images.
         """
         result, camera = camera_factory.create_camera(camera_option, width, height, config)
         if not result:
             local_logger.error(
-                f"camera factory failed. Current configs were: {camera_option=}, {width=}, {height=}, {config=}. Please try a different set of configs."
+                f"Camera factory failed. Current configs were: {camera_option=}, {width=}, {height=}, {config=}."
             )
             return False, None
+
         return True, VideoInput(cls.__create_key, camera, maybe_image_name, local_logger)
 
     def __init__(
@@ -67,7 +68,6 @@ class VideoInput:
             self.__logger.warning("Failed to take image")
             return False, None
 
-        # If __maybe_image_name is not None, then save image
         if self.__maybe_image_name is not None:
             self.__logger.save_image(image, self.__maybe_image_name)
 

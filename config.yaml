@@ -4,18 +4,21 @@ queue_max_size: 10
 
 video_input:
     worker_period: 1.0  # seconds
-    camera_enum: 0  # enum values can be found in camera_factory.py
+    camera_enum: 0  # Enum values can be found in camera_factory.py
     width: 1920
     height: 1200
-    # For camera_enum=0, use the CV camera config. For camera_enum=1, use the Picamera config
-    camera_config:  # For CV camera (regular cameras, enum 0)
+    # For camera_enum=0, use the OpenCV camera config. For camera_enum=1, use the PiCamera2 config
+    # OpenCV camera config (regular cameras, enum 0)
+    camera_config:
         device_index: 0
-    # camera_config:  # For Picamera (PiCamera NoIR, enum 1)
+    # PiCamera2 camera config (PiCamera NoIR, enum 1)
+    # camera_config:
     #     exposure_time: 250  # microseconds
     #     analogue_gain: 64.0  # Sets ISO, 1.0 for normal, 64.0 for max, 0.0 for min
     #     contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
     #     lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
-    save_prefix: "log_image"  # Leave as empty string to not log any images
+    log_images: true  # Set to true to save images
+    save_prefix: "log_image"  # Image name prefix when saving images
 
 detect_target:
     worker_count: 1

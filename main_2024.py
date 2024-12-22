@@ -97,7 +97,14 @@ def main() -> int:
                 VIDEO_INPUT_CAMERA_CONFIG = camera_picamera2.ConfigPiCamera2(
                     **config["video_input"]["camera_config"]
                 )
-        VIDEO_INPUT_SAVE_PREFIX = config["video_input"]["save_prefix"]
+            case _:
+                raise ValueError(f"Inputted an invalid camera option: {VIDEO_INPUT_OPTION}")
+        if config["video_input"]["log_images"]:
+            VIDEO_INPUT_SAVE_PREFIX = None
+        else:
+            VIDEO_INPUT_SAVE_PREFIX = str(
+                pathlib.Path(logging_path, config["video_input"]["save_prefix"])
+            )
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
         DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(
@@ -106,8 +113,9 @@ def main() -> int:
         DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
         DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
         DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
-        DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_SAVE_PREFIX = str(pathlib.Path(logging_path, DETECT_TARGET_SAVE_NAME_PREFIX))
+        DETECT_TARGET_SAVE_PREFIX = str(
+            pathlib.Path(logging_path, config["detect_target"]["save_prefix"])
+        )
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
@@ -139,7 +147,7 @@ def main() -> int:
         main_logger.error(f"Config key(s) not found: {exception}", True)
         return -1
     except ValueError as exception:
-        main_logger.error(f"Could not convert detect target option into enum: {exception}", True)
+        main_logger.error(f"{exception}", True)
         return -1
 
     # Setup
@@ -213,12 +221,12 @@ def main() -> int:
         count=1,
         target=video_input_worker.video_input_worker,
         work_arguments=(
-            VIDEO_INPUT_WORKER_PERIOD,
             VIDEO_INPUT_OPTION,
             VIDEO_INPUT_WIDTH,
             VIDEO_INPUT_HEIGHT,
             VIDEO_INPUT_CAMERA_CONFIG,
             VIDEO_INPUT_SAVE_PREFIX,
+            VIDEO_INPUT_WORKER_PERIOD,
         ),
         input_queues=[],
         output_queues=[video_input_to_detect_target_queue],

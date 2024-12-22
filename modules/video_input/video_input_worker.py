@@ -16,12 +16,12 @@ from ..common.modules.logger import logger
 
 
 def video_input_worker(
-    period: float,
     camera_option: camera_factory.CameraOption,
     width: int,
     height: int,
     camera_config: camera_opencv.ConfigOpenCV | camera_picamera2.ConfigPiCamera2,
     maybe_image_name: str | None,
+    period: float,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
