@@ -65,9 +65,6 @@ class ClusterEstimation:
     __MEAN_PRECISION_PRIOR = 1e-6
     __MAX_MODEL_ITERATIONS = 1000
 
-    # # Real-world scenario Hyperparameters
-    # __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
-
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
@@ -92,6 +89,10 @@ class ClusterEstimation:
         if min_activation_threshold < 1:
             return False, None
 
+        #This must be greater than 0
+        if max_num_components < 0:
+            return False, None
+        
         return True, ClusterEstimation(
             cls.__create_key,
             min_activation_threshold,
