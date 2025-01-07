@@ -209,7 +209,7 @@ class ClusterEstimation:
             return False, None
 
         # sort bucket by label in descending order
-        self.__current_bucket = self.__sort_by_labels(self.__current_bucket)
+        self.__all_points = self.__sort_by_labels(self.__current_bucket)
         detections_in_world = []
 
         # init search parameters
@@ -220,22 +220,22 @@ class ClusterEstimation:
             # reference label
             label = self.__current_bucket[ptr][2]
 
-            # creates bucket of points with the same label
+            # creates bucket of points with the same label since bucket is sorted by label
             bucket_labelled = []
-            while ptr < len(self.__current_bucket) and self.__current_bucket[ptr][2] == label:
-                bucket_labelled += [self.__current_bucket[ptr]]
+            while ptr < len(self.__current_bucket) and self.__all_points[ptr][2] == label:
+                bucket_labelled.append([self.__all_points[ptr]])
                 ptr += 1
 
             # skip if no objects have label=label
             if len(bucket_labelled) == 0:
                 continue
 
-            check, labelled_detections_in_world = self.cluster_by_label(
+            result, labelled_detections_in_world = self.cluster_by_label(
                 bucket_labelled, run_override, label
             )
 
             # checks if cluster_by_label ran succssfully
-            if not check:
+            if not result:
                 self.__logger.warning(
                     f"did not add objects of label={label} to total object detections"
                 )
