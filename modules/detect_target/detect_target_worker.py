@@ -5,6 +5,7 @@ Gets frames and outputs detections in image space.
 import os
 import pathlib
 
+from modules import image_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import detect_target_factory
@@ -64,7 +65,12 @@ def detect_target_worker(
 
         input_data = input_queue.queue.get()
         if input_data is None:
+            local_logger.info("Recieved type None, exiting.")
             break
+
+        if not isinstance(input_data, image_and_time.ImageAndTime):
+            local_logger.warning(f"Skipping unexpected input: {input_data}")
+            continue
 
         result, value = detector.run(input_data)
         if not result:
