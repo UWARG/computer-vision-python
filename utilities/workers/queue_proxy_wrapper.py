@@ -65,7 +65,6 @@ class QueueProxyWrapper:
             return None
         else:
             return items
-            
 
     def fill_and_drain_queue(self) -> None:
         """

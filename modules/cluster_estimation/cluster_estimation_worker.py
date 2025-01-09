@@ -75,7 +75,7 @@ def cluster_estimation_worker(
         if input_data is None:
             local_logger.info("Recieved type None, exiting.")
             continue
-        
+
         isInvalid = False
         for input in input_data:
             if not isinstance(input, detection_in_world.DetectionInWorld):
