@@ -29,7 +29,7 @@ def create_detect_target(
     """
     Factory function to create a detection target object.
 
-    Returns:
+    Return:
     Success, detect target object.
     """
     match detect_target_option:
@@ -42,4 +42,5 @@ def create_detect_target(
                 show_annotations,
                 save_name,
             )
+        
     return False, None

@@ -46,6 +46,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
+            
         if self.__device != "cpu" and not torch.cuda.is_available():
             self.__local_logger.warning("CUDA not available. Falling back to CPU.")
             self.__device = "cpu"
