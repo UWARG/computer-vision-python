@@ -8,6 +8,7 @@ import cv2
 import torch
 import ultralytics
 
+
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
@@ -116,11 +117,13 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             self.__counter += 1
 
         if self.__show_annotations:
-            if image_annotated is not None:
-                # Display the annotated image in a named window
-                cv2.imshow("Annotated", image_annotated)
-                cv2.waitKey(1)  # Short delay to process GUI events
-            else:
-                self.__local_logger.warning("Annotated image is invalid.")
+            if image_annotated is None:
+                self.__local_logger.error("Annotated image is invalid.")
+                return False, detections
+
+
+            # Display the annotated image in a named window
+            cv2.imshow("Annotated", image_annotated)
+            cv2.waitKey(1)  # Short delay to process GUI events
 
         return True, detections

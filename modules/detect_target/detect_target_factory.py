@@ -3,6 +3,7 @@ Factory pattern for constructing detect target class at runtime.
 """
 
 import enum
+import torch
 
 from . import base_detect_target
 from . import detect_target_brightspot
@@ -34,6 +35,11 @@ def create_detect_target(
     Return:
     Success, detect target object.
     """
+    # Fall back to CPU if no GPU is available
+    if device != "cpu" and not torch.cuda.is_available():
+        local_logger.warning("CUDA not available. Falling back to CPU.")
+        device = "cpu"
+
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:
             return True, detect_target_ultralytics.DetectTargetUltralytics(
