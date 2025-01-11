@@ -3,6 +3,8 @@ Auto-landing script for AEAC 2024 competition.
 
 Usage: Either with contour (default) or yolo method.
 python blue_only.py --method=...
+
+note: not sure what to name this file cause it's not a worker..
 """
 
 import argparse
@@ -19,6 +21,8 @@ import numpy as np
 from pymavlink import mavutil
 
 import yolo_decision # do i copy the DetectLandingPad class to replace this library?
+
+import auto_landing
 
 LOG_DIRECTORY_PATH = pathlib.Path("logs")
 SAVE_PREFIX = str(pathlib.Path(LOG_DIRECTORY_PATH, "image_"))
