@@ -4,7 +4,6 @@ Auto-landing worker.
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import auto_landing
-from . import auto_landing_main
 
 def auto_landing_worker(
     FOV_X: float,
@@ -19,14 +18,14 @@ def auto_landing_worker(
     controller: worker_controller.WorkerController,
     ) -> None:
 
-    auto_lander = auto_landing.AutoLanding(FOV_X, FOV_Y, im_h, im_w, x_center, y_center, height)
+    auto_lander = auto_landing.AutoLanding(FOV_X, FOV_Y, im_h, im_w)
     """
     result, lander = cluster_estimation.ClusterEstimation.create(
         min_activation_threshold,
         min_new_points_to_run,
         random_state,
     )
-
+    currently don't have a create function
     """
     if not result:
         print("ERROR: Worker failed to create class object")
