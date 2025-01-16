@@ -35,6 +35,24 @@ NO_DETECTION_TEST_CASES = IMAGE_NO_DETECTIONS_FILES
 BOUNDING_BOX_PRECISION_TOLERANCE = 3
 CONFIDENCE_PRECISION_TOLERANCE = 6
 
+DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
+    brightspot_percentile_threshold=99.9,
+    filter_by_color=True,
+    blob_color=255,
+    filter_by_circularity=False,
+    min_circularity=0.01,
+    max_circularity=1,
+    filter_by_inertia=True,
+    min_inertia_ratio=0.2,
+    max_inertia_ratio=1,
+    filter_by_convexity=False,
+    min_convexity=0.01,
+    max_convexity=1,
+    filter_by_area=True,
+    min_area_pixels=50,
+    max_area_pixels=640,
+)
+
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -121,7 +139,9 @@ def detector() -> detect_target_brightspot.DetectTargetBrightspot:  # type: igno
     assert result
     assert test_logger is not None
 
-    detection = detect_target_brightspot.DetectTargetBrightspot(test_logger)
+    detection = detect_target_brightspot.DetectTargetBrightspot(
+        DETECT_TARGET_BRIGHTSPOT_CONFIG, test_logger
+    )
     yield detection  # type: ignore
 
 
