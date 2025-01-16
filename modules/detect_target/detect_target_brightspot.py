@@ -19,6 +19,8 @@ DETECTION_LABEL = 1
 CONFIDENCE = 1.0
 
 
+# Class has 15 attributes
+# pylint: disable=too-many-instance-attributes
 class DetectTargetBrightspotConfig:
     """
     Configuration for DetectTargetBrightspot.
@@ -76,6 +78,9 @@ class DetectTargetBrightspotConfig:
         self.filter_by_area = filter_by_area
         self.min_area_pixels = min_area_pixels
         self.max_area_pixels = max_area_pixels
+
+
+# pylint: enable=too-many-instance-attributes
 
 
 class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
