@@ -178,36 +178,35 @@ class ClusterEstimation:
         """
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
+        self.__all_points = []
 
         # Decide to run
         if not self.__decide_to_run(run_override):
             return False, None
 
         # sort bucket by label in descending order
-        self.__all_points = self.__sort_by_labels(self.__current_bucket)
+        self.__all_points = self.__sort_by_labels(self.__all_points)
         detections_in_world = []
 
         # init search parameters
         ptr = 0
 
         # itterates through all points
-        while ptr <= len(self.__current_bucket):
+        while ptr < len(self.__all_points):
             # reference label
-            label = self.__current_bucket[ptr][2]
+            label = self.__all_points[ptr][2]
 
             # creates bucket of points with the same label since bucket is sorted by label
             bucket_labelled = []
-            while ptr < len(self.__current_bucket) and self.__all_points[ptr][2] == label:
-                bucket_labelled.append([self.__all_points[ptr]])
+            while ptr < len(self.__all_points) and self.__all_points[ptr][2] == label:
+                bucket_labelled.append(self.__all_points[ptr])
                 ptr += 1
 
             # skip if no objects have label=label
             if len(bucket_labelled) == 0:
                 continue
 
-            result, labelled_detections_in_world = self.cluster_by_label(
-                bucket_labelled, run_override, label
-            )
+            result, labelled_detections_in_world = self.cluster_by_label(bucket_labelled, label)
 
             # checks if cluster_by_label ran succssfully
             if not result:
@@ -223,7 +222,6 @@ class ClusterEstimation:
     def cluster_by_label(
         self,
         points: "list[tuple[float, float, int]]",
-        run_override: bool,
         label: int,
     ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
@@ -249,13 +247,8 @@ class ClusterEstimation:
             List containing ObjectInWorld objects, containing position and covariance value.
             None if conditions not met and model not ran or model failed to converge.
         """
-
-        # Decide to run
-        if not self.__decide_to_run(run_override):
-            return False, None
-
         # Fit points and get cluster data
-        __vgmm_label = self.__vgmm.fit(points)  # type: ignore
+        __vgmm_label = self.__vgmm.fit([[point[0], point[1]] for point in points])  # type: ignore
 
         # Check convergence
         if not __vgmm_label.converged_:
@@ -302,7 +295,7 @@ class ClusterEstimation:
             else:
                 self.__logger.warning("Failed to create ObjectInWorld object")
 
-        self.__logger.info(detections_in_world)
+        # self.__logger.info(detections_in_world)
         return True, detections_in_world
 
     def __decide_to_run(self, run_override: bool) -> bool:
@@ -322,14 +315,13 @@ class ClusterEstimation:
         """
         count_all = len(self.__all_points)
         count_current = len(self.__current_bucket)
-
         if not run_override:
             # Don't run if total points under minimum requirement
             if count_all + count_current < self.__min_activation_threshold:
                 return False
 
             # Don't run if not enough new points
-            if count_current < self.__min_new_points_to_run and self.__has_ran_once:
+            if count_current < self.__min_new_points_to_run and not self.__has_ran_once:
                 return False
 
         # No data can not run
@@ -381,7 +373,9 @@ class ClusterEstimation:
         list[tuple[np.ndarray, float, float]]
             List containing detection points sorted in descending order by label
         """
-        return sorted(points, key=lambda x: x.label, reverse=True)
+        return sorted(
+            points, key=lambda x: x[2], reverse=True
+        )  # the label is stored at index 2 of object
 
     @staticmethod
     def __convert_detections_to_point(
@@ -433,7 +427,7 @@ class ClusterEstimation:
             List containing predicted cluster centres after filtering.
         """
         # List of each point's cluster index
-        cluster_assignment = self.__vgmm.predict(self.__all_points)  # type: ignore
+        cluster_assignment = self.__vgmm.predict([[point[0], point[1]] for point in self.__all_points])  # type: ignore
 
         # Find which cluster indices have points
         clusters_with_points = np.unique(cluster_assignment)
