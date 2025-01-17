@@ -32,6 +32,24 @@ IMAGE_NO_DETECTIONS_FILES = [
     pathlib.Path(f"ir_no_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_NO_DETECTIONS)
 ]
 
+DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
+    brightspot_percentile_threshold=99.9,
+    filter_by_color=True,
+    blob_color=255,
+    filter_by_circularity=False,
+    min_circularity=0.01,
+    max_circularity=1,
+    filter_by_inertia=True,
+    min_inertia_ratio=0.2,
+    max_inertia_ratio=1,
+    filter_by_convexity=False,
+    min_convexity=0.01,
+    max_convexity=1,
+    filter_by_area=True,
+    min_area_pixels=50,
+    max_area_pixels=640,
+)
+
 
 def main() -> int:
     """
@@ -43,7 +61,10 @@ def main() -> int:
         return 1
 
     detector = detect_target_brightspot.DetectTargetBrightspot(
-        local_logger=temp_logger, show_annotations=False, save_name=""
+        config=DETECT_TARGET_BRIGHTSPOT_CONFIG,
+        local_logger=temp_logger,
+        show_annotations=False,
+        save_name="",
     )
 
     for image_file, annotated_image_path, expected_detections_path in zip(
