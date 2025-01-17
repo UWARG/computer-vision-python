@@ -89,10 +89,10 @@ class ClusterEstimation:
         if min_activation_threshold < 1:
             return False, None
 
-        #This must be greater than 0
+        # This must be greater than 0
         if max_num_components < 0:
             return False, None
-        
+
         return True, ClusterEstimation(
             cls.__create_key,
             min_activation_threshold,
@@ -107,7 +107,7 @@ class ClusterEstimation:
         class_private_create_key: object,
         min_activation_threshold: int,
         min_new_points_to_run: int,
-        max_num_components: int, 
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> None:
@@ -119,7 +119,7 @@ class ClusterEstimation:
         # Initializes VGMM
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
             covariance_type=self.__COVAR_TYPE,
-            n_components = max_num_components,
+            n_components=max_num_components,
             init_params=self.__MODEL_INIT_PARAM,
             weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
