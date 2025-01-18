@@ -77,8 +77,8 @@ def cluster_estimation_worker(
 
         is_invalid = False
 
-        for input in input_data:
-            if not isinstance(input, detection_in_world.DetectionInWorld):
+        for single_input in input_data:
+            if not isinstance(single_input, detection_in_world.DetectionInWorld):
                 local_logger.warning(f"Skipping unexpected input: {input}")
                 is_invalid = True
                 break
