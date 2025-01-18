@@ -75,15 +75,15 @@ def cluster_estimation_worker(
             local_logger.info("Recieved type None, exiting.")
             break
 
-        isInvalid = False
+        is_invalid = False
 
         for input in input_data:
             if not isinstance(input, detection_in_world.DetectionInWorld):
                 local_logger.warning(f"Skipping unexpected input: {input}")
-                isInvalid = True
+                is_invalid = True
                 break
 
-        if isInvalid:
+        if is_invalid:
             continue
 
         # TODO: When to override
