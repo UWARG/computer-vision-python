@@ -81,7 +81,7 @@ class ClusterEstimation:
         """
         Data requirement conditions for estimation model to run.
         """
-        # These parameters must be positive
+        # These parameters must be greater than or equal to 0
         if min_new_points_to_run < 0 or random_state < 0:
             return False, None
 
@@ -90,7 +90,7 @@ class ClusterEstimation:
             return False, None
 
         # This must be greater than 0
-        if max_num_components < 0:
+        if max_num_components <= 0:
             return False, None
 
         return True, ClusterEstimation(
