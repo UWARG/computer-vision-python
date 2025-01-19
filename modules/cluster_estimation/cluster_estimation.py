@@ -18,7 +18,7 @@ class ClusterEstimation:
     """
     Estimate landing pad locations based on landing pad ground detection. Estimation
     works by predicting 'cluster centres' from groups of closely placed landing pad
-    detections.    
+    detections.
 
     METHODS
     -------
@@ -81,7 +81,7 @@ class ClusterEstimation:
             Seed for randomizer, to get consistent results. Must be at least 0.
 
         RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
-        
+
         """
         if min_activation_threshold < 1:
             return False, None
