@@ -23,16 +23,16 @@ class ClusterEstimation:
     ATTRIBUTES
     ----------
     min_activation_threshold: int
-        Minimum total data points before model runs.
+        Minimum total data points before model runs. Must be at least 1.
 
     min_new_points_to_run: int
-        Minimum number of new data points that must be collected before running model.
+        Minimum number of new data points that must be collected before running model. Must be at least 0.
 
     max_num_components: int
-        Max number of real landing pads.
+        Max number of real landing pads. Must be greater than 0.
 
     random_state: int
-        Seed for randomizer, to get consistent results.
+        Seed for randomizer, to get consistent results. Must be at least 0.
 
     METHODS
     -------
@@ -81,16 +81,16 @@ class ClusterEstimation:
         """
         Data requirement conditions for estimation model to run.
         """
-        # These parameters must be greater than or equal to 0
-        if min_new_points_to_run < 0 or random_state < 0:
-            return False, None
-
-        # At least 1 point for model to fit
         if min_activation_threshold < 1:
             return False, None
 
-        # This must be greater than 0
+        if min_new_points_to_run < 0:
+            return False, None
+
         if max_num_components <= 0:
+            return False, None
+
+        if random_state < 0:
             return False, None
 
         return True, ClusterEstimation(
