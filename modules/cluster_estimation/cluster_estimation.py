@@ -80,8 +80,10 @@ class ClusterEstimation:
         random_state: int
             Seed for randomizer, to get consistent results. Must be at least 0.
 
-        RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
+        local_logger: logger.Logger
+            The local logger to log this object's information.
 
+        RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
         if min_activation_threshold < 1:
             return False, None
