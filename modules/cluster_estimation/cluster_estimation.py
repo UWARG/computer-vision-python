@@ -69,7 +69,7 @@ class ClusterEstimation:
 
         PARAMETERS:
         min_activation_threshold: int
-            Minimum total data points before model runs. Must be at least 1.
+            Minimum total data points before model runs. Must be at least max_num_components.
 
         min_new_points_to_run: int
             Minimum number of new data points that must be collected before running model. Must be at least 0.
@@ -85,7 +85,7 @@ class ClusterEstimation:
 
         RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
-        if min_activation_threshold < 1:
+        if min_activation_threshold < max_num_components:
             return False, None
 
         if min_new_points_to_run < 0:
