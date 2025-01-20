@@ -6,6 +6,7 @@ import enum
 
 from . import base_detect_target
 from . import detect_target_brightspot
+from . import detect_target_contour
 from . import detect_target_ultralytics
 from ..common.modules.logger import logger
 
@@ -17,6 +18,7 @@ class DetectTargetOption(enum.Enum):
 
     ML_ULTRALYTICS = 0
     CV_BRIGHTSPOT = 1
+    C_CONTOUR = 2
 
 
 def create_detect_target(
@@ -37,13 +39,17 @@ def create_detect_target(
                 device,
                 model_path,
                 override_full,
-                local_logger,
                 show_annotations,
                 save_name,
             )
         case DetectTargetOption.CV_BRIGHTSPOT:
             return True, detect_target_brightspot.DetectTargetBrightspot(
                 local_logger,
+                show_annotations,
+                save_name,
+            )
+        case DetectTargetOption.C_CONTOUR:
+            return True, detect_target_contour.DetectTargetContour(
                 show_annotations,
                 save_name,
             )
