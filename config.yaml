@@ -33,13 +33,13 @@ detect_brightspot:
     blob_color: 255
     filter_by_circularity: False
     min_circularity: 0.01
-    min_circularity: 1
+    max_circularity: 1
     filter_by_inertia: True
     min_inertia_ratio: 0.2
     max_inertia_ratio: 1
     filter_by_convexity: False
     min_convexity: 0.01
-    min_convexity: 1
+    max_convexity: 1
     filter_by_area: True
     min_area_pixels: 50
     max_area_pixels: 640
