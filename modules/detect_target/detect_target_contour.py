@@ -39,7 +39,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
     def detect_landing_pads_contours(
-        self, image: "np.ndarray", timestamp: float
+        self, image: np.ndarray, timestamp: float
     ) -> tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]:
         """
         Detects landing pads using contours/classical cv.
@@ -101,7 +101,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
     def run(
         self, data: image_and_time.ImageAndTime
-    ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None]":
+    ) -> tuple[bool, detections_and_time.DetectionsAndTime] | tuple[False, None]:
         """
         Runs object detection on the provided image and returns the detections.
         data: Image with a timestamp.
