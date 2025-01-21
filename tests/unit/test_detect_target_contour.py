@@ -1,19 +1,22 @@
 """
-Test DetectTarget module.
+Test Contour Detection module.
 
 """
 
-from typing import NamedTuple
-import math
-import cv2
 import numpy as np
 import pytest
 
-from modules.detect_target import detect_target_contour
-from modules import image_and_time
+from tests.unit.generate_detect_target_contour import (
+    LandingPadData,
+    LandingPadTestData,
+    create_test,
+)
 from modules import detections_and_time
+from modules import image_and_time
+from modules.detect_target import detect_target_contour
 
-BOUNDING_BOX_PRECISION_TOLERANCE = -2 / 3
+
+BOUNDING_BOX_PRECISION_TOLERANCE = -2 / 3  # Tolerance > 1
 CONFIDENCE_PRECISION_TOLERANCE = 2
 
 # Test functions use test fixture signature names and access class privates
@@ -21,139 +24,156 @@ CONFIDENCE_PRECISION_TOLERANCE = 2
 # pylint: disable=protected-access,redefined-outer-name
 
 
-class LandingPadData(NamedTuple):
+@pytest.fixture
+def single_circle() -> LandingPadTestData:  # type: ignore
     """
-    Landing Pad information struct
+    Loads the data for the single basic circle.
+    """
+    options = [LandingPadData(center=(300, 400), axis=(200, 200))]
+
+    test_data = create_test(options)
+    yield test_data
+
+
+@pytest.fixture
+def single_blurry_circle() -> LandingPadTestData:  # type: ignore
+    """
+    Loads the data for the single blury circle.
+    """
+    options = [
+        LandingPadData(center=(1000, 500), axis=(423, 423), blur=True),
+    ]
+
+    test_data = create_test(options)
+    yield test_data
+
+
+@pytest.fixture
+def single_stretched_circle() -> LandingPadTestData:  # type: ignore
+    """
+    Loads the data for the single stretched circle.
+    """
+    options = [LandingPadData(center=(1000, 500), axis=(383, 405))]
+
+    test_data = create_test(options)
+    yield test_data
+
+
+@pytest.fixture
+def multiple_circles() -> LandingPadTestData:  # type: ignore
+    """
+    Loads the data for the multiple stretched circles.
+    """
+    options = [
+        LandingPadData(center=(997, 600), axis=(300, 300)),
+        LandingPadData(center=(1590, 341), axis=(250, 250)),
+        LandingPadData(center=(200, 500), axis=(50, 45), blur=True),
+        LandingPadData(center=(401, 307), axis=(200, 150), blur=True),
+    ]
+
+    test_data = create_test(options)
+    yield test_data
+
+
+@pytest.fixture()
+def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
+    """
+    Construct DetectTargetContour.
+    """
+    detection = detect_target_contour.DetectTargetContour(False)
+    yield detection  # type: ignore
+
+
+@pytest.fixture()
+def image_easy(single_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load the single basic landing pad.
     """
 
-    center: tuple[int, int]
-    radius: int | tuple[int, int]
-    blur: bool = False
-    elipse: bool = False
-    angle: int = 0
+    image = single_circle.image
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
 
 
-easy_data = [LandingPadData(center=(1000, 400), radius=200)]
-
-blurry_data = [
-    LandingPadData(center=(1000, 500), radius=423, blur=True),
-]
-
-stretched_data = [LandingPadData(center=(1000, 500), radius=(383, 405), elipse=True)]
-
-multiple_data = [
-    LandingPadData(center=(200, 500), radius=(50, 45), blur=True, elipse=True),
-    LandingPadData(center=(1590, 341), radius=250),
-    LandingPadData(center=(997, 600), radius=300),
-    LandingPadData(center=(401, 307), radius=(200, 150), blur=True, elipse=True),
-]
-
-
-def blur_img(
-    bg: np.ndarray,
-    center: tuple[int, int],
-    radius: int = 0,
-    axis_length: tuple[int, int] = (0, 0),
-    angle: int = 0,
-    circle_check: bool = True,
-) -> np.ndarray:
+@pytest.fixture()
+def blurry_image(single_blurry_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
     """
-    Blurs an image a singular shape and adds it to the background.
+    Load the single blurry landing pad.
     """
 
-    bg_copy = bg.copy()
-    x, y = bg_copy.shape[:2]
-
-    mask = np.zeros((x, y), np.uint8)
-    if circle_check:
-        mask = cv2.circle(mask, center, radius, (215, 158, 115), -1, cv2.LINE_AA)
-    else:
-        mask = cv2.ellipse(mask, center, axis_length, angle, 0, 360, (215, 158, 115), -1)
-
-    mask = cv2.blur(mask, (25, 25), 7)
-
-    alpha = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR) / 255.0
-    fg = np.zeros(bg.shape, np.uint8)
-    fg[:, :, :] = [0, 0, 0]
-
-    blended = cv2.convertScaleAbs(bg * (1 - alpha) + fg * alpha)
-    return blended
+    image = single_blurry_circle.image
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
 
 
-def draw_circle(
-    image: np.ndarray, center: tuple[int, int], radius: int, blur: bool
-) -> tuple[np.ndarray, int, int]:
+@pytest.fixture()
+def stretched_image(single_stretched_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
     """
-    Draws a circle on the provided image and saves the bounding box coordinates to a text file.
+    Load the single stretched landing pad.
     """
-    x, y = center
-    top_left = (max(x - radius, 0), max(y - radius, 0))
-    bottom_right = (min(x + radius, image.shape[1]), min(y + radius, image.shape[0]))
 
-    if blur:
-        image = blur_img(image, center, radius=radius, circle_check=True)
-        return image, top_left, bottom_right
-
-    cv2.circle(image, center, radius, (215, 158, 115), -1)
-    return image, top_left, bottom_right
+    image = single_stretched_circle.image
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
 
 
-def draw_ellipse(
-    image: np.ndarray, center: tuple[int, int], axis_length: tuple, angle: int, blur: bool
-) -> tuple[np.ndarray, int, int]:
+@pytest.fixture()
+def multiple_images(multiple_circles: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
     """
-    Draws an ellipse on the provided image and saves the bounding box coordinates to a text file.
+    Load the multiple landing pads.
     """
-    (h, k), (a, b) = center, axis_length
-    rad = math.pi / 180
-    ux, uy = a * math.cos(angle * rad), a * math.sin(angle * rad)  # first point on the ellipse
-    vx, vy = b * math.sin(angle * rad), b * math.cos(angle * rad)
-    width, height = 2 * math.sqrt(ux**2 + vx**2), 2 * math.sqrt(uy**2 + vy**2)
 
-    top_left = (int(max(h - (0.5) * width, 0)), int(max(k - (0.5) * height, 0)))
-    bottom_right = (
-        int(min(h + (0.5) * width, image.shape[1])),
-        int(min(k + (0.5) * height, image.shape[0])),
-    )
-
-    if blur:
-        image = blur_img(image, center, axis_length=axis_length, angle=angle, circle_check=False)
-        return image, top_left, bottom_right
-
-    image = cv2.ellipse(image, center, axis_length, angle, 0, 360, (0, 0, 0), -1)
-    return image, top_left, bottom_right
+    image = multiple_circles.image
+    result, actual_image = image_and_time.ImageAndTime.create(image)
+    assert result
+    assert actual_image is not None
+    yield actual_image  # type: ignore
 
 
-def create_test_case(landing_list: list[LandingPadData]) -> tuple[np.ndarray, np.ndarray]:
+@pytest.fixture()
+def expected_easy(single_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
     """
-    Genereates test cases given a data set.
+    Load expected a basic image detections.
     """
-    image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.int16)
 
-    boxes_list = []
-    for landing_data in landing_list:
-        if landing_data.elipse:
-            axis_length, angle = landing_data.radius, landing_data.angle
-            image, top_left, bottom_right = draw_ellipse(
-                image, landing_data.center, axis_length, angle, landing_data.blur
-            )
-            boxes_list.append([1, 0] + list(top_left + bottom_right))
-            continue
+    expected = single_circle.bounding_box_list
+    yield create_detections(expected)  # type: ignore
 
-        image, top_left, bottom_right = draw_circle(
-            image, landing_data.center, landing_data.radius, landing_data.blur
-        )
-        boxes_list.append([1, 0] + list(top_left + bottom_right))
 
-    boxes_list = sorted(
-        boxes_list,
-        reverse=True,
-        key=lambda boxes_list: abs(
-            (boxes_list[4] - boxes_list[2]) * (boxes_list[5] - boxes_list[3])
-        ),
-    )
-    boxes_list = np.array(boxes_list)
-    return (image.astype(np.uint8), boxes_list)
+@pytest.fixture()
+def expected_blur(single_blurry_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected the blured pad image detections.
+    """
+
+    expected = single_blurry_circle.bounding_box_list
+    yield create_detections(expected)  # type: ignore
+
+
+@pytest.fixture()
+def expected_stretch(single_stretched_circle: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected a stretched pad image detections.
+    """
+
+    expected = single_stretched_circle.bounding_box_list
+    yield create_detections(expected)  # type: ignore
+
+
+@pytest.fixture()
+def expected_multiple(multiple_circles: LandingPadTestData) -> image_and_time.ImageAndTime:  # type: ignore
+    """
+    Load expected multiple pads image detections.
+    """
+
+    expected = multiple_circles.bounding_box_list
+    yield create_detections(expected)  # type: ignore
 
 
 # pylint:disable=duplicate-code
@@ -227,107 +247,6 @@ def create_detections(detections_from_file: np.ndarray) -> detections_and_time.D
     return detections
 
 
-@pytest.fixture()
-def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
-    """
-    Construct DetectTargetContour.
-    """
-    detection = detect_target_contour.DetectTargetContour(False)
-    yield detection  # type: ignore
-
-
-@pytest.fixture()
-def image_easy() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load easy image.
-    """
-
-    image, _ = create_test_case(easy_data)
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def blurry_image() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load easy image.
-    """
-
-    image, _ = create_test_case(blurry_data)
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def stretched_image() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load easy image.
-    """
-
-    image, _ = create_test_case(stretched_data)
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def multiple_images() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load easy image.
-    """
-
-    image, _ = create_test_case(multiple_data)
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def expected_easy() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected an easy image detections.
-    """
-
-    _, expected = create_test_case(easy_data)
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_blur() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected an easy image detections.
-    """
-
-    _, expected = create_test_case(blurry_data)
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_stretch() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected an easy image detections.
-    """
-
-    _, expected = create_test_case(stretched_data)
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_multiple() -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected an easy image detections.
-    """
-
-    _, expected = create_test_case(multiple_data)
-    yield create_detections(expected)  # type: ignore
-
-
 class TestDetector:
     """
     Tests `DetectTarget.run()` .
@@ -340,7 +259,7 @@ class TestDetector:
         expected_easy: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Bus image.
+        Run the detection for the single landing pad.
         """
         # Run
         result, actual = detector.run(image_easy)
@@ -358,7 +277,7 @@ class TestDetector:
         expected_blur: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Bus image.
+        Run the detection for the blury circle.
         """
         # Run
         result, actual = detector.run(blurry_image)
@@ -376,7 +295,7 @@ class TestDetector:
         expected_stretch: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Bus image.
+        Run the detection for the single stretched landing pad.
         """
         # Run
         result, actual = detector.run(stretched_image)
@@ -394,7 +313,7 @@ class TestDetector:
         expected_multiple: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Bus image.
+        Run the detection for the multiple landing pads.
         """
         # Run
         result, actual = detector.run(multiple_images)
