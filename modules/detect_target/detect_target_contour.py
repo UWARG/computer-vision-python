@@ -12,10 +12,15 @@ from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
 
+MIN_CONTOUR_AREA = 100
+# some arbitrary value
+UPPER_BLUE = np.array([130, 255, 255])
+LOWER_BLUE = np.array([100, 50, 50])
+
 
 class DetectTargetContour(base_detect_target.BaseDetectTarget):
     """
-    Predicts annd locates landing pads using Classical Computer Vision
+    Predicts annd locates landing pads using the Classical Computer Vision methodology.
     """
 
     def __init__(
@@ -33,63 +38,21 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-    @staticmethod
-    def is_contour_circular(contour: np.ndarray) -> bool:
-        """
-        Helper function for detect_landing_pads_contours.
-        Checks if the shape is close to circular.
-        Return: True is the shape is circular, false if it is not.
-        """
-        contour_minimum = 0.8
-        perimeter = cv2.arcLength(contour, True)
-        # Check if the perimeter is zero
-        if perimeter == 0.0:
-            return False
-
-        area = cv2.contourArea(contour)
-        circularity = 4 * np.pi * (area / (perimeter * perimeter))
-        return circularity > contour_minimum
-
-    @staticmethod
-    def is_contour_large_enough(contour: np.ndarray, min_diameter: float) -> bool:
-        """
-        Helper function for detect_landing_pads_contours.
-        Checks if the shape is larger than the provided diameter.
-        Return: True if it is, false if it not.
-        """
-        _, radius = cv2.minEnclosingCircle(contour)
-        diameter = radius * 2
-        return diameter >= min_diameter
-
     def detect_landing_pads_contours(
         self, image: "np.ndarray", timestamp: float
-    ) -> "tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]":
+    ) -> tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]:
         """
         Detects landing pads using contours/classical cv.
         image: Current image frame.
         timestamp: Timestamp for the detections.
         Return: Success, the DetectionsAndTime object, and the annotated image.
         """
-        kernel = np.ones((2, 2), np.uint8)
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        threshold = 180
-        im_bw = cv2.threshold(gray_image, threshold, 255, cv2.THRESH_BINARY)[1]
-        im_dilation = cv2.dilate(im_bw, kernel, iterations=1)
-        contours, hierarchy = cv2.findContours(im_dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv_image, LOWER_BLUE, UPPER_BLUE)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if len(contours) == 0:
-            return False, None, image
-
-        contours_with_children = set(i for i, hier in enumerate(hierarchy[0]) if hier[3] != -1)
-        parent_circular_contours = [
-            cnt
-            for i, cnt in enumerate(contours)
-            if self.is_contour_circular(cnt)
-            and self.is_contour_large_enough(cnt, 7)
-            and i in contours_with_children
-        ]
-
-        if len(parent_circular_contours) == 0:
             return False, None, image
 
         # Create the DetectionsAndTime object
@@ -97,13 +60,25 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         if not result:
             return False, None, image
 
-        sorted_contour = sorted(parent_circular_contours, key=cv2.contourArea, reverse=True)
+        sorted_contour = sorted(contours, key=cv2.contourArea, reverse=True)
         image_annotated = copy.deepcopy(image)
         for i, contour in enumerate(sorted_contour):
+            contour_area = cv2.contourArea(contour)
+
+            if contour_area < MIN_CONTOUR_AREA:
+                continue
+
+            (x, y), radius = cv2.minEnclosingCircle(contour)
+
+            enclosing_area = np.pi * (radius**2)
+            circularity = contour_area / enclosing_area
+
+            if circularity < 0.7 or circularity > 1.3:
+                continue
+
             x, y, w, h = cv2.boundingRect(contour)
             bounds = np.array([x, y, x + w, y + h])
-            confidence = 1.0  # Confidence for classical CV is often set to a constant value
-            label = 0  # Label can be set to a constant or derived from some logic
+            confidence, label = 1.0, 0
 
             # Create a Detection object and append it to detections
             result, detection = detections_and_time.Detection.create(bounds, label, confidence)
@@ -136,6 +111,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         timestamp = data.timestamp
 
         result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
+
         if not result:
             return False, None
 
