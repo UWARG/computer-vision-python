@@ -1,6 +1,7 @@
 """
 Auto-landing worker.
 """
+
 import pathlib
 import os
 
@@ -9,13 +10,14 @@ from utilities.workers import worker_controller
 from . import auto_landing
 from ..common.modules.logger import logger
 
+
 def auto_landing_worker(
     FOV_X: float,
     FOV_Y: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-    ) -> None:
+) -> None:
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -28,11 +30,9 @@ def auto_landing_worker(
     assert local_logger is not None
 
     local_logger.info("Logger initialized", True)
-    
-    result, auto_lander = auto_landing.AutoLanding.create(
-        FOV_X, FOV_Y, local_logger
-    )
-    
+
+    result, auto_lander = auto_landing.AutoLanding.create(FOV_X, FOV_Y, local_logger)
+
     if not result:
         local_logger.error("Worker failed to create class object", True)
         return

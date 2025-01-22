@@ -3,37 +3,36 @@ import math
 from ..common.modules.logger import logger
 from .. import detections_and_time
 
+
 class AutoLanding:
-    """"
-    Auto-landing script. 
+    """ "
+    Auto-landing script.
     """
-    __create_key = object ()
+
+    __create_key = object()
 
     @classmethod
-    def create (
+    def create(
         cls,
         FOV_X: float,
         FOV_Y: float,
         local_logger: logger.Logger,
     ) -> "tuple [bool, AutoLanding | None ]":
-        """"
+        """ "
         FOV_X: The horizontal camera field of view in degrees.
         FOV_Y: The vertical camera field of view in degrees.
 
         """
-        
-        return True, AutoLanding(
-            cls.__create_key, FOV_X, FOV_Y, local_logger
-        )
-    
 
-    def __init__ (
-            self,
-            class_private_create_key: object,
-            FOV_X: float,
-            FOV_Y: float,
-            local_logger: logger.Logger
-        ) -> None:
+        return True, AutoLanding(cls.__create_key, FOV_X, FOV_Y, local_logger)
+
+    def __init__(
+        self,
+        class_private_create_key: object,
+        FOV_X: float,
+        FOV_Y: float,
+        local_logger: logger.Logger,
+    ) -> None:
         """
         Private constructor, use create() method.
         """
@@ -43,9 +42,7 @@ class AutoLanding:
         self.FOV_Y = FOV_Y
         self.__logger = local_logger
 
-    def run (self, 
-             height: float
-        ) -> "tuple[float, float, float]":
+    def run(self, height: float) -> "tuple[float, float, float]":
         """
         Calculates the angles in radians of the bounding box based on its center.
 
@@ -68,12 +65,9 @@ class AutoLanding:
 
         x_dist = math.tan(angle_x) * height
         y_dist = math.tan(angle_y) * height
-        ground_hyp = (x_dist**2 + y_dist**2)**0.5
+        ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
         self.__logger.info(f"Required horizontal correction (m): {ground_hyp}", True)
-        target_to_vehicle_dist = (ground_hyp**2 + height**2)**0.5
+        target_to_vehicle_dist = (ground_hyp**2 + height**2) ** 0.5
         self.__logger.info(f"Distance from vehicle to target (m): {target_to_vehicle_dist}", True)
 
         return angle_x, angle_y, target_to_vehicle_dist
-
-
-    
