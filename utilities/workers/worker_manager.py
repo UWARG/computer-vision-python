@@ -244,11 +244,4 @@ class WorkerManager:
 
         self.__workers = new_workers
 
-        # Draining the preceding queue ensures that the preceding queue data wasn't what
-        # caused the worker to fail. Draining the succeeding queues is not needed
-        # because a worker that died would not have put bad data into the queue.
-        # input_queues = self.__worker_properties.get_input_queues()
-        # for queue in input_queues:
-        #     queue.drain_queue()
-
         return True
