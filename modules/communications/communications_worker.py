@@ -7,7 +7,6 @@ import pathlib
 import queue
 
 from modules import object_in_world
-
 from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -78,7 +77,7 @@ def communications_worker(
         if is_invalid:
             continue
 
-        result, value = comm.run(input_queue.queue.get())
+        result, value = comm.run(input_data)
         if not result:
             continue
 
