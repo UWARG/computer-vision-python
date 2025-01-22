@@ -70,7 +70,7 @@ def communications_worker(
 
         for single_input in input_data:
             if not isinstance(single_input, object_in_world.ObjectInWorld):
-                local_logger.warning(f"Skipping unexpected input: {input}")
+                local_logger.warning(f"Skipping unexpected input: {input_data}, because of unexpected value: {single_input}")
                 is_invalid = True
                 break
 

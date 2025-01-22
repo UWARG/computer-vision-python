@@ -69,7 +69,7 @@ def detect_target_worker(
             break
 
         if not isinstance(input_data, image_and_time.ImageAndTime):
-            local_logger.warning(f"Skipping unexpected input: {input}")
+            local_logger.warning(f"Skipping unexpected input: {input_data}")
             continue
 
         result, value = detector.run(input_data)

@@ -60,7 +60,7 @@ def geolocation_worker(
             break
 
         if not isinstance(input_data, merged_odometry_detections.MergedOdometryDetections):
-            local_logger.warning(f"Skipping unexpected input: {input}")
+            local_logger.warning(f"Skipping unexpected input: {input_data}")
             continue
 
         result, value = locator.run(input_data)
