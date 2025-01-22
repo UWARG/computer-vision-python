@@ -27,6 +27,23 @@ detect_target:
     model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
     save_prefix: "log_comp"
 
+detect_brightspot:
+    brightspot_percentile_threshold: 99.9
+    filter_by_color: True
+    blob_color: 255
+    filter_by_circularity: False
+    min_circularity: 0.01
+    max_circularity: 1
+    filter_by_inertia: True
+    min_inertia_ratio: 0.2
+    max_inertia_ratio: 1
+    filter_by_convexity: False
+    min_convexity: 0.01
+    max_convexity: 1
+    filter_by_area: True
+    min_area_pixels: 50
+    max_area_pixels: 640
+
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
     # than connecting to port 14550, which is the ground station
@@ -53,6 +70,7 @@ geolocation:
 cluster_estimation:
     min_activation_threshold: 25
     min_new_points_to_run: 5
+    max_num_components: 10
     random_state: 0
 
 communications:

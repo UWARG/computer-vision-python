@@ -13,9 +13,9 @@ from modules import detection_in_world
 
 MIN_TOTAL_POINTS_THRESHOLD = 100
 MIN_NEW_POINTS_TO_RUN = 10
+MAX_NUM_COMPONENTS = 10
 RNG_SEED = 0
 CENTRE_BOX_SIZE = 500
-
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -34,6 +34,7 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
     result, model = cluster_estimation.ClusterEstimation.create(
         MIN_TOTAL_POINTS_THRESHOLD,
         MIN_NEW_POINTS_TO_RUN,
+        MAX_NUM_COMPONENTS,
         RNG_SEED,
         test_logger,
     )

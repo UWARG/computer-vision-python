@@ -137,6 +137,7 @@ def main() -> int:
 
         MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
         MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        MAX_NUM_COMPONENTS = config["cluster_estimation"]["max_num_components"]
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
 
         COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
@@ -327,7 +328,12 @@ def main() -> int:
     result, cluster_estimation_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=cluster_estimation_worker.cluster_estimation_worker,
-        work_arguments=(MIN_ACTIVATION_THRESHOLD, MIN_NEW_POINTS_TO_RUN, RANDOM_STATE),
+        work_arguments=(
+            MIN_ACTIVATION_THRESHOLD,
+            MIN_NEW_POINTS_TO_RUN,
+            MAX_NUM_COMPONENTS,
+            RANDOM_STATE,
+        ),
         input_queues=[geolocation_to_cluster_estimation_queue],
         output_queues=[cluster_estimation_to_communications_queue],
         controller=controller,

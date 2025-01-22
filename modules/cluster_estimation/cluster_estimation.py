@@ -20,17 +20,6 @@ class ClusterEstimation:
     works by predicting 'cluster centres' from groups of closely placed landing pad
     detections.
 
-    ATTRIBUTES
-    ----------
-    min_activation_threshold: int
-        Minimum total data points before model runs.
-
-    min_new_points_to_run: int
-        Minimum number of new data points that must be collected before running model.
-
-    random_state: int
-        Seed for randomizer, to get consistent results.
-
     METHODS
     -------
     run()
@@ -62,9 +51,6 @@ class ClusterEstimation:
     __MEAN_PRECISION_PRIOR = 1e-6
     __MAX_MODEL_ITERATIONS = 1000
 
-    # Real-world scenario Hyperparameters
-    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
-
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
@@ -74,24 +60,48 @@ class ClusterEstimation:
         cls,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation model to run.
+
+        PARAMETERS:
+        min_activation_threshold: int
+            Minimum total data points before model runs. Must be at least max_num_components.
+
+        min_new_points_to_run: int
+            Minimum number of new data points that must be collected before running model. Must be at least 0.
+
+        max_num_components: int
+            Max number of real landing pads. Must be at least 1.
+
+        random_state: int
+            Seed for randomizer, to get consistent results. Must be at least 0.
+
+        local_logger: logger.Logger
+            The local logger to log this object's information.
+
+        RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
-        # These parameters must be positive
-        if min_new_points_to_run < 0 or random_state < 0:
+        if min_activation_threshold < max_num_components:
             return False, None
 
-        # At least 1 point for model to fit
-        if min_activation_threshold < 1:
+        if min_new_points_to_run < 0:
+            return False, None
+
+        if max_num_components < 1:
+            return False, None
+
+        if random_state < 0:
             return False, None
 
         return True, ClusterEstimation(
             cls.__create_key,
             min_activation_threshold,
             min_new_points_to_run,
+            max_num_components,
             random_state,
             local_logger,
         )
@@ -101,6 +111,7 @@ class ClusterEstimation:
         class_private_create_key: object,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> None:
@@ -112,7 +123,7 @@ class ClusterEstimation:
         # Initializes VGMM
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
             covariance_type=self.__COVAR_TYPE,
-            n_components=self.__MAX_NUM_COMPONENTS,
+            n_components=max_num_components,
             init_params=self.__MODEL_INIT_PARAM,
             weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
