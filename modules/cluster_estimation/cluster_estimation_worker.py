@@ -5,6 +5,7 @@ Gets detections in world space and outputs estimations of objects.
 import os
 import pathlib
 
+from modules import detection_in_world
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import cluster_estimation
@@ -76,6 +77,18 @@ def cluster_estimation_worker(
 
         input_data = input_queue.queue.get()
         if input_data is None:
+            local_logger.info("Recieved type None, exiting.")
+            break
+
+        is_invalid = False
+
+        for single_input in input_data:
+            if not isinstance(single_input, detection_in_world.DetectionInWorld):
+                local_logger.warning(f"Skipping unexpected input: {input}")
+                is_invalid = True
+                break
+
+        if is_invalid:
             continue
 
         # TODO: When to override

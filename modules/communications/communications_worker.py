@@ -6,6 +6,7 @@ import os
 import pathlib
 import queue
 
+from modules import object_in_world
 from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -59,7 +60,24 @@ def communications_worker(
     while not controller.is_exit_requested():
         controller.check_pause()
 
-        result, value = comm.run(input_queue.queue.get())
+        input_data = input_queue.queue.get()
+
+        if input_data is None:
+            local_logger.info("Recieved type None, exiting.")
+            break
+
+        is_invalid = False
+
+        for single_input in input_data:
+            if not isinstance(single_input, object_in_world.ObjectInWorld):
+                local_logger.warning(f"Skipping unexpected input: {input}")
+                is_invalid = True
+                break
+
+        if is_invalid:
+            continue
+
+        result, value = comm.run(input_data)
         if not result:
             continue
 
