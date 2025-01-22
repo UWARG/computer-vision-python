@@ -1,31 +1,40 @@
 """
 Auto-landing worker.
 """
+import pathlib
+import os
+
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import auto_landing
+from ..common.modules.logger import logger
 
 def auto_landing_worker(
     FOV_X: float,
     FOV_Y: float,
-    im_h: float,
-    im_w: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
     ) -> None:
 
-    auto_lander = auto_landing.AutoLanding(FOV_X, FOV_Y, im_h, im_w)
-    """
-    result, lander = cluster_estimation.ClusterEstimation.create(
-        min_activation_threshold,
-        min_new_points_to_run,
-        random_state,
-    )
-    currently don't have a create function
-    """
+    worker_name = pathlib.Path(__file__).stem
+    process_id = os.getpid()
+    result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
     if not result:
-        print("ERROR: Worker failed to create class object")
+        print("ERROR: Worker failed to create logger")
+        return
+
+    # Get Pylance to stop complaining
+    assert local_logger is not None
+
+    local_logger.info("Logger initialized", True)
+    
+    result, auto_lander = auto_landing.AutoLanding.create(
+        FOV_X, FOV_Y, local_logger
+    )
+    
+    if not result:
+        local_logger.error("Worker failed to create class object", True)
         return
 
     # Get Pylance to stop complaining
@@ -38,7 +47,7 @@ def auto_landing_worker(
         if input_data is None:
             continue
 
-        result, value = auto_lander.run(input_data, False)
+        result, value = auto_lander.run(input_data)
         if not result:
             continue
 
