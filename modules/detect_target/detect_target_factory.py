@@ -20,14 +20,14 @@ class DetectTargetOption(enum.Enum):
 
 
 def create_detect_target(
+    save_name: str,
+    show_annotations: bool,
     detect_target_option: DetectTargetOption,
     config: (
         detect_target_brightspot.DetectTargetBrightspotConfig
         | detect_target_ultralytics.DetectTargetUltralyticsConfig
     ),
     local_logger: logger.Logger,
-    show_annotations: bool,
-    save_name: str,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
     """
     Construct detect target class at runtime.
