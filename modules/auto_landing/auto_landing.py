@@ -9,6 +9,9 @@ from .. import detections_and_time
 
 
 class AutoLanding:
+    """
+    Auto-landing script.
+    """
 
     __create_key = object()
 
@@ -50,16 +53,19 @@ class AutoLanding:
         self.im_w = im_w
         self.__logger = local_logger
 
-    def run(self, height: float) -> "tuple[float, float, float]":
+    def run(
+        self, height: float, center: detections_and_time.Detection
+    ) -> "tuple[float, float, float]":
         """
         Calculates the angles in radians of the bounding box based on its center.
 
         height: Height above ground level in meters.
+        center: The xy coordinates of the center of the bounding box.
 
         Return: Tuple of the x and y angles in radians respectively and the target distance in meters.
         """
 
-        x_center, y_center = detections_and_time.Detection.get_centre()
+        x_center, y_center = center.get_centre()
 
         angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
         angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
