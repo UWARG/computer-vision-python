@@ -14,23 +14,22 @@ class AutoLanding:
     @classmethod
     def create(
         cls,
-        FOV_X: float,
-        FOV_Y: float,
+        fov_x: float,
+        fov_y: float,
         local_logger: logger.Logger,
     ) -> "tuple [bool, AutoLanding | None ]":
-        """ "
-        FOV_X: The horizontal camera field of view in degrees.
-        FOV_Y: The vertical camera field of view in degrees.
-
+        """
+        fov_x: The horizontal camera field of view in degrees.
+        fov_y: The vertical camera field of view in degrees.
         """
 
-        return True, AutoLanding(cls.__create_key, FOV_X, FOV_Y, local_logger)
+        return True, AutoLanding(cls.__create_key, fov_x, fov_y, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
-        FOV_X: float,
-        FOV_Y: float,
+        fov_x: float,
+        fov_y: float,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -38,8 +37,8 @@ class AutoLanding:
         """
         assert class_private_create_key is AutoLanding.__create_key, "Use create() method"
 
-        self.FOV_X = FOV_X
-        self.FOV_Y = FOV_Y
+        self.fov_x = fov_x
+        self.fov_y = fov_y
         self.__logger = local_logger
 
     def run(self, height: float) -> "tuple[float, float, float]":
@@ -57,8 +56,8 @@ class AutoLanding:
         im_w = abs(top_right - top_left)
         im_h = abs(top_right - bottom_right)
 
-        angle_x = (x_center - im_w / 2) * (self.FOV_X * (math.pi / 180)) / im_w
-        angle_y = (y_center - im_h / 2) * (self.FOV_Y * (math.pi / 180)) / im_h
+        angle_x = (x_center - im_w / 2) * (self.fov_x * (math.pi / 180)) / im_w
+        angle_y = (y_center - im_h / 2) * (self.fov_y * (math.pi / 180)) / im_h
 
         self.__logger.info(f"X angle (rad): {angle_x}", True)
         self.__logger.info(f"Y angle (rad): {angle_y}", True)

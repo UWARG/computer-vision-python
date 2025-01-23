@@ -12,8 +12,8 @@ from ..common.modules.logger import logger
 
 
 def auto_landing_worker(
-    FOV_X: float,
-    FOV_Y: float,
+    fov_x: float,
+    fov_y: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -31,7 +31,7 @@ def auto_landing_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, auto_lander = auto_landing.AutoLanding.create(FOV_X, FOV_Y, local_logger)
+    result, auto_lander = auto_landing.AutoLanding.create(fov_x, fov_y, local_logger)
 
     if not result:
         local_logger.error("Worker failed to create class object", True)
