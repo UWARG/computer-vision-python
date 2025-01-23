@@ -30,7 +30,6 @@ class AutoLanding:
         im_w: Width of image.
         im_h: Height of image.
         """
-
         return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_w, im_h, local_logger)
 
     def __init__(
@@ -40,6 +39,7 @@ class AutoLanding:
         fov_y: float,
         im_h: float,
         im_w: float,
+        height_agl: float,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -51,15 +51,15 @@ class AutoLanding:
         self.fov_y = fov_y
         self.im_h = im_h
         self.im_w = im_w
+        self.height_agl = height_agl
         self.__logger = local_logger
 
     def run(
-        self, height: float, center: detections_and_time.Detection
-    ) -> "tuple[float, float, float]":
+        self, center: detections_and_time.Detection
+    ) -> "tuple[bool, tuple[float, float, float]]":
         """
         Calculates the angles in radians of the bounding box based on its center.
 
-        height: Height above ground level in meters.
         center: The xy coordinates of the center of the bounding box.
 
         Return: Tuple of the x and y angles in radians respectively and the target distance in meters.
@@ -73,11 +73,11 @@ class AutoLanding:
         self.__logger.info(f"X angle (rad): {angle_x}", True)
         self.__logger.info(f"Y angle (rad): {angle_y}", True)
 
-        x_dist = math.tan(angle_x) * height
-        y_dist = math.tan(angle_y) * height
+        x_dist = math.tan(angle_x) * self.height_agl
+        y_dist = math.tan(angle_y) * self.height_agl
         ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
         self.__logger.info(f"Required horizontal correction (m): {ground_hyp}", True)
-        target_to_vehicle_dist = (ground_hyp**2 + height**2) ** 0.5
+        target_to_vehicle_dist = (ground_hyp**2 + self.height_agl**2) ** 0.5
         self.__logger.info(f"Distance from vehicle to target (m): {target_to_vehicle_dist}", True)
 
-        return angle_x, angle_y, target_to_vehicle_dist
+        return True, (angle_x, angle_y, target_to_vehicle_dist)
