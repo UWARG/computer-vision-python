@@ -24,27 +24,27 @@ detect_target:
     worker_count: 1
     option: 0  # 0 is for Ultralytics and 1 is for brightspot (from detect_target_factory.py)
     save_prefix: "log_comp"
-
-detect_ultralytics:
-    device: 0
-    model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
-
-detect_brightspot:
-    brightspot_percentile_threshold: 99.9
-    filter_by_color: True
-    blob_color: 255
-    filter_by_circularity: False
-    min_circularity: 0.01
-    max_circularity: 1
-    filter_by_inertia: True
-    min_inertia_ratio: 0.2
-    max_inertia_ratio: 1
-    filter_by_convexity: False
-    min_convexity: 0.01
-    max_convexity: 1
-    filter_by_area: True
-    min_area_pixels: 50
-    max_area_pixels: 640
+    # Ultralytics config (enum 0)
+    config:
+        device: 0
+        model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
+    # Brightspot config (enum 1)
+    # config:
+    #     brightspot_percentile_threshold: 99.9
+    #     filter_by_color: True
+    #     blob_color: 255
+    #     filter_by_circularity: False
+    #     min_circularity: 0.01
+    #     max_circularity: 1
+    #     filter_by_inertia: True
+    #     min_inertia_ratio: 0.2
+    #     max_inertia_ratio: 1
+    #     filter_by_convexity: False
+    #     min_convexity: 0.01
+    #     max_convexity: 1
+    #     filter_by_area: True
+    #     min_area_pixels: 50
+    #     max_area_pixels: 640
 
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
