@@ -1,3 +1,7 @@
+""" 
+Auto-landing script.
+"""
+
 import math
 
 from ..common.modules.logger import logger
@@ -5,9 +9,6 @@ from .. import detections_and_time
 
 
 class AutoLanding:
-    """ "
-    Auto-landing script.
-    """
 
     __create_key = object()
 
@@ -16,20 +17,26 @@ class AutoLanding:
         cls,
         fov_x: float,
         fov_y: float,
+        im_h: float,
+        im_w: float,
         local_logger: logger.Logger,
     ) -> "tuple [bool, AutoLanding | None ]":
         """
         fov_x: The horizontal camera field of view in degrees.
         fov_y: The vertical camera field of view in degrees.
+        im_w: Width of image.
+        im_h: Height of image.
         """
 
-        return True, AutoLanding(cls.__create_key, fov_x, fov_y, local_logger)
+        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_w, im_h, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
         fov_x: float,
         fov_y: float,
+        im_h: float,
+        im_w: float,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -39,6 +46,8 @@ class AutoLanding:
 
         self.fov_x = fov_x
         self.fov_y = fov_y
+        self.im_h = im_h
+        self.im_w = im_w
         self.__logger = local_logger
 
     def run(self, height: float) -> "tuple[float, float, float]":
@@ -49,15 +58,11 @@ class AutoLanding:
 
         Return: Tuple of the x and y angles in radians respectively and the target distance in meters.
         """
+
         x_center, y_center = detections_and_time.Detection.get_centre()
 
-        top_left, top_right, _, bottom_right = detections_and_time.Detection.get_corners()
-
-        im_w = abs(top_right - top_left)
-        im_h = abs(top_right - bottom_right)
-
-        angle_x = (x_center - im_w / 2) * (self.fov_x * (math.pi / 180)) / im_w
-        angle_y = (y_center - im_h / 2) * (self.fov_y * (math.pi / 180)) / im_h
+        angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
+        angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
 
         self.__logger.info(f"X angle (rad): {angle_x}", True)
         self.__logger.info(f"Y angle (rad): {angle_y}", True)

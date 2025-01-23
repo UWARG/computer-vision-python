@@ -14,10 +14,18 @@ from ..common.modules.logger import logger
 def auto_landing_worker(
     fov_x: float,
     fov_y: float,
+    im_h: float,
+    im_w: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
+    """
+    Worker process.
+
+    input_queue and output_queue are data queues.
+    controller is how the main process communicates to this worker process.
+    """
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -31,7 +39,7 @@ def auto_landing_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, auto_lander = auto_landing.AutoLanding.create(fov_x, fov_y, local_logger)
+    result, auto_lander = auto_landing.AutoLanding.create(fov_x, fov_y, im_h, im_w, local_logger)
 
     if not result:
         local_logger.error("Worker failed to create class object", True)
