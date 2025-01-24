@@ -10,6 +10,10 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
 from ..common.modules.logger import logger
+from ..common.modules.mavlink import flight_controller
+from ..common.modules.data_encoding import message_encoding_decoding
+from ..common.modules.data_encoding import metadata_encoding_decoding
+from ..common.modules import position_global
 
 
 def flight_interface_worker(
@@ -20,6 +24,7 @@ def flight_interface_worker(
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     communications_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    coordinates_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -27,7 +32,9 @@ def flight_interface_worker(
 
     address, timeout is initial setting.
     period is minimum period between loops.
-    output_queue is the data queue.
+    input_queue and output_queue are the data queues.
+    communications_output_queue is a one time queue that sends communications worker the home address.
+    coordinates_input_queue provides the flight controller with a list of GPS coordinates.
     controller is how the main process communicates to this worker process.
     """
     # TODO: Error handling
@@ -57,10 +64,44 @@ def flight_interface_worker(
     home_position = interface.get_home_position()
     communications_output_queue.queue.put(home_position)
 
+    result, message_flight_controller = flight_controller.FlightController.create(
+        address, baud_rate
+    )
+    if not result:
+        local_logger.error("Worker failed to create class object", True)
+        return
+
+    result, metadata = metadata_encoding_decoding.encode_metadata(
+        f"{worker_name}", coordinates_input_queue.queue.qsize()
+    )
+    if not result:
+        local_logger.error("Failed to encode metadata", True)
+        return
+
+    message_flight_controller.send_statustext_msg(f"{metadata}")
+
     while not controller.is_exit_requested():
         controller.check_pause()
 
         time.sleep(period)
+
+        coordinate = coordinates_input_queue.queue.get()
+        if coordinate is None:
+            local_logger.info("Received type None, exiting")
+            break
+
+        if not isinstance(coordinate, position_global.PositionGlobal):
+            local_logger.warning(f"Skipping unexpected input: {coordinate}")
+            continue
+
+        result, message = message_encoding_decoding.encode_position_global(
+            f"{worker_name}", coordinate
+        )
+        if not result:
+            local_logger.error("Failed to encode PositionGlobal object", True)
+            continue
+
+        message_flight_controller.send_statustext_msg(f"{message}")
 
         result, value = interface.run()
         if not result:

@@ -182,6 +182,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    communications_to_flight_interface_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     cluster_estimation_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
@@ -272,7 +276,10 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
-        input_queues=[flight_interface_decision_queue],
+        input_queues=[
+            flight_interface_decision_queue,
+            communications_to_flight_interface_queue,
+        ],
         output_queues=[
             flight_interface_to_data_merge_queue,
             flight_interface_to_communications_queue,
@@ -492,6 +499,7 @@ def main() -> int:
     cluster_estimation_to_communications_queue.fill_and_drain_queue()
     communications_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
+    communications_to_flight_interface_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()
