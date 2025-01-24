@@ -4,10 +4,9 @@ Auto-landing script.
 
 import math
 
+from pymavlink import mavutil
 from ..common.modules.logger import logger
 from .. import detections_and_time
-
-from pymavlink import mavutil
 
 
 class AutoLanding:

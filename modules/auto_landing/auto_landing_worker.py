@@ -40,9 +40,7 @@ def auto_landing_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, auto_lander = auto_landing.AutoLanding.create(
-        fov_x, fov_y, im_h, im_w, height_agl, local_logger
-    )
+    result, auto_lander = auto_landing.AutoLanding.create(fov_x, fov_y, im_h, im_w, local_logger)
 
     if not result:
         local_logger.error("Worker failed to create class object", True)
