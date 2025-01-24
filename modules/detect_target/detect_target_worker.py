@@ -8,17 +8,20 @@ import pathlib
 from modules import image_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
+from . import detect_target_brightspot
 from . import detect_target_factory
+from . import detect_target_ultralytics
 from ..common.modules.logger import logger
 
 
 def detect_target_worker(
-    detect_target_option: detect_target_factory.DetectTargetOption,
-    device: "str | int",
-    model_path: str,
-    override_full: bool,
-    show_annotations: bool,
     save_name: str,
+    show_annotations: bool,
+    detect_target_option: detect_target_factory.DetectTargetOption,
+    config: (
+        detect_target_brightspot.DetectTargetBrightspotConfig
+        | detect_target_ultralytics.DetectTargetUltralyticsConfig
+    ),
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -44,13 +47,11 @@ def detect_target_worker(
     local_logger.info("Logger initialized", True)
 
     result, detector = detect_target_factory.create_detect_target(
-        detect_target_option,
-        device,
-        model_path,
-        override_full,
-        local_logger,
-        show_annotations,
         save_name,
+        show_annotations,
+        detect_target_option,
+        config,
+        local_logger,
     )
 
     if not result:
