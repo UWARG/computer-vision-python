@@ -16,7 +16,6 @@ def auto_landing_worker(
     fov_y: float,
     im_h: float,
     im_w: float,
-    height_agl: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
