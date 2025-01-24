@@ -7,6 +7,8 @@ import math
 from ..common.modules.logger import logger
 from .. import detections_and_time
 
+from pymavlink import mavutil
+
 
 class AutoLanding:
     """
@@ -29,9 +31,24 @@ class AutoLanding:
         fov_y: The vertical camera field of view in degrees.
         im_w: Width of image.
         im_h: Height of image.
+        height_agl: Height above ground level in meters.
+
+        Returns an AutoLanding object.
         """
-        local_logger.info("", True)
-        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_w, im_h, local_logger)
+        vehicle = mavutil.mavlink_connection("tcp:localhost:14550")
+        try:
+            height_agl_mm = vehicle.messages[
+                "GLOBAL_POSITION_INT"
+            ].relative_alt  # copied from blue_only.py
+            height_agl = max(height_agl_mm / 1000, 0.0)
+            local_logger.info(f"Altitude AGL: {height_agl} ", True)
+        except (KeyError, AttributeError):
+            local_logger.error("No GLOBAL_POSITION_INT message received")
+            return False, None
+
+        return True, AutoLanding(
+            cls.__create_key, fov_x, fov_y, im_h, im_w, height_agl, local_logger
+        )
 
     def __init__(
         self,
