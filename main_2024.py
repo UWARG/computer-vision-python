@@ -16,8 +16,10 @@ from modules.common.modules.camera import camera_factory
 from modules.common.modules.camera import camera_opencv
 from modules.common.modules.camera import camera_picamera2
 from modules.communications import communications_worker
+from modules.detect_target import detect_target_brightspot
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
+from modules.detect_target import detect_target_ultralytics
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
@@ -109,13 +111,26 @@ def main() -> int:
         DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(
             config["detect_target"]["option"]
         )
-        DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
-        DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
-        DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
         DETECT_TARGET_SAVE_PREFIX = str(
             pathlib.Path(logging_path, config["detect_target"]["save_prefix"])
         )
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
+        match DETECT_TARGET_OPTION:
+            case detect_target_factory.DetectTargetOption.ML_ULTRALYTICS:
+                DETECT_TARGET_CONFIG = detect_target_ultralytics.DetectTargetUltralyticsConfig(
+                    config["detect_target"]["config"]["device"],
+                    config["detect_target"]["config"]["model_path"],
+                    args.full,
+                )
+            case detect_target_factory.DetectTargetOption.CV_BRIGHTSPOT:
+                DETECT_TARGET_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
+                    **config["detect_target"]["config"]
+                )
+            case _:
+                main.logger.error(
+                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}", True
+                )
+                return -1
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
@@ -248,12 +263,10 @@ def main() -> int:
         count=DETECT_TARGET_WORKER_COUNT,
         target=detect_target_worker.detect_target_worker,
         work_arguments=(
-            DETECT_TARGET_OPTION,
-            DETECT_TARGET_DEVICE,
-            DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
+            DETECT_TARGET_SHOW_ANNOTATED,
+            DETECT_TARGET_OPTION,
+            DETECT_TARGET_CONFIG,
         ),
         input_queues=[video_input_to_detect_target_queue],
         output_queues=[detect_target_to_data_merge_queue],
