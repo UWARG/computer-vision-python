@@ -30,6 +30,7 @@ class AutoLanding:
         im_w: Width of image.
         im_h: Height of image.
         """
+        local_logger.info("", True)
         return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_w, im_h, local_logger)
 
     def __init__(
@@ -55,17 +56,17 @@ class AutoLanding:
         self.__logger = local_logger
 
     def run(
-        self, center: detections_and_time.Detection
+        self, bounding_box: detections_and_time.Detection
     ) -> "tuple[bool, tuple[float, float, float]]":
         """
         Calculates the angles in radians of the bounding box based on its center.
 
-        center: The xy coordinates of the center of the bounding box.
+        bounding_box: A detections and time object.
 
         Return: Tuple of the x and y angles in radians respectively and the target distance in meters.
         """
 
-        x_center, y_center = center.get_centre()
+        x_center, y_center = bounding_box.get_centre()
 
         angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
         angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
