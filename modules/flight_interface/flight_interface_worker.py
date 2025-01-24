@@ -34,7 +34,7 @@ def flight_interface_worker(
     period is minimum period between loops.
     input_queue and output_queue are the data queues.
     communications_output_queue is a one time queue that sends communications worker the home address.
-    coordinates_input_queue provides the flight controller with a list of GPS coordinates.
+    coordinates_input_queue provides the flight interface worker with a list of GPS coordinates.
     controller is how the main process communicates to this worker process.
     """
     # TODO: Error handling
