@@ -1,17 +1,20 @@
 """ 
-Auto-landing script.
+Auto-landing script that calculates the necessary parameters 
+for use with LANDING_TARGET MAVLink command. 
 """
 
 import math
+import time
 
-from pymavlink import mavutil
-from ..common.modules.logger import logger
 from .. import detections_and_time
+from ..common.modules.logger import logger
+from .. import merged_odometry_detections
 
 
 class AutoLanding:
     """
-    Auto-landing script.
+    Auto-landing script that calculates the necessary parameters
+    for use with LANDING_TARGET MAVLink command.
     """
 
     __create_key = object()
@@ -23,6 +26,7 @@ class AutoLanding:
         fov_y: float,
         im_h: float,
         im_w: float,
+        period: float,
         local_logger: logger.Logger,
     ) -> "tuple [bool, AutoLanding | None ]":
         """
@@ -30,24 +34,11 @@ class AutoLanding:
         fov_y: The vertical camera field of view in degrees.
         im_w: Width of image.
         im_h: Height of image.
-        height_agl: Height above ground level in meters.
 
         Returns an AutoLanding object.
         """
-        vehicle = mavutil.mavlink_connection("tcp:localhost:14550")
-        try:
-            height_agl_mm = vehicle.messages[
-                "GLOBAL_POSITION_INT"
-            ].relative_alt  # copied from blue_only.py
-            height_agl = max(height_agl_mm / 1000, 0.0)
-            local_logger.info(f"Altitude AGL: {height_agl} ", True)
-        except (KeyError, AttributeError):
-            local_logger.error("No GLOBAL_POSITION_INT message received")
-            return False, None
 
-        return True, AutoLanding(
-            cls.__create_key, fov_x, fov_y, im_h, im_w, height_agl, local_logger
-        )
+        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_h, im_w, period, local_logger)
 
     def __init__(
         self,
@@ -56,7 +47,7 @@ class AutoLanding:
         fov_y: float,
         im_h: float,
         im_w: float,
-        height_agl: float,
+        period: float,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -68,7 +59,7 @@ class AutoLanding:
         self.fov_y = fov_y
         self.im_h = im_h
         self.im_w = im_w
-        self.height_agl = height_agl
+        self.period = period
         self.__logger = local_logger
 
     def run(
@@ -87,14 +78,18 @@ class AutoLanding:
         angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
         angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
 
-        self.__logger.info(f"X angle (rad): {angle_x}", True)
-        self.__logger.info(f"Y angle (rad): {angle_y}", True)
+        height_agl = 0
 
-        x_dist = math.tan(angle_x) * self.height_agl
-        y_dist = math.tan(angle_y) * self.height_agl
+        x_dist = math.tan(angle_x) * height_agl
+        y_dist = math.tan(angle_y) * height_agl
         ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
-        self.__logger.info(f"Required horizontal correction (m): {ground_hyp}", True)
-        target_to_vehicle_dist = (ground_hyp**2 + self.height_agl**2) ** 0.5
-        self.__logger.info(f"Distance from vehicle to target (m): {target_to_vehicle_dist}", True)
+        target_to_vehicle_dist = (ground_hyp**2 + height_agl**2) ** 0.5
+
+        self.__logger.info(
+            f"X angle: {angle_x} Y angle: {angle_y}\nRequired horizontal correction: {ground_hyp} Distance from vehicle to target: {target_to_vehicle_dist}",
+            True,
+        )
+
+        time.sleep(self.period)
 
         return True, (angle_x, angle_y, target_to_vehicle_dist)
