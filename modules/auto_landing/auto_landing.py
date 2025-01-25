@@ -8,7 +8,8 @@ import time
 
 from .. import detections_and_time
 from ..common.modules.logger import logger
-from .. import merged_odometry_detections
+
+# from .. import merged_odometry_detections
 
 
 class AutoLanding:
