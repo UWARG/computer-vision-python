@@ -8,6 +8,7 @@ from .. import object_in_world
 from ..common.modules import position_global
 from ..common.modules import position_local
 from ..common.modules.logger import logger
+from ..common.modules.data_encoding import message_encoding_decoding
 from ..common.modules.mavlink import local_global_conversion
 
 
@@ -23,6 +24,7 @@ class Communications:
         cls,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
+        worker_name: str,
     ) -> "tuple[True, Communications] | tuple[False, None]":
         """
         Logs data and forwards it.
@@ -32,13 +34,14 @@ class Communications:
         Returns: Success, class object.
         """
 
-        return True, Communications(cls.__create_key, home_position, local_logger)
+        return True, Communications(cls.__create_key, home_position, local_logger, worker_name)
 
     def __init__(
         self,
         class_private_create_key: object,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
+        worker_name: str,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -47,11 +50,12 @@ class Communications:
 
         self.__home_position = home_position
         self.__logger = local_logger
+        self.__worker_name = worker_name
 
     def run(
         self,
         objects_in_world: list[object_in_world.ObjectInWorld],
-    ) -> tuple[True, list[object_in_world.ObjectInWorld]] | tuple[False, None]:
+    ) -> tuple[True, list[bytes]] | tuple[False, None]:
 
         objects_in_world_global = []
         for object_in_world in objects_in_world:
@@ -87,4 +91,16 @@ class Communications:
 
         self.__logger.info(f"{time.time()}: {objects_in_world_global}")
 
-        return True, objects_in_world
+        encoded_position_global_objects = []
+        for object in objects_in_world_global:
+
+            result, message = message_encoding_decoding.encode_position_global(
+                f"{self.__worker_name}", object
+            )
+            if not result:
+                self.__logger.warning("Conversion from PositionGlobal to bytes failed", True)
+                return False, None
+
+            encoded_position_global_objects.append(message)
+
+        return True, encoded_position_global_objects

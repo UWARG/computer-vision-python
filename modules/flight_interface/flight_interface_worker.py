@@ -64,22 +64,6 @@ def flight_interface_worker(
     home_position = interface.get_home_position()
     communications_output_queue.queue.put(home_position)
 
-    result, message_flight_controller = flight_controller.FlightController.create(
-        address, baud_rate
-    )
-    if not result:
-        local_logger.error("Worker failed to create class object", True)
-        return
-
-    result, metadata = metadata_encoding_decoding.encode_metadata(
-        f"{worker_name}", coordinates_input_queue.queue.qsize()
-    )
-    if not result:
-        local_logger.error("Failed to encode metadata", True)
-        return
-
-    message_flight_controller.send_statustext_msg(f"{metadata}")
-
     while not controller.is_exit_requested():
         controller.check_pause()
 
@@ -90,20 +74,11 @@ def flight_interface_worker(
             local_logger.info("Received type None, exiting")
             break
 
-        if not isinstance(coordinate, position_global.PositionGlobal):
+        if not isinstance(coordinate, bytes):
             local_logger.warning(f"Skipping unexpected input: {coordinate}")
             continue
 
-        result, message = message_encoding_decoding.encode_position_global(
-            f"{worker_name}", coordinate
-        )
-        if not result:
-            local_logger.error("Failed to encode PositionGlobal object", True)
-            continue
-
-        message_flight_controller.send_statustext_msg(f"{message}")
-
-        result, value = interface.run()
+        result, value = interface.run(coordinate)
         if not result:
             continue
 
