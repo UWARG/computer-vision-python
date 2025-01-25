@@ -10,10 +10,6 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import flight_interface
 from ..common.modules.logger import logger
-from ..common.modules.mavlink import flight_controller
-from ..common.modules.data_encoding import message_encoding_decoding
-from ..common.modules.data_encoding import metadata_encoding_decoding
-from ..common.modules import position_global
 
 
 def flight_interface_worker(
