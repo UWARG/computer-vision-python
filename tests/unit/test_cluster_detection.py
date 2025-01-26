@@ -68,6 +68,27 @@ def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByL
     yield model  # type: ignore
 
 
+@pytest.fixture()
+def cluster_model_by_label(cluster_model: cluster_estimation.ClusterEstimation) -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
+    """
+    Cluster estimation by label object.
+    """
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
+    result, model = cluster_estimation_by_label.ClusterEstimationByLabel.create(
+        MIN_TOTAL_POINTS_THRESHOLD,
+        MIN_NEW_POINTS_TO_RUN,
+        cluster_model,
+        test_logger,
+    )
+    assert result
+    assert model is not None
+
+    yield model  # type: ignore
+
+
 def generate_cluster_data(
     n_samples_per_cluster: "list[int]",
     cluster_standard_deviation: int,
@@ -268,6 +289,24 @@ class TestModelExecutionCondition:
         assert not result
         assert detections_in_world is None
 
+    def test_under_min_total_threshold_by_label(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        As above, but with labels.
+        """
+        # Setup
+        original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
+        generated_detections, _ = generate_cluster_data_by_label([1], [original_count], self.__STD_DEV_REG)
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+
+        # Test
+        assert not result
+        assert detections_in_world is None
+
+
     def test_at_min_total_threshold(
         self, cluster_model: cluster_estimation.ClusterEstimation
     ) -> None:
@@ -292,6 +331,30 @@ class TestModelExecutionCondition:
         assert result_2
         assert detections_in_world_2 is not None
 
+    def test_at_min_total_threshold_by_label(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        As above, but with labels.
+        """
+        # Setup
+        original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
+        new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
+
+        generated_detections, _ = generate_cluster_data_by_label([1], [original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data_by_label([1], [new_count], self.__STD_DEV_REG)
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+        result_2, detections_in_world_2 = cluster_model_by_label.run(generated_detections_2, False)
+
+        # Test
+        assert not result
+        assert detections_in_world is None
+        assert result_2
+        assert detections_in_world_2 is not None
+
+
     def test_under_min_bucket_size(
         self, cluster_model: cluster_estimation.ClusterEstimation
     ) -> None:
@@ -315,6 +378,30 @@ class TestModelExecutionCondition:
         assert not result_2
         assert detections_in_world_2 is None
 
+    def test_under_min_bucket_size_by_label(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        As above, but with labels.
+        """
+        # Setup
+        original_count = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
+        new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
+
+        generated_detections, _ = generate_cluster_data_by_label([1], [original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data_by_label([1], [new_count], self.__STD_DEV_REG)
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+        result_2, detections_in_world_2 = cluster_model_by_label.run(generated_detections_2, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+        assert not result_2
+        assert detections_in_world_2 is None
+    
+
     def test_good_data(self, cluster_model: cluster_estimation.ClusterEstimation) -> None:
         """
         All conditions met should run.
@@ -324,6 +411,20 @@ class TestModelExecutionCondition:
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+    
+    def test_good_data_by_label(self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel) -> None:
+        """
+        As above, but with labels.
+        """
+        original_count = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
+        generated_detections, _ = generate_cluster_data_by_label([1], [original_count], self.__STD_DEV_REG)
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
 
         # Test
         assert result
@@ -358,6 +459,24 @@ class TestCorrectNumberClusterOutputs:
         assert result
         assert detections_in_world is not None
 
+    def test_detect_normal_data_single_cluster_by_label(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        As above, but with labels.
+        """
+        # Setup
+        points_per_cluster = [100]
+        generated_detections, _ = generate_cluster_data_by_label([1], points_per_cluster, self.__STD_DEV_REGULAR)
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+
+
     def test_detect_normal_data_five_clusters(
         self, cluster_model: cluster_estimation.ClusterEstimation
     ) -> None:
@@ -378,6 +497,30 @@ class TestCorrectNumberClusterOutputs:
         assert result
         assert detections_in_world is not None
         assert len(detections_in_world) == expected_cluster_count
+
+    def test_detect_normal_data_five_clusters_by_label_all_different(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        As above, but with labels. Every cluster has a different label.
+        """
+        # Setup
+        points_per_cluster = [100, 100, 100, 100, 100]
+        labels_of_clusters = [1, 1, 1, 1, 1]
+        expected_cluster_count = len(points_per_cluster)
+        generated_detections, clusters = generate_cluster_data_by_label(labels_of_clusters, points_per_cluster, self.__STD_DEV_REGULAR)
+        assert len(generated_detections) == 500
+        assert len(clusters) == 5
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+
+        # Test
+        assert detections_in_world[0].label == 1
+        assert result
+        assert detections_in_world is not None
+        assert len(detections_in_world) == expected_cluster_count
+    
 
     def test_detect_large_std_dev_single_cluster(
         self, cluster_model: cluster_estimation.ClusterEstimation

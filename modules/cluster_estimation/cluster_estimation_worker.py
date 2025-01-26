@@ -34,6 +34,9 @@ def cluster_estimation_worker(
     min_new_points_to_run: int
         Minimum number of new data points that must be collected before running model.
 
+    max_num_components: int
+        Max number of real landing pads.
+
     random_state: int
         Seed for randomizer, to get consistent results.
 
