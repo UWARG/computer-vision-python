@@ -65,10 +65,7 @@ def flight_interface_worker(
 
         time.sleep(period)
 
-        coordinate = coordinates_input_queue.queue.get()
-        if coordinate is None:
-            local_logger.info("Received type None, exiting")
-            break
+        coordinate = coordinates_input_queue.queue.get_nowait()
 
         if not isinstance(coordinate, bytes):
             local_logger.warning(f"Skipping unexpected input: {coordinate}")

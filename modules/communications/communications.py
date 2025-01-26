@@ -9,6 +9,7 @@ from ..common.modules import position_global
 from ..common.modules import position_local
 from ..common.modules.logger import logger
 from ..common.modules.data_encoding import message_encoding_decoding
+from ..common.modules.data_encoding import worker_enum
 from ..common.modules.mavlink import local_global_conversion
 
 
@@ -24,7 +25,7 @@ class Communications:
         cls,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_name: str,
+        worker_id: int,
     ) -> "tuple[True, Communications] | tuple[False, None]":
         """
         Logs data and forwards it.
@@ -34,14 +35,14 @@ class Communications:
         Returns: Success, class object.
         """
 
-        return True, Communications(cls.__create_key, home_position, local_logger, worker_name)
+        return True, Communications(cls.__create_key, home_position, local_logger, worker_id)
 
     def __init__(
         self,
         class_private_create_key: object,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_name: str,
+        worker_id: int,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -50,7 +51,7 @@ class Communications:
 
         self.__home_position = home_position
         self.__logger = local_logger
-        self.__worker_name = worker_name
+        self.__worker_id = worker_id
 
     def run(
         self,
@@ -95,7 +96,7 @@ class Communications:
         for object in objects_in_world_global:
 
             result, message = message_encoding_decoding.encode_position_global(
-                f"{self.__worker_name}", object
+                self.__worker_id, object
             )
             if not result:
                 self.__logger.warning("Conversion from PositionGlobal to bytes failed", True)

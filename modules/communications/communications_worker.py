@@ -5,17 +5,20 @@ Logs data and forwards it.
 import os
 import pathlib
 import queue
+import time
 
 from modules import object_in_world
 from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from ..common.modules.data_encoding import metadata_encoding_decoding
+from ..common.modules.data_encoding import worker_enum
 from ..common.modules.logger import logger
 
 
 def communications_worker(
     timeout: float,
+    period: float,
     home_position_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -30,6 +33,7 @@ def communications_worker(
     """
 
     worker_name = pathlib.Path(__file__).stem
+    worker_id = worker_enum.WorkerEnum.COMMUNICATIONS_WORKER
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
     if not result:
@@ -50,7 +54,7 @@ def communications_worker(
 
     local_logger.info(f"Home position received: {home_position}", True)
 
-    result, comm = communications.Communications.create(home_position, local_logger, worker_name)
+    result, comm = communications.Communications.create(home_position, local_logger, worker_id)
     if not result:
         local_logger.error("Worker failed to create class object", True)
         return
@@ -85,7 +89,7 @@ def communications_worker(
             continue
 
         result, metadata = metadata_encoding_decoding.encode_metadata(
-            f"{worker_name}", len(list_of_messages)
+            worker_id, len(list_of_messages)
         )
         if not result:
             local_logger.error("Failed to encode metadata", True)
@@ -94,4 +98,7 @@ def communications_worker(
         output_queue.queue.put(metadata)
 
         for message in list_of_messages:
+
+            time.sleep(period)
+
             output_queue.queue.put(message)
