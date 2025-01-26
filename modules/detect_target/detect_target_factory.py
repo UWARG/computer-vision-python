@@ -20,13 +20,14 @@ class DetectTargetOption(enum.Enum):
 
 
 def create_detect_target(
-    detect_target_option: DetectTargetOption,
-    device: "str | int",
-    model_path: str,
-    override_full: bool,
-    local_logger: logger.Logger,
-    show_annotations: bool,
     save_name: str,
+    show_annotations: bool,
+    detect_target_option: DetectTargetOption,
+    config: (
+        detect_target_brightspot.DetectTargetBrightspotConfig
+        | detect_target_ultralytics.DetectTargetUltralyticsConfig
+    ),
+    local_logger: logger.Logger,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
     """
     Construct detect target class at runtime.
@@ -34,15 +35,14 @@ def create_detect_target(
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:
             return True, detect_target_ultralytics.DetectTargetUltralytics(
-                device,
-                model_path,
-                override_full,
+                config,
                 local_logger,
                 show_annotations,
                 save_name,
             )
         case DetectTargetOption.CV_BRIGHTSPOT:
             return True, detect_target_brightspot.DetectTargetBrightspot(
+                config,
                 local_logger,
                 show_annotations,
                 save_name,

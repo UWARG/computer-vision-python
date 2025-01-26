@@ -13,9 +13,9 @@ from .. import detections_and_time
 from ..common.modules.logger import logger
 
 
-class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
+class DetectTargetUltralyticsConfig:
     """
-    Contains the YOLOv8 model for prediction.
+    Configuration for DetectTargetUltralytics.
     """
 
     def __init__(
@@ -23,6 +23,27 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         device: "str | int",
         model_path: str,
         override_full: bool,
+    ) -> None:
+        """
+        Initializes the configuration for DetectTargetUltralytics.
+
+        device: name of target device to run inference on (i.e. "cpu" or cuda device 0, 1, 2, 3).
+        model_path: path to the YOLOv8 model.
+        override_full: Force full precision floating point calculations.
+        """
+        self.device = device
+        self.model_path = model_path
+        self.override_full = override_full
+
+
+class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
+    """
+    Contains the YOLOv8 model for prediction.
+    """
+
+    def __init__(
+        self,
+        config: DetectTargetUltralyticsConfig,
         local_logger: logger.Logger,
         show_annotations: bool = False,
         save_name: str = "",
@@ -34,14 +55,14 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
-        self.__device = device
-        self.__model = ultralytics.YOLO(model_path)
-        self.__counter = 0
+        self.__device = config.device
         self.__enable_half_precision = not self.__device == "cpu"
+        self.__model = ultralytics.YOLO(config.model_path)
+        if config.override_full:
+            self.__enable_half_precision = False
+        self.__counter = 0
         self.__local_logger = local_logger
         self.__show_annotations = show_annotations
-        if override_full:
-            self.__enable_half_precision = False
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"

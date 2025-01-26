@@ -35,6 +35,8 @@ NO_DETECTION_TEST_CASES = IMAGE_NO_DETECTIONS_FILES
 BOUNDING_BOX_PRECISION_TOLERANCE = 3
 CONFIDENCE_PRECISION_TOLERANCE = 6
 
+# Config is identical to test_detect_target_worker.py
+# pylint: disable=duplicate-code
 DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
     brightspot_percentile_threshold=99.9,
     filter_by_color=True,
@@ -52,7 +54,7 @@ DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspo
     min_area_pixels=50,
     max_area_pixels=640,
 )
-
+# pylint: enable=duplicate-code
 
 # Test functions use test fixture signature names and access class privates
 # No enable
