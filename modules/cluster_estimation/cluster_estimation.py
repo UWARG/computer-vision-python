@@ -23,21 +23,14 @@ class ClusterEstimation:
     METHODS
     -------
     run()
-        Take in list of object detections and return list of estimated object locations
+        Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
-
-    cluster_by_label()
-        Take in list of detections of the same label and return list of estimated object locations
-        of the same label.
 
     __decide_to_run()
         Decide when to run cluster estimation model.
 
     __sort_by_weights()
         Sort input model output list by weights in descending order.
-
-    __sort_by_labels()
-        Sort input detection list by labels in descending order.
 
     __convert_detections_to_point()
         Convert DetectionInWorld input object to a [x,y] position to store.
@@ -149,12 +142,10 @@ class ClusterEstimation:
         self.__logger = local_logger
 
     def run(
-        self,
-        detections: "list[detection_in_world.DetectionInWorld]",
-        run_override: bool,
+        self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool
     ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
         """
-        Take in list of detections and return list of estimated object locations
+        Take in list of landing pad detections and return list of estimated landing pad locations
         if number of detections is sufficient, or if manually forced to run.
 
         PARAMETERS
@@ -178,91 +169,30 @@ class ClusterEstimation:
         """
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
-        self.__all_points = []
+        print("len of current bucket = "+str(len(self.__current_bucket)))
 
         # Decide to run
         if not self.__decide_to_run(run_override):
             return False, None
 
-        # sort bucket by label in descending order
-        self.__all_points = self.__sort_by_labels(self.__all_points)
-        detections_in_world = []
-
-        # init search parameters
-        ptr = 0
-
-        # itterates through all points
-        while ptr < len(self.__all_points):
-            # reference label
-            label = self.__all_points[ptr][2]
-
-            # creates bucket of points with the same label since bucket is sorted by label
-            bucket_labelled = []
-            while ptr < len(self.__all_points) and self.__all_points[ptr][2] == label:
-                bucket_labelled.append(self.__all_points[ptr])
-                ptr += 1
-
-            # skip if no objects have label=label
-            if len(bucket_labelled) == 0:
-                continue
-
-            result, labelled_detections_in_world = self.cluster_by_label(bucket_labelled, label)
-
-            # checks if cluster_by_label ran succssfully
-            if not result:
-                self.__logger.warning(
-                    f"did not add objects of label={label} to total object detections"
-                )
-                continue
-
-            detections_in_world += labelled_detections_in_world
-
-        return True, detections_in_world
-
-    def cluster_by_label(
-        self,
-        points: "list[tuple[float, float, int]]",
-        label: int,
-    ) -> "tuple[bool, list[object_in_world.ObjectInWorld] | None]":
-        """
-        Take in list of detections of the same label and return list of estimated object locations
-        of the same label.
-
-        PARAMETERS
-        ----------
-        points: list[tuple[float, float, int]]
-            List containing tuple objects which holds real-world positioning data to run
-            clustering on and their labels
-
-        run_override: bool
-            Forces ClusterEstimation to predict if data is available, regardless of any other
-            requirements.
-
-        RETURNS
-        -------
-        model_ran: bool
-            True if ClusterEstimation object successfully ran its estimation model, False otherwise.
-
-        objects_in_world: list[ObjectInWorld] or None.
-            List containing ObjectInWorld objects, containing position and covariance value.
-            None if conditions not met and model not ran or model failed to converge.
-        """
         # Fit points and get cluster data
-        __vgmm_label = self.__vgmm.fit([[point[0], point[1]] for point in points])  # type: ignore
+        self.__vgmm = self.__vgmm.fit(self.__all_points)  # type: ignore
 
         # Check convergence
-        if not __vgmm_label.converged_:
-            self.__logger.warning(f"Model for label={label} failed to converge")
+        if not self.__vgmm.converged_:
+            self.__logger.warning("Model failed to converge")
             return False, None
 
         # Get predictions from cluster model
         model_output: "list[tuple[np.ndarray, float, float]]" = list(
             zip(
-                __vgmm_label.means_,  # type: ignore
-                __vgmm_label.weights_,  # type: ignore
-                __vgmm_label.covariances_,  # type: ignore
+                self.__vgmm.means_,  # type: ignore
+                self.__vgmm.weights_,  # type: ignore
+                self.__vgmm.covariances_,  # type: ignore
             )
         )
+
+        print("output = "+str(model_output))
 
         # Empty cluster removal
         model_output = self.__filter_by_points_ownership(model_output)
@@ -279,6 +209,7 @@ class ClusterEstimation:
             viable_clusters.append(model_output[i])
 
         model_output = viable_clusters
+        print("len model output: "+str(len(model_output)))
 
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
@@ -287,7 +218,7 @@ class ClusterEstimation:
         detections_in_world = []
         for cluster in model_output:
             result, landing_pad = object_in_world.ObjectInWorld.create(
-                cluster[0][0], cluster[0][1], cluster[2], label
+                cluster[0][0], cluster[0][1], cluster[2], 0
             )
 
             if result:
@@ -295,7 +226,7 @@ class ClusterEstimation:
             else:
                 self.__logger.warning("Failed to create ObjectInWorld object")
 
-        # self.__logger.info(detections_in_world)
+        #self.__logger.info(detections_in_world)
         return True, detections_in_world
 
     def __decide_to_run(self, run_override: bool) -> bool:
@@ -315,13 +246,14 @@ class ClusterEstimation:
         """
         count_all = len(self.__all_points)
         count_current = len(self.__current_bucket)
+
         if not run_override:
             # Don't run if total points under minimum requirement
             if count_all + count_current < self.__min_activation_threshold:
                 return False
 
             # Don't run if not enough new points
-            if count_current < self.__min_new_points_to_run and not self.__has_ran_once:
+            if count_current < self.__min_new_points_to_run and self.__has_ran_once:
                 return False
 
         # No data can not run
@@ -356,33 +288,11 @@ class ClusterEstimation:
         return sorted(model_output, key=lambda x: x[1], reverse=True)
 
     @staticmethod
-    def __sort_by_labels(
-        points: "list[tuple[float, float, int]]",
-    ) -> "list[tuple[float, float, int]]":
-        """
-        Sort input detection list by labels in descending order.
-
-        PARAMETERS
-        ----------
-        detections: list[tuple[float, float, int]]
-            List containing detections, with each element having the format
-            [x_position, y_position, label].
-
-        RETURNS
-        -------
-        list[tuple[np.ndarray, float, float]]
-            List containing detection points sorted in descending order by label
-        """
-        return sorted(
-            points, key=lambda x: x[2], reverse=True
-        )  # the label is stored at index 2 of object
-
-    @staticmethod
     def __convert_detections_to_point(
         detections: "list[detection_in_world.DetectionInWorld]",
     ) -> "list[tuple[float, float, int]]":
         """
-        Convert DetectionInWorld input object to a list of points- (x,y) positions with label, to store.
+        Convert DetectionInWorld input object to a list of points- (x,y) positions, to store.
 
         PARAMETERS
         ----------
@@ -392,8 +302,8 @@ class ClusterEstimation:
 
         RETURNS
         -------
-        points: list[tuple[float, float, int]]
-            List of points (x,y) and their label
+        points: list[tuple[float, float]]
+            List of points (x,y).
         -------
         """
         points = []
@@ -405,7 +315,7 @@ class ClusterEstimation:
         # Convert DetectionInWorld objects
         for detection in detections:
             # `centre` attribute holds positioning data
-            points.append(tuple([detection.centre[0], detection.centre[1], detection.label]))
+            points.append(tuple([detection.centre[0], detection.centre[1]]))
 
         return points
 
@@ -427,7 +337,7 @@ class ClusterEstimation:
             List containing predicted cluster centres after filtering.
         """
         # List of each point's cluster index
-        cluster_assignment = self.__vgmm.predict([[point[0], point[1]] for point in self.__all_points])  # type: ignore
+        cluster_assignment = self.__vgmm.predict(self.__all_points)  # type: ignore
 
         # Find which cluster indices have points
         clusters_with_points = np.unique(cluster_assignment)
