@@ -106,7 +106,6 @@ class FlightInterface:
         result = self.controller.send_statustext_msg(message)
         if not result:
             self.__logger.error("Failed to send statustext message", True)
-            return False, None
 
         return True, odometry_and_time_object
 

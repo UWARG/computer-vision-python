@@ -374,7 +374,7 @@ def main() -> int:
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,
         ],
-        output_queues=[communications_to_main_queue],
+        output_queues=[communications_to_main_queue, communications_to_flight_interface_queue],
         controller=controller,
         local_logger=main_logger,
     )
