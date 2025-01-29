@@ -25,7 +25,7 @@ class Communications:
         cls,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_id: int,
+        worker_id: worker_enum.WorkerEnum,
     ) -> "tuple[True, Communications] | tuple[False, None]":
         """
         Logs data and forwards it.
@@ -42,7 +42,7 @@ class Communications:
         class_private_create_key: object,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_id: int,
+        worker_id: worker_enum.WorkerEnum,
     ) -> None:
         """
         Private constructor, use create() method.
