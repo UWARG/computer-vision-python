@@ -156,6 +156,7 @@ def main() -> int:
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
 
         COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
+        COMMUNICATIONS_WORKER_PERIOD = config["communications"]["worker_period"]
 
         # pylint: enable=invalid-name
     except KeyError as exception:
@@ -369,7 +370,7 @@ def main() -> int:
     result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=communications_worker.communications_worker,
-        work_arguments=(COMMUNICATIONS_TIMEOUT,),
+        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD),
         input_queues=[
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,
