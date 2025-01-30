@@ -70,7 +70,7 @@ def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByL
 
 
 @pytest.fixture()
-def cluster_model_by_label(cluster_model: cluster_estimation.ClusterEstimation) -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
+def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
     """
     Cluster estimation by label object.
     """
