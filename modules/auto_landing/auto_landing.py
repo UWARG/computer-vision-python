@@ -6,10 +6,9 @@ for use with LANDING_TARGET MAVLink command.
 import math
 import time
 
-from .. import detections_and_time
-from ..common.modules.logger import logger
 
-# from .. import merged_odometry_detections
+from ..common.modules.logger import logger
+from .. import merged_odometry_detections
 
 
 class AutoLanding:
@@ -35,6 +34,7 @@ class AutoLanding:
         fov_y: The vertical camera field of view in degrees.
         im_w: Width of image.
         im_h: Height of image.
+        period: Wait time in seconds.
 
         Returns an AutoLanding object.
         """
@@ -64,33 +64,34 @@ class AutoLanding:
         self.__logger = local_logger
 
     def run(
-        self, bounding_box: detections_and_time.Detection
+        self, input: merged_odometry_detections.MergedOdometryDetections
     ) -> "tuple[bool, tuple[float, float, float]]":
         """
-        Calculates the angles in radians of the bounding box based on its center.
+        Calculates the x and y angles in radians of the bounding box based on its center.
 
-        bounding_box: A detections and time object.
+        input: A merged odometry dectections object.
 
         Return: Tuple of the x and y angles in radians respectively and the target distance in meters.
         """
 
-        x_center, y_center = bounding_box.get_centre()
+        for bounding_box in input.detections:
+            x_center, y_center = bounding_box.get_centre()
 
-        angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
-        angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
+            angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
+            angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
 
-        height_agl = 0
+            height_agl = input.odometry_local.position.down * -1
 
-        x_dist = math.tan(angle_x) * height_agl
-        y_dist = math.tan(angle_y) * height_agl
-        ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
-        target_to_vehicle_dist = (ground_hyp**2 + height_agl**2) ** 0.5
+            x_dist = math.tan(angle_x) * height_agl
+            y_dist = math.tan(angle_y) * height_agl
+            ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
+            target_to_vehicle_dist = (ground_hyp**2 + height_agl**2) ** 0.5
 
-        self.__logger.info(
-            f"X angle: {angle_x} Y angle: {angle_y}\nRequired horizontal correction: {ground_hyp} Distance from vehicle to target: {target_to_vehicle_dist}",
-            True,
-        )
+            self.__logger.info(
+                f"X angle: {angle_x} Y angle: {angle_y}\nRequired horizontal correction: {ground_hyp} Distance from vehicle to target: {target_to_vehicle_dist}",
+                True,
+            )
 
-        time.sleep(self.period)
+            time.sleep(self.period)
 
-        return True, (angle_x, angle_y, target_to_vehicle_dist)
+            return True, (angle_x, angle_y, target_to_vehicle_dist)
