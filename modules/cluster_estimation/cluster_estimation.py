@@ -3,6 +3,7 @@ Take in bounding box coordinates from Geolocation and use to estimate landing pa
 Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
 covariance of each landing pad estimation.
 """
+# pylint: disable=duplicate-code
 
 # pylint: disable=duplicate-code
 
@@ -60,6 +61,7 @@ class ClusterEstimation:
     __filter_by_covariances()
         Removes any cluster with covariances much higher than the lowest covariance value.
     """
+    # pylint: disable=too-many-instance-attributes
 
     # pylint: disable=too-many-instance-attributes
 
@@ -194,7 +196,6 @@ class ClusterEstimation:
         """
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
-        print("len of current bucket = "+str(len(self.__current_bucket)))
 
         # Decide to run
         if not self.__decide_to_run(run_override):
@@ -217,8 +218,6 @@ class ClusterEstimation:
             )
         )
 
-        print("output = "+str(model_output))
-
         # Empty cluster removal
         model_output = self.__filter_by_points_ownership(model_output)
 
@@ -234,7 +233,6 @@ class ClusterEstimation:
             viable_clusters.append(model_output[i])
 
         model_output = viable_clusters
-        print("len model output: "+str(len(model_output)))
 
         # Remove clusters with covariances too large
         model_output = self.__filter_by_covariances(model_output)
