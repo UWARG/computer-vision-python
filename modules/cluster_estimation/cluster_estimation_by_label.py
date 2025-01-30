@@ -3,6 +3,7 @@ Take in bounding box coordinates from Geolocation and use to estimate landing pa
 Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
 covariance of each landing pad estimation.
 """
+
 from .. import detection_in_world
 from .. import object_in_world
 from ..cluster_estimation import cluster_estimation
@@ -36,6 +37,7 @@ class ClusterEstimationByLabel:
         to corresponging clusters of estimated object locations if number of
         detections is sufficient, or if manually forced to run.
     """
+
     # pylint: disable=too-many-instance-attributes
 
     __create_key = object()
@@ -86,7 +88,9 @@ class ClusterEstimationByLabel:
         self.__local_logger = local_logger
 
         # cluster model corresponding to each label
-        self.__label_to_cluster_estimation_model: dict[int, cluster_estimation.ClusterEstimation] = {}
+        self.__label_to_cluster_estimation_model: dict[
+            int, cluster_estimation.ClusterEstimation
+        ] = {}
 
     def run(
         self,
@@ -117,22 +121,24 @@ class ClusterEstimationByLabel:
         """
         label_to_detections: dict[int, list[detection_in_world.DetectionInWorld]] = {}
         for detection in input_detections:
-            if not (detection.label in label_to_detections):
+            if not detection.label in label_to_detections:
                 label_to_detections[detection.label] = []
             label_to_detections[detection.label].append(detection)
 
         labels_to_object_clusters: dict[int, list[object_in_world.ObjectInWorld]] = {}
         for label, detections in label_to_detections.items():
-            if not (label in self.__label_to_cluster_estimation_model):
+            if not label in self.__label_to_cluster_estimation_model:
                 result, cluster_model = cluster_estimation.ClusterEstimation.create(
                     self.__min_activation_threshold,
                     self.__min_new_points_to_run,
                     self.__random_state,
                     self.__local_logger,
-                    label
+                    label,
                 )
                 if not result:
-                    self.__local_logger.error(f"Failed to create cluster estimation for label {label}")
+                    self.__local_logger.error(
+                        f"Failed to create cluster estimation for label {label}"
+                    )
                     return False, None
                 self.__label_to_cluster_estimation_model[label] = cluster_model
             result, clusters = self.__label_to_cluster_estimation_model[label].run(
@@ -140,10 +146,12 @@ class ClusterEstimationByLabel:
                 run_override,
             )
             if not result:
-                self.__local_logger.error(f"Failed to run cluster estimation model for label {label}")
+                self.__local_logger.error(
+                    f"Failed to run cluster estimation model for label {label}"
+                )
                 return False, None
-            if not (label in labels_to_object_clusters):
+            if not label in labels_to_object_clusters:
                 labels_to_object_clusters[label] = []
             labels_to_object_clusters[label] += clusters
-        
+
         return True, labels_to_object_clusters

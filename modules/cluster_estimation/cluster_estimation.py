@@ -3,6 +3,7 @@ Take in bounding box coordinates from Geolocation and use to estimate landing pa
 Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
 covariance of each landing pad estimation.
 """
+
 # pylint: disable=duplicate-code
 
 import numpy as np
@@ -59,6 +60,7 @@ class ClusterEstimation:
     __filter_by_covariances()
         Removes any cluster with covariances much higher than the lowest covariance value.
     """
+
     # pylint: disable=too-many-instance-attributes
 
     __create_key = object()
