@@ -65,39 +65,31 @@ class AutoLanding:
 
     def run(
         self, odometry_detections: merged_odometry_detections.MergedOdometryDetections
-    ) -> "tuple[bool, list[tuple[float, float, float]]]":
+    ) -> "tuple[bool, tuple[float, float, float]]":
         """
         Calculates the x and y angles in radians of the bounding box based on its center.
 
         odometry_detections: A merged odometry dectections object.
 
-        Return: A list of tuples containing the x and y angles in radians
-        respectively, and the target distance in meters.
-
-        ex. [(angle_x_1, angle_y_1, target_dist_1), (angle_x_2, angle_y_2, target_dist_2)]
+        Return: Tuple containing the x and y angles in radians respectively, and the target distance in meters.
         """
 
-        landing_commands = []
+        x_center, y_center = odometry_detections.detections[0].get_centre()
 
-        for bounding_box in odometry_detections.detections:
-            x_center, y_center = bounding_box.get_centre()
+        angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
+        angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
 
-            angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
-            angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
+        height_agl = odometry_detections.odometry_local.position.down * -1
 
-            height_agl = odometry_detections.odometry_local.position.down * -1
+        x_dist = math.tan(angle_x) * height_agl
+        y_dist = math.tan(angle_y) * height_agl
+        ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
+        target_to_vehicle_dist = (ground_hyp**2 + height_agl**2) ** 0.5
 
-            x_dist = math.tan(angle_x) * height_agl
-            y_dist = math.tan(angle_y) * height_agl
-            ground_hyp = (x_dist**2 + y_dist**2) ** 0.5
-            target_to_vehicle_dist = (ground_hyp**2 + height_agl**2) ** 0.5
+        self.__logger.info(
+            f"X angle: {angle_x} Y angle: {angle_y}\nRequired horizontal correction: {ground_hyp} Distance from vehicle to target: {target_to_vehicle_dist}",
+            True,
+        )
 
-            self.__logger.info(
-                f"X angle: {angle_x} Y angle: {angle_y}\nRequired horizontal correction: {ground_hyp} Distance from vehicle to target: {target_to_vehicle_dist}",
-                True,
-            )
-
-            time.sleep(self.period)
-            landing_commands.append((angle_x, angle_y, target_to_vehicle_dist))
-
-        return True, landing_commands
+        time.sleep(self.period)
+        return True, (angle_x, angle_y, target_to_vehicle_dist)
