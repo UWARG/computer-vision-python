@@ -155,11 +155,12 @@ def main() -> int:
     home_position = home_position_out_queue.queue.get()
     assert home_position is not None
 
-    data_points = [position_global.PositionGlobal.create(43.471468, -80.544205, 335), 
-                   position_global.PositionGlobal.create(43.6629, -79.3957, 105),
-                   position_global.PositionGlobal.create(43.2609, -79.9192, 100),
-                   position_global.PositionGlobal.create(43.7735, -79.5019, 170)
-                   ]
+    data_points = [
+        position_global.PositionGlobal.create(43.471468, -80.544205, 335),
+        position_global.PositionGlobal.create(43.6629, -79.3957, 105),
+        position_global.PositionGlobal.create(43.2609, -79.9192, 100),
+        position_global.PositionGlobal.create(43.7735, -79.5019, 170),
+    ]
 
     # Simulate communications worker
     for i in range(0, WORK_COUNT):
