@@ -11,11 +11,34 @@ from modules.flight_interface import flight_interface_worker
 from modules import decision_command
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
+from modules.common.modules import position_global
+from modules.common.modules.data_encoding import message_encoding_decoding
+from modules.common.modules.data_encoding import worker_enum
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
+WORK_COUNT = 4
+COMMUNICATIONS_WORKER_ID = worker_enum.WorkerEnum.COMMUNICATIONS_WORKER
+
+
+def simulate_communications_worker(
+    in_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    data_point: position_global.PositionGlobal,
+) -> None:
+    """
+    Encode coordinates and place into queue.
+    """
+    result, message = message_encoding_decoding.encode_position_global(
+        COMMUNICATIONS_WORKER_ID, data_point
+    )
+    assert result
+    assert message is not None
+
+    in_queue.queue.put(message)
+
+    return
 
 
 def apply_decision_test(
@@ -105,6 +128,8 @@ def main() -> int:
     out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     home_position_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    communications_in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    communications_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
@@ -116,6 +141,7 @@ def main() -> int:
             in_queue,  # Added input_queue
             out_queue,
             home_position_out_queue,
+            communications_in_queue,
             controller,
         ),
     )
@@ -128,6 +154,27 @@ def main() -> int:
     # Test
     home_position = home_position_out_queue.queue.get()
     assert home_position is not None
+
+    data_points = [position_global.PositionGlobal.create(43.471468, -80.544205, 335), 
+                   position_global.PositionGlobal.create(43.6629, -79.3957, 105),
+                   position_global.PositionGlobal.create(43.2609, -79.9192, 100),
+                   position_global.PositionGlobal.create(43.7735, -79.5019, 170)
+                   ]
+
+    # Simulate communications worker
+    for i in range(0, WORK_COUNT):
+        simulate_communications_worker(communications_in_queue, home_position, data_points[i])
+
+    # Test flight interface worker sending statustext messages
+    for i in range(0, WORK_COUNT):
+        try:
+            input_data: bytes = communications_out_queue.queue.get_nowait()
+            assert input_data is not None
+        except queue.Empty:
+            print("Output queue has no more messages to process, exiting")
+            break
+
+    assert communications_out_queue.queue.empty()
 
     # Run the apply_decision tests
     test_result = apply_decision_test(in_queue, out_queue)
