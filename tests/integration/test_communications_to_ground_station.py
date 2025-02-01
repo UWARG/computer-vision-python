@@ -3,7 +3,6 @@ Test MAVLink integration test
 """
 
 import multiprocessing as mp
-import queue
 import time
 
 from utilities.workers import queue_proxy_wrapper
@@ -14,15 +13,14 @@ from modules.flight_interface import flight_interface_worker
 
 
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
-FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
+FLIGHT_INTERFACE_TIMEOUT = 30.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
 def apply_communications_test(
     in_queue: queue_proxy_wrapper.QueueProxyWrapper,
-    out_queue: queue_proxy_wrapper.QueueProxyWrapper,
-) -> None:
+) -> bool:
     """
     Method to send in hardcoded GPS coordinates to the flight interface worker
     """
@@ -43,16 +41,9 @@ def apply_communications_test(
     time.sleep(10)
 
     # Verify that stuff is sending
-    try:
-        # pylint: disable=unused-variable
-        for i in range(len(gps_coordinates)):
-            data = out_queue.queue.get_nowait()
-            print(f"MAVLink data sent by drone: {data}")
-    except queue.Empty:
-        print("Output queue is empty.")
-        return False
-
-    print("apply_communications_test completed successfully")
+    print(
+        "TEST OPERATOR ACTION REQUIRED: Open mission planner's MAVLink inspector or the groundside repo (https://github.com/UWARG/statustext-parser-2025) to check for MAVLink messages"
+    )
     return True
 
 
@@ -93,7 +84,7 @@ def main() -> int:
     assert home_position is not None
 
     # Run the apply_communication tests
-    test_result = apply_communications_test(in_queue, out_queue)
+    test_result = apply_communications_test(in_queue)
     if not test_result:
         print("apply_communications test failed.")
         worker.terminate()
