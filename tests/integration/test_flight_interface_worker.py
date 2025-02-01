@@ -18,6 +18,7 @@ FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
+
 def apply_decision_test(
     in_queue: queue_proxy_wrapper.QueueProxyWrapper,
     out_queue: queue_proxy_wrapper.QueueProxyWrapper,
