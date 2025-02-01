@@ -19,7 +19,7 @@ FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
 
 
 def apply_communications_test(
-    in_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    communications_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
 ) -> bool:
     """
     Method to send in hardcoded GPS coordinates to the flight interface worker
@@ -35,7 +35,7 @@ def apply_communications_test(
     for success, gps_coordinate in gps_coordinates:
         if not success:
             return False
-        in_queue.queue.put(gps_coordinate)
+        communications_input_queue.queue.put(gps_coordinate)
 
     # Wait for processing
     time.sleep(10)
@@ -57,9 +57,9 @@ def main() -> int:
 
     mp_manager = mp.Manager()
 
-    out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
-    home_position_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    communications_input_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
@@ -70,7 +70,7 @@ def main() -> int:
             FLIGHT_INTERFACE_WORKER_PERIOD,
             in_queue,
             out_queue,
-            home_position_out_queue,
+            communications_input_queue,
             controller,
         ),
     )
@@ -80,11 +80,11 @@ def main() -> int:
     time.sleep(3)
 
     # Test
-    home_position = home_position_out_queue.queue.get()
+    home_position = communications_input_queue.queue.get()
     assert home_position is not None
 
     # Run the apply_communication tests
-    test_result = apply_communications_test(in_queue)
+    test_result = apply_communications_test(communications_input_queue)
     if not test_result:
         print("apply_communications test failed.")
         worker.terminate()
