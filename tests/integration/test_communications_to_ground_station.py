@@ -9,6 +9,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 from modules.common.modules import position_global
+from modules.common.modules.data_encoding import message_encoding_decoding
 from modules.flight_interface import flight_interface_worker
 
 
@@ -32,10 +33,22 @@ def apply_communications_test(
     ]
 
     # Place the GPS coordinates
+    print(f"Inserting list of gps coordinates, length {len(gps_coordinates)}")
+
     for success, gps_coordinate in gps_coordinates:
         if not success:
+            print("ERROR: GPS Coordinate not successfully generated")
             return False
-        communications_input_queue.queue.put(gps_coordinate)
+
+        success, message = message_encoding_decoding.encode_position_global(
+            "FLIGHT_INTERFACE_WORKER", gps_coordinate
+        )
+
+        if not success:
+            print("ERROR: Conversion from PositionGlobal to bytes failed")
+            return False
+
+        communications_input_queue.queue.put(message)
 
     # Wait for processing
     time.sleep(10)
@@ -58,8 +71,9 @@ def main() -> int:
     mp_manager = mp.Manager()
 
     in_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
-    out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     communications_input_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
+    home_position_out_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     worker = mp.Process(
         target=flight_interface_worker.flight_interface_worker,
@@ -69,8 +83,9 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
             in_queue,
-            out_queue,
             communications_input_queue,
+            out_queue,
+            home_position_out_queue,
             controller,
         ),
     )
@@ -80,7 +95,7 @@ def main() -> int:
     time.sleep(3)
 
     # Test
-    home_position = communications_input_queue.queue.get()
+    home_position = home_position_out_queue.queue.get()
     assert home_position is not None
 
     # Run the apply_communication tests
