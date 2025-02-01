@@ -25,7 +25,6 @@ class Communications:
         cls,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_id: worker_enum.WorkerEnum,
     ) -> "tuple[True, Communications] | tuple[False, None]":
         """
         Logs data and forwards it.
@@ -35,14 +34,13 @@ class Communications:
         Returns: Success, class object.
         """
 
-        return True, Communications(cls.__create_key, home_position, local_logger, worker_id)
+        return True, Communications(cls.__create_key, home_position, local_logger)
 
     def __init__(
         self,
         class_private_create_key: object,
         home_position: position_global.PositionGlobal,
         local_logger: logger.Logger,
-        worker_id: worker_enum.WorkerEnum,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -51,7 +49,6 @@ class Communications:
 
         self.__home_position = home_position
         self.__logger = local_logger
-        self.__worker_id = worker_id
 
     def run(
         self,
@@ -96,7 +93,7 @@ class Communications:
         for object in object_in_world_global:
 
             result, message = message_encoding_decoding.encode_position_global(
-                self.__worker_id, object
+                worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, object
             )
             if not result:
                 self.__logger.warning("Conversion from PositionGlobal to bytes failed", True)

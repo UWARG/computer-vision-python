@@ -19,9 +19,9 @@ def flight_interface_worker(
     baud_rate: int,
     period: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    coordinates_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     communications_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
-    coordinates_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -67,12 +67,7 @@ def flight_interface_worker(
         try:
             coordinate = coordinates_input_queue.queue.get_nowait()
         except queue.Empty:
-            local_logger.warning("No more coordinates to process")
             coordinate = None
-
-        if not isinstance(coordinate, bytes):
-            local_logger.warning(f"Skipping unexpected input: {coordinate}")
-            continue
 
         result, value = interface.run(coordinate)
         if not result:
