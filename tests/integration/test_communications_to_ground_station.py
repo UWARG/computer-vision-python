@@ -10,6 +10,7 @@ from utilities.workers import worker_controller
 
 from modules.common.modules import position_global
 from modules.common.modules.data_encoding import message_encoding_decoding
+from modules.common.modules.data_encoding import metadata_encoding_decoding
 from modules.flight_interface import flight_interface_worker
 
 
@@ -17,6 +18,7 @@ MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 30.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
+WORKER_NAME = "FLIGHT_INTERFACE_WORKER"
 
 
 def apply_communications_test(
@@ -34,6 +36,13 @@ def apply_communications_test(
 
     # Place the GPS coordinates
     print(f"Inserting list of gps coordinates, length {len(gps_coordinates)}")
+    success, metadata = metadata_encoding_decoding.encode_metadata(
+        WORKER_NAME, len(gps_coordinates)
+    )
+    if not success:
+        return False
+
+    communications_input_queue.queue.put(metadata)
 
     for success, gps_coordinate in gps_coordinates:
         if not success:
@@ -41,7 +50,7 @@ def apply_communications_test(
             return False
 
         success, message = message_encoding_decoding.encode_position_global(
-            "FLIGHT_INTERFACE_WORKER", gps_coordinate
+            WORKER_NAME, gps_coordinate
         )
 
         if not success:
