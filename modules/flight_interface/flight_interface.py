@@ -103,10 +103,7 @@ class FlightInterface:
 
         self.__logger.info(str(odometry_and_time_object), True)
 
-        if not isinstance(message, bytes):
-            self.__logger.warning(f"Skipping unexpected input: {message}")
-        else:
-            result = self.controller.send_statustext_msg(message)
+        self.controller.send_statustext_msg(message)
 
         return True, odometry_and_time_object
 
