@@ -59,6 +59,7 @@ def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByL
     result, model = cluster_estimation_by_label.ClusterEstimationByLabel.create(
         MIN_TOTAL_POINTS_THRESHOLD,
         MIN_NEW_POINTS_TO_RUN,
+        MAX_NUM_COMPONENTS,
         RNG_SEED,
         test_logger,
         0

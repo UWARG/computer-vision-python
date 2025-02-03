@@ -19,6 +19,7 @@ def cluster_estimation_worker(
     min_new_points_to_run: int,
     max_num_components: int,
     random_state: int,
+    label: int,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -75,6 +76,7 @@ def cluster_estimation_worker(
         max_num_components,
         random_state,
         local_logger,
+        label,
     )
     if not result:
         local_logger.error("Worker failed to create class object", True)

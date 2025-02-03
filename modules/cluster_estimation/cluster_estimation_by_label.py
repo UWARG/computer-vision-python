@@ -6,8 +6,8 @@ covariance of each landing pad estimation.
 
 from .. import detection_in_world
 from .. import object_in_world
-from ..cluster_estimation import cluster_estimation
 from ..common.modules.logger import logger
+from . import cluster_estimation
 
 
 class ClusterEstimationByLabel:
@@ -19,10 +19,13 @@ class ClusterEstimationByLabel:
     ATTRIBUTES
     ----------
     min_activation_threshold: int
-        Minimum total data points before model runs.
+        Minimum total data points before model runs. Must be at least max_num_components.
 
     min_new_points_to_run: int
         Minimum number of new data points that must be collected before running model.
+
+    max_num_components: int
+        Max number of real landing pads. Must be at least 1.
 
     random_state: int
         Seed for randomizer, to get consistent results.
@@ -47,6 +50,7 @@ class ClusterEstimationByLabel:
         cls,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> "tuple[bool, ClusterEstimationByLabel | None]":
@@ -55,13 +59,23 @@ class ClusterEstimationByLabel:
         """
 
         # At least 1 point for model to fit
-        if min_activation_threshold < 1:
+        if min_activation_threshold < max_num_components:
+            return False, None
+
+        if min_new_points_to_run < 0:
+            return False, None
+
+        if max_num_components < 1:
+            return False, None
+
+        if random_state < 0:
             return False, None
 
         return True, ClusterEstimationByLabel(
             cls.__create_key,
             min_activation_threshold,
             min_new_points_to_run,
+            max_num_components,
             random_state,
             local_logger,
         )
@@ -71,6 +85,7 @@ class ClusterEstimationByLabel:
         class_private_create_key: object,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
     ) -> None:
@@ -84,10 +99,12 @@ class ClusterEstimationByLabel:
         # Requirements to decide to run
         self.__min_activation_threshold = min_activation_threshold
         self.__min_new_points_to_run = min_new_points_to_run
+        self.__max_num_components = max_num_components
         self.__random_state = random_state
         self.__local_logger = local_logger
 
-        # cluster model corresponding to each label
+        # Cluster model corresponding to each label
+        # Each cluster estimation object stores the detections given to in its __all_points bucket across runs
         self.__label_to_cluster_estimation_model: dict[
             int, cluster_estimation.ClusterEstimation
         ] = {}
@@ -120,6 +137,7 @@ class ClusterEstimationByLabel:
             Dictionary where the key is a label and the value is a list of all cluster detections with that label
         """
         label_to_detections: dict[int, list[detection_in_world.DetectionInWorld]] = {}
+        # Sorting detections by label
         for detection in input_detections:
             if not detection.label in label_to_detections:
                 label_to_detections[detection.label] = []
@@ -127,10 +145,12 @@ class ClusterEstimationByLabel:
 
         labels_to_object_clusters: dict[int, list[object_in_world.ObjectInWorld]] = {}
         for label, detections in label_to_detections.items():
+            # create cluster estimation for label if it doesn't exist
             if not label in self.__label_to_cluster_estimation_model:
                 result, cluster_model = cluster_estimation.ClusterEstimation.create(
                     self.__min_activation_threshold,
                     self.__min_new_points_to_run,
+                    self.__max_num_components,
                     self.__random_state,
                     self.__local_logger,
                     label,
@@ -141,6 +161,7 @@ class ClusterEstimationByLabel:
                     )
                     return False, None
                 self.__label_to_cluster_estimation_model[label] = cluster_model
+            # runs cluster estimation for specific label
             result, clusters = self.__label_to_cluster_estimation_model[label].run(
                 detections,
                 run_override,
