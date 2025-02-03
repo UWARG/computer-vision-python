@@ -65,13 +65,13 @@ class AutoLanding:
 
     def run(
         self, odometry_detections: merged_odometry_detections.MergedOdometryDetections
-    ) -> "tuple[bool, tuple[float, float, float]]":
+    ) -> "AutoLandingInformation":
         """
         Calculates the x and y angles in radians of the bounding box based on its center.
 
         odometry_detections: A merged odometry dectections object.
 
-        Return: Tuple containing the x and y angles in radians respectively, and the target distance in meters.
+        Returns an AutoLandingInformation object.
         """
 
         x_center, y_center = odometry_detections.detections[0].get_centre()
@@ -92,4 +92,32 @@ class AutoLanding:
         )
 
         time.sleep(self.period)
-        return True, (angle_x, angle_y, target_to_vehicle_dist)
+        return AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)
+
+
+class AutoLandingInformation:
+
+    __create_key = object()
+
+    @classmethod
+    def create(
+        cls, angle_x: float, angle_y: float, target_dist: float
+    ) -> "tuple[bool, AutoLandingInformation | None]":
+        """
+        Object containing the x and y angles in radians respectively, and the target distance in meters.
+        """
+        return True, AutoLandingInformation(cls.__create_key, angle_x, angle_y, target_dist)
+
+    def __init__(
+        self, class_private_create_key: object, angle_x: float, angle_y: float, target_dist: float
+    ) -> None:
+        """
+        Private constructor, use create() method.
+        """
+        assert (
+            class_private_create_key is AutoLandingInformation.__create_key
+        ), "Use create() method"
+
+        self.angle_x = angle_x
+        self.angle_y = angle_y
+        self.target_dist = target_dist
