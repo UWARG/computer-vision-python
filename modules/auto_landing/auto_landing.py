@@ -92,10 +92,13 @@ class AutoLanding:
         )
 
         time.sleep(self.period)
-        return AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)
+        return AutoLandingInformation.create(angle_x, angle_y, target_to_vehicle_dist)
 
 
 class AutoLandingInformation:
+    """
+    Information necessary for the LANDING_TARGET MAVlink command
+    """
 
     __create_key = object()
 
