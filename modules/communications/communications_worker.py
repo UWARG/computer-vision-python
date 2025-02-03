@@ -5,6 +5,7 @@ Logs data and forwards it.
 import os
 import pathlib
 import queue
+import time
 
 from modules import object_in_world
 from . import communications
@@ -27,6 +28,7 @@ def communications_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
+    start_time = time.time()
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -57,7 +59,13 @@ def communications_worker(
     # Get Pylance to stop complaining
     assert comm is not None
 
+    end_time = time.time()
+
+    local_logger.info(f"{time.time()}: Class object creation took {end_time - start_time} seconds.")
+
     while not controller.is_exit_requested():
+        start_time = time.time()
+
         controller.check_pause()
 
         input_data = input_queue.queue.get()
@@ -84,3 +92,7 @@ def communications_worker(
             continue
 
         output_queue.queue.put(value)
+
+        end_time = time.time()
+
+        local_logger.info(f"{time.time()}: Worker iteration took {end_time - start_time} seconds.")
