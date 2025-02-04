@@ -1,0 +1,2 @@
+<class 'modules.detections_and_time.DetectionsAndTime'>, time: 1738651853.983181, size: 1
+[cls: 0, conf: 1.0, bounds: 617 95 1384 906]

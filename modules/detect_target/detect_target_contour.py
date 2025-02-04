@@ -4,29 +4,31 @@ Detects objects using the provided model.
 
 import time
 
-import copy
 import cv2
 import numpy as np
 
 from . import base_detect_target
 from .. import image_and_time
 from .. import detections_and_time
+from ..common.modules.logger import logger
+
+
 
 MIN_CONTOUR_AREA = 100
-# some arbitrary value
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
+LABEL = 0
 
 
 class DetectTargetContour(base_detect_target.BaseDetectTarget):
     """
-    Predicts annd locates landing pads using the Classical Computer Vision methodology.
+    Predicts annd locates landing pads using the classical computer vision methodology.
     """
 
     def __init__(
         self,
         show_annotations: bool = False,
-        save_name: str = "",
+        save_name: str = "donke"
     ) -> None:
         """
         show_annotations: Display annotated images.
@@ -35,12 +37,14 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         self.__counter = 0
         self.__show_annotations = show_annotations
         self.__filename_prefix = ""
+        _, self.__logger = logger.Logger.create(self.__filename_prefix, False)
+
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
     def detect_landing_pads_contours(
         self, image: np.ndarray, timestamp: float
-    ) -> tuple[bool, detections_and_time.DetectionsAndTime | None, np.ndarray]:
+    ) -> tuple[True, detections_and_time.DetectionsAndTime, np.ndarray] | tuple[False, None, None]:
         """
         Detects landing pads using contours/classical cv.
         image: Current image frame.
@@ -53,15 +57,16 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if len(contours) == 0:
-            return False, None, image
+            return False, None, None
 
         # Create the DetectionsAndTime object
         result, detections = detections_and_time.DetectionsAndTime.create(timestamp)
         if not result:
-            return False, None, image
+            return False, None, None
 
+        # Ordered for the mapping to the corresponding detections
         sorted_contour = sorted(contours, key=cv2.contourArea, reverse=True)
-        image_annotated = copy.deepcopy(image)
+        image_annotated = image
         for i, contour in enumerate(sorted_contour):
             contour_area = cv2.contourArea(contour)
 
@@ -78,12 +83,16 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
             x, y, w, h = cv2.boundingRect(contour)
             bounds = np.array([x, y, x + w, y + h])
-            confidence, label = 1.0, 0
+            confidence = 1.0
+            label = LABEL
 
             # Create a Detection object and append it to detections
             result, detection = detections_and_time.Detection.create(bounds, label, confidence)
-            if result:
-                detections.append(detection)
+            
+            if not result:
+                return False, None, None
+            
+            detections.append(detection)
 
             # Annotate the image
             cv2.rectangle(image_annotated, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -101,7 +110,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
     def run(
         self, data: image_and_time.ImageAndTime
-    ) -> tuple[bool, detections_and_time.DetectionsAndTime] | tuple[False, None]:
+    ) -> tuple[True, detections_and_time.DetectionsAndTime] | tuple[False, None]:
         """
         Runs object detection on the provided image and returns the detections.
         data: Image with a timestamp.
@@ -109,7 +118,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         """
         image = data.image
         timestamp = data.timestamp
-
+        
         result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
 
         if not result:
@@ -117,14 +126,10 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
         # Logging
         if self.__filename_prefix != "":
-            filename = self.__filename_prefix + str(self.__counter)
-            # Object detections
-            with open(filename + ".txt", "w", encoding="utf-8") as file:
-                # Use internal string representation
-                file.write(repr(detections))
-            # Annotated image
-            cv2.imwrite(filename + ".png", image_annotated)  # type: ignore
+            self.__logger.save_image(image, self.__filename_prefix)
             self.__counter += 1
+        
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)  # type: ignore
+
         return True, detections
