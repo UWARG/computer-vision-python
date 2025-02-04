@@ -13,7 +13,6 @@ from .. import detections_and_time
 from ..common.modules.logger import logger
 
 
-
 MIN_CONTOUR_AREA = 100
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
@@ -25,11 +24,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
     Predicts annd locates landing pads using the classical computer vision methodology.
     """
 
-    def __init__(
-        self,
-        show_annotations: bool = False,
-        save_name: str = "donke"
-    ) -> None:
+    def __init__(self, show_annotations: bool = False, save_name: str = "donke") -> None:
         """
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
@@ -88,10 +83,10 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
             # Create a Detection object and append it to detections
             result, detection = detections_and_time.Detection.create(bounds, label, confidence)
-            
+
             if not result:
                 return False, None, None
-            
+
             detections.append(detection)
 
             # Annotate the image
@@ -118,7 +113,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         """
         image = data.image
         timestamp = data.timestamp
-        
+
         result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
 
         if not result:
@@ -126,9 +121,10 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
         # Logging
         if self.__filename_prefix != "":
-            self.__logger.save_image(image, self.__filename_prefix)
+            filename = self.__filename_prefix + str(self.__counter)
+            self.__logger.save_image(image, filename)
             self.__counter += 1
-        
+
         if self.__show_annotations:
             cv2.imshow("Annotated", image_annotated)  # type: ignore
 
