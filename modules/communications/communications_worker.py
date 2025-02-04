@@ -11,8 +11,6 @@ from modules import object_in_world
 from . import communications
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
-from ..common.modules.data_encoding import metadata_encoding_decoding
-from ..common.modules.data_encoding import worker_enum
 from ..common.modules.logger import logger
 
 
