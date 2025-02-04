@@ -29,7 +29,7 @@ def single_circle() -> LandingPadTestData:  # type: ignore
     """
     Loads the data for the single basic circle.
     """
-    options = [LandingPadData(center=(300, 400), axis=(200, 200))]
+    options = [LandingPadData(center=(300, 400), axis=(200, 200), blur=False, angle=0)]
 
     test_data = create_test(options)
     yield test_data
@@ -41,7 +41,7 @@ def single_blurry_circle() -> LandingPadTestData:  # type: ignore
     Loads the data for the single blury circle.
     """
     options = [
-        LandingPadData(center=(1000, 500), axis=(423, 423), blur=True),
+        LandingPadData(center=(1000, 500), axis=(423, 423), blur=True, angle=0),
     ]
 
     test_data = create_test(options)
@@ -53,7 +53,7 @@ def single_stretched_circle() -> LandingPadTestData:  # type: ignore
     """
     Loads the data for the single stretched circle.
     """
-    options = [LandingPadData(center=(1000, 500), axis=(383, 405))]
+    options = [LandingPadData(center=(1000, 500), axis=(383, 405), blur=False, angle=0)]
 
     test_data = create_test(options)
     yield test_data
@@ -65,10 +65,10 @@ def multiple_circles() -> LandingPadTestData:  # type: ignore
     Loads the data for the multiple stretched circles.
     """
     options = [
-        LandingPadData(center=(997, 600), axis=(300, 300)),
-        LandingPadData(center=(1590, 341), axis=(250, 250)),
-        LandingPadData(center=(200, 500), axis=(50, 45), blur=True),
-        LandingPadData(center=(401, 307), axis=(200, 150), blur=True),
+        LandingPadData(center=(997, 600), axis=(300, 300), blur=False, angle=0),
+        LandingPadData(center=(1590, 341), axis=(250, 250), blur=False, angle=0),
+        LandingPadData(center=(200, 500), axis=(50, 45), blur=True, angle=0),
+        LandingPadData(center=(401, 307), axis=(200, 150), blur=True, angle=0),
     ]
 
     test_data = create_test(options)
