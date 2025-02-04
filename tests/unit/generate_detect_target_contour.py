@@ -167,7 +167,9 @@ def create_test(landing_list: list[LandingPadData]) -> LandingPadTestData:
         print(image)
         image_wrapper, bounding_box = draw_landing_pad(image, landing_data)
         image = image_wrapper.image
-        boxes_list.append(confidence_and_label + list(bounding_box.top_left + bounding_box.bottom_right))
+        boxes_list.append(
+            confidence_and_label + list(bounding_box.top_left + bounding_box.bottom_right)
+        )
 
     boxes_list = sorted(
         boxes_list,
