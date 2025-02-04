@@ -84,15 +84,8 @@ def communications_worker(
         if is_invalid:
             continue
 
-        result, list_of_messages = comm.run(input_data)
+        result, list_of_messages, metadata = comm.run(input_data)
         if not result:
-            continue
-
-        result, metadata = metadata_encoding_decoding.encode_metadata(
-            worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, len(list_of_messages)
-        )
-        if not result:
-            local_logger.error("Failed to encode metadata", True)
             continue
 
         output_queue.queue.put(metadata)

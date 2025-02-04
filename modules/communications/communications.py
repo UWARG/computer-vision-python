@@ -9,6 +9,7 @@ from ..common.modules import position_global
 from ..common.modules import position_local
 from ..common.modules.logger import logger
 from ..common.modules.data_encoding import message_encoding_decoding
+from ..common.modules.data_encoding import metadata_encoding_decoding
 from ..common.modules.data_encoding import worker_enum
 from ..common.modules.mavlink import local_global_conversion
 
@@ -53,7 +54,7 @@ class Communications:
     def run(
         self,
         objects_in_world: list[object_in_world.ObjectInWorld],
-    ) -> tuple[True, list[bytes]] | tuple[False, None]:
+    ) -> tuple[True, list[bytes], bytes] | tuple[False, None, None]:
 
         objects_in_world_global = []
         for object_in_world in objects_in_world:
@@ -71,7 +72,7 @@ class Communications:
                 self.__logger.warning(
                     f"Could not convert ObjectInWorld to PositionLocal:\nobject in world: {object_in_world}"
                 )
-                return False, None
+                return False, None, None
 
             result, object_in_world_global = (
                 local_global_conversion.position_global_from_position_local(
@@ -83,7 +84,7 @@ class Communications:
                 self.__logger.warning(
                     f"position_global_from_position_local conversion failed:\nhome_position: {self.__home_position}\nobject_position_local: {object_position_local}"
                 )
-                return False, None
+                return False, None, None
 
             objects_in_world_global.append(object_in_world_global)
 
@@ -97,8 +98,15 @@ class Communications:
             )
             if not result:
                 self.__logger.warning("Conversion from PositionGlobal to bytes failed", True)
-                return False, None
+                return False, None, None
 
             encoded_position_global_objects.append(message)
 
-        return True, encoded_position_global_objects
+        result, metadata = metadata_encoding_decoding.encode_metadata(
+            worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, len(encoded_position_global_objects)
+        )
+        if not result:
+            self.__logger.error("Failed to encode metadata", True)
+            return False, None, None
+
+        return True, encoded_position_global_objects, metadata
