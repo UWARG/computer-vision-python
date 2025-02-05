@@ -19,7 +19,7 @@ MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 30.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
-WORKER_ID = worker_enum.WorkerEnum.FLIGHT_INTERFACE_WORKER
+WORKER_ID = worker_enum.WorkerEnum.COMMUNICATIONS_WORKER
 
 
 def apply_communications_test(
