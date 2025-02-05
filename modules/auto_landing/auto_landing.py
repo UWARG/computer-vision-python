@@ -65,7 +65,7 @@ class AutoLanding:
 
     def run(
         self, odometry_detections: merged_odometry_detections.MergedOdometryDetections
-    ) -> "AutoLandingInformation":
+    ) -> "tuple[bool, AutoLandingInformation]":
         """
         Calculates the x and y angles in radians of the bounding box based on its center.
 
@@ -92,34 +92,20 @@ class AutoLanding:
         )
 
         time.sleep(self.period)
-        return AutoLandingInformation.create(angle_x, angle_y, target_to_vehicle_dist)
+        return True, AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)
 
 
 class AutoLandingInformation:
     """
-    Information necessary for the LANDING_TARGET MAVlink command
+    Information necessary for the LANDING_TARGET MAVlink command.
     """
 
-    __create_key = object()
-
-    @classmethod
-    def create(
-        cls, angle_x: float, angle_y: float, target_dist: float
-    ) -> "tuple[bool, AutoLandingInformation | None]":
+    def __init__(self, angle_x: float, angle_y: float, target_dist: float) -> None:
         """
-        Object containing the x and y angles in radians respectively, and the target distance in meters.
+        angle_x: Angle of the x coordinate of the bounding box (rads).
+        angle_y: Angle of the y coordinate of the bounding box (rads).
+        target_dist: Horizontal distance of vehicle to target (meters).
         """
-        return True, AutoLandingInformation(cls.__create_key, angle_x, angle_y, target_dist)
-
-    def __init__(
-        self, class_private_create_key: object, angle_x: float, angle_y: float, target_dist: float
-    ) -> None:
-        """
-        Private constructor, use create() method.
-        """
-        assert (
-            class_private_create_key is AutoLandingInformation.__create_key
-        ), "Use create() method"
 
         self.angle_x = angle_x
         self.angle_y = angle_y
