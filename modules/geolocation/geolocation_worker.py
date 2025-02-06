@@ -4,6 +4,7 @@ Convert bounding box data into ground data.
 
 import os
 import pathlib
+import time
 
 from modules import merged_odometry_detections
 from utilities.workers import queue_proxy_wrapper
@@ -27,6 +28,7 @@ def geolocation_worker(
     controller is how the main process communicates to this worker process.
     """
     # TODO: Handle errors better
+    start_time = time.time()
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -51,7 +53,13 @@ def geolocation_worker(
     # Get Pylance to stop complaining
     assert locator is not None
 
+    end_time = time.time()
+
+    local_logger.info(f"{time.time()}: Class object creation took {end_time - start_time} seconds.")
+
     while not controller.is_exit_requested():
+        start_time = time.time()
+
         controller.check_pause()
 
         input_data = input_queue.queue.get()
@@ -68,3 +76,7 @@ def geolocation_worker(
             continue
 
         output_queue.queue.put(value)
+
+        end_time = time.time()
+
+        local_logger.info(f"{time.time()}: Worker iteration took {end_time - start_time} seconds.")
