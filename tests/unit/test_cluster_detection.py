@@ -21,7 +21,7 @@ CENTRE_BOX_SIZE = 500
 
 # Test functions use test fixture signature names and access class privates
 # No enable
-# pylint: disable=protected-access,redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes
 
 
 @pytest.fixture()
@@ -39,7 +39,6 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
         MAX_NUM_COMPONENTS,
         RNG_SEED,
         test_logger,
-        0
     )
     assert result
     assert model is not None
@@ -60,28 +59,6 @@ def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByL
         MIN_TOTAL_POINTS_THRESHOLD,
         MIN_NEW_POINTS_TO_RUN,
         MAX_NUM_COMPONENTS,
-        RNG_SEED,
-        test_logger,
-        0
-    )
-    assert result
-    assert model is not None
-
-    yield model  # type: ignore
-
-
-@pytest.fixture()
-def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
-    """
-    Cluster estimation by label object.
-    """
-    result, test_logger = logger.Logger.create("test_logger", False)
-    assert result
-    assert test_logger is not None
-
-    result, model = cluster_estimation_by_label.ClusterEstimationByLabel.create(
-        MIN_TOTAL_POINTS_THRESHOLD,
-        MIN_NEW_POINTS_TO_RUN,
         RNG_SEED,
         test_logger,
     )

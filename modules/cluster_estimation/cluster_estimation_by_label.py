@@ -153,7 +153,6 @@ class ClusterEstimationByLabel:
                     self.__max_num_components,
                     self.__random_state,
                     self.__local_logger,
-                    label,
                 )
                 if not result:
                     self.__local_logger.error(

@@ -346,7 +346,6 @@ def main() -> int:
             MIN_NEW_POINTS_TO_RUN,
             MAX_NUM_COMPONENTS,
             RANDOM_STATE,
-            0,
         ),
         input_queues=[geolocation_to_cluster_estimation_queue],
         output_queues=[cluster_estimation_to_communications_queue],
