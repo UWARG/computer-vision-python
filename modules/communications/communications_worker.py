@@ -82,12 +82,15 @@ def communications_worker(
         if is_invalid:
             continue
 
-        result, list_of_messages, metadata = comm.run(input_data)
+        result, metadata, list_of_messages = comm.run(input_data)
         if not result:
             continue
 
         output_queue.queue.put(metadata)
         message_output_queue.queue.put(metadata)
+
+        if list_of_messages is None:
+            continue
 
         for message in list_of_messages:
 

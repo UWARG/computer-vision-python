@@ -54,7 +54,7 @@ class Communications:
     def run(
         self,
         objects_in_world: list[object_in_world.ObjectInWorld],
-    ) -> tuple[True, list[bytes], bytes] | tuple[False, None, None]:
+    ) -> tuple[True, bytes, list[bytes]] | tuple[False, None, None]:
 
         objects_in_world_global = []
         for object_in_world in objects_in_world:
@@ -109,4 +109,4 @@ class Communications:
             self.__logger.error("Failed to encode metadata", True)
             return False, None, None
 
-        return True, encoded_position_global_objects, metadata
+        return True, metadata, encoded_position_global_objects
