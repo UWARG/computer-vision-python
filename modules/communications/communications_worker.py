@@ -89,9 +89,6 @@ def communications_worker(
         output_queue.queue.put(metadata)
         message_output_queue.queue.put(metadata)
 
-        if list_of_messages is None:
-            continue
-
         for message in list_of_messages:
 
             time.sleep(period)
