@@ -73,7 +73,7 @@ class FlightInterface:
         """
         return self.__home_position
 
-    def run(self) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
+    def run(self, message: bytes | None) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
         """
         Returns a possible OdometryAndTime with current timestamp.
         """
@@ -102,6 +102,9 @@ class FlightInterface:
         assert odometry_and_time_object is not None
 
         self.__logger.info(str(odometry_and_time_object), True)
+
+        if message:
+            self.controller.send_statustext_msg(message)
 
         return True, odometry_and_time_object
 

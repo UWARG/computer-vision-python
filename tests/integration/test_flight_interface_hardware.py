@@ -34,7 +34,7 @@ def main() -> int:
     assert interface is not None
 
     # Run
-    result, odometry_time = interface.run()
+    result, odometry_time = interface.run(None)
 
     # Test
     assert result
