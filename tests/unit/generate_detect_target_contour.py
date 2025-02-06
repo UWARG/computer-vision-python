@@ -8,7 +8,7 @@ import math
 import numpy as np
 
 
-LANDING_PAD_COLOR_BLUE = (100, 50, 50)
+LANDING_PAD_COLOUR_BLUE = (100, 50, 50)  # BGR
 
 
 # Test functions use test fixture signature names and access class privates
@@ -16,23 +16,22 @@ LANDING_PAD_COLOR_BLUE = (100, 50, 50)
 # pylint: disable=protected-access,redefined-outer-name
 
 
-class LandingPadData:
+class LandingPadImageConfig:
 
     def __init__(
         self,
         center: tuple[int, int],
         axis: tuple[int, int],
         blur: bool,
-        angle: int,
+        angle: float,
     ):
         """
         Represents the data required to define and generate a landing pad.
 
-        Attributes:
-            center: The (x, y) coordinates representing the center of the landing pad.
-            axis: The lengths of the semi-major and semi-minor axes of the ellipse.
-            blur: Indicates whether the landing pad should have a blur effect. default: False.
-            angle (int): The rotation angle of the landing pad in degrees. defaults: 0.
+        center: The (x, y) coordinates representing the center of the landing pad.
+        axis: The pixel lengths of the semi-major and semi-minor axes of the ellipse.
+        blur: Indicates whether the landing pad should have a blur effect. default: False.
+        angle: The rotation angle of the landing pad in degrees clockwise (0 < angle < 360).
         """
         self.center = center
         self.axis = axis
@@ -61,7 +60,7 @@ class BoundingBox:
         self.bottom_right = bottom_right
 
 
-class LandingPadTestData:
+class InputImageAndExpectedBoundingBoxes:
     def __init__(self, image: NumpyImage, boxes_list: np.ndarray):
         """
         Struct to hold the data needed to perform the tests.
@@ -74,15 +73,16 @@ class LandingPadTestData:
         self.bounding_box_list = boxes_list
 
 
-def add_blurred_landing_pad(background: np.ndarray, landing_data: LandingPadData) -> NumpyImage:
+def add_blurred_landing_pad(
+    background: np.ndarray, landing_data: LandingPadImageConfig
+) -> NumpyImage:
     """
     Blurs an image a singular lading pad, adds it to the background.
 
-    Attributes:
-        image = A numpy array that represents background.
-        landing_data = The landing pad which is to be blurred.
-    Returns:
-        NumpyImage: A numpy array of the new blured image.
+    background: A numpy image.
+    landing_data = The landing pad which is to be blurred.
+
+    Returns: Image with the landing pad.
     """
     x, y = background.shape[:2]
 
@@ -101,27 +101,24 @@ def add_blurred_landing_pad(background: np.ndarray, landing_data: LandingPadData
     mask = cv2.blur(mask, (25, 25), 7)
 
     alpha = mask[:, :, np.newaxis] / 255.0
-    # Brings the image back to its original color
-    fg = np.full(background.shape, LANDING_PAD_COLOR_BLUE, dtype=np.uint8)
+    # Brings the image back to its original colour
+    fg = np.full(background.shape, LANDING_PAD_COLOUR_BLUE, dtype=np.uint8)
 
     blended = (background * (1 - alpha) + fg * alpha).astype(np.uint8)
     return NumpyImage(blended)
 
 
 def draw_landing_pad(
-    image: np.ndarray, landing_data: LandingPadData
+    image: np.ndarray, landing_data: LandingPadImageConfig
 ) -> tuple[NumpyImage, BoundingBox]:
     print("asdasd")
     print(image)
     """
-    Draws an singular landing pad on the provided image and saves the bounding box coordinates to a text file.
+    Draws a single landing pad on the provided image and saves the bounding box coordinates to a text file.
 
-    Attributes:
-        image = A numpy array that represents background
-        landing_data = The landing pad which is to be placed
-    Returns:
-        NumpyImage: A numpy array of the new image .
-        BoundingBox: Bounding box of the newly placed bounding box.
+    landing_data: Landing pad data for the landing pad to be added.
+
+    Returns: Image with landing pad and the bounding box for the drawn landing pad.
     """
     (h, k), (a, b) = landing_data.center, landing_data.axis
     rad = math.pi / 180
@@ -148,17 +145,24 @@ def draw_landing_pad(
         landing_data.angle,
         0,
         360,
-        LANDING_PAD_COLOR_BLUE,
+        LANDING_PAD_COLOUR_BLUE,
         -1,
     )
     return NumpyImage(image), bounding_box
 
 
-def create_test(landing_list: list[LandingPadData]) -> LandingPadTestData:
+def create_test(landing_list: list[LandingPadImageConfig]) -> InputImageAndExpectedBoundingBoxes:
     """
     Generates test cases given a data set.
+
+    landing_data: Landing pad data for the landing pad to be added.
+
+    Returns: The image and expected bounding box.
+
     """
-    image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.int16)
+    image = np.full(
+        shape=(1000, 2000, 3), fill_value=255, dtype=np.int16
+    )  # shape: size of the screen
     confidence_and_label = [1, 0]
 
     boxes_list = []
@@ -175,9 +179,10 @@ def create_test(landing_list: list[LandingPadData]) -> LandingPadTestData:
         boxes_list,
         reverse=True,
         key=lambda box: abs((box[4] - box[2]) * (box[5] - box[3])),
+        # calculates the absolute value of area of the bounding box
     )
 
     boxes_list = np.array(boxes_list)
     image = image.astype(np.uint8)
 
-    return LandingPadTestData(NumpyImage(image), boxes_list)
+    return InputImageAndExpectedBoundingBoxes(NumpyImage(image), boxes_list)

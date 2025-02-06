@@ -12,7 +12,7 @@ from .. import image_and_time
 from .. import detections_and_time
 from ..common.modules.logger import logger
 
-
+CONFIDENCE = 1.0
 MIN_CONTOUR_AREA = 100
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
@@ -24,7 +24,9 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
     Predicts annd locates landing pads using the classical computer vision methodology.
     """
 
-    def __init__(self, show_annotations: bool = False, save_name: str = "donke") -> None:
+    def __init__(
+        self, image_logger: logger.Logger, show_annotations: bool = False, save_name: str = ""
+    ) -> None:
         """
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
@@ -32,7 +34,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         self.__counter = 0
         self.__show_annotations = show_annotations
         self.__filename_prefix = ""
-        _, self.__logger = logger.Logger.create(self.__filename_prefix, False)
+        self.__logger = image_logger
 
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
@@ -41,9 +43,11 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         self, image: np.ndarray, timestamp: float
     ) -> tuple[True, detections_and_time.DetectionsAndTime, np.ndarray] | tuple[False, None, None]:
         """
-        Detects landing pads using contours/classical cv.
+        Detects landing pads using contours/classical CV.
+
         image: Current image frame.
         timestamp: Timestamp for the detections.
+
         Return: Success, the DetectionsAndTime object, and the annotated image.
         """
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -78,11 +82,9 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
             x, y, w, h = cv2.boundingRect(contour)
             bounds = np.array([x, y, x + w, y + h])
-            confidence = 1.0
-            label = LABEL
 
             # Create a Detection object and append it to detections
-            result, detection = detections_and_time.Detection.create(bounds, label, confidence)
+            result, detection = detections_and_time.Detection.create(bounds, LABEL, CONFIDENCE)
 
             if not result:
                 return False, None, None
@@ -108,7 +110,9 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
     ) -> tuple[True, detections_and_time.DetectionsAndTime] | tuple[False, None]:
         """
         Runs object detection on the provided image and returns the detections.
+
         data: Image with a timestamp.
+
         Return: Success and the detections.
         """
         image = data.image
