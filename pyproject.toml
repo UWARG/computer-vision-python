@@ -100,8 +100,8 @@ min-similarity-lines = 10
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-# Submodules
-addopts = "--ignore=modules/common/"
+# Submodules and integration tests
+addopts = "--ignore=modules/common/ --ignore=tests/integration"
 
 [tool.black]
 line-length = 100

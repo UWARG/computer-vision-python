@@ -9,27 +9,60 @@ import time
 import cv2
 import torch
 
+from modules.detect_target import detect_target_brightspot
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
+from modules.detect_target import detect_target_ultralytics
 from modules import image_and_time
 from modules import detections_and_time
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
-TEST_PATH = pathlib.Path("tests", "model_example")
-IMAGE_BUS_PATH = pathlib.Path(TEST_PATH, "bus.jpg")
-IMAGE_ZIDANE_PATH = pathlib.Path(TEST_PATH, "zidane.jpg")
+BRIGHTSPOT_TEST_PATH = pathlib.Path("tests", "brightspot_example")
+IMAGE_BRIGHTSPOT_0_PATH = pathlib.Path(BRIGHTSPOT_TEST_PATH, "ir_detections_0.png")
+IMAGE_BRIGHTSPOT_1_PATH = pathlib.Path(BRIGHTSPOT_TEST_PATH, "ir_detections_1.png")
 
-WORK_COUNT = 3
-DELAY_FOR_SIMULATED_WORKERS = 1  # seconds
-DELAY_FOR_CUDA_WARMUP = 20  # seconds
+BRIGHTSPOT_OPTION = detect_target_factory.DetectTargetOption.CV_BRIGHTSPOT
+# Logging is identical to detect_target_ultralytics.py
+# pylint: disable=duplicate-code
+BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
+    brightspot_percentile_threshold=99.9,
+    filter_by_color=True,
+    blob_color=255,
+    filter_by_circularity=False,
+    min_circularity=0.01,
+    max_circularity=1,
+    filter_by_inertia=True,
+    min_inertia_ratio=0.2,
+    max_inertia_ratio=1,
+    filter_by_convexity=False,
+    min_convexity=0.01,
+    max_convexity=1,
+    filter_by_area=True,
+    min_area_pixels=50,
+    max_area_pixels=640,
+)
+# pylint: enable=duplicate-code
 
-OPTION = detect_target_factory.DetectTargetOption.ML_ULTRALYTICS
-MODEL_PATH = pathlib.Path(TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt")
-OVERRIDE_FULL = False
+ULTRALYTICS_TEST_PATH = pathlib.Path("tests", "model_example")
+IMAGE_BUS_PATH = pathlib.Path(ULTRALYTICS_TEST_PATH, "bus.jpg")
+IMAGE_ZIDANE_PATH = pathlib.Path(ULTRALYTICS_TEST_PATH, "zidane.jpg")
+
+ULTRALYTICS_OPTION = detect_target_factory.DetectTargetOption.ML_ULTRALYTICS
+ULTRALYTICS_CONFIG = detect_target_ultralytics.DetectTargetUltralyticsConfig(
+    0 if torch.cuda.is_available() else "cpu",
+    pathlib.Path(ULTRALYTICS_TEST_PATH, "yolov8s_ultralytics_pretrained_default.pt"),
+    False,
+)
+
 SHOW_ANNOTATIONS = False
 SAVE_NAME = ""  # No need to save images
+
+WORK_COUNT = 3
+DELAY_FOR_SIMULATED_ULTRALYTICS_WORKER = 1  # seconds
+DELAY_FOR_SIMULATED_BRIGHTSPOT_WORKER = 3  # seconds
+DELAY_FOR_CUDA_WARMUP = 20  # seconds
 
 
 def simulate_previous_worker(
@@ -37,6 +70,9 @@ def simulate_previous_worker(
 ) -> None:
     """
     Place the image into the queue.
+
+    image_path: Path to the image being added to the queue.
+    in_queue: Input queue.
     """
     image = cv2.imread(str(image_path))  # type: ignore
     result, value = image_and_time.ImageAndTime.create(image)
@@ -45,14 +81,20 @@ def simulate_previous_worker(
     in_queue.queue.put(value)
 
 
-def main() -> int:
+def run_worker(
+    option: detect_target_factory.DetectTargetOption,
+    config: (
+        detect_target_brightspot.DetectTargetBrightspotConfig
+        | detect_target_ultralytics.DetectTargetUltralyticsConfig
+    ),
+) -> None:
     """
-    Main function.
+    Tests target detection.
+
+    option: Brightspot or Ultralytics.
+    config: Configuration for respective target detection module.
     """
     # Setup
-    # Not a constant
-    # pylint: disable-next=invalid-name
-    device = 0 if torch.cuda.is_available() else "cpu"
     controller = worker_controller.WorkerController()
 
     mp_manager = mp.Manager()
@@ -63,33 +105,39 @@ def main() -> int:
     worker = mp.Process(
         target=detect_target_worker.detect_target_worker,
         args=(
-            OPTION,
-            device,
-            MODEL_PATH,
-            OVERRIDE_FULL,
-            SHOW_ANNOTATIONS,
             SAVE_NAME,
+            SHOW_ANNOTATIONS,
+            option,
+            config,
             image_in_queue,
             image_out_queue,
             controller,
         ),
     )
 
-    # Run
     print("Starting worker")
     worker.start()
 
-    for _ in range(0, WORK_COUNT):
-        simulate_previous_worker(IMAGE_BUS_PATH, image_in_queue)
+    if option == ULTRALYTICS_OPTION:
+        for _ in range(0, WORK_COUNT):
+            simulate_previous_worker(IMAGE_BUS_PATH, image_in_queue)
 
-    time.sleep(DELAY_FOR_SIMULATED_WORKERS)
+        time.sleep(DELAY_FOR_SIMULATED_ULTRALYTICS_WORKER)
 
-    for _ in range(0, WORK_COUNT):
-        simulate_previous_worker(IMAGE_ZIDANE_PATH, image_in_queue)
+        for _ in range(0, WORK_COUNT):
+            simulate_previous_worker(IMAGE_ZIDANE_PATH, image_in_queue)
 
-    # Takes some time for CUDA to warm up
-    print("Waiting for CUDA to warm up")
-    time.sleep(DELAY_FOR_CUDA_WARMUP)
+        # Takes some time for CUDA to warm up
+        print("Waiting for CUDA to warm up")
+        time.sleep(DELAY_FOR_CUDA_WARMUP)
+    elif option == BRIGHTSPOT_OPTION:
+        for _ in range(0, WORK_COUNT):
+            simulate_previous_worker(IMAGE_BRIGHTSPOT_0_PATH, image_in_queue)
+
+        time.sleep(DELAY_FOR_SIMULATED_BRIGHTSPOT_WORKER * 2.5)
+
+        for _ in range(0, WORK_COUNT):
+            simulate_previous_worker(IMAGE_BRIGHTSPOT_1_PATH, image_in_queue)
 
     controller.request_exit()
     print("Requested exit")
@@ -105,6 +153,14 @@ def main() -> int:
     print("Teardown")
     image_in_queue.fill_and_drain_queue()
     worker.join()
+
+
+def main() -> int:
+    """
+    Main function.
+    """
+    run_worker(BRIGHTSPOT_OPTION, BRIGHTSPOT_CONFIG)
+    run_worker(ULTRALYTICS_OPTION, ULTRALYTICS_CONFIG)
 
     return 0
 

@@ -114,9 +114,13 @@ def detector() -> detect_target_ultralytics.DetectTargetUltralytics:  # type: ig
     assert result
     assert test_logger is not None
 
-    detection = detect_target_ultralytics.DetectTargetUltralytics(
-        DEVICE, str(MODEL_PATH), OVERRIDE_FULL, test_logger
+    config = detect_target_ultralytics.DetectTargetUltralyticsConfig(
+        DEVICE,
+        str(MODEL_PATH),
+        OVERRIDE_FULL,
     )
+
+    detection = detect_target_ultralytics.DetectTargetUltralytics(config, test_logger)
     yield detection  # type: ignore
 
 

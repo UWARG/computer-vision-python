@@ -5,6 +5,7 @@ Convert bounding box data into ground data.
 import os
 import pathlib
 
+from modules import merged_odometry_detections
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 from . import camera_properties
@@ -55,7 +56,12 @@ def geolocation_worker(
 
         input_data = input_queue.queue.get()
         if input_data is None:
+            local_logger.info("Recieved type None, exiting.")
             break
+
+        if not isinstance(input_data, merged_odometry_detections.MergedOdometryDetections):
+            local_logger.warning(f"Skipping unexpected input: {input_data}")
+            continue
 
         result, value = locator.run(input_data)
         if not result:

@@ -12,8 +12,14 @@ import cv2
 # Used in type annotation of flight interface output
 # pylint: disable-next=unused-import
 from modules import odometry_and_time
+from modules.common.modules.camera import camera_factory
+from modules.common.modules.camera import camera_opencv
+from modules.common.modules.camera import camera_picamera2
+from modules.communications import communications_worker
+from modules.detect_target import detect_target_brightspot
 from modules.detect_target import detect_target_factory
 from modules.detect_target import detect_target_worker
+from modules.detect_target import detect_target_ultralytics
 from modules.flight_interface import flight_interface_worker
 from modules.video_input import video_input_worker
 from modules.data_merge import data_merge_worker
@@ -80,20 +86,51 @@ def main() -> int:
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
 
-        VIDEO_INPUT_CAMERA_NAME = config["video_input"]["camera_name"]
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
-        VIDEO_INPUT_SAVE_NAME_PREFIX = config["video_input"]["save_prefix"]
-        VIDEO_INPUT_SAVE_PREFIX = str(pathlib.Path(logging_path, VIDEO_INPUT_SAVE_NAME_PREFIX))
+        VIDEO_INPUT_OPTION = camera_factory.CameraOption(config["video_input"]["camera_enum"])
+        VIDEO_INPUT_WIDTH = config["video_input"]["width"]
+        VIDEO_INPUT_HEIGHT = config["video_input"]["height"]
+        match VIDEO_INPUT_OPTION:
+            case camera_factory.CameraOption.OPENCV:
+                VIDEO_INPUT_CAMERA_CONFIG = camera_opencv.ConfigOpenCV(
+                    **config["video_input"]["camera_config"]
+                )
+            case camera_factory.CameraOption.PICAM2:
+                VIDEO_INPUT_CAMERA_CONFIG = camera_picamera2.ConfigPiCamera2(
+                    **config["video_input"]["camera_config"]
+                )
+            case _:
+                main_logger.error(f"Inputted an invalid camera option: {VIDEO_INPUT_OPTION}", True)
+                return -1
+
+        VIDEO_INPUT_IMAGE_NAME = (
+            config["video_input"]["image_name"] if config["video_input"]["log_images"] else None
+        )
 
         DETECT_TARGET_WORKER_COUNT = config["detect_target"]["worker_count"]
-        detect_target_option_int = config["detect_target"]["option"]
-        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(detect_target_option_int)
-        DETECT_TARGET_DEVICE = "cpu" if args.cpu else config["detect_target"]["device"]
-        DETECT_TARGET_MODEL_PATH = config["detect_target"]["model_path"]
-        DETECT_TARGET_OVERRIDE_FULL_PRECISION = args.full
-        DETECT_TARGET_SAVE_NAME_PREFIX = config["detect_target"]["save_prefix"]
-        DETECT_TARGET_SAVE_PREFIX = str(pathlib.Path(logging_path, DETECT_TARGET_SAVE_NAME_PREFIX))
+        DETECT_TARGET_OPTION = detect_target_factory.DetectTargetOption(
+            config["detect_target"]["option"]
+        )
+        DETECT_TARGET_SAVE_PREFIX = str(
+            pathlib.Path(logging_path, config["detect_target"]["save_prefix"])
+        )
         DETECT_TARGET_SHOW_ANNOTATED = args.show_annotated
+        match DETECT_TARGET_OPTION:
+            case detect_target_factory.DetectTargetOption.ML_ULTRALYTICS:
+                DETECT_TARGET_CONFIG = detect_target_ultralytics.DetectTargetUltralyticsConfig(
+                    config["detect_target"]["config"]["device"],
+                    config["detect_target"]["config"]["model_path"],
+                    args.full,
+                )
+            case detect_target_factory.DetectTargetOption.CV_BRIGHTSPOT:
+                DETECT_TARGET_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
+                    **config["detect_target"]["config"]
+                )
+            case _:
+                main.logger.error(
+                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}", True
+                )
+                return -1
 
         FLIGHT_INTERFACE_ADDRESS = config["flight_interface"]["address"]
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
@@ -115,14 +152,18 @@ def main() -> int:
 
         MIN_ACTIVATION_THRESHOLD = config["cluster_estimation"]["min_activation_threshold"]
         MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
+        MAX_NUM_COMPONENTS = config["cluster_estimation"]["max_num_components"]
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
+
+        COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
+        COMMUNICATIONS_WORKER_PERIOD = config["communications"]["worker_period"]
 
         # pylint: enable=invalid-name
     except KeyError as exception:
         main_logger.error(f"Config key(s) not found: {exception}", True)
         return -1
     except ValueError as exception:
-        main_logger.error(f"Could not convert detect target option into enum: {exception}", True)
+        main_logger.error(f"{exception}", True)
         return -1
 
     # Setup
@@ -141,6 +182,10 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
+    flight_interface_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     data_merge_to_geolocation_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
@@ -153,11 +198,18 @@ def main() -> int:
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-    cluster_estimation_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+    cluster_estimation_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
-
+    communications_to_flight_interface_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    communications_to_main_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
     result, camera_intrinsics = camera_properties.CameraIntrinsics.create(
         GEOLOCATION_RESOLUTION_X,
         GEOLOCATION_RESOLUTION_Y,
@@ -189,9 +241,12 @@ def main() -> int:
         count=1,
         target=video_input_worker.video_input_worker,
         work_arguments=(
-            VIDEO_INPUT_CAMERA_NAME,
+            VIDEO_INPUT_OPTION,
+            VIDEO_INPUT_WIDTH,
+            VIDEO_INPUT_HEIGHT,
+            VIDEO_INPUT_CAMERA_CONFIG,
+            VIDEO_INPUT_IMAGE_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
-            VIDEO_INPUT_SAVE_PREFIX,
         ),
         input_queues=[],
         output_queues=[video_input_to_detect_target_queue],
@@ -209,12 +264,10 @@ def main() -> int:
         count=DETECT_TARGET_WORKER_COUNT,
         target=detect_target_worker.detect_target_worker,
         work_arguments=(
-            DETECT_TARGET_OPTION,
-            DETECT_TARGET_DEVICE,
-            DETECT_TARGET_MODEL_PATH,
-            DETECT_TARGET_OVERRIDE_FULL_PRECISION,
-            DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_SAVE_PREFIX,
+            DETECT_TARGET_SHOW_ANNOTATED,
+            DETECT_TARGET_OPTION,
+            DETECT_TARGET_CONFIG,
         ),
         input_queues=[video_input_to_detect_target_queue],
         output_queues=[detect_target_to_data_merge_queue],
@@ -237,8 +290,14 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
-        input_queues=[flight_interface_decision_queue],
-        output_queues=[flight_interface_to_data_merge_queue],
+        input_queues=[
+            flight_interface_decision_queue,
+            communications_to_flight_interface_queue,
+        ],
+        output_queues=[
+            flight_interface_to_data_merge_queue,
+            flight_interface_to_communications_queue,
+        ],
         controller=controller,
         local_logger=main_logger,
     )
@@ -290,9 +349,14 @@ def main() -> int:
     result, cluster_estimation_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=cluster_estimation_worker.cluster_estimation_worker,
-        work_arguments=(MIN_ACTIVATION_THRESHOLD, MIN_NEW_POINTS_TO_RUN, RANDOM_STATE),
+        work_arguments=(
+            MIN_ACTIVATION_THRESHOLD,
+            MIN_NEW_POINTS_TO_RUN,
+            MAX_NUM_COMPONENTS,
+            RANDOM_STATE,
+        ),
         input_queues=[geolocation_to_cluster_estimation_queue],
-        output_queues=[cluster_estimation_to_main_queue],
+        output_queues=[cluster_estimation_to_communications_queue],
         controller=controller,
         local_logger=main_logger,
     )
@@ -302,6 +366,27 @@ def main() -> int:
 
     # Get Pylance to stop complaining
     assert cluster_estimation_worker_properties is not None
+
+    result, communications_worker_properties = worker_manager.WorkerProperties.create(
+        count=1,
+        target=communications_worker.communications_worker,
+        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD),
+        input_queues=[
+            flight_interface_to_communications_queue,
+            cluster_estimation_to_communications_queue,
+        ],
+        output_queues=[
+            communications_to_main_queue,
+            communications_to_flight_interface_queue,
+        ],
+        controller=controller,
+        local_logger=main_logger,
+    )
+    if not result:
+        main_logger.error("Failed to create arguments for Communications Worker", True)
+        return -1
+
+    assert communications_worker_properties is not None
 
     # Create managers
     worker_managers = []
@@ -384,6 +469,19 @@ def main() -> int:
 
     worker_managers.append(cluster_estimation_manager)
 
+    result, communications_manager = worker_manager.WorkerManager.create(
+        worker_properties=communications_worker_properties,
+        local_logger=main_logger,
+    )
+    if not result:
+        main_logger.error("Failed to create manager for Communications", True)
+        return -1
+
+    # Get Pylance to stop complaining
+    assert communications_manager is not None
+
+    worker_managers.append(communications_manager)
+
     # Run
     for manager in worker_managers:
         manager.start_workers()
@@ -396,16 +494,12 @@ def main() -> int:
                 return -1
 
         try:
-            cluster_estimations = cluster_estimation_to_main_queue.queue.get_nowait()
+            cluster_estimations = communications_to_main_queue.queue.get_nowait()
         except queue.Empty:
             cluster_estimations = None
 
         if cluster_estimations is not None:
-            for cluster in cluster_estimations:
-                main_logger.debug("Cluster in world: " + True)
-                main_logger.debug("Cluster location x: " + str(cluster.location_x))
-                main_logger.debug("Cluster location y: " + str(cluster.location_y))
-                main_logger.debug("Cluster spherical variance: " + str(cluster.spherical_variance))
+            main_logger.debug(f"Clusters: {cluster_estimations}")
         if cv2.waitKey(1) == ord("q"):  # type: ignore
             main_logger.info("Exiting main loop", True)
             break
@@ -416,10 +510,13 @@ def main() -> int:
     video_input_to_detect_target_queue.fill_and_drain_queue()
     detect_target_to_data_merge_queue.fill_and_drain_queue()
     flight_interface_to_data_merge_queue.fill_and_drain_queue()
+    flight_interface_to_communications_queue.fill_and_drain_queue()
     data_merge_to_geolocation_queue.fill_and_drain_queue()
     geolocation_to_cluster_estimation_queue.fill_and_drain_queue()
+    cluster_estimation_to_communications_queue.fill_and_drain_queue()
+    communications_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
-    cluster_estimation_to_main_queue.fill_and_drain_queue()
+    communications_to_flight_interface_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()

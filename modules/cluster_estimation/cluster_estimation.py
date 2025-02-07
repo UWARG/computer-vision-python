@@ -11,6 +11,7 @@ import sklearn.mixture
 
 from .. import object_in_world
 from .. import detection_in_world
+from ..common.modules.logger import logger
 
 
 class ClusterEstimation:
@@ -18,17 +19,6 @@ class ClusterEstimation:
     Estimate landing pad locations based on landing pad ground detection. Estimation
     works by predicting 'cluster centres' from groups of closely placed landing pad
     detections.
-
-    ATTRIBUTES
-    ----------
-    min_activation_threshold: int
-        Minimum total data points before model runs.
-
-    min_new_points_to_run: int
-        Minimum number of new data points that must be collected before running model.
-
-    random_state: int
-        Seed for randomizer, to get consistent results.
 
     METHODS
     -------
@@ -61,33 +51,59 @@ class ClusterEstimation:
     __MEAN_PRECISION_PRIOR = 1e-6
     __MAX_MODEL_ITERATIONS = 1000
 
-    # Real-world scenario Hyperparameters
-    __MAX_NUM_COMPONENTS = 10  # assumed maximum number of real landing pads
-
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
 
     @classmethod
     def create(
-        cls, min_activation_threshold: int, min_new_points_to_run: int, random_state: int
+        cls,
+        min_activation_threshold: int,
+        min_new_points_to_run: int,
+        max_num_components: int,
+        random_state: int,
+        local_logger: logger.Logger,
     ) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation model to run.
+
+        PARAMETERS:
+        min_activation_threshold: int
+            Minimum total data points before model runs. Must be at least max_num_components.
+
+        min_new_points_to_run: int
+            Minimum number of new data points that must be collected before running model. Must be at least 0.
+
+        max_num_components: int
+            Max number of real landing pads. Must be at least 1.
+
+        random_state: int
+            Seed for randomizer, to get consistent results. Must be at least 0.
+
+        local_logger: logger.Logger
+            The local logger to log this object's information.
+
+        RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
-        # These parameters must be positive
-        if min_new_points_to_run < 0 or random_state < 0:
+        if min_activation_threshold < max_num_components:
             return False, None
 
-        # At least 1 point for model to fit
-        if min_activation_threshold < 1:
+        if min_new_points_to_run < 0:
+            return False, None
+
+        if max_num_components < 1:
+            return False, None
+
+        if random_state < 0:
             return False, None
 
         return True, ClusterEstimation(
             cls.__create_key,
             min_activation_threshold,
             min_new_points_to_run,
+            max_num_components,
             random_state,
+            local_logger,
         )
 
     def __init__(
@@ -95,7 +111,9 @@ class ClusterEstimation:
         class_private_create_key: object,
         min_activation_threshold: int,
         min_new_points_to_run: int,
+        max_num_components: int,
         random_state: int,
+        local_logger: logger.Logger,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -105,7 +123,7 @@ class ClusterEstimation:
         # Initializes VGMM
         self.__vgmm = sklearn.mixture.BayesianGaussianMixture(
             covariance_type=self.__COVAR_TYPE,
-            n_components=self.__MAX_NUM_COMPONENTS,
+            n_components=max_num_components,
             init_params=self.__MODEL_INIT_PARAM,
             weight_concentration_prior=self.__WEIGHT_CONCENTRATION_PRIOR,
             mean_precision_prior=self.__MEAN_PRECISION_PRIOR,
@@ -121,6 +139,7 @@ class ClusterEstimation:
         self.__min_activation_threshold = min_activation_threshold
         self.__min_new_points_to_run = min_new_points_to_run
         self.__has_ran_once = False
+        self.__logger = local_logger
 
     def run(
         self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool
@@ -160,6 +179,7 @@ class ClusterEstimation:
 
         # Check convergence
         if not self.__vgmm.converged_:
+            self.__logger.warning("Model failed to converge")
             return False, None
 
         # Get predictions from cluster model
@@ -201,7 +221,10 @@ class ClusterEstimation:
 
             if result:
                 detections_in_world.append(landing_pad)
+            else:
+                self.__logger.warning("Failed to create ObjectInWorld object")
 
+        self.__logger.info(detections_in_world)
         return True, detections_in_world
 
     def __decide_to_run(self, run_override: bool) -> bool:
