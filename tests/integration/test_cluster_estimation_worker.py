@@ -1,11 +1,14 @@
+"""
+Test cluster_estimation_worker process.
+"""
+
 import time
 import multiprocessing as mp
 from typing import List
-from queue import Queue
 import numpy as np
-from modules.detection_in_world import DetectionInWorld
 from utilities.workers import queue_proxy_wrapper, worker_controller
-from modules.cluster_estimation import cluster_estimation_worker
+from modules.detection_in_world import DetectionInWorld
+from modules.cluster_estimation.cluster_estimation_worker import cluster_estimation_worker
 
 
 def test_cluster_estimation_worker() -> int:
@@ -13,49 +16,120 @@ def test_cluster_estimation_worker() -> int:
     Integration test for cluster estimation worker.
     """
 
+    # Worker and controller setup.
     controller = worker_controller.WorkerController()
 
     mp_manager = mp.Manager()
     input_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     output_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
-    test_data = [
-        DetectionInWorld.create(
-            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
-        )[1],
-        DetectionInWorld.create(
-            np.array([[2, 2], [2, 3], [3, 3], [3, 2]]), np.array([2.5, 2.5]), 1, 0.85
-        )[1],
-    ]
-
     worker_process = mp.Process(
         target=cluster_estimation_worker,
         args=(
-            2,
-            2,
             3,
-            42,
+            0,
+            3,
+            0,
             input_queue,
             output_queue,
             controller,
         ),
     )
 
+    # Second test set: 1 clusters
+    test_data_1 = [
+        # Landing pad 1
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+    ]
+
+    # First test set: 2 clusters
+    test_data_2 = [
+        # Landing pad 1
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[1, 1], [1, 2], [2, 2], [2, 1]]), np.array([1.5, 1.5]), 1, 0.9
+        )[1],
+        # Landing pad 2
+        DetectionInWorld.create(
+            np.array([[10, 10], [10, 11], [11, 11], [11, 10]]), np.array([10.5, 10.5]), 1, 0.9
+        )[1],
+        DetectionInWorld.create(
+            np.array([[10.1, 10.1], [10.1, 11.1], [11.1, 11.1], [11.1, 10.1]]),
+            np.array([10.6, 10.6]),
+            1,
+            0.92,
+        )[1],
+        DetectionInWorld.create(
+            np.array([[9.9, 9.9], [9.9, 10.9], [10.9, 10.9], [10.9, 9.9]]),
+            np.array([10.4, 10.4]),
+            1,
+            0.88,
+        )[1],
+        DetectionInWorld.create(
+            np.array([[10.2, 10.2], [10.2, 11.2], [11.2, 11.2], [11.2, 10.2]]),
+            np.array([10.7, 10.7]),
+            1,
+            0.95,
+        )[1],
+        DetectionInWorld.create(
+            np.array([[10.3, 10.3], [10.3, 11.3], [11.3, 11.3], [11.3, 10.3]]),
+            np.array([10.8, 10.8]),
+            1,
+            0.93,
+        )[1],
+    ]
+
+    # Testing with test_data_1 (1 cluster)
+
+    input_queue.queue.put(test_data_1)
     worker_process.start()
-    time.sleep(3)
+    time.sleep(1)
 
-    input_queue.queue.put(test_data)
-    time.sleep(5)
+    output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
 
-    output_results: List[List[DetectionInWorld]] = []
-    while not output_queue.queue.empty():
-        output_results.append(output_queue.queue.get())
+    assert output_results is not None
+    assert len(output_results) == 1
 
-    print("Hello")
-    print(output_results)
+    time.sleep(1)
 
-    # Validating Output TBD
+    # Testing with test_data_2 (2 clusters)
+
+    input_queue.queue.put(test_data_2)
+    time.sleep(1)
+
+    output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
+
+    assert output_results is not None
+    assert len(output_results) == 2
+
     controller.request_exit()
+    input_queue.queue.put(None)
+    worker_process.join()
 
     return 0
 
