@@ -17,9 +17,27 @@ from modules.common.modules.data_encoding import message_encoding_decoding
 # No enable
 # pylint: disable=protected-access,redefined-outer-name
 
+LATITUDE_TOLERANCE = 0.000001
+LONGITUDE_TOLERANCE = 0.000001
+ALTITUDE_TOLERANCE = 7
+
 
 @pytest.fixture
-def communications_maker() -> communications.Communications:  # type: ignore
+def home_position() -> position_global.PositionGlobal:  # type: ignore
+    """
+    Home position.
+    """
+    result, position = position_global.PositionGlobal.create(43.472978, -80.540103, 336.0)
+    assert result
+    assert position is not None
+
+    yield position
+
+
+@pytest.fixture
+def communications_maker(
+    home_position: position_global.PositionGlobal,
+) -> communications.Communications:  # type: ignore
     """
     Construct a Communications instance with the Home position
     """
@@ -27,10 +45,6 @@ def communications_maker() -> communications.Communications:  # type: ignore
 
     assert result
     assert test_logger is not None
-
-    result, home_position = position_global.PositionGlobal.create(0, 0, 0)
-    assert result
-    assert home_position is not None
 
     result, communications_instance = communications.Communications.create(
         home_position, test_logger
@@ -41,79 +55,265 @@ def communications_maker() -> communications.Communications:  # type: ignore
     yield communications_instance  # type: ignore
 
 
+def object_in_world_from_position_local(
+    position_local: position_local.PositionLocal,
+) -> object_in_world.ObjectInWorld:
+    """
+    Convert position local to object_in_world as defined in Communications.py
+    """
+    result, obj = object_in_world.ObjectInWorld.create(
+        position_local.north, position_local.east, 0.0
+    )
+    assert result
+    assert obj is not None
+
+    return obj
+
+
+def assert_global_positions(
+    expected: position_global.PositionGlobal, actual: position_global.PositionGlobal
+) -> None:
+    """
+    Assert each values of the global positions using the Tolerances
+    """
+    assert abs(expected.latitude - actual.latitude) < LATITUDE_TOLERANCE
+    assert abs(expected.longitude - actual.longitude) < LONGITUDE_TOLERANCE
+    assert abs(expected.altitude - actual.altitude) < ALTITUDE_TOLERANCE
+
+
 class TestCommunications:
     """
     Tests for the Communications.run() method.
     """
 
-    def test_normal_data(self, communications_maker: communications.Communications) -> None:
+    def test_run(
+        self,
+        home_position: position_global.PositionGlobal,
+        communications_maker: communications.Communications,
+    ) -> None:
         """
-        Deal with one data to test if it works
+        Test if the Communications.run returns the correct instance
         """
         # Setup
-        result, local_position = object_in_world.ObjectInWorld.create(10, 20, 1.0)
+        result, position = position_global.PositionGlobal.create(43.472978, -80.540103, 336.0)
         assert result
-        assert local_position is not None
-        objects_in_world = [local_position]
+        assert position is not None
+
+        result, actual = local_global_conversion.position_local_from_position_global(
+            home_position, position
+        )
+        assert result
+        assert actual is not None
+
+        objects_in_world = [object_in_world_from_position_local(actual)]
 
         # Run
-        result, generated_objects = communications_maker.run(objects_in_world)
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
 
         # Test
         assert result
+        assert isinstance(metadata, bytes)
+        for generated_object in generated_objects:
+            assert isinstance(generated_object, bytes)
+
+    def test_normal(
+        self,
+        home_position: position_global.PositionGlobal,
+        communications_maker: communications.Communications,
+    ) -> None:
+        """
+        Normal
+        """
+        # Setup
+        result, global_position_1 = position_global.PositionGlobal.create(
+            43.472978, -80.540103, 336.0
+        )
+        assert result
+        assert global_position_1 is not None
+
+        result, local_position_1 = local_global_conversion.position_local_from_position_global(
+            home_position, global_position_1
+        )
+        assert result
+        assert local_position_1 is not None
+
+        result, global_position_2 = position_global.PositionGlobal.create(
+            43.472800, -80.539500, 330.0
+        )
+        assert result
+        assert global_position_2 is not None
+
+        result, local_position_2 = local_global_conversion.position_local_from_position_global(
+            home_position, global_position_2
+        )
+        assert result
+        assert local_position_2 is not None
+
+        objects_in_world = [
+            object_in_world_from_position_local(local_position_1),
+            object_in_world_from_position_local(local_position_2),
+        ]
+        number_of_messages = 2
+
+        # Run
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
+        assert result
+        assert metadata is not None
         assert generated_objects is not None
 
-    def test_correct_data_structure(
+        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
+            metadata
+        )
+        assert result
+        assert worker_id is not None
+        assert actual_number_of_messages is not None
+
+        # Test
+        assert actual_number_of_messages == number_of_messages
+
+        # Conversion
+        result, worker_id, actual_1 = message_encoding_decoding.decode_bytes_to_position_global(
+            generated_objects[0]
+        )
+        assert result
+        assert worker_id is not None
+        assert actual_1 is not None
+
+        result, worker_id, actual_2 = message_encoding_decoding.decode_bytes_to_position_global(
+            generated_objects[1]
+        )
+        assert result
+        assert worker_id is not None
+        assert actual_2 is not None
+
+        # Test
+        assert_global_positions(global_position_1, actual_1)
+        assert_global_positions(global_position_2, actual_2)
+
+    def test_empty_objects(
         self,
         communications_maker: communications.Communications,
     ) -> None:
         """
-        Check if the coordinates are converted into the correct data structure
+        When nothing is passed in
         """
+        objects_in_world = []
 
-        # Setup
-        result, obj_1 = object_in_world.ObjectInWorld.create(30.0, 40.0, 2.0)
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
-        assert obj_1 is not None
-
-        result, obj_2 = object_in_world.ObjectInWorld.create(50.0, 60.0, 3.0)
-        assert result
-        assert obj_2 is not None
-
-        result, obj_3 = object_in_world.ObjectInWorld.create(70.0, 80.0, 4.0)
-        assert result
-        assert obj_3 is not None
-
-        result, home_position = position_global.PositionGlobal.create(0, 0, 0)
-        assert result
-        assert home_position is not None
-
-        objects_in_world = [obj_1, obj_2, obj_3]
-
-        # Run
-        result, generated_objects = communications_maker.run(objects_in_world)
-        assert result
+        assert metadata is not None
         assert generated_objects is not None
 
+        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
+            metadata
+        )
+
+        # it will encounter an error where metadata is failed to encode
+        assert result
+        assert worker_id is not None
+        assert actual_number_of_messages is not None
+
         # Test
-        for i, generated_object in enumerate(generated_objects):
+        assert actual_number_of_messages == 0
+        assert len(generated_objects) == 0
 
-            # should convert the byte to positionGlobal
-            result, worker_id, generated_object = message_encoding_decoding.decode_bytes_to_position_global(generated_object)
+    def test_same_as_home(
+        self,
+        home_position: position_global.PositionGlobal,
+        communications_maker: communications.Communications,
+    ) -> None:
+        """
+        When the objects_in_world contains the home positions
+        """
+        # Setup
+        result, local_position = local_global_conversion.position_local_from_position_global(
+            home_position, home_position
+        )
+        assert result
+        assert local_position is not None
+
+        actual = object_in_world_from_position_local(local_position)
+        objects_in_world = [actual]
+        number_of_messages = 1
+
+        # Run
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
+        assert result
+        assert metadata is not None
+        assert generated_objects is not None
+
+        # Conversion
+        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
+            metadata
+        )
+        assert result
+        assert worker_id is not None
+        assert actual_number_of_messages is not None
+
+        # Test
+        assert actual_number_of_messages == number_of_messages
+
+        # Conversion
+        result, worker_id, actual = message_encoding_decoding.decode_bytes_to_position_global(
+            generated_objects[0]
+        )
+        assert result
+        assert worker_id is not None
+        assert actual is not None
+
+        # Test
+        assert_global_positions(home_position, actual)
+
+    def test_duplicate_coordinates(
+        self,
+        home_position: position_global.PositionGlobal,
+        communications_maker: communications.Communications,
+    ) -> None:
+        """
+        When the objects_in_world contains duplicate positions
+        """
+        # Setup
+        result, global_position = position_global.PositionGlobal.create(
+            43.472978, -80.540103, 336.0
+        )
+        assert result
+        assert global_position is not None
+
+        result, local_position = local_global_conversion.position_local_from_position_global(
+            home_position, global_position
+        )
+        assert result
+        assert local_position is not None
+
+        position = object_in_world_from_position_local(local_position)
+
+        objects_in_world = [position, position, position]
+        number_of_messages = 3
+
+        # Run
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
+        assert result
+        assert metadata is not None
+        assert generated_objects is not None
+
+        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
+            metadata
+        )
+        assert result
+        assert worker_id is not None
+        assert actual_number_of_messages is not None
+
+        # Test
+        assert actual_number_of_messages == number_of_messages
+
+        for generated_object in generated_objects:
+            # Conversion
+            result, worker_id, actual = message_encoding_decoding.decode_bytes_to_position_global(
+                generated_object
+            )
             assert result
-            assert generated_object is not None
             assert worker_id is not None
+            assert actual is not None
 
-            # convert the input data to position local
-            result, object_position_local = position_local.PositionLocal.create(
-                objects_in_world[i].location_x, east=objects_in_world[i].location_y, down=0.0
-            )
-            assert result
-
-            # convert the input data to position global for comparison
-            result, expected = local_global_conversion.position_global_from_position_local(
-                home_position, object_position_local
-            )
-            assert result
-            
-            assert generated_object == expected
+            # Test
+            assert_global_positions(global_position, actual)

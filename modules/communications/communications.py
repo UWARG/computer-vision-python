@@ -91,7 +91,7 @@ class Communications:
         self.__logger.info(f"{time.time()}: {objects_in_world_global}")
 
         encoded_position_global_objects = []
-        for object in object_in_world_global:
+        for object in objects_in_world_global:
 
             result, message = message_encoding_decoding.encode_position_global(
                 worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, object
