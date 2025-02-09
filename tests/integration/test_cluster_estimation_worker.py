@@ -118,7 +118,7 @@ def test_cluster_estimation_worker() -> int:
     worker_process.start()
     time.sleep(1)
 
-    output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
+    output_results: List[DetectionInWorld] = output_queue.queue.get()
 
     assert output_results is not None
     assert isinstance(output_results, list)
@@ -132,7 +132,7 @@ def test_cluster_estimation_worker() -> int:
     input_queue.queue.put(test_data_2)
     time.sleep(1)
 
-    output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
+    output_results: List[DetectionInWorld] = output_queue.queue.get()
 
     assert output_results is not None
     assert isinstance(output_results, list)
