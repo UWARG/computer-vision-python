@@ -17,7 +17,6 @@ LANDING_PAD_COLOUR_BLUE = (100, 50, 50)  # BGR
 
 
 class LandingPadImageConfig:
-
     def __init__(
         self,
         center: tuple[int, int],

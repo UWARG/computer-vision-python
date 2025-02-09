@@ -21,8 +21,6 @@ BOUNDING_BOX_PRECISION_TOLERANCE = -2 / 3  # Tolerance > 1
 CONFIDENCE_PRECISION_TOLERANCE = 2
 LOGGER_NAME = ""
 
-_, test_logger = logger.Logger.create(LOGGER_NAME, False)
-
 # Test functions use test fixture signature names and access class privates
 # No enable
 # pylint: disable=protected-access,redefined-outer-name
@@ -84,6 +82,11 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
     """
     Construct DetectTargetContour.
     """
+    result, test_logger = logger.Logger.create(LOGGER_NAME, False)
+
+    assert result
+    assert test_logger is not None
+
     detection = detect_target_contour.DetectTargetContour(test_logger, False)
     yield detection  # type: ignore
 

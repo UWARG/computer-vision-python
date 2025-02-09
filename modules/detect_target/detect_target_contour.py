@@ -40,7 +40,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
     def detect_landing_pads_contours(
-        self, image: np.ndarray, timestamp: float
+        self, image_and_time_data: image_and_time.ImageAndTime
     ) -> tuple[True, detections_and_time.DetectionsAndTime, np.ndarray] | tuple[False, None, None]:
         """
         Detects landing pads using contours/classical CV.
@@ -50,6 +50,10 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
         Return: Success, the DetectionsAndTime object, and the annotated image.
         """
+
+        image = image_and_time_data.image
+        timestamp = image_and_time_data.timestamp
+
         hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv_image, LOWER_BLUE, UPPER_BLUE)
 
@@ -115,10 +119,8 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
         Return: Success and the detections.
         """
-        image = data.image
-        timestamp = data.timestamp
 
-        result, detections, image_annotated = self.detect_landing_pads_contours(image, timestamp)
+        result, detections, image_annotated = self.detect_landing_pads_contours(data)
 
         if not result:
             return False, None
@@ -126,7 +128,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         # Logging
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
-            self.__logger.save_image(image, filename)
+            self.__logger.save_image(image_annotated, filename)
             self.__counter += 1
 
         if self.__show_annotations:
