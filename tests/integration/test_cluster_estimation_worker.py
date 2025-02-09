@@ -5,10 +5,18 @@ Test cluster_estimation_worker process.
 import time
 import multiprocessing as mp
 from typing import List
+
 import numpy as np
+
 from utilities.workers import queue_proxy_wrapper, worker_controller
-from modules.detection_in_world import DetectionInWorld
 from modules.cluster_estimation.cluster_estimation_worker import cluster_estimation_worker
+from modules.detection_in_world import DetectionInWorld
+from modules.object_in_world import ObjectInWorld
+
+MIN_ACTIVATION_THRESHOLD = 3
+MIN_NEW_POINTS_TO_RUN = 0
+MAX_NUM_COMPONENTS = 3
+RANDOM_STATE = 0
 
 
 def test_cluster_estimation_worker() -> int:
@@ -26,10 +34,10 @@ def test_cluster_estimation_worker() -> int:
     worker_process = mp.Process(
         target=cluster_estimation_worker,
         args=(
-            3,
-            0,
-            3,
-            0,
+            MIN_ACTIVATION_THRESHOLD,
+            MIN_NEW_POINTS_TO_RUN,
+            MAX_NUM_COMPONENTS,
+            RANDOM_STATE,
             input_queue,
             output_queue,
             controller,
@@ -113,7 +121,9 @@ def test_cluster_estimation_worker() -> int:
     output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
 
     assert output_results is not None
+    assert isinstance(output_results, list)
     assert len(output_results) == 1
+    assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
 
     time.sleep(1)
 
@@ -125,7 +135,9 @@ def test_cluster_estimation_worker() -> int:
     output_results: List[List[DetectionInWorld]] = output_queue.queue.get()
 
     assert output_results is not None
+    assert isinstance(output_results, list)
     assert len(output_results) == 2
+    assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
 
     controller.request_exit()
     input_queue.queue.put(None)
