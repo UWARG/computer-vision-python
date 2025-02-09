@@ -212,10 +212,7 @@ class TestCommunications:
         assert actual_number_of_messages == 0
         assert len(generated_objects) == 0
 
-    def test_none(
-        self,
-        communications_maker: communications.Communications
-    ) -> None:
+    def test_none(self, communications_maker: communications.Communications) -> None:
         """
         When None is passed in
         """

@@ -58,7 +58,7 @@ class Communications:
 
         objects_in_world_global = []
         objects_in_world = objects_in_world or []
-        
+
         for object_in_world in objects_in_world:
             # We assume detected objects are on the ground
             north = object_in_world.location_x
