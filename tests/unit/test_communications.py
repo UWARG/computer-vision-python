@@ -27,6 +27,7 @@ def home_position() -> position_global.PositionGlobal:  # type: ignore
     """
     Home position.
     """
+    # University of Waterloo WGS84 Coordinate
     result, position = position_global.PositionGlobal.create(43.472978, -80.540103, 336.0)
     assert result
     assert position is not None
@@ -149,11 +150,13 @@ class TestCommunications:
         assert result
         assert local_position_2 is not None
 
+        global_positions = [global_position_1, global_position_2]
+
         objects_in_world = [
             object_in_world_from_position_local(local_position_1),
             object_in_world_from_position_local(local_position_2),
         ]
-        number_of_messages = 2
+        number_of_messages = len(objects_in_world)
 
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
@@ -172,23 +175,15 @@ class TestCommunications:
         assert actual_number_of_messages == number_of_messages
 
         # Conversion
-        result, worker_id, actual_1 = message_encoding_decoding.decode_bytes_to_position_global(
-            generated_objects[0]
-        )
-        assert result
-        assert worker_id is not None
-        assert actual_1 is not None
+        for i, global_position in enumerate(global_positions):
+            result, worker_id, actual = message_encoding_decoding.decode_bytes_to_position_global(
+                generated_objects[i]
+            )
+            assert result
+            assert worker_id is not None
+            assert actual is not None
 
-        result, worker_id, actual_2 = message_encoding_decoding.decode_bytes_to_position_global(
-            generated_objects[1]
-        )
-        assert result
-        assert worker_id is not None
-        assert actual_2 is not None
-
-        # Test
-        assert_global_positions(global_position_1, actual_1)
-        assert_global_positions(global_position_2, actual_2)
+            assert_global_positions(global_position, actual)
 
     def test_empty_objects(
         self,
@@ -198,6 +193,33 @@ class TestCommunications:
         When nothing is passed in
         """
         objects_in_world = []
+
+        result, metadata, generated_objects = communications_maker.run(objects_in_world)
+        assert result
+        assert metadata is not None
+        assert generated_objects is not None
+
+        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
+            metadata
+        )
+
+        # it will encounter an error where metadata is failed to encode
+        assert result
+        assert worker_id is not None
+        assert actual_number_of_messages is not None
+
+        # Test
+        assert actual_number_of_messages == 0
+        assert len(generated_objects) == 0
+
+    def test_none(
+        self,
+        communications_maker: communications.Communications
+    ) -> None:
+        """
+        When None is passed in
+        """
+        objects_in_world = None
 
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
@@ -234,7 +256,7 @@ class TestCommunications:
 
         actual = object_in_world_from_position_local(local_position)
         objects_in_world = [actual]
-        number_of_messages = 1
+        number_of_messages = len(objects_in_world)
 
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
@@ -288,7 +310,7 @@ class TestCommunications:
         position = object_in_world_from_position_local(local_position)
 
         objects_in_world = [position, position, position]
-        number_of_messages = 3
+        number_of_messages = len(objects_in_world)
 
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
