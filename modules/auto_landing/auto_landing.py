@@ -11,6 +11,25 @@ from ..common.modules.logger import logger
 from .. import merged_odometry_detections
 
 
+class AutoLandingInformation:
+    """
+    Information necessary for the LANDING_TARGET MAVLink command.
+    """
+
+    def __init__(self, angle_x: float, angle_y: float, target_dist: float) -> None:
+        """
+        Information necessary for the LANDING_TARGET MAVLink command.
+
+        angle_x: Angle of the x coordinate of the bounding box within -π to π (rads).
+        angle_y: Angle of the y coordinate of the bounding box within -π to π (rads).
+        target_dist: Horizontal distance of vehicle to target (meters).
+        """
+
+        self.angle_x = angle_x
+        self.angle_y = angle_y
+        self.target_dist = target_dist
+
+
 class AutoLanding:
     """
     Auto-landing script that calculates the necessary parameters
@@ -93,20 +112,3 @@ class AutoLanding:
 
         time.sleep(self.period)
         return True, AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)
-
-
-class AutoLandingInformation:
-    """
-    Information necessary for the LANDING_TARGET MAVlink command.
-    """
-
-    def __init__(self, angle_x: float, angle_y: float, target_dist: float) -> None:
-        """
-        angle_x: Angle of the x coordinate of the bounding box (rads).
-        angle_y: Angle of the y coordinate of the bounding box (rads).
-        target_dist: Horizontal distance of vehicle to target (meters).
-        """
-
-        self.angle_x = angle_x
-        self.angle_y = angle_y
-        self.target_dist = target_dist
