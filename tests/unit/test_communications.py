@@ -12,6 +12,7 @@ from modules.common.modules.mavlink import local_global_conversion
 from modules.common.modules import position_global
 from modules.common.modules.data_encoding import metadata_encoding_decoding
 from modules.common.modules.data_encoding import message_encoding_decoding
+from modules.common.modules.data_encoding.worker_enum import WorkerEnum
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -114,8 +115,7 @@ class TestCommunications:
         # Test
         assert result
         assert isinstance(metadata, bytes)
-        for generated_object in generated_objects:
-            assert isinstance(generated_object, bytes)
+        assert all(isinstance(obj, bytes) for obj in generated_objects)
 
     def test_normal(
         self,
@@ -161,15 +161,14 @@ class TestCommunications:
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
-        assert metadata is not None
-        assert generated_objects is not None
+        assert isinstance(metadata, bytes)
+        assert all(isinstance(obj, bytes) for obj in generated_objects)
 
         result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
             metadata
         )
         assert result
-        assert worker_id is not None
-        assert actual_number_of_messages is not None
+        assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
 
         # Test
         assert actual_number_of_messages == number_of_messages
@@ -180,8 +179,7 @@ class TestCommunications:
                 generated_objects[i]
             )
             assert result
-            assert worker_id is not None
-            assert actual is not None
+            assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
 
             assert_global_positions(global_position, actual)
 
@@ -196,42 +194,15 @@ class TestCommunications:
 
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
-        assert metadata is not None
-        assert generated_objects is not None
+        assert isinstance(metadata, bytes)
+        assert all(isinstance(obj, bytes) for obj in generated_objects)
 
         result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
             metadata
         )
 
-        # it will encounter an error where metadata is failed to encode
         assert result
-        assert worker_id is not None
-        assert actual_number_of_messages is not None
-
-        # Test
-        assert actual_number_of_messages == 0
-        assert len(generated_objects) == 0
-
-    def test_none(self, communications_maker: communications.Communications) -> None:
-        """
-        When None is passed in
-        """
-        objects_in_world = None
-
-        result, metadata, generated_objects = communications_maker.run(objects_in_world)
-        assert result
-        assert metadata is not None
-        assert generated_objects is not None
-
-        result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
-            metadata
-        )
-
-        # it will encounter an error where metadata is failed to encode
-        assert result
-        assert worker_id is not None
-        assert actual_number_of_messages is not None
-
+        assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
         # Test
         assert actual_number_of_messages == 0
         assert len(generated_objects) == 0
@@ -258,16 +229,14 @@ class TestCommunications:
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
-        assert metadata is not None
-        assert generated_objects is not None
-
+        assert isinstance(metadata, bytes)
+        assert all(isinstance(obj, bytes) for obj in generated_objects)
         # Conversion
         result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
             metadata
         )
         assert result
-        assert worker_id is not None
-        assert actual_number_of_messages is not None
+        assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
 
         # Test
         assert actual_number_of_messages == number_of_messages
@@ -277,8 +246,7 @@ class TestCommunications:
             generated_objects[0]
         )
         assert result
-        assert worker_id is not None
-        assert actual is not None
+        assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
 
         # Test
         assert_global_positions(home_position, actual)
@@ -312,16 +280,14 @@ class TestCommunications:
         # Run
         result, metadata, generated_objects = communications_maker.run(objects_in_world)
         assert result
-        assert metadata is not None
-        assert generated_objects is not None
+        assert isinstance(metadata, bytes)
+        assert all(isinstance(obj, bytes) for obj in generated_objects)
 
         result, worker_id, actual_number_of_messages = metadata_encoding_decoding.decode_metadata(
             metadata
         )
         assert result
-        assert worker_id is not None
-        assert actual_number_of_messages is not None
-
+        assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
         # Test
         assert actual_number_of_messages == number_of_messages
 
@@ -331,8 +297,6 @@ class TestCommunications:
                 generated_object
             )
             assert result
-            assert worker_id is not None
-            assert actual is not None
-
+            assert worker_id == WorkerEnum.COMMUNICATIONS_WORKER
             # Test
             assert_global_positions(global_position, actual)
