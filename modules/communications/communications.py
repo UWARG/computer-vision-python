@@ -57,6 +57,7 @@ class Communications:
     ) -> tuple[True, bytes, list[bytes]] | tuple[False, None, None]:
 
         objects_in_world_global = []
+
         for object_in_world in objects_in_world:
             # We assume detected objects are on the ground
             north = object_in_world.location_x
@@ -91,7 +92,7 @@ class Communications:
         self.__logger.info(f"{time.time()}: {objects_in_world_global}")
 
         encoded_position_global_objects = []
-        for object in object_in_world_global:
+        for object in objects_in_world_global:
 
             result, message = message_encoding_decoding.encode_position_global(
                 worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, object
