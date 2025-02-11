@@ -1,5 +1,7 @@
 """
-Gets detections in world space and outputs estimations of objects.
+Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
+Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
+covariance of each landing pad estimation.
 """
 
 import os
@@ -32,20 +34,29 @@ def cluster_estimation_worker(
     min_new_points_to_run: int
         Minimum number of new data points that must be collected before running model.
 
-    max_num_components: int
-        Max number of real landing pads.
-
     random_state: int
         Seed for randomizer, to get consistent results.
 
-    input_queue: queue_proxy_wrapper.QueuePRoxyWrapper
-        Data queue.
+    METHODS
+    -------
+    run()
+        Take in list of landing pad detections and return list of estimated landing pad locations
+        if number of detections is sufficient, or if manually forced to run.
 
-    output_queue: queue_proxy_wrapper.QueuePRoxyWrapper
-        Data queue.
+    __decide_to_run()
+        Decide when to run cluster estimation model.
 
-    worker_controller: worker_controller.WorkerController
-        How the main process communicates to this worker process.
+    __sort_by_weights()
+        Sort input model output list by weights in descending order.
+
+    __convert_detections_to_point()
+        Convert DetectionInWorld input object to a [x,y] position to store.
+
+    __filter_by_points_ownership()
+        Removes any clusters that don't have any points belonging to it.
+
+    __filter_by_covariances()
+        Removes any cluster with covariances much higher than the lowest covariance value.
     """
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()

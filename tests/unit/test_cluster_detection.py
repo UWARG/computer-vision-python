@@ -2,11 +2,13 @@
 Testing ClusterEstimation.
 """
 
+import random
 import numpy as np
 import pytest
 import sklearn.datasets
 
 from modules.cluster_estimation import cluster_estimation
+from modules.cluster_estimation import cluster_estimation_by_label
 from modules.common.modules.logger import logger
 from modules import detection_in_world
 
@@ -19,7 +21,7 @@ CENTRE_BOX_SIZE = 500
 
 # Test functions use test fixture signature names and access class privates
 # No enable
-# pylint: disable=protected-access,redefined-outer-name
+# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes
 
 
 @pytest.fixture()
@@ -44,8 +46,32 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
     yield model  # type: ignore
 
 
+@pytest.fixture()
+def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
+    """
+    Cluster estimation by label object.
+    """
+    result, test_logger = logger.Logger.create("test_logger", False)
+    assert result
+    assert test_logger is not None
+
+    result, model = cluster_estimation_by_label.ClusterEstimationByLabel.create(
+        MIN_TOTAL_POINTS_THRESHOLD,
+        MIN_NEW_POINTS_TO_RUN,
+        MAX_NUM_COMPONENTS,
+        RNG_SEED,
+        test_logger,
+    )
+    assert result
+    assert model is not None
+
+    yield model  # type: ignore
+
+
 def generate_cluster_data(
-    n_samples_per_cluster: "list[int]", cluster_standard_deviation: int
+    n_samples_per_cluster: "list[int]",
+    cluster_standard_deviation: int,
+    label: int,
 ) -> "tuple[list[detection_in_world.DetectionInWorld], list[np.ndarray]]":
     """
     Returns a list of points (DetectionInWorld objects) with specified points per cluster
@@ -61,6 +87,9 @@ def generate_cluster_data(
     cluster_standard_deviation: int
         The standard deviation of the generated points, bigger
         standard deviation == more spread out points.
+
+    label: int
+        The label that every generated detection gets assigned
 
     RETURNS
     -------
@@ -90,13 +119,12 @@ def generate_cluster_data(
     for point in generated_points:
         # Placeholder variables to create DetectionInWorld objects
         placeholder_vertices = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
-        placeholder_label = 1
         placeholder_confidence = 0.5
 
         result, detection_to_add = detection_in_world.DetectionInWorld.create(
             placeholder_vertices,
             point,
-            placeholder_label,
+            label,
             placeholder_confidence,
         )
 
@@ -105,6 +133,48 @@ def generate_cluster_data(
         detections.append(detection_to_add)
 
     return detections, cluster_positions.tolist()
+
+
+def generate_cluster_data_by_label(
+    labels_to_n_samples_per_cluster: "dict[int, list[int]]",
+    cluster_standard_deviation: int,
+) -> "tuple[list[detection_in_world.DetectionInWorld], dict[int, list[np.ndarray]]]":
+    """
+    Returns a list of labeled points (DetectionInWorld objects) with specified points per cluster
+    and standard deviation.
+
+    PARAMETERS
+    ----------
+    labels_to_cluster_samples: "dict[int, list[int]]"
+        Dictionary where the key is a label and the value is a
+        list of integers the represent the number of samples a cluster has.
+
+    cluster_standard_deviation: int
+        The standard deviation of the generated points, bigger
+        standard deviation == more spread out points.
+
+    RETURNS
+    -------
+    detections: list[detection_in_world.DetectionInWorld]
+        List of points (DetectionInWorld objects).
+
+    labels_to_cluster_positions: dict[int, list[np.ndarray]]
+        Dictionary where the key is a label and the value is a
+        list of coordinate positions of each cluster centre with that label.
+    -------
+    """
+
+    detections = []
+    labels_to_cluster_positions: dict[int, list[np.ndarray]] = {}
+
+    for label, n_samples_list in labels_to_n_samples_per_cluster.items():
+        temp_detections, cluster_positions = generate_cluster_data(
+            n_samples_list, cluster_standard_deviation, label
+        )
+        detections += temp_detections
+        labels_to_cluster_positions[label] = cluster_positions
+
+    return detections, labels_to_cluster_positions
 
 
 def generate_points_away_from_cluster(
@@ -189,7 +259,7 @@ class TestModelExecutionCondition:
         """
         # Setup
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -209,8 +279,8 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
 
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -232,8 +302,8 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
 
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -250,7 +320,7 @@ class TestModelExecutionCondition:
         All conditions met should run.
         """
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -277,7 +347,9 @@ class TestCorrectNumberClusterOutputs:
         """
         # Setup
         points_per_cluster = [100]
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+        generated_detections, _ = generate_cluster_data(
+            points_per_cluster, self.__STD_DEV_REGULAR, 0
+        )
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -295,7 +367,9 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+        generated_detections, _ = generate_cluster_data(
+            points_per_cluster, self.__STD_DEV_REGULAR, 0
+        )
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -314,7 +388,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -333,7 +407,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE, 0)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -353,7 +427,9 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [10, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+        generated_detections, _ = generate_cluster_data(
+            points_per_cluster, self.__STD_DEV_REGULAR, 0
+        )
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -376,6 +452,7 @@ class TestCorrectNumberClusterOutputs:
         generated_detections, cluster_positions = generate_cluster_data(
             points_per_cluster,
             self.__STD_DEV_REGULAR,
+            0,
         )
 
         # Add 5 random points to dataset, each being at least 20m away from cluster centres
@@ -407,7 +484,9 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+        generated_detections, _ = generate_cluster_data(
+            points_per_cluster, self.__STD_DEV_REGULAR, 0
+        )
 
         # Run
         result_latest = False
@@ -431,7 +510,9 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
+        generated_detections, _ = generate_cluster_data(
+            points_per_cluster, self.__STD_DEV_REGULAR, 0
+        )
 
         # Run
         result_latest = False
@@ -465,6 +546,7 @@ class TestCorrectClusterPositionOutput:
         generated_detections, cluster_positions = generate_cluster_data(
             points_per_cluster,
             self.__STD_DEV_REG,
+            0,
         )
 
         # Run
@@ -489,3 +571,97 @@ class TestCorrectClusterPositionOutput:
                     break
 
             assert is_match
+
+
+class TestCorrectClusterEstimationByLabel:
+    """
+    Tests if cluster estimation by label properly sorts labels.
+    """
+
+    __STD_DEV_REG = 1  # Regular standard deviation is 1m
+    __MAX_POSITION_TOLERANCE = 1
+
+    def test_one_label(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        Five clusters with small standard devition that all have the same label
+        """
+        # Setup
+        labels_to_n_samples_per_cluster = {1: [100, 100, 100, 100, 100]}
+        generated_detections, labels_to_generated_cluster_positions = (
+            generate_cluster_data_by_label(labels_to_n_samples_per_cluster, self.__STD_DEV_REG)
+        )
+        random.shuffle(
+            generated_detections
+        )  # so all abojects with the same label are not arranged all in a row
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+        assert len(detections_in_world[1]) == 5
+        for cluster in detections_in_world[1]:
+            assert cluster.label == 1
+            is_match = False
+            for generated_cluster in labels_to_generated_cluster_positions[1]:
+                # Check if coordinates are equal
+                distance = np.linalg.norm(
+                    [
+                        cluster.location_x - generated_cluster[0],
+                        cluster.location_y - generated_cluster[1],
+                    ]
+                )
+                if distance < self.__MAX_POSITION_TOLERANCE:
+                    is_match = True
+                    break
+
+            assert is_match
+
+    def test_multiple_labels(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
+        """
+        Five clusters with small standard devition that have different labels
+        """
+        # Setup
+        labels_to_n_samples_per_cluster = {
+            1: [100, 100, 100],
+            2: [100, 100, 100],
+            3: [100, 100, 100],
+        }
+        generated_detections, labels_to_generated_cluster_positions = (
+            generate_cluster_data_by_label(labels_to_n_samples_per_cluster, self.__STD_DEV_REG)
+        )
+        random.shuffle(
+            generated_detections
+        )  # so all abojects with the same label are not arranged all in a row
+
+        # Run
+        result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+        assert len(detections_in_world[1]) == 3
+        assert len(detections_in_world[2]) == 3
+        assert len(detections_in_world[3]) == 3
+        for label in range(1, 4):
+            for cluster in detections_in_world[label]:
+                assert cluster.label == label
+                is_match = False
+                for generated_cluster in labels_to_generated_cluster_positions[label]:
+                    # Check if coordinates are equal
+                    distance = np.linalg.norm(
+                        [
+                            cluster.location_x - generated_cluster[0],
+                            cluster.location_y - generated_cluster[1],
+                        ]
+                    )
+                    if distance < self.__MAX_POSITION_TOLERANCE:
+                        is_match = True
+                        break
+
+                assert is_match
