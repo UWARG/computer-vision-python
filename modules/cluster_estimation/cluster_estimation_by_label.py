@@ -34,6 +34,7 @@ class ClusterEstimationByLabel:
     run()
         Cluster estimation filtered by label.
     """
+
     __create_key = object()
 
     @classmethod
@@ -50,10 +51,7 @@ class ClusterEstimationByLabel:
         """
 
         is_valid_arguments = cluster_estimation.ClusterEstimation.check_create_arguments(
-            min_activation_threshold,
-            min_new_points_to_run,
-            max_num_components,
-            random_state
+            min_activation_threshold, min_new_points_to_run, max_num_components, random_state
         )
 
         if not is_valid_arguments:
@@ -103,7 +101,7 @@ class ClusterEstimationByLabel:
         run_override: bool,
     ) -> tuple[True, dict[int, list[object_in_world.ObjectInWorld]]] | tuple[False, None]:
         """
-        See `ClusterEstimation` for parameter descriptions.  
+        See `ClusterEstimation` for parameter descriptions.
 
         RETURNS
         -------

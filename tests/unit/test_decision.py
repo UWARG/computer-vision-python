@@ -43,9 +43,7 @@ def best_pad_within_tolerance() -> object_in_world.ObjectInWorld:  # type: ignor
     location_x = BEST_PAD_LOCATION_X
     location_y = BEST_PAD_LOCATION_Y
     spherical_variance = 1.0
-    result, pad = object_in_world.ObjectInWorld.create(
-        location_x, location_y, spherical_variance
-    )
+    result, pad = object_in_world.ObjectInWorld.create(location_x, location_y, spherical_variance)
     assert result
     assert pad is not None
 
@@ -60,9 +58,7 @@ def best_pad_outside_tolerance() -> object_in_world.ObjectInWorld:  # type: igno
     location_x = 100.0
     location_y = 200.0
     spherical_variance = 5.0  # variance outside tolerance
-    result, pad = object_in_world.ObjectInWorld.create(
-        location_x, location_y, spherical_variance
-    )
+    result, pad = object_in_world.ObjectInWorld.create(location_x, location_y, spherical_variance)
     assert result
     assert pad is not None
 

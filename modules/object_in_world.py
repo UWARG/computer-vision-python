@@ -22,7 +22,10 @@ class ObjectInWorld:
             return False, None
 
         return True, ObjectInWorld(
-            cls.__create_key, location_x, location_y, spherical_variance,
+            cls.__create_key,
+            location_x,
+            location_y,
+            spherical_variance,
         )
 
     def __init__(

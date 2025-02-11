@@ -100,10 +100,7 @@ class ClusterEstimation:
         RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
         is_valid_arguments = ClusterEstimation.check_create_arguments(
-            min_activation_threshold,
-            min_new_points_to_run,
-            max_num_components,
-            random_state
+            min_activation_threshold, min_new_points_to_run, max_num_components, random_state
         )
 
         if not is_valid_arguments:

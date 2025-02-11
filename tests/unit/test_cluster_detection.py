@@ -2,7 +2,6 @@
 Testing ClusterEstimation.
 """
 
-import random
 import numpy as np
 import pytest
 import sklearn.datasets
@@ -21,7 +20,7 @@ CENTRE_BOX_SIZE = 500
 
 # Test functions use test fixture signature names and access class privates
 # No enable
-# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes
+# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes,duplicate-code
 
 
 @pytest.fixture()
@@ -133,6 +132,7 @@ def generate_cluster_data(
         detections.append(detection_to_add)
 
     return detections, cluster_positions.tolist()
+
 
 def generate_points_away_from_cluster(
     num_points_to_generate: int,

@@ -17,6 +17,11 @@ MAX_NUM_COMPONENTS = 10
 RNG_SEED = 0
 CENTRE_BOX_SIZE = 500
 
+# Test functions use test fixture signature names and access class privates
+# No enable
+# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes,duplicate-code
+
+
 @pytest.fixture()
 def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
     """
@@ -37,6 +42,7 @@ def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByL
     assert model is not None
 
     yield model  # type: ignore
+
 
 def generate_cluster_data(
     n_samples_per_cluster: "list[int]",
@@ -104,6 +110,7 @@ def generate_cluster_data(
 
     return detections, cluster_positions.tolist()
 
+
 def generate_cluster_data_by_label(
     labels_to_n_samples_per_cluster: "dict[int, list[int]]",
     cluster_standard_deviation: int,
@@ -145,6 +152,7 @@ def generate_cluster_data_by_label(
 
     return detections, labels_to_cluster_positions
 
+
 class TestModelExecutionCondition:
     """
     Tests execution condition for estimation worker at different amount of total and new data
@@ -162,7 +170,9 @@ class TestModelExecutionCondition:
         # Setup
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
 
-        generated_detections, _ = generate_cluster_data_by_label({0: [original_count]}, self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data_by_label(
+            {0: [original_count]}, self.__STD_DEV_REG
+        )
 
         # Run
         result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
@@ -182,8 +192,12 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
 
-        generated_detections, _ = generate_cluster_data_by_label({0: [original_count]}, self.__STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data_by_label({0: [new_count]}, self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data_by_label(
+            {0: [original_count]}, self.__STD_DEV_REG
+        )
+        generated_detections_2, _ = generate_cluster_data_by_label(
+            {0: [new_count]}, self.__STD_DEV_REG
+        )
 
         # Run
         result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
@@ -205,8 +219,12 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
 
-        generated_detections, _ = generate_cluster_data_by_label({0: [original_count]}, self.__STD_DEV_REG)
-        generated_detections_2, _ = generate_cluster_data_by_label({0: [new_count]}, self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data_by_label(
+            {0: [original_count]}, self.__STD_DEV_REG
+        )
+        generated_detections_2, _ = generate_cluster_data_by_label(
+            {0: [new_count]}, self.__STD_DEV_REG
+        )
 
         # Run
         result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
@@ -218,12 +236,16 @@ class TestModelExecutionCondition:
         assert not result_2
         assert detections_in_world_2 is None
 
-    def test_good_data(self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel) -> None:
+    def test_good_data(
+        self, cluster_model_by_label: cluster_estimation_by_label.ClusterEstimationByLabel
+    ) -> None:
         """
         All conditions met should run.
         """
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
-        generated_detections, _ = generate_cluster_data_by_label({0: [original_count]}, self.__STD_DEV_REG)
+        generated_detections, _ = generate_cluster_data_by_label(
+            {0: [original_count]}, self.__STD_DEV_REG
+        )
 
         # Run
         result, detections_in_world = cluster_model_by_label.run(generated_detections, False)
@@ -231,6 +253,7 @@ class TestModelExecutionCondition:
         # Test
         assert result
         assert detections_in_world is not None
+
 
 class TestCorrectClusterPositionOutput:
     """
