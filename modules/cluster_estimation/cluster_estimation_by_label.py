@@ -1,20 +1,16 @@
 """
-Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
-Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
-covariance of each landing pad estimation.
+Cluster estimation by label.
 """
 
+from . import cluster_estimation
 from .. import detection_in_world
 from .. import object_in_world
 from ..common.modules.logger import logger
-from . import cluster_estimation
 
 
 class ClusterEstimationByLabel:
     """
-    Estimate landing pad locations based on landing pad ground detection. Estimation
-    works by predicting 'cluster centres' from groups of closely placed landing pad
-    detections.
+    Cluster estimation filtered on label.
 
     ATTRIBUTES
     ----------
@@ -36,13 +32,8 @@ class ClusterEstimationByLabel:
     METHODS
     -------
     run()
-        Take in list of object detections and return dictionary of labels to
-        to corresponging clusters of estimated object locations if number of
-        detections is sufficient, or if manually forced to run.
+        Cluster estimation filtered by label.
     """
-
-    # pylint: disable=too-many-instance-attributes
-
     __create_key = object()
 
     @classmethod
@@ -53,22 +44,19 @@ class ClusterEstimationByLabel:
         max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
-    ) -> "tuple[bool, ClusterEstimationByLabel | None]":
+    ) -> "tuple[True, ClusterEstimationByLabel] | tuple[False, None]":
         """
-        Data requirement conditions for estimation model to run.
+        See `ClusterEstimation` for parameter descriptions.
         """
 
-        # At least 1 point for model to fit
-        if min_activation_threshold < max_num_components:
-            return False, None
+        is_valid_arguments = cluster_estimation.ClusterEstimation.check_create_arguments(
+            min_activation_threshold,
+            min_new_points_to_run,
+            max_num_components,
+            random_state
+        )
 
-        if min_new_points_to_run < 0:
-            return False, None
-
-        if max_num_components < 1:
-            return False, None
-
-        if random_state < 0:
+        if not is_valid_arguments:
             return False, None
 
         return True, ClusterEstimationByLabel(
@@ -96,7 +84,7 @@ class ClusterEstimationByLabel:
             class_private_create_key is ClusterEstimationByLabel.__create_key
         ), "Use create() method"
 
-        # Requirements to decide to run
+        # Construction arguments for `ClusterEstimation`
         self.__min_activation_threshold = min_activation_threshold
         self.__min_new_points_to_run = min_new_points_to_run
         self.__max_num_components = max_num_components
@@ -111,41 +99,33 @@ class ClusterEstimationByLabel:
 
     def run(
         self,
-        input_detections: "list[detection_in_world.DetectionInWorld]",
+        input_detections: list[detection_in_world.DetectionInWorld],
         run_override: bool,
-    ) -> "tuple[True, dict[int, list[object_in_world.ObjectInWorld]]] | tuple[False, None]":
+    ) -> tuple[True, dict[int, list[object_in_world.ObjectInWorld]]] | tuple[False, None]:
         """
-        Take in list of detections and return list of estimated object locations
-        if number of detections is sufficient, or if manually forced to run.
-
-        PARAMETERS
-        ----------
-        input_detections: list[DetectionInWorld]
-            List containing DetectionInWorld objects which holds real-world positioning data to run
-            clustering on.
-
-        run_override: bool
-            Forces ClusterEstimation to predict if data is available, regardless of any other
-            requirements.
+        See `ClusterEstimation` for parameter descriptions.  
 
         RETURNS
         -------
         model_ran: bool
             True if ClusterEstimation object successfully ran its estimation model, False otherwise.
 
-        labels_to_object_clusters: dict[int, list[object_in_world.ObjectInWorld] or None.
-            Dictionary where the key is a label and the value is a list of all cluster detections with that label
+        labels_to_objects: dict[int, list[object_in_world.ObjectInWorld] or None.
+            Dictionary where the key is a label and the value is a list of all cluster detections with that label.
+            ObjectInWorld objects don't have a label property, but they are sorted into label categories in the dictionary.
         """
         label_to_detections: dict[int, list[detection_in_world.DetectionInWorld]] = {}
+
         # Sorting detections by label
         for detection in input_detections:
             if not detection.label in label_to_detections:
                 label_to_detections[detection.label] = []
             label_to_detections[detection.label].append(detection)
 
-        labels_to_object_clusters: dict[int, list[object_in_world.ObjectInWorld]] = {}
+        labels_to_objects: dict[int, list[object_in_world.ObjectInWorld]] = {}
+
         for label, detections in label_to_detections.items():
-            # create cluster estimation for label if it doesn't exist
+            # Create cluster estimation for label if it doesn't exist
             if not label in self.__label_to_cluster_estimation_model:
                 result, cluster_model = cluster_estimation.ClusterEstimation.create(
                     self.__min_activation_threshold,
@@ -160,18 +140,21 @@ class ClusterEstimationByLabel:
                     )
                     return False, None
                 self.__label_to_cluster_estimation_model[label] = cluster_model
+
             # runs cluster estimation for specific label
             result, clusters = self.__label_to_cluster_estimation_model[label].run(
                 detections,
                 run_override,
             )
+
             if not result:
                 self.__local_logger.error(
                     f"Failed to run cluster estimation model for label {label}"
                 )
                 return False, None
-            if not label in labels_to_object_clusters:
-                labels_to_object_clusters[label] = []
-            labels_to_object_clusters[label] += clusters
 
-        return True, labels_to_object_clusters
+            if not label in labels_to_objects:
+                labels_to_objects[label] = []
+            labels_to_objects[label] += clusters
+
+        return True, labels_to_objects

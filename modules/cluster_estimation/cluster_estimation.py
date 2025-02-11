@@ -4,8 +4,6 @@ Returns an array of classes, each containing the x coordinate, y coordinate, and
 covariance of each landing pad estimation.
 """
 
-# pylint: disable=duplicate-code
-
 import numpy as np
 import sklearn
 import sklearn.datasets
@@ -58,10 +56,6 @@ class ClusterEstimation:
         Removes any cluster with covariances much higher than the lowest covariance value.
     """
 
-    # pylint: disable=too-many-instance-attributes
-
-    # pylint: disable=too-many-instance-attributes
-
     __create_key = object()
 
     # VGMM Hyperparameters
@@ -105,16 +99,14 @@ class ClusterEstimation:
 
         RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
-        if min_activation_threshold < max_num_components:
-            return False, None
+        is_valid_arguments = ClusterEstimation.check_create_arguments(
+            min_activation_threshold,
+            min_new_points_to_run,
+            max_num_components,
+            random_state
+        )
 
-        if min_new_points_to_run < 0:
-            return False, None
-
-        if max_num_components < 1:
-            return False, None
-
-        if random_state < 0:
+        if not is_valid_arguments:
             return False, None
 
         return True, ClusterEstimation(
@@ -187,10 +179,6 @@ class ClusterEstimation:
             List containing ObjectInWorld objects, containing position and covariance value.
             None if conditions not met and model not ran or model failed to converge.
         """
-        # in use, all detections will have the same label, so the
-        # first element's label was arbitrarily selected
-        label = detections[0].label
-
         # Store new input data
         self.__current_bucket += self.__convert_detections_to_point(detections)
 
@@ -223,7 +211,6 @@ class ClusterEstimation:
 
         # Filter out all clusters after __WEIGHT_DROP_THRESHOLD weight drop occurs
         viable_clusters = [model_output[0]]
-        print(f"len(model_output) = {len(model_output)}")
         for i in range(1, len(model_output)):
             if model_output[i][1] / model_output[i - 1][1] < self.__WEIGHT_DROP_THRESHOLD:
                 break
@@ -239,7 +226,7 @@ class ClusterEstimation:
         objects_in_world = []
         for cluster in model_output:
             result, landing_pad = object_in_world.ObjectInWorld.create(
-                cluster[0][0], cluster[0][1], cluster[2], label
+                cluster[0][0], cluster[0][1], cluster[2]
             )
 
             if result:
@@ -247,7 +234,35 @@ class ClusterEstimation:
             else:
                 self.__logger.error("Failed to create ObjectInWorld object")
                 return False, None
+
+        self.__logger.info(objects_in_world)
         return True, objects_in_world
+
+    @staticmethod
+    def check_create_arguments(
+        min_activation_threshold: int,
+        min_new_points_to_run: int,
+        max_num_components: int,
+        random_state: int,
+    ):
+        """
+        Checks if a valid cluster estimation object can be constructed.
+
+        See `ClusterEstimation` for parameter descriptions.
+        """
+        if min_activation_threshold < max_num_components:
+            return False
+
+        if min_new_points_to_run < 0:
+            return False
+
+        if max_num_components < 1:
+            return False
+
+        if random_state < 0:
+            return False
+
+        return True
 
     def __decide_to_run(self, run_override: bool) -> bool:
         """
@@ -310,7 +325,7 @@ class ClusterEstimation:
     @staticmethod
     def __convert_detections_to_point(
         detections: "list[detection_in_world.DetectionInWorld]",
-    ) -> "list[tuple[float, float, int]]":
+    ) -> "list[tuple[float, float]]":
         """
         Convert DetectionInWorld input object to a list of points- (x,y) positions, to store.
 
