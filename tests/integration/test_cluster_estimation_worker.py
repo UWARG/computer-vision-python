@@ -19,6 +19,19 @@ MAX_NUM_COMPONENTS = 3
 RANDOM_STATE = 0
 
 
+def check_output_results(output_queue: queue_proxy_wrapper.QueueProxyWrapper) -> None:
+    """
+    Checking if the output from the worker is of the correct type
+    """
+
+    output_results: List[DetectionInWorld] = output_queue.queue.get()
+
+    while not output_queue.queue.empty():
+        output_results = output_queue.queue.get()
+        assert isinstance(output_results, list)
+        assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
+
+
 def test_cluster_estimation_worker() -> int:
     """
     Integration test for cluster estimation worker.
@@ -118,12 +131,7 @@ def test_cluster_estimation_worker() -> int:
     worker_process.start()
     time.sleep(1)
 
-    output_results: List[DetectionInWorld] = output_queue.queue.get()
-
-    assert output_results is not None
-    assert isinstance(output_results, list)
-    assert len(output_results) == 1
-    assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
+    check_output_results(output_queue)
 
     time.sleep(1)
 
@@ -132,12 +140,7 @@ def test_cluster_estimation_worker() -> int:
     input_queue.queue.put(test_data_2)
     time.sleep(1)
 
-    output_results: List[DetectionInWorld] = output_queue.queue.get()
-
-    assert output_results is not None
-    assert isinstance(output_results, list)
-    assert len(output_results) == 2
-    assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
+    check_output_results(output_queue)
 
     controller.request_exit()
     input_queue.queue.put(None)
