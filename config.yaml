@@ -45,6 +45,7 @@ detect_target:
     #     filter_by_area: True
     #     min_area_pixels: 50
     #     max_area_pixels: 640
+    #     min_brightness_threshold: 100
 
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
