@@ -43,6 +43,7 @@ class DetectTargetBrightspotConfig:
         filter_by_area: bool,
         min_area_pixels: int,
         max_area_pixels: int,
+        min_brightness_threshold:int,
     ) -> None:
         """
         Initializes the configuration for DetectTargetBrightspot.
@@ -62,6 +63,7 @@ class DetectTargetBrightspotConfig:
         filter_by_area: Whether to filter by area.
         min_area_pixels: Minimum area in pixels.
         max_area_pixels: Maximum area in pixels.
+        min_brightness_threshold: Minimum brightness threshold for bright spots.
         """
         self.brightspot_percentile_threshold = brightspot_percentile_threshold
         self.filter_by_color = filter_by_color
@@ -78,6 +80,7 @@ class DetectTargetBrightspotConfig:
         self.filter_by_area = filter_by_area
         self.min_area_pixels = min_area_pixels
         self.max_area_pixels = max_area_pixels
+        self.min_brightness_threshold = min_brightness_threshold
 
 
 # pylint: enable=too-many-instance-attributes
@@ -132,13 +135,18 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             )
             return False, None
 
+        # Apply min brightness thresholding first to remove non-bright-spot noise
+        threshold_used, min_filtered_image = cv2.threshold(
+            grey_image, self.__config.min_brightness_threshold, 255, cv2.THRESH_TOZERO
+        ) 
+
         brightspot_threshold = np.percentile(
             grey_image, self.__config.brightspot_percentile_threshold
         )
 
         # Apply thresholding to isolate bright spots
         threshold_used, bw_image = cv2.threshold(
-            grey_image, brightspot_threshold, 255, cv2.THRESH_BINARY
+            min_filtered_image, brightspot_threshold, 255, cv2.THRESH_BINARY
         )
         if threshold_used == 0:
             self.__local_logger.error(f"{time.time()}: Failed to threshold image.")

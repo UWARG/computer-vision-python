@@ -42,6 +42,7 @@ BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
     filter_by_area=True,
     min_area_pixels=50,
     max_area_pixels=640,
+    min_brightness_threshold=100,
 )
 # pylint: enable=duplicate-code
 
