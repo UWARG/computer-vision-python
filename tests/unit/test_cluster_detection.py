@@ -16,6 +16,7 @@ MIN_NEW_POINTS_TO_RUN = 10
 MAX_NUM_COMPONENTS = 10
 RNG_SEED = 0
 CENTRE_BOX_SIZE = 500
+MIN_POINTS_PER_CLUSTER = 3
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -37,6 +38,7 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
         MAX_NUM_COMPONENTS,
         RNG_SEED,
         test_logger,
+        MIN_POINTS_PER_CLUSTER,
     )
     assert result
     assert model is not None
