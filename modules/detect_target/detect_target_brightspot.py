@@ -43,7 +43,7 @@ class DetectTargetBrightspotConfig:
         filter_by_area: bool,
         min_area_pixels: int,
         max_area_pixels: int,
-        min_brightness_threshold:int,
+        min_brightness_threshold: int,
     ) -> None:
         """
         Initializes the configuration for DetectTargetBrightspot.
@@ -138,7 +138,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         # Apply min brightness thresholding first to remove non-bright-spot noise
         threshold_used, min_filtered_image = cv2.threshold(
             grey_image, self.__config.min_brightness_threshold, 255, cv2.THRESH_TOZERO
-        ) 
+        )
 
         brightspot_threshold = np.percentile(
             grey_image, self.__config.brightspot_percentile_threshold
