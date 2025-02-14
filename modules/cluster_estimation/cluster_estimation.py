@@ -63,6 +63,7 @@ class ClusterEstimation:
         max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
+        min_points_per_cluster: int,
     ) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation model to run.
@@ -82,6 +83,9 @@ class ClusterEstimation:
 
         local_logger: logger.Logger
             The local logger to log this object's information.
+        
+        min_points_per_cluster: int
+            Minimum number of points that must be assigned to a cluster for it to be considered valid.
 
         RETURNS: The ClusterEstimation object if all conditions pass, otherwise False, None
         """
@@ -96,6 +100,9 @@ class ClusterEstimation:
 
         if random_state < 0:
             return False, None
+        
+        if min_points_per_cluster < 1:
+            return False, None
 
         return True, ClusterEstimation(
             cls.__create_key,
@@ -104,6 +111,7 @@ class ClusterEstimation:
             max_num_components,
             random_state,
             local_logger,
+            min_points_per_cluster,
         )
 
     def __init__(
@@ -114,6 +122,7 @@ class ClusterEstimation:
         max_num_components: int,
         random_state: int,
         local_logger: logger.Logger,
+        min_points_per_cluster: int,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -140,6 +149,7 @@ class ClusterEstimation:
         self.__min_new_points_to_run = min_new_points_to_run
         self.__has_ran_once = False
         self.__logger = local_logger
+        self.__min_points_per_cluster = min_points_per_cluster
 
     def run(
         self, detections: "list[detection_in_world.DetectionInWorld]", run_override: bool
@@ -337,15 +347,16 @@ class ClusterEstimation:
         # List of each point's cluster index
         cluster_assignment = self.__vgmm.predict(self.__all_points)  # type: ignore
 
-        # Find which cluster indices have points
-        clusters_with_points = np.unique(cluster_assignment)
+        # Get counts for each cluster index
+        unique, counts = np.unique(cluster_assignment, return_counts=True)
+        cluster_counts = dict(zip(unique, counts))
 
         # Remove empty clusters
         filtered_output: "list[tuple[np.ndarray, float, float]]" = []
         # By cluster index
         # pylint: disable-next=consider-using-enumerate
         for i in range(len(model_output)):
-            if i in clusters_with_points:
+            if cluster_counts.get(i, 0) >= self.__min_points_per_cluster:
                 filtered_output.append(model_output[i])
 
         return filtered_output
