@@ -13,7 +13,7 @@ from .. import object_in_world
 from .. import detection_in_world
 from ..common.modules.logger import logger
 
-
+# pylint: disable=too-many-instance-attributes
 class ClusterEstimation:
     """
     Estimate landing pad locations based on landing pad ground detection. Estimation
