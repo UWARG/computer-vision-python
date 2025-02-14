@@ -156,6 +156,7 @@ def main() -> int:
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
 
         COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
+        COMMUNICATIONS_WORKER_PERIOD = config["communications"]["worker_period"]
 
         # pylint: enable=invalid-name
     except KeyError as exception:
@@ -198,6 +199,10 @@ def main() -> int:
         QUEUE_MAX_SIZE,
     )
     cluster_estimation_to_communications_queue = queue_proxy_wrapper.QueueProxyWrapper(
+        mp_manager,
+        QUEUE_MAX_SIZE,
+    )
+    communications_to_flight_interface_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
         QUEUE_MAX_SIZE,
     )
@@ -285,7 +290,10 @@ def main() -> int:
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
         ),
-        input_queues=[flight_interface_decision_queue],
+        input_queues=[
+            flight_interface_decision_queue,
+            communications_to_flight_interface_queue,
+        ],
         output_queues=[
             flight_interface_to_data_merge_queue,
             flight_interface_to_communications_queue,
@@ -362,12 +370,15 @@ def main() -> int:
     result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=communications_worker.communications_worker,
-        work_arguments=(COMMUNICATIONS_TIMEOUT,),
+        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD),
         input_queues=[
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,
         ],
-        output_queues=[communications_to_main_queue],
+        output_queues=[
+            communications_to_main_queue,
+            communications_to_flight_interface_queue,
+        ],
         controller=controller,
         local_logger=main_logger,
     )
@@ -505,6 +516,7 @@ def main() -> int:
     cluster_estimation_to_communications_queue.fill_and_drain_queue()
     communications_to_main_queue.fill_and_drain_queue()
     flight_interface_decision_queue.fill_and_drain_queue()
+    communications_to_flight_interface_queue.fill_and_drain_queue()
 
     for manager in worker_managers:
         manager.join_workers()

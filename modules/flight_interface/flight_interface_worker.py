@@ -4,6 +4,7 @@ Gets odometry information from drone.
 
 import os
 import pathlib
+import queue
 import time
 
 from utilities.workers import queue_proxy_wrapper
@@ -18,6 +19,7 @@ def flight_interface_worker(
     baud_rate: int,
     period: float,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    coordinates_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     communications_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -62,7 +64,12 @@ def flight_interface_worker(
 
         time.sleep(period)
 
-        result, value = interface.run()
+        try:
+            coordinate = coordinates_input_queue.queue.get_nowait()
+        except queue.Empty:
+            coordinate = None
+
+        result, value = interface.run(coordinate)
         if not result:
             continue
 

@@ -78,3 +78,4 @@ cluster_estimation:
 
 communications:
     timeout: 30.0  # seconds
+    worker_period: 0.5 # seconds
