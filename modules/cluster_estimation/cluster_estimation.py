@@ -1,6 +1,6 @@
 """
 Take in bounding box coordinates from Geolocation and use to estimate landing pad locations.
-Returns an array of classes, each containing the x coordinate, y coordinate, and spherical 
+Returns an array of classes, each containing the x coordinate, y coordinate, and spherical
 covariance of each landing pad estimation.
 """
 
@@ -83,7 +83,7 @@ class ClusterEstimation:
 
         local_logger: logger.Logger
             The local logger to log this object's information.
-        
+
         min_points_per_cluster: int
             Minimum number of points that must be assigned to a cluster for it to be considered valid.
 
@@ -100,7 +100,7 @@ class ClusterEstimation:
 
         if random_state < 0:
             return False, None
-        
+
         if min_points_per_cluster < 1:
             return False, None
 
