@@ -24,10 +24,8 @@ def check_output_results(output_queue: queue_proxy_wrapper.QueueProxyWrapper) ->
     Checking if the output from the worker is of the correct type
     """
 
-    output_results: List[DetectionInWorld] = output_queue.queue.get()
-
     while not output_queue.queue.empty():
-        output_results = output_queue.queue.get()
+        output_results: List[DetectionInWorld] = output_queue.queue.get()
         assert isinstance(output_results, list)
         assert all(isinstance(obj, ObjectInWorld) for obj in output_results)
 
