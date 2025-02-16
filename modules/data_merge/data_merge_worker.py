@@ -32,7 +32,7 @@ def data_merge_worker(
     Merge work is done in the worker process as the queues and control mechanisms
     are naturally available.
     """
-    start_time = time.time()
+    setup_start_time = time.time()
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -55,12 +55,12 @@ def data_merge_worker(
         local_logger.error("Queue timed out on startup", True)
         return
 
-    end_time = time.time()
+    setup_end_time = time.time()
 
-    local_logger.info(f"{time.time()}: Setup took {end_time - start_time} seconds.")
+    local_logger.info(f"{time.time()}: Setup took {setup_end_time - setup_start_time} seconds.")
 
     while not controller.is_exit_requested():
-        start_time = time.time()
+        iteration_start_time = time.time()
 
         controller.check_pause()
 
@@ -117,6 +117,8 @@ def data_merge_worker(
 
         output_queue.queue.put(merged)
 
-        end_time = time.time()
+        iteration_end_time = time.time()
 
-        local_logger.info(f"{time.time()}: Worker iteration took {end_time - start_time} seconds.")
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )

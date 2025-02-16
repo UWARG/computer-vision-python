@@ -31,7 +31,7 @@ def flight_interface_worker(
     controller is how the main process communicates to this worker process.
     """
     # TODO: Error handling
-    start_time = time.time()
+    setup_start_time = time.time()
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -58,12 +58,14 @@ def flight_interface_worker(
     home_position = interface.get_home_position()
     communications_output_queue.queue.put(home_position)
 
-    end_time = time.time()
+    setup_end_time = time.time()
 
-    local_logger.info(f"{time.time()}: Class object creation took {end_time - start_time} seconds.")
+    local_logger.info(
+        f"{time.time()}: Class object creation took {setup_end_time - setup_start_time} seconds."
+    )
 
     while not controller.is_exit_requested():
-        start_time = time.time()
+        iteration_start_time = time.time()
 
         controller.check_pause()
 
@@ -81,6 +83,8 @@ def flight_interface_worker(
             # Pass the decision command to the flight controller
             interface.apply_decision(command)
 
-        end_time = time.time()
+        iteration_end_time = time.time()
 
-        local_logger.info(f"{time.time()}: Worker iteration took {end_time - start_time} seconds.")
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )
