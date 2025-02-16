@@ -2,7 +2,7 @@
 Test Contour Detection module.
 
 """
-
+import cv2
 import numpy as np
 import pytest
 
@@ -194,9 +194,17 @@ def compare_detections(
 
     # Using integer indexing for both lists
     # pylint: disable-next=consider-using-enumerate
+
+    # Ordered for the mapping to the corresponding detections
+    sorted_actual_detections = sorted(
+        actual.detections,
+        reverse=True,
+        key=lambda box: abs((box.x_1 - box.x_2) * (box.y_1 - box.y_2)),
+    )
+
     for i in range(0, len(expected.detections)):
         expected_detection = expected.detections[i]
-        actual_detection = actual.detections[i]
+        actual_detection = sorted_actual_detections[i]
 
         assert expected_detection.label == actual_detection.label
         np.testing.assert_almost_equal(
