@@ -12,10 +12,11 @@ from .. import image_and_time
 from .. import detections_and_time
 from ..common.modules.logger import logger
 
-CONFIDENCE = 1.0
+
 MIN_CONTOUR_AREA = 100
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
+CONFIDENCE = 1.0
 LABEL = 0
 
 
@@ -28,6 +29,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         self, image_logger: logger.Logger, show_annotations: bool = False, save_name: str = ""
     ) -> None:
         """
+        image_logger: Log annotated iamges.
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
@@ -50,7 +52,6 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
 
         Return: Success, the DetectionsAndTime object, and the annotated image.
         """
-
         image = image_and_time_data.image
         timestamp = image_and_time_data.timestamp
 
@@ -62,15 +63,12 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         if len(contours) == 0:
             return False, None, None
 
-        # Create the DetectionsAndTime object
         result, detections = detections_and_time.DetectionsAndTime.create(timestamp)
         if not result:
             return False, None, None
 
-        # Ordered for the mapping to the corresponding detections
-        sorted_contour = sorted(contours, key=cv2.contourArea, reverse=True)
         image_annotated = image
-        for i, contour in enumerate(sorted_contour):
+        for i, contour in enumerate(contours):
             contour_area = cv2.contourArea(contour)
 
             if contour_area < MIN_CONTOUR_AREA:
