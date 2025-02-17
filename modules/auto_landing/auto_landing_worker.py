@@ -6,10 +6,10 @@ import os
 import pathlib
 import time
 
-from . import auto_landing
-from ..common.modules.logger import logger
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
+from . import auto_landing
+from ..common.modules.logger import logger
 
 
 def auto_landing_worker(
