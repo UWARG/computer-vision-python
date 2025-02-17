@@ -4,11 +4,9 @@ for use with LANDING_TARGET MAVLink command.
 """
 
 import math
-import time
 
-
-from ..common.modules.logger import logger
 from .. import merged_odometry_detections
+from ..common.modules.logger import logger
 
 
 class AutoLandingInformation:
@@ -45,7 +43,6 @@ class AutoLanding:
         fov_y: float,
         im_h: float,
         im_w: float,
-        period: float,
         local_logger: logger.Logger,
     ) -> "tuple [bool, AutoLanding | None ]":
         """
@@ -53,12 +50,11 @@ class AutoLanding:
         fov_y: The vertical camera field of view in degrees.
         im_w: Width of image.
         im_h: Height of image.
-        period: Wait time in seconds.
 
         Returns an AutoLanding object.
         """
 
-        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_h, im_w, period, local_logger)
+        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_h, im_w, local_logger)
 
     def __init__(
         self,
@@ -67,7 +63,6 @@ class AutoLanding:
         fov_y: float,
         im_h: float,
         im_w: float,
-        period: float,
         local_logger: logger.Logger,
     ) -> None:
         """
@@ -79,7 +74,6 @@ class AutoLanding:
         self.fov_y = fov_y
         self.im_h = im_h
         self.im_w = im_w
-        self.period = period
         self.__logger = local_logger
 
     def run(
@@ -93,11 +87,14 @@ class AutoLanding:
         Returns an AutoLandingInformation object.
         """
 
+        # TODO: Devise better algorithm to pick which detection to land at if several are detected
         x_center, y_center = odometry_detections.detections[0].get_centre()
 
         angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
         angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
 
+        # This is height above ground level (AGL)
+        # down is how many meters down you are from home position, which is on the ground
         height_agl = odometry_detections.odometry_local.position.down * -1
 
         x_dist = math.tan(angle_x) * height_agl
@@ -110,5 +107,4 @@ class AutoLanding:
             True,
         )
 
-        time.sleep(self.period)
         return True, AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)

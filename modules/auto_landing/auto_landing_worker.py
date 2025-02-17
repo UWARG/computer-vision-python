@@ -4,11 +4,12 @@ Auto-landing worker.
 
 import os
 import pathlib
+import time
 
-from utilities.workers import queue_proxy_wrapper
-from utilities.workers import worker_controller
 from . import auto_landing
 from ..common.modules.logger import logger
+from utilities.workers import queue_proxy_wrapper
+from utilities.workers import worker_controller
 
 
 def auto_landing_worker(
@@ -24,6 +25,7 @@ def auto_landing_worker(
     """
     Worker process.
 
+    period: Wait time in seconds.
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
@@ -40,9 +42,7 @@ def auto_landing_worker(
 
     local_logger.info("Logger initialized", True)
 
-    result, auto_lander = auto_landing.AutoLanding.create(
-        fov_x, fov_y, im_h, im_w, period, local_logger
-    )
+    result, auto_lander = auto_landing.AutoLanding.create(fov_x, fov_y, im_h, im_w, local_logger)
 
     if not result:
         local_logger.error("Worker failed to create class object", True)
@@ -63,3 +63,4 @@ def auto_landing_worker(
             continue
 
         output_queue.queue.put(value)
+        time.sleep(period)
