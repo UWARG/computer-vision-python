@@ -139,17 +139,20 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         threshold_used, min_filtered_image = cv2.threshold(
             grey_image, self.__config.min_brightness_threshold, 255, cv2.THRESH_TOZERO
         )
+        if threshold_used == 0:
+            self.__local_logger.error(f"{time.time()}: Failed to apply min brightness threshold.")
+            return False, None
 
         brightspot_threshold = np.percentile(
             grey_image, self.__config.brightspot_percentile_threshold
         )
 
-        # Apply thresholding to isolate bright spots
+        # Apply percentile thresholding to isolate bright spots
         threshold_used, bw_image = cv2.threshold(
             min_filtered_image, brightspot_threshold, 255, cv2.THRESH_BINARY
         )
         if threshold_used == 0:
-            self.__local_logger.error(f"{time.time()}: Failed to threshold image.")
+            self.__local_logger.error(f"{time.time()}: Failed to percentile threshold image.")
             return False, None
 
         # Set up SimpleBlobDetector
