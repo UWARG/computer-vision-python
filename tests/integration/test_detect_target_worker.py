@@ -20,14 +20,14 @@ from utilities.workers import worker_controller
 
 
 BRIGHTSPOT_TEST_PATH = pathlib.Path("tests", "brightspot_example")
-IMAGE_BRIGHTSPOT_0_PATH = pathlib.Path(BRIGHTSPOT_TEST_PATH, "ir_detections_0.png")
+IMAGE_BRIGHTSPOT_0_PATH = pathlib.Path(BRIGHTSPOT_TEST_PATH, "ir_detections_5.png")
 IMAGE_BRIGHTSPOT_1_PATH = pathlib.Path(BRIGHTSPOT_TEST_PATH, "ir_detections_1.png")
 
 BRIGHTSPOT_OPTION = detect_target_factory.DetectTargetOption.CV_BRIGHTSPOT
 # Logging is identical to detect_target_ultralytics.py
 # pylint: disable=duplicate-code
 BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
-    brightspot_percentile_threshold=99.9,
+    brightspot_percentile_threshold=98.0,
     filter_by_color=True,
     blob_color=255,
     filter_by_circularity=False,
@@ -42,7 +42,7 @@ BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
     filter_by_area=True,
     min_area_pixels=50,
     max_area_pixels=640,
-    min_brightness_threshold=50,
+    min_brightness_threshold=0,
 )
 # pylint: enable=duplicate-code
 
@@ -58,7 +58,7 @@ ULTRALYTICS_CONFIG = detect_target_ultralytics.DetectTargetUltralyticsConfig(
 )
 
 SHOW_ANNOTATIONS = False
-SAVE_NAME = ""  # No need to save images
+SAVE_NAME = "test"  # No need to save images
 
 WORK_COUNT = 3
 DELAY_FOR_SIMULATED_ULTRALYTICS_WORKER = 1  # seconds
@@ -161,7 +161,7 @@ def main() -> int:
     Main function.
     """
     run_worker(BRIGHTSPOT_OPTION, BRIGHTSPOT_CONFIG)
-    run_worker(ULTRALYTICS_OPTION, ULTRALYTICS_CONFIG)
+    # run_worker(ULTRALYTICS_OPTION, ULTRALYTICS_CONFIG)
 
     return 0
 

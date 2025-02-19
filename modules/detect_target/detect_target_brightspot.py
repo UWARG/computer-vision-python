@@ -141,6 +141,8 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             grey_image, self.__config.brightspot_percentile_threshold
         )
 
+        print(np.max(grey_image))
+
         # Compute the maximum of the percentile threshold and the minimum brightness threshold
         combined_threshold = max(brightspot_threshold, self.__config.min_brightness_threshold)
 
@@ -151,6 +153,9 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         if threshold_used == 0:
             self.__local_logger.error(f"{time.time()}: Failed to threshold image.")
             return False, None
+        
+        # cv2.imshow("Thresholded", bw_image)  # type: ignore
+        # cv2.waitKey(0)  # type: ignore
 
         # Set up SimpleBlobDetector
         params = cv2.SimpleBlobDetector_Params()
