@@ -104,7 +104,7 @@ class FlightInterface:
         self.__logger.info(str(odometry_and_time_object), True)
 
         if message:
-            self.controller.send_statustext_msg(message)
+            self.controller.send_statustext_msg(str(message, encoding="utf-8"))
 
         return True, odometry_and_time_object
 
