@@ -51,15 +51,15 @@ flight_interface:
     # than connecting to port 14550, which is the ground station
     address: "tcp:localhost:5762"
     timeout: 30.0  # seconds
-    baud_rate: 57600  # symbol rate 
+    baud_rate: 57600  # symbol rate
     worker_period: 0.1  # seconds
 
 data_merge:
-    timeout: 30.0  # seconds
+    timeout: 60.0  # seconds
 
 geolocation:
     resolution_x: 1920
-    resolution_y: 1200 
+    resolution_y: 1200
     fov_x: 0.64889
     fov_y: 0.41438
     camera_position_x: 0.0
@@ -70,11 +70,11 @@ geolocation:
     camera_orientation_roll: 0.0
 
 cluster_estimation:
-    min_activation_threshold: 25
-    min_new_points_to_run: 5
+    min_activation_threshold: 25  # must be >= max_num_components
+    min_new_points_to_run: 3
     max_num_components: 10
     random_state: 0
 
 communications:
-    timeout: 30.0  # seconds
+    timeout: 60.0  # seconds
     worker_period: 0.5 # seconds
