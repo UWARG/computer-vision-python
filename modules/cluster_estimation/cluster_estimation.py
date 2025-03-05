@@ -348,7 +348,7 @@ class ClusterEstimation:
         # List of each point's cluster index
         cluster_assignment = self.__vgmm.predict(self.__all_points)  # type: ignore
 
-        # Get counts for each cluster index
+        # Check each cluster has enough points associated to it by index
         unique, counts = np.unique(cluster_assignment, return_counts=True)
         cluster_counts = dict(zip(unique, counts))
 
@@ -357,7 +357,7 @@ class ClusterEstimation:
         # By cluster index
         # pylint: disable-next=consider-using-enumerate
         for i in range(len(model_output)):
-            if cluster_counts.get(i, 0) >= self.__min_points_per_cluster:
+            if cluster_counts.get(i) >= self.__min_points_per_cluster:
                 filtered_output.append(model_output[i])
 
         return filtered_output
