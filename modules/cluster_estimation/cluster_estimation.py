@@ -357,7 +357,7 @@ class ClusterEstimation:
         # By cluster index
         # pylint: disable-next=consider-using-enumerate
         for i in range(len(model_output)):
-            if cluster_counts.get(i) >= self.__min_points_per_cluster:
+            if cluster_counts.get(i, 0) >= self.__min_points_per_cluster:
                 filtered_output.append(model_output[i])
 
         return filtered_output
