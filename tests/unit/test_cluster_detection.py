@@ -506,7 +506,7 @@ class TestMinimumPointsPerCluster:
         while a valid cluster with enough points is retained.
         """
         # Setup
-        valid_detections, valid_cluster_positions = generate_cluster_data([5], self.__STD_DEV_REG)
+        valid_detections, valid_cluster_positions = generate_cluster_data([100], self.__STD_DEV_REG)
         outlier_detections = generate_points_away_from_cluster(
             num_points_to_generate=1,
             minimum_distance_from_cluster=20,
