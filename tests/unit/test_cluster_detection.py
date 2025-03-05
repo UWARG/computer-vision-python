@@ -490,10 +490,12 @@ class TestCorrectClusterPositionOutput:
 
             assert is_match
 
+
 class TestMinimumPointsPerCluster:
     """
     Tests that clusters with fewer than the minimum required points are filtered out.
     """
+
     __STD_DEV_REG = 1
 
     def test_outlier_is_filtered(self, cluster_model: cluster_estimation.ClusterEstimation) -> None:
@@ -506,13 +508,13 @@ class TestMinimumPointsPerCluster:
         outlier_detections = generate_points_away_from_cluster(
             num_points_to_generate=1,
             minimum_distance_from_cluster=20,
-            cluster_positions=valid_cluster_positions
+            cluster_positions=valid_cluster_positions,
         )
         generated_detections = valid_detections + outlier_detections
-        
+
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
-        
+
         # Test
         assert result
         assert detections_in_world is not None
