@@ -14,6 +14,8 @@ from ..common.modules.logger import logger
 
 
 MIN_CONTOUR_AREA = 100
+MAX_CIRCULARITY = 1.3
+MIN_CIRCULARITY = 0.7
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
 CONFIDENCE = 1.0
@@ -29,7 +31,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         self, image_logger: logger.Logger, show_annotations: bool = False, save_name: str = ""
     ) -> None:
         """
-        image_logger: Log annotated iamges.
+        image_logger: Log annotated images.
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
@@ -79,7 +81,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
             enclosing_area = np.pi * (radius**2)
             circularity = contour_area / enclosing_area
 
-            if circularity < 0.7 or circularity > 1.3:
+            if circularity < MIN_CIRCULARITY or circularity > MAX_CIRCULARITY:
                 continue
 
             x, y, w, h = cv2.boundingRect(contour)

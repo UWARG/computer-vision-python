@@ -18,7 +18,7 @@ class DetectTargetOption(enum.Enum):
 
     ML_ULTRALYTICS = 0
     CV_BRIGHTSPOT = 1
-    C_CONTOUR = 2
+    CV_CONTOUR = 2
 
 
 def create_detect_target(
@@ -49,8 +49,9 @@ def create_detect_target(
                 show_annotations,
                 save_name,
             )
-        case DetectTargetOption.C_CONTOUR:
+        case DetectTargetOption.CV_CONTOUR:
             return True, detect_target_contour.DetectTargetContour(
+                local_logger,
                 show_annotations,
                 save_name,
             )

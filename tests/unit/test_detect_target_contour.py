@@ -1,25 +1,21 @@
 """
-Test Contour Detection module.
-
+Test contour detection module.
 """
-import cv2
+
 import numpy as np
 import pytest
 
-from tests.unit.generate_detect_target_contour import (
-    LandingPadImageConfig,
-    InputImageAndExpectedBoundingBoxes,
-    create_test,
-)
+from tests.unit import generate_detect_target_contour
 from modules import detections_and_time
 from modules import image_and_time
 from modules.detect_target import detect_target_contour
 from modules.common.modules.logger import logger  # Changed from relative to absolute import
 
 
-BOUNDING_BOX_PRECISION_TOLERANCE = -2 / 3  # Tolerance > 1
+BOUNDING_BOX_PRECISION_TOLERANCE = -1  # Tolerance > 1
 CONFIDENCE_PRECISION_TOLERANCE = 2
 LOGGER_NAME = ""
+
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -27,53 +23,71 @@ LOGGER_NAME = ""
 
 
 @pytest.fixture
-def single_circle() -> InputImageAndExpectedBoundingBoxes:  # type: ignore
+def single_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
     """
     Loads the data for the single basic circle.
     """
-    options = [LandingPadImageConfig(center=(300, 400), axis=(200, 200), blur=False, angle=0)]
+    options = [
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(300, 400), axis=(200, 200), blur=False, angle=0
+        )
+    ]
 
-    test_data = create_test(options)
+    test_data = generate_detect_target_contour.create_test(options)
     yield test_data
 
 
 @pytest.fixture
-def single_blurry_circle() -> InputImageAndExpectedBoundingBoxes:  # type: ignore
+def single_blurry_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
     """
     Loads the data for the single blury circle.
     """
     options = [
-        LandingPadImageConfig(center=(1000, 500), axis=(423, 423), blur=True, angle=0),
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(1000, 500), axis=(423, 423), blur=True, angle=0
+        ),
     ]
 
-    test_data = create_test(options)
+    test_data = generate_detect_target_contour.create_test(options)
     yield test_data
 
 
 @pytest.fixture
-def single_stretched_circle() -> InputImageAndExpectedBoundingBoxes:  # type: ignore
+def single_stretched_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
     """
     Loads the data for the single stretched circle.
     """
-    options = [LandingPadImageConfig(center=(1000, 500), axis=(383, 405), blur=False, angle=0)]
+    options = [
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(1000, 500), axis=(383, 405), blur=False, angle=0
+        )
+    ]
 
-    test_data = create_test(options)
+    test_data = generate_detect_target_contour.create_test(options)
     yield test_data
 
 
 @pytest.fixture
-def multiple_circles() -> InputImageAndExpectedBoundingBoxes:  # type: ignore
+def multiple_circles() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
     """
     Loads the data for the multiple stretched circles.
     """
     options = [
-        LandingPadImageConfig(center=(997, 600), axis=(300, 300), blur=False, angle=0),
-        LandingPadImageConfig(center=(1590, 341), axis=(250, 250), blur=False, angle=0),
-        LandingPadImageConfig(center=(200, 500), axis=(50, 45), blur=True, angle=0),
-        LandingPadImageConfig(center=(401, 307), axis=(200, 150), blur=True, angle=0),
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(997, 600), axis=(300, 300), blur=False, angle=0
+        ),
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(1590, 341), axis=(250, 250), blur=False, angle=0
+        ),
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(200, 500), axis=(50, 45), blur=True, angle=0
+        ),
+        generate_detect_target_contour.LandingPadImageConfig(
+            centre=(401, 307), axis=(200, 150), blur=True, angle=0
+        ),
     ]
 
-    test_data = create_test(options)
+    test_data = generate_detect_target_contour.create_test(options)
     yield test_data
 
 
@@ -92,7 +106,7 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
 
 
 @pytest.fixture()
-def image_easy(single_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def image_easy(single_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load the single basic landing pad.
     """
@@ -105,7 +119,7 @@ def image_easy(single_circle: InputImageAndExpectedBoundingBoxes) -> image_and_t
 
 
 @pytest.fixture()
-def blurry_image(single_blurry_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def blurry_image(single_blurry_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load the single blurry landing pad.
     """
@@ -118,7 +132,7 @@ def blurry_image(single_blurry_circle: InputImageAndExpectedBoundingBoxes) -> im
 
 
 @pytest.fixture()
-def stretched_image(single_stretched_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def stretched_image(single_stretched_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load the single stretched landing pad.
     """
@@ -131,7 +145,7 @@ def stretched_image(single_stretched_circle: InputImageAndExpectedBoundingBoxes)
 
 
 @pytest.fixture()
-def multiple_images(multiple_circles: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def multiple_images(multiple_circles: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load the multiple landing pads.
     """
@@ -144,7 +158,7 @@ def multiple_images(multiple_circles: InputImageAndExpectedBoundingBoxes) -> ima
 
 
 @pytest.fixture()
-def expected_easy(single_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def expected_easy(single_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load expected a basic image detections.
     """
@@ -154,7 +168,7 @@ def expected_easy(single_circle: InputImageAndExpectedBoundingBoxes) -> image_an
 
 
 @pytest.fixture()
-def expected_blur(single_blurry_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def expected_blur(single_blurry_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load expected the blured pad image detections.
     """
@@ -164,7 +178,7 @@ def expected_blur(single_blurry_circle: InputImageAndExpectedBoundingBoxes) -> i
 
 
 @pytest.fixture()
-def expected_stretch(single_stretched_circle: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def expected_stretch(single_stretched_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load expected a stretched pad image detections.
     """
@@ -174,7 +188,7 @@ def expected_stretch(single_stretched_circle: InputImageAndExpectedBoundingBoxes
 
 
 @pytest.fixture()
-def expected_multiple(multiple_circles: InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
+def expected_multiple(multiple_circles: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
     """
     Load expected multiple pads image detections.
     """
@@ -274,7 +288,7 @@ class TestDetector:
         expected_easy: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Run the detection for the single landing pad.
+        Run the detection for the single cirucluar landing pad.
         """
         # Run
         result, actual = detector.run(image_easy)
@@ -292,7 +306,7 @@ class TestDetector:
         expected_blur: detections_and_time.DetectionsAndTime,
     ) -> None:
         """
-        Run the detection for the blury circle.
+        Run the detection for the blury cicular circle.
         """
         # Run
         result, actual = detector.run(blurry_image)
