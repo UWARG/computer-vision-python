@@ -20,20 +20,6 @@ class ClusterEstimation:
     works by predicting 'cluster centres' from groups of closely placed landing pad
     detections.
 
-    ATTRIBUTES
-    ----------
-    min_activation_threshold: int
-        Minimum total data points before model runs.
-
-    min_new_points_to_run: int
-        Minimum number of new data points that must be collected before running model.
-
-    random_state: int
-        Seed for randomizer, to get consistent results.
-
-    local_logger: Logger
-        For logging error and debug messages.
-
     METHODS
     -------
     run()
@@ -68,6 +54,32 @@ class ClusterEstimation:
     # Hyperparameters to clean up model outputs
     __WEIGHT_DROP_THRESHOLD = 0.1
     __MAX_COVARIANCE_THRESHOLD = 10
+
+    @staticmethod
+    def check_create_arguments(
+        min_activation_threshold: int,
+        min_new_points_to_run: int,
+        max_num_components: int,
+        random_state: int,
+    ) -> bool:
+        """
+        Checks if a valid cluster estimation object can be constructed.
+
+        See `ClusterEstimation` for parameter descriptions.
+        """
+        if min_activation_threshold < max_num_components:
+            return False
+
+        if min_new_points_to_run < 0:
+            return False
+
+        if max_num_components < 1:
+            return False
+
+        if random_state < 0:
+            return False
+
+        return True
 
     @classmethod
     def create(
@@ -226,40 +238,14 @@ class ClusterEstimation:
                 cluster[0][0], cluster[0][1], cluster[2]
             )
 
-            if result:
-                objects_in_world.append(landing_pad)
-            else:
+            if not result:
                 self.__logger.error("Failed to create ObjectInWorld object")
                 return False, None
 
+            objects_in_world.append(landing_pad)
+
         self.__logger.info(objects_in_world)
         return True, objects_in_world
-
-    @staticmethod
-    def check_create_arguments(
-        min_activation_threshold: int,
-        min_new_points_to_run: int,
-        max_num_components: int,
-        random_state: int,
-    ):
-        """
-        Checks if a valid cluster estimation object can be constructed.
-
-        See `ClusterEstimation` for parameter descriptions.
-        """
-        if min_activation_threshold < max_num_components:
-            return False
-
-        if min_new_points_to_run < 0:
-            return False
-
-        if max_num_components < 1:
-            return False
-
-        if random_state < 0:
-            return False
-
-        return True
 
     def __decide_to_run(self, run_override: bool) -> bool:
         """

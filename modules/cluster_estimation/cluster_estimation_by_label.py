@@ -118,6 +118,7 @@ class ClusterEstimationByLabel:
         for detection in input_detections:
             if not detection.label in label_to_detections:
                 label_to_detections[detection.label] = []
+            
             label_to_detections[detection.label].append(detection)
 
         labels_to_objects: dict[int, list[object_in_world.ObjectInWorld]] = {}
@@ -137,9 +138,10 @@ class ClusterEstimationByLabel:
                         f"Failed to create cluster estimation for label {label}"
                     )
                     return False, None
+                
                 self.__label_to_cluster_estimation_model[label] = cluster_model
 
-            # runs cluster estimation for specific label
+            # Runs cluster estimation for specific label
             result, clusters = self.__label_to_cluster_estimation_model[label].run(
                 detections,
                 run_override,

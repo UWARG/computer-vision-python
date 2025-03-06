@@ -7,7 +7,6 @@ import pytest
 import sklearn.datasets
 
 from modules.cluster_estimation import cluster_estimation
-from modules.cluster_estimation import cluster_estimation_by_label
 from modules.common.modules.logger import logger
 from modules import detection_in_world
 
@@ -20,7 +19,7 @@ CENTRE_BOX_SIZE = 500
 
 # Test functions use test fixture signature names and access class privates
 # No enable
-# pylint: disable=protected-access,redefined-outer-name,too-many-instance-attributes,duplicate-code
+# pylint: disable=protected-access,redefined-outer-name
 
 
 @pytest.fixture()
@@ -45,32 +44,8 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
     yield model  # type: ignore
 
 
-@pytest.fixture()
-def cluster_model_by_label() -> cluster_estimation_by_label.ClusterEstimationByLabel:  # type: ignore
-    """
-    Cluster estimation by label object.
-    """
-    result, test_logger = logger.Logger.create("test_logger", False)
-    assert result
-    assert test_logger is not None
-
-    result, model = cluster_estimation_by_label.ClusterEstimationByLabel.create(
-        MIN_TOTAL_POINTS_THRESHOLD,
-        MIN_NEW_POINTS_TO_RUN,
-        MAX_NUM_COMPONENTS,
-        RNG_SEED,
-        test_logger,
-    )
-    assert result
-    assert model is not None
-
-    yield model  # type: ignore
-
-
 def generate_cluster_data(
-    n_samples_per_cluster: "list[int]",
-    cluster_standard_deviation: int,
-    label: int,
+    n_samples_per_cluster: "list[int]", cluster_standard_deviation: int
 ) -> "tuple[list[detection_in_world.DetectionInWorld], list[np.ndarray]]":
     """
     Returns a list of points (DetectionInWorld objects) with specified points per cluster
@@ -86,9 +61,6 @@ def generate_cluster_data(
     cluster_standard_deviation: int
         The standard deviation of the generated points, bigger
         standard deviation == more spread out points.
-
-    label: int
-        The label that every generated detection gets assigned
 
     RETURNS
     -------
@@ -118,12 +90,13 @@ def generate_cluster_data(
     for point in generated_points:
         # Placeholder variables to create DetectionInWorld objects
         placeholder_vertices = np.array([[0, 0], [0, 0], [0, 0], [0, 0]])
+        placeholder_label = 1
         placeholder_confidence = 0.5
 
         result, detection_to_add = detection_in_world.DetectionInWorld.create(
             placeholder_vertices,
             point,
-            label,
+            placeholder_label,
             placeholder_confidence,
         )
 
@@ -216,7 +189,7 @@ class TestModelExecutionCondition:
         """
         # Setup
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Less than min threshold (100)
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -236,8 +209,8 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD - 1  # Should not run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points
 
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
-        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG, 0)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -259,8 +232,8 @@ class TestModelExecutionCondition:
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 10  # Should run the first time
         new_count = MIN_NEW_POINTS_TO_RUN - 1  # Under 10 new points, shouldn't run
 
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
-        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG, 0)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
+        generated_detections_2, _ = generate_cluster_data([new_count], self.__STD_DEV_REG)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -277,7 +250,7 @@ class TestModelExecutionCondition:
         All conditions met should run.
         """
         original_count = MIN_TOTAL_POINTS_THRESHOLD + 1  # More than min total threshold should run
-        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG, 0)
+        generated_detections, _ = generate_cluster_data([original_count], self.__STD_DEV_REG)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -304,9 +277,7 @@ class TestCorrectNumberClusterOutputs:
         """
         # Setup
         points_per_cluster = [100]
-        generated_detections, _ = generate_cluster_data(
-            points_per_cluster, self.__STD_DEV_REGULAR, 0
-        )
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -324,9 +295,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(
-            points_per_cluster, self.__STD_DEV_REGULAR, 0
-        )
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -345,7 +314,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE, 0)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -364,7 +333,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE, 0)
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_LARGE)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -384,9 +353,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [10, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(
-            points_per_cluster, self.__STD_DEV_REGULAR, 0
-        )
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
         result, detections_in_world = cluster_model.run(generated_detections, False)
@@ -409,7 +376,6 @@ class TestCorrectNumberClusterOutputs:
         generated_detections, cluster_positions = generate_cluster_data(
             points_per_cluster,
             self.__STD_DEV_REGULAR,
-            0,
         )
 
         # Add 5 random points to dataset, each being at least 20m away from cluster centres
@@ -441,9 +407,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(
-            points_per_cluster, self.__STD_DEV_REGULAR, 0
-        )
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
         result_latest = False
@@ -467,9 +431,7 @@ class TestCorrectNumberClusterOutputs:
         # Setup
         points_per_cluster = [100, 100, 100, 100, 100]
         expected_cluster_count = len(points_per_cluster)
-        generated_detections, _ = generate_cluster_data(
-            points_per_cluster, self.__STD_DEV_REGULAR, 0
-        )
+        generated_detections, _ = generate_cluster_data(points_per_cluster, self.__STD_DEV_REGULAR)
 
         # Run
         result_latest = False
@@ -503,7 +465,6 @@ class TestCorrectClusterPositionOutput:
         generated_detections, cluster_positions = generate_cluster_data(
             points_per_cluster,
             self.__STD_DEV_REG,
-            0,
         )
 
         # Run
