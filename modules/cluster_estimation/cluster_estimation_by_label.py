@@ -48,6 +48,8 @@ class ClusterEstimationByLabel:
     ) -> "tuple[True, ClusterEstimationByLabel] | tuple[False, None]":
         """
         See `ClusterEstimation` for parameter descriptions.
+
+        Return: Success, cluster estimation by label object.
         """
 
         is_valid_arguments = cluster_estimation.ClusterEstimation.check_create_arguments(
@@ -114,11 +116,11 @@ class ClusterEstimationByLabel:
         """
         label_to_detections: dict[int, list[detection_in_world.DetectionInWorld]] = {}
 
-        # Sorting detections by label
+        # Filtering detections by label
         for detection in input_detections:
             if not detection.label in label_to_detections:
                 label_to_detections[detection.label] = []
-            
+
             label_to_detections[detection.label].append(detection)
 
         labels_to_objects: dict[int, list[object_in_world.ObjectInWorld]] = {}
@@ -138,7 +140,7 @@ class ClusterEstimationByLabel:
                         f"Failed to create cluster estimation for label {label}"
                     )
                     return False, None
-                
+
                 self.__label_to_cluster_estimation_model[label] = cluster_model
 
             # Runs cluster estimation for specific label

@@ -26,8 +26,8 @@ def cluster_estimation_worker(
 
     PARAMETERS
     ----------
-    
-    See `ClusterEstimation` for parameter descriptions. 
+
+    See `ClusterEstimation` for parameter descriptions.
 
     """
     worker_name = pathlib.Path(__file__).stem
