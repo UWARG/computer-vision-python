@@ -57,7 +57,9 @@ def data_merge_worker(
 
     setup_end_time = time.time()
 
-    local_logger.info(f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds.")
+    local_logger.info(
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+    )
 
     while not controller.is_exit_requested():
         iteration_start_time = time.time()
