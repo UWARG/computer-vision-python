@@ -56,7 +56,7 @@ def geolocation_worker(
     setup_end_time = time.time()
 
     local_logger.info(
-        f"{time.time()}: Class object creation took {setup_end_time - setup_start_time} seconds."
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
     )
 
     while not controller.is_exit_requested():
