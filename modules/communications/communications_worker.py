@@ -16,9 +16,11 @@ from ..common.modules.logger import logger
 
 def communications_worker(
     timeout: float,
+    period: float,
     home_position_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
+    message_output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
 ) -> None:
     """
@@ -89,11 +91,19 @@ def communications_worker(
         if is_invalid:
             continue
 
-        result, value = comm.run(input_data)
+        result, metadata, list_of_messages = comm.run(input_data)
         if not result:
             continue
 
-        output_queue.queue.put(value)
+        output_queue.queue.put(metadata)
+        message_output_queue.queue.put(metadata)
+
+        for message in list_of_messages:
+
+            time.sleep(period)
+
+            output_queue.queue.put(message)
+            message_output_queue.queue.put(message)
 
         iteration_end_time = time.time()
 
