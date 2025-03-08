@@ -15,7 +15,7 @@ from modules.common.modules.data_encoding import worker_enum
 from modules.flight_interface import flight_interface_worker
 
 
-MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:5762"
+MAVLINK_CONNECTION_ADDRESS = "/dev/ttyAMA0"
 FLIGHT_INTERFACE_TIMEOUT = 30.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
