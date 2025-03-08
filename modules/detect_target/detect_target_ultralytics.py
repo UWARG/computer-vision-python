@@ -18,6 +18,7 @@ class DetectTargetUltralyticsConfig:
     """
     Configuration for DetectTargetUltralytics.
     """
+    CPU_DEVICE = "cpu"
 
     def __init__(
         self,
@@ -57,7 +58,10 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = config.device
-        self.__enable_half_precision = self.__device != "cpu"
+        if self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE and not torch.cuda.is_available():
+            self.__local_logger.warning("CUDA not available. Falling back to CPU.")
+            self.__device = DetectTargetUltralyticsConfig.CPU_DEVICE
+        self.__enable_half_precision = self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE
         self.__model = ultralytics.YOLO(config.model_path)
         if config.override_full:
             self.__enable_half_precision = False
@@ -68,9 +72,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
 
-        if self.__device != "cpu" and not torch.cuda.is_available():
-            self.__local_logger.warning("CUDA not available. Falling back to CPU.")
-            self.__device = "cpu"
+        
 
     def run(
         self, data: image_and_time.ImageAndTime
@@ -132,7 +134,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
             filename = self.__filename_prefix + str(self.__counter)
 
             # Annotated image
-            cv2.imwrite(filename + ".png", image_annotated)  # type: ignore
+            cv2.imwrite(filename + ".png", image_annotated)
 
             self.__counter += 1
 
