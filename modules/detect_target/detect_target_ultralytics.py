@@ -58,6 +58,7 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         show_annotations: Display annotated images.
         save_name: filename prefix for logging detections and annotated images.
         """
+        self.__local_logger = local_logger
         self.__device = config.device
         if (
             self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE
@@ -70,7 +71,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         if config.override_full:
             self.__enable_half_precision = False
         self.__counter = 0
-        self.__local_logger = local_logger
         self.__show_annotations = show_annotations
         self.__filename_prefix = ""
         if save_name != "":
