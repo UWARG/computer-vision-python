@@ -18,6 +18,7 @@ class DetectTargetUltralyticsConfig:
     """
     Configuration for DetectTargetUltralytics.
     """
+
     CPU_DEVICE = "cpu"
 
     def __init__(
@@ -58,7 +59,10 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         save_name: filename prefix for logging detections and annotated images.
         """
         self.__device = config.device
-        if self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE and not torch.cuda.is_available():
+        if (
+            self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE
+            and not torch.cuda.is_available()
+        ):
             self.__local_logger.warning("CUDA not available. Falling back to CPU.")
             self.__device = DetectTargetUltralyticsConfig.CPU_DEVICE
         self.__enable_half_precision = self.__device != DetectTargetUltralyticsConfig.CPU_DEVICE
@@ -71,8 +75,6 @@ class DetectTargetUltralytics(base_detect_target.BaseDetectTarget):
         self.__filename_prefix = ""
         if save_name != "":
             self.__filename_prefix = save_name + "_" + str(int(time.time())) + "_"
-
-        
 
     def run(
         self, data: image_and_time.ImageAndTime
