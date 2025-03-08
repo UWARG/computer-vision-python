@@ -4,55 +4,55 @@ queue_max_size: 10
 
 video_input:
     worker_period: 1.0  # seconds
-    camera_enum: 0  # Enum values can be found in camera_factory.py
+    camera_enum: 1  # Enum values can be found in camera_factory.py
     width: 1920
     height: 1200
     # For camera_enum=0, use the OpenCV camera config. For camera_enum=1, use the PiCamera2 config
     # OpenCV camera config (regular cameras, enum 0)
-    camera_config:
-        device_index: 0
-    # PiCamera2 camera config (PiCamera NoIR, enum 1)
     # camera_config:
-    #     exposure_time: 250  # microseconds
-    #     analogue_gain: 64.0  # Sets ISO, 1.0 for normal, 64.0 for max, 0.0 for min
-    #     contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
-    #     lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
+    #     device_index: 0
+    # PiCamera2 camera config (PiCamera NoIR, enum 1)
+    camera_config:
+        exposure_time: 10  # microseconds
+        analogue_gain: 64.0  # Sets ISO, 1.0 for normal, 64.0 for max, 0.0 for min
+        contrast: 1.0  # Contrast, 1.0 for nomral, 32.0 for max, 0.0 for min
+        # lens_position: null  # Focal length, 1/m (0 for infinity, null for auto focus)
     log_images: true  # Set to true to save images
     image_name: "log_image"  # Image name when saving images
 
 detect_target:
     worker_count: 1
-    option: 0  # 0 is for Ultralytics and 1 is for brightspot (from detect_target_factory.py)
+    option: 1  # 0 is for Ultralytics and 1 is for brightspot (from detect_target_factory.py)
     save_prefix: "log_comp"
     # Ultralytics config (enum 0)
-    config:
-        device: 0
-        model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
-    # Brightspot config (enum 1)
     # config:
-    #     brightspot_percentile_threshold: 99.9
-    #     filter_by_color: True
-    #     blob_color: 255
-    #     filter_by_circularity: False
-    #     min_circularity: 0.01
-    #     max_circularity: 1
-    #     filter_by_inertia: True
-    #     min_inertia_ratio: 0.1
-    #     max_inertia_ratio: 1
-    #     filter_by_convexity: False
-    #     min_convexity: 0.01
-    #     max_convexity: 1
-    #     filter_by_area: True
-    #     min_area_pixels: 160
-    #     max_area_pixels: 2000
-    #     min_brightness_threshold: 50
-    #     min_average_brightness_threshold: 130
+    #     device: 0
+    #     model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
+    # Brightspot config (enum 1)
+    config:
+        brightspot_percentile_threshold: 99.99
+        filter_by_color: True
+        blob_color: 255
+        filter_by_circularity: False
+        min_circularity: 0.01
+        max_circularity: 1
+        filter_by_inertia: True
+        min_inertia_ratio: 0.1
+        max_inertia_ratio: 1
+        filter_by_convexity: False
+        min_convexity: 0.01
+        max_convexity: 1
+        filter_by_area: True
+        min_area_pixels: 160
+        max_area_pixels: 2000
+        min_brightness_threshold: 50
+        min_average_brightness_threshold: 120
 
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
     # than connecting to port 14550, which is the ground station
-    address: "tcp:localhost:5762"
-    timeout: 30.0  # seconds
+    address: "/dev/ttyAMA0"
+    timeout: 120.0  # seconds
     baud_rate: 57600  # symbol rate
     worker_period: 0.1  # seconds
 
@@ -72,12 +72,12 @@ geolocation:
     camera_orientation_roll: 0.0
 
 cluster_estimation:
-    min_activation_threshold: 25  # must be >= max_num_components
+    min_activation_threshold: 10  # must be >= max_num_components
     min_new_points_to_run: 3
     max_num_components: 10
     random_state: 0
     min_points_per_cluster: 3
 
 communications:
-    timeout: 60.0  # seconds
+    timeout: 120.0  # seconds
     worker_period: 0.5 # seconds
