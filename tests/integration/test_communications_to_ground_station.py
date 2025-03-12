@@ -15,7 +15,7 @@ from modules.common.modules.data_encoding import worker_enum
 from modules.flight_interface import flight_interface_worker
 
 
-MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
+MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:5762"
 FLIGHT_INTERFACE_TIMEOUT = 30.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
@@ -30,9 +30,9 @@ def apply_communications_test(
     """
     gps_coordinates = [
         position_global.PositionGlobal.create(43.47321268948186, -80.53950244232878, 10),  # E7
-        position_global.PositionGlobal.create(37.7749, 122.4194, 30),  # San Francisco
-        position_global.PositionGlobal.create(40.7128, 74.0060, -5.6),  # New York
-        position_global.PositionGlobal.create(51.5072, 0.1276, 20.1),  # London UK
+        position_global.PositionGlobal.create(37.752254, -122.454425, 30),  # San Francisco
+        position_global.PositionGlobal.create(40.772927, -73.972933, -5.6),  # New York
+        position_global.PositionGlobal.create(51.507479, -0.127764, 20.1),  # London UK
     ]
 
     # Place the GPS coordinates
@@ -61,10 +61,6 @@ def apply_communications_test(
     # Wait for processing
     time.sleep(10)
 
-    # Verify that stuff is sending
-    print(
-        "TEST OPERATOR ACTION REQUIRED: Open mission planner's MAVLink inspector or the groundside repo (https://github.com/UWARG/statustext-parser-2025) to check for MAVLink messages"
-    )
     return True
 
 
@@ -125,4 +121,8 @@ if __name__ == "__main__":
     if result_main < 0:
         print(f"ERROR: Status code: {result_main}")
 
+    # Verify that stuff is sending
+    print(
+        "TEST OPERATOR ACTION REQUIRED: Open mission planner's MAVLink inspector or the groundside repo (https://github.com/UWARG/statustext-parser-2025) to check for MAVLink messages"
+    )
     print("Done!")
