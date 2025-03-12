@@ -19,6 +19,7 @@ MAX_NUM_COMPONENTS = 3
 RANDOM_STATE = 0
 MIN_POINTS_PER_CLUSTER = 3
 
+
 def check_output_results(output_queue: queue_proxy_wrapper.QueueProxyWrapper) -> None:
     """
     Checking if the output from the worker is of the correct type
