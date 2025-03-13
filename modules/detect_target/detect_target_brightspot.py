@@ -151,7 +151,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             grey_image, combined_threshold, 255, cv2.THRESH_BINARY
         )
         if threshold_used == 0:
-            self.__local_logger.error(f"{time.time()}: Failed to threshold image.")
+            self.__local_logger.error(f"{time.time()}: Failed to percentile threshold image.")
             return False, None
         
         # cv2.imshow("Thresholded", bw_image)  # type: ignore
