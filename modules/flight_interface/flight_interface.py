@@ -79,6 +79,7 @@ class FlightInterface:
         """
         result, odometry = self.controller.get_odometry()
         if not result:
+            self.__logger.error("Could not get odometry")
             return False, None
 
         # Get Pylance to stop complaining
@@ -89,6 +90,7 @@ class FlightInterface:
             odometry,
         )
         if not result:
+            self.__logger.error("Could not convert odometry from global to local")
             return False, None
 
         # Get Pylance to stop complaining
@@ -96,6 +98,7 @@ class FlightInterface:
 
         result, odometry_and_time_object = odometry_and_time.OdometryAndTime.create(odometry_local)
         if not result:
+            self.__logger.error("Could not create an OdometryAndTime object")
             return False, None
 
         # Get Pylance to stop complaining
@@ -121,6 +124,7 @@ class FlightInterface:
             # Get current position.
             result, current_odometry = self.controller.get_odometry()
             if not result or current_odometry is None:
+                self.__logger.error("Could not get odometry")
                 return False
 
             # Convert current global position to local NED coordinates.
@@ -130,6 +134,7 @@ class FlightInterface:
                 )
             )
             if not result or current_local_odometry is None:
+                self.__logger.error("Could not convert odometry from global to local")
                 return False
 
             # Add relative offsets.
@@ -141,6 +146,7 @@ class FlightInterface:
                 target_north, target_east, target_down
             )
             if not result or target_local_position is None:
+                self.__logger.error("Could not create a PositionLocal object")
                 return False
 
             result, target_global_position = (
@@ -149,6 +155,7 @@ class FlightInterface:
                 )
             )
             if not result or target_global_position is None:
+                self.__logger.error("Could not convert new position from local to global")
                 return False
 
             # Move to target global position.
@@ -162,6 +169,7 @@ class FlightInterface:
             )
 
             if not result or target_position is None:
+                self.__logger.error("Could not create a PositionGlobal object")
                 return False
 
             return self.controller.move_to_position(target_position)
@@ -175,6 +183,7 @@ class FlightInterface:
             # Get current position.
             result, current_odometry = self.controller.get_odometry()
             if not result or current_odometry is None:
+                self.__logger.error("Could not get odometry")
                 return False
 
             # Convert current global position to local NED coordinates
@@ -184,6 +193,7 @@ class FlightInterface:
                 )
             )
             if not result or current_local_odometry is None:
+                self.__logger.error("Could not convert odometry from global to local")
                 return False
 
             # Add relative offsets.
@@ -196,6 +206,7 @@ class FlightInterface:
                 target_north, target_east, target_down
             )
             if not result or target_local_position is None:
+                self.__logger.error("Could not create a PositionLocal object")
                 return False
             # Convert target local position to global position.
             result, target_global_position = (
@@ -204,12 +215,14 @@ class FlightInterface:
                 )
             )
             if not result or target_global_position is None:
+                self.__logger.error("Could not convert new position from local to global")
                 return False
             # Upload land command.
             result = self.controller.upload_land_command(
                 target_global_position.latitude, target_global_position.longitude
             )
             if not result:
+                self.__logger.error("Could not upload land command")
                 return False
 
             return self.controller.set_flight_mode("AUTO")
@@ -218,9 +231,11 @@ class FlightInterface:
             # Land at absolute position in local NED coordinates
             result = self.controller.upload_land_command(command_position[0], command_position[1])
             if not result:
+                self.__logger.error("Could not upload land command")
                 return False
 
             return self.controller.set_flight_mode("AUTO")
 
         # Unsupported commands
+        self.__logger.error(f"Command {command_type} is unsupported")
         return False

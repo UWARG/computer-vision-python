@@ -102,6 +102,7 @@ class Communications:
                 return False, None, None
 
             encoded_position_global_objects.append(message)
+        self.__logger.debug(f"Encoded messages: {encoded_position_global_objects}")
 
         result, metadata = metadata_encoding_decoding.encode_metadata(
             worker_enum.WorkerEnum.COMMUNICATIONS_WORKER, len(encoded_position_global_objects)
@@ -109,5 +110,6 @@ class Communications:
         if not result:
             self.__logger.error("Failed to encode metadata", True)
             return False, None, None
+        self.__logger.debug(f"Encoded metadata: {metadata}")
 
         return True, metadata, encoded_position_global_objects
