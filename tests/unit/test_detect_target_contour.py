@@ -18,6 +18,7 @@ LOGGER_NAME = ""
 # Test functions use test fixture signature names and access class privates
 # pylint: disable=protected-access,redefined-outer-name, duplicate-code
 
+
 @pytest.fixture
 def single_circle() -> generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes:
     """
@@ -102,14 +103,14 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
 
 
 def compare_detections(
-    actual_and_expected_detections: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes
+    actual_and_expected_detections: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
 ) -> None:
     """
     Compare expected and actual detections.
-    
+
     actual_and_expected_detections: Test data containing both actual image and time and expected bounding boxes.
     """
-    actual = actual_and_expected_detections.image_and_time_data.detector  
+    actual = actual_and_expected_detections.image_and_time_data.detector
     expected = actual_and_expected_detections.bounding_box_list
 
     assert len(actual) == len(expected)
@@ -124,7 +125,7 @@ def compare_detections(
     for i, expected_detection in enumerate(expected):
         actual_detection = sorted_actual_detections[i]
 
-        # Check label and confidence 
+        # Check label and confidence
         assert actual_detection.label == expected_detection[1]
         np.testing.assert_almost_equal(
             actual_detection.confidence,
@@ -180,8 +181,7 @@ class TestDetector:
 
         # Create new object with actual detections
         test_data = generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes(
-            actual,
-            single_circle.bounding_box_list
+            actual, single_circle.bounding_box_list
         )
         compare_detections(test_data)
 
