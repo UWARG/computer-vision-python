@@ -16,15 +16,17 @@ from ..common.modules.logger import logger
 MIN_CONTOUR_AREA = 100
 MAX_CIRCULARITY = 1.3
 MIN_CIRCULARITY = 0.7
+
 UPPER_BLUE = np.array([130, 255, 255])
 LOWER_BLUE = np.array([100, 50, 50])
+
 CONFIDENCE = 1.0
 LABEL = 0
 
 
 class DetectTargetContour(base_detect_target.BaseDetectTarget):
     """
-    Predicts annd locates landing pads using the classical computer vision methodology.
+    Predicts and locates landing pads using the classical computer vision methodology.
     """
 
     def __init__(
@@ -49,7 +51,7 @@ class DetectTargetContour(base_detect_target.BaseDetectTarget):
         """
         Detects landing pads using contours/classical CV.
 
-        image: Current image frame.
+        image_and_time_data: Data for the current image and time.
         timestamp: Timestamp for the detections.
 
         Return: Success, the DetectionsAndTime object, and the annotated image.

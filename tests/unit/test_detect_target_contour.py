@@ -5,12 +5,10 @@ Test contour detection module.
 import numpy as np
 import pytest
 
-from tests.unit import generate_detect_target_contour
 from modules import detections_and_time
-from modules import image_and_time
 from modules.detect_target import detect_target_contour
-from modules.common.modules.logger import logger  # Changed from relative to absolute import
-
+from modules.common.modules.logger import logger
+from tests.unit import generate_detect_target_contour
 
 BOUNDING_BOX_PRECISION_TOLERANCE = -1  # Tolerance > 1
 CONFIDENCE_PRECISION_TOLERANCE = 2
@@ -18,12 +16,10 @@ LOGGER_NAME = ""
 
 
 # Test functions use test fixture signature names and access class privates
-# No enable
-# pylint: disable=protected-access,redefined-outer-name
-
+# pylint: disable=protected-access,redefined-outer-name, duplicate-code
 
 @pytest.fixture
-def single_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
+def single_circle() -> generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Loads the data for the single basic circle.
     """
@@ -38,7 +34,7 @@ def single_circle() -> generate_detect_target_contour.InputImageAndExpectedBound
 
 
 @pytest.fixture
-def single_blurry_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
+def blurry_circle() -> generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Loads the data for the single blury circle.
     """
@@ -53,7 +49,7 @@ def single_blurry_circle() -> generate_detect_target_contour.InputImageAndExpect
 
 
 @pytest.fixture
-def single_stretched_circle() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
+def stretched_circle() -> generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Loads the data for the single stretched circle.
     """
@@ -68,7 +64,7 @@ def single_stretched_circle() -> generate_detect_target_contour.InputImageAndExp
 
 
 @pytest.fixture
-def multiple_circles() -> generate_detect_target_contour.InputImageAndExpectedBoundingBoxes:  # type: ignore
+def multiple_circles() -> generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Loads the data for the multiple stretched circles.
     """
@@ -105,175 +101,56 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
     yield detection  # type: ignore
 
 
-@pytest.fixture()
-def image_easy(single_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load the single basic landing pad.
-    """
-
-    image = single_circle.image
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def blurry_image(single_blurry_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load the single blurry landing pad.
-    """
-
-    image = single_blurry_circle.image
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def stretched_image(single_stretched_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load the single stretched landing pad.
-    """
-
-    image = single_stretched_circle.image
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def multiple_images(multiple_circles: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load the multiple landing pads.
-    """
-
-    image = multiple_circles.image
-    result, actual_image = image_and_time.ImageAndTime.create(image)
-    assert result
-    assert actual_image is not None
-    yield actual_image  # type: ignore
-
-
-@pytest.fixture()
-def expected_easy(single_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected a basic image detections.
-    """
-
-    expected = single_circle.bounding_box_list
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_blur(single_blurry_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected the blured pad image detections.
-    """
-
-    expected = single_blurry_circle.bounding_box_list
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_stretch(single_stretched_circle: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected a stretched pad image detections.
-    """
-
-    expected = single_stretched_circle.bounding_box_list
-    yield create_detections(expected)  # type: ignore
-
-
-@pytest.fixture()
-def expected_multiple(multiple_circles: generate_detect_target_contour.InputImageAndExpectedBoundingBoxes) -> image_and_time.ImageAndTime:  # type: ignore
-    """
-    Load expected multiple pads image detections.
-    """
-
-    expected = multiple_circles.bounding_box_list
-    yield create_detections(expected)  # type: ignore
-
-
-# pylint:disable=duplicate-code
 def compare_detections(
-    actual: detections_and_time.DetectionsAndTime, expected: detections_and_time.DetectionsAndTime
+    actual: list[detections_and_time.Detection], expected: list[list[float]]
 ) -> None:
     """
     Compare expected and actual detections.
     """
-    assert len(actual.detections) == len(expected.detections)
-
-    # Using integer indexing for both lists
-    # pylint: disable-next=consider-using-enumerate
+    assert len(actual) == len(expected)
 
     # Ordered for the mapping to the corresponding detections
     sorted_actual_detections = sorted(
-        actual.detections,
+        actual,
         reverse=True,
-        key=lambda box: abs((box.x_1 - box.x_2) * (box.y_1 - box.y_2)),
+        key=lambda box: abs((box.x_2 - box.x_1) * (box.y_2 - box.y_1)),
     )
 
-    for i in range(0, len(expected.detections)):
-        expected_detection = expected.detections[i]
+    for i, expected_detection in enumerate(expected):
         actual_detection = sorted_actual_detections[i]
 
-        assert expected_detection.label == actual_detection.label
+        # Check label and confidence
+        assert actual_detection.label == expected_detection[1]
         np.testing.assert_almost_equal(
-            expected_detection.confidence,
             actual_detection.confidence,
+            expected_detection[0],
             decimal=CONFIDENCE_PRECISION_TOLERANCE,
         )
 
+        # Check bounding box coordinates
         np.testing.assert_almost_equal(
             actual_detection.x_1,
-            expected_detection.x_1,
+            expected_detection[2],
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
             actual_detection.y_1,
-            expected_detection.y_1,
+            expected_detection[3],
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
             actual_detection.x_2,
-            expected_detection.x_2,
+            expected_detection[4],
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
 
         np.testing.assert_almost_equal(
             actual_detection.y_2,
-            expected_detection.y_2,
+            expected_detection[5],
             decimal=BOUNDING_BOX_PRECISION_TOLERANCE,
         )
-
-
-def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
-    """
-    Create DetectionsAndTime from expected.
-    Format: [confidence, label, x_1, y_1, x_2, y_2] .
-    """
-    assert detections_from_file.shape[1] == 6
-
-    result, detections = detections_and_time.DetectionsAndTime.create(0)
-    assert result
-    assert detections is not None
-
-    for i in range(0, detections_from_file.shape[0]):
-        result, detection = detections_and_time.Detection.create(
-            detections_from_file[i][2:],
-            int(detections_from_file[i][1]),
-            detections_from_file[i][0],
-        )
-        assert result
-        assert detection is not None
-        detections.append(detection)
-
-    return detections
 
 
 class TestDetector:
@@ -284,71 +161,67 @@ class TestDetector:
     def test_single_circle(
         self,
         detector: detect_target_contour.DetectTargetContour,
-        image_easy: image_and_time.ImageAndTime,
-        expected_easy: detections_and_time.DetectionsAndTime,
+        single_circle: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
     ) -> None:
         """
         Run the detection for the single cirucluar landing pad.
         """
         # Run
-        result, actual = detector.run(image_easy)
+        result, actual = detector.run(single_circle.image_and_time_data)
 
         # Test
         assert result
         assert actual is not None
 
-        compare_detections(actual, expected_easy)
+        compare_detections(actual.detections, single_circle.bounding_box_list)
 
     def test_blurry_circle(
         self,
         detector: detect_target_contour.DetectTargetContour,
-        blurry_image: image_and_time.ImageAndTime,
-        expected_blur: detections_and_time.DetectionsAndTime,
+        blurry_circle: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
     ) -> None:
         """
         Run the detection for the blury cicular circle.
         """
         # Run
-        result, actual = detector.run(blurry_image)
+        result, actual = detector.run(blurry_circle.image_and_time_data)
 
         # Test
         assert result
         assert actual is not None
 
-        compare_detections(actual, expected_blur)
+        compare_detections(actual.detections, blurry_circle.bounding_box_list)
 
-    def test_stretch(
+    def test_stretched_circle(
         self,
         detector: detect_target_contour.DetectTargetContour,
-        stretched_image: image_and_time.ImageAndTime,
-        expected_stretch: detections_and_time.DetectionsAndTime,
+        stretched_circle: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
     ) -> None:
         """
-        Run the detection for the single stretched landing pad.
+        Run the detection for a single stretched circular landing pad.
         """
         # Run
-        result, actual = detector.run(stretched_image)
+        result, actual = detector.run(stretched_circle.image_and_time_data)
 
         # Test
         assert result
         assert actual is not None
 
-        compare_detections(actual, expected_stretch)
+        compare_detections(actual.detections, stretched_circle.bounding_box_list)
 
-    def test_multiple(
+    def test_multiple_circles(
         self,
         detector: detect_target_contour.DetectTargetContour,
-        multiple_images: image_and_time.ImageAndTime,
-        expected_multiple: detections_and_time.DetectionsAndTime,
+        multiple_circles: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
     ) -> None:
         """
         Run the detection for the multiple landing pads.
         """
         # Run
-        result, actual = detector.run(multiple_images)
+        result, actual = detector.run(multiple_circles.image_and_time_data)
 
         # Test
         assert result
         assert actual is not None
 
-        compare_detections(actual, expected_multiple)
+        compare_detections(actual.detections, multiple_circles.bounding_box_list)

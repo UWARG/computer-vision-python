@@ -8,6 +8,7 @@ import math
 import numpy as np
 
 from modules import detections_and_time
+from modules import image_and_time
 
 
 LANDING_PAD_COLOUR_BLUE = (100, 50, 50)  # BGR
@@ -57,32 +58,27 @@ class BoundingBox:
 
     def __init__(self, top_left: tuple[float, float], bottom_right: tuple[float, float]):
         """
-        top_left: pixel coordinates representing the top left corner of the bounding box on an image.
+        top_left: The pixel coordinates representing the top left corner of the bounding box on an image.
         bottom_right: pixel coordinates representing the bottom right corner of the bounding box on an image.
         """
         self.top_left = top_left
         self.bottom_right = bottom_right
 
 
-class InputImageAndExpectedBoundingBoxes:
+class InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Struct to hold the data needed to perform the tests.
     """
 
-    def __init__(self, image: np.ndarray, boxes_list: np.ndarray):
+    def __init__(self, image_and_time_data: image_and_time.ImageAndTime, bounding_box_list: list):
         """
-        image: A numpy array that represents the image needed to be tested.
-        bounding_box_list: A numpy array that holds a list of expected bounding box coordinates.
-
-        The bounding box coordinates are in the following format:
-            top_left_x = boxes_list[0]
-            top_left_y = boxes_list[1]
-
-            bottom_right_x = boxes_list[2]
-            bottom_right_x = boxes_list[3]
+        image_and_time_data: ImageAndTime object containing the image and timestamp
+        bounding_box_list: A list that holds expected bounding box coordinates.
+        Given in the following format:
+            [conf, label, top_left_x, top_left_y, bottom_right_x, bottom_right_y]
         """
-        self.image = image
-        self.bounding_box_list = boxes_list
+        self.image_and_time_data = image_and_time_data
+        self.bounding_box_list = bounding_box_list
 
 
 def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
@@ -168,7 +164,7 @@ def draw_landing_pad(
     width = 2 * math.sqrt(ux**2 + vx**2)
     height = 2 * math.sqrt(uy**2 + vy**2)
 
-    top_left = (int(max(centre_x - (0.5) * width, 0)), int(max(centre_y - (0.5) * height, 0)))
+    top_left = (max(centre_x - (0.5) * width, 0), max(centre_y - (0.5) * height, 0))
     bottom_right = (
         min(centre_x + (0.5) * width, image.shape[1]),
         min(centre_y + (0.5) * height, image.shape[0]),
@@ -193,7 +189,9 @@ def draw_landing_pad(
     return NumpyImage(image), bounding_box
 
 
-def create_test(landing_list: list[LandingPadImageConfig]) -> InputImageAndExpectedBoundingBoxes:
+def create_test(
+    landing_list: list[LandingPadImageConfig],
+) -> InputImageAndTimeAndExpectedBoundingBoxes:
     """
     Generates test cases given a data set.
 
@@ -201,7 +199,7 @@ def create_test(landing_list: list[LandingPadImageConfig]) -> InputImageAndExpec
 
     Returns: The image and expected bounding box.
     """
-    image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.int8)
+    image = np.full(shape=(1000, 2000, 3), fill_value=255, dtype=np.uint8)
     confidence_and_label = [1, 0]
 
     # List to hold the bounding boxes.
@@ -220,7 +218,10 @@ def create_test(landing_list: list[LandingPadImageConfig]) -> InputImageAndExpec
         boxes_list, reverse=True, key=lambda box: abs((box[4] - box[2]) * (box[5] - box[3]))
     )
 
-    boxes_list = np.array(boxes_list)
     image = image.astype(np.uint8)
+    result, image_and_time_data = image_and_time.ImageAndTime.create(image)
 
-    return InputImageAndExpectedBoundingBoxes(image, boxes_list)
+    assert result
+    assert image_and_time_data is not None
+
+    return InputImageAndTimeAndExpectedBoundingBoxes(image_and_time_data, boxes_list)
