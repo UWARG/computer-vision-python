@@ -4,6 +4,7 @@ Gets detections in world space and outputs estimations of objects.
 
 import os
 import pathlib
+import time
 
 from modules import detection_in_world
 from utilities.workers import queue_proxy_wrapper
@@ -47,6 +48,8 @@ def cluster_estimation_worker(
     worker_controller: worker_controller.WorkerController
         How the main process communicates to this worker process.
     """
+    setup_start_time = time.time()
+
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
@@ -72,7 +75,15 @@ def cluster_estimation_worker(
     # Get Pylance to stop complaining
     assert estimator is not None
 
+    setup_end_time = time.time()
+
+    local_logger.info(
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+    )
+
     while not controller.is_exit_requested():
+        iteration_start_time = time.time()
+
         controller.check_pause()
 
         input_data = input_queue.queue.get()
@@ -99,3 +110,9 @@ def cluster_estimation_worker(
             continue
 
         output_queue.queue.put(value)
+
+        iteration_end_time = time.time()
+
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )
