@@ -81,30 +81,6 @@ class InputImageAndTimeAndExpectedBoundingBoxes:
         self.bounding_box_list = bounding_box_list
 
 
-def create_detections(detections_from_file: np.ndarray) -> detections_and_time.DetectionsAndTime:
-    """
-    Create DetectionsAndTime from expected.
-    Format: [confidence, label, x_1, y_1, x_2, y_2] .
-    """
-    assert detections_from_file.shape[1] == 6
-
-    result, detections = detections_and_time.DetectionsAndTime.create(0)
-    assert result
-    assert detections is not None
-
-    for i in range(0, detections_from_file.shape[0]):
-        result, detection = detections_and_time.Detection.create(
-            detections_from_file[i][2:],
-            int(detections_from_file[i][1]),
-            detections_from_file[i][0],
-        )
-        assert result
-        assert detection is not None
-        detections.append(detection)
-
-    return detections
-
-
 def add_blurred_landing_pad(
     background: np.ndarray, landing_data: LandingPadImageConfig
 ) -> NumpyImage:
