@@ -102,11 +102,16 @@ def detector() -> detect_target_contour.DetectTargetContour:  # type: ignore
 
 
 def compare_detections(
-    actual: list[detections_and_time.Detection], expected: list[list[float]]
+    actual_and_expected_detections: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes
 ) -> None:
     """
     Compare expected and actual detections.
+    
+    actual_and_expected_detections: Test data containing both actual image and time and expected bounding boxes.
     """
+    actual = actual_and_expected_detections.image_and_time_data.detector  
+    expected = actual_and_expected_detections.bounding_box_list
+
     assert len(actual) == len(expected)
 
     # Ordered for the mapping to the corresponding detections
@@ -119,7 +124,7 @@ def compare_detections(
     for i, expected_detection in enumerate(expected):
         actual_detection = sorted_actual_detections[i]
 
-        # Check label and confidence
+        # Check label and confidence 
         assert actual_detection.label == expected_detection[1]
         np.testing.assert_almost_equal(
             actual_detection.confidence,
@@ -164,7 +169,7 @@ class TestDetector:
         single_circle: generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes,
     ) -> None:
         """
-        Run the detection for the single cirucluar landing pad.
+        Run the detection for the single circular landing pad.
         """
         # Run
         result, actual = detector.run(single_circle.image_and_time_data)
@@ -173,7 +178,12 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        compare_detections(actual.detections, single_circle.bounding_box_list)
+        # Create new object with actual detections
+        test_data = generate_detect_target_contour.InputImageAndTimeAndExpectedBoundingBoxes(
+            actual,
+            single_circle.bounding_box_list
+        )
+        compare_detections(test_data)
 
     def test_blurry_circle(
         self,
@@ -190,7 +200,7 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        compare_detections(actual.detections, blurry_circle.bounding_box_list)
+        compare_detections(blurry_circle)
 
     def test_stretched_circle(
         self,
@@ -207,7 +217,7 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        compare_detections(actual.detections, stretched_circle.bounding_box_list)
+        compare_detections(stretched_circle)
 
     def test_multiple_circles(
         self,
@@ -224,4 +234,4 @@ class TestDetector:
         assert result
         assert actual is not None
 
-        compare_detections(actual.detections, multiple_circles.bounding_box_list)
+        compare_detections(multiple_circles.bounding_box_list)
