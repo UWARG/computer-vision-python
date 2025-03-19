@@ -33,6 +33,7 @@ def flight_interface_worker(
     controller is how the main process communicates to this worker process.
     """
     # TODO: Error handling
+    setup_start_time = time.time()
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -59,7 +60,15 @@ def flight_interface_worker(
     home_position = interface.get_home_position()
     communications_output_queue.queue.put(home_position)
 
+    setup_end_time = time.time()
+
+    local_logger.info(
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+    )
+
     while not controller.is_exit_requested():
+        iteration_start_time = time.time()
+
         controller.check_pause()
 
         time.sleep(period)
@@ -80,3 +89,9 @@ def flight_interface_worker(
             command = input_queue.queue.get()
             # Pass the decision command to the flight controller
             interface.apply_decision(command)
+
+        iteration_end_time = time.time()
+
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )

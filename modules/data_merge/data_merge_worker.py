@@ -5,6 +5,7 @@ Merges detections and telemetry by time.
 import os
 import pathlib
 import queue
+import time
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -31,6 +32,8 @@ def data_merge_worker(
     Merge work is done in the worker process as the queues and control mechanisms
     are naturally available.
     """
+    setup_start_time = time.time()
+
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
@@ -52,7 +55,15 @@ def data_merge_worker(
         local_logger.error("Queue timed out on startup", True)
         return
 
+    setup_end_time = time.time()
+
+    local_logger.info(
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+    )
+
     while not controller.is_exit_requested():
+        iteration_start_time = time.time()
+
         controller.check_pause()
 
         detections: detections_and_time.DetectionsAndTime = detections_input_queue.queue.get()
@@ -107,3 +118,9 @@ def data_merge_worker(
         assert merged is not None
 
         output_queue.queue.put(merged)
+
+        iteration_end_time = time.time()
+
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )

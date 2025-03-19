@@ -32,6 +32,8 @@ def video_input_worker(
     output_queue is the data queue.
     controller is how the main process communicates to this worker process.
     """
+    setup_start_time = time.time()
+
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
     result, local_logger = logger.Logger.create(f"{worker_name}_{process_id}", True)
@@ -53,7 +55,15 @@ def video_input_worker(
     # Get Pylance to stop complaining
     assert input_device is not None
 
+    setup_end_time = time.time()
+
+    local_logger.info(
+        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+    )
+
     while not controller.is_exit_requested():
+        iteration_start_time = time.time()
+
         controller.check_pause()
 
         time.sleep(period)
@@ -63,3 +73,9 @@ def video_input_worker(
             continue
 
         output_queue.queue.put(value)
+
+        iteration_end_time = time.time()
+
+        local_logger.info(
+            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+        )
