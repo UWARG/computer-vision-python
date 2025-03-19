@@ -27,7 +27,7 @@ BRIGHTSPOT_OPTION = detect_target_factory.DetectTargetOption.CV_BRIGHTSPOT
 # Logging is identical to detect_target_ultralytics.py
 # pylint: disable=duplicate-code
 BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
-    brightspot_percentile_threshold=98.0,
+    brightspot_percentile_threshold=99.5,
     filter_by_color=True,
     blob_color=255,
     filter_by_circularity=False,
@@ -40,9 +40,10 @@ BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspotConfig(
     min_convexity=0.01,
     max_convexity=1,
     filter_by_area=True,
-    min_area_pixels=50,
-    max_area_pixels=640,
+    min_area_pixels=100,
+    max_area_pixels=2000,
     min_brightness_threshold=50,
+    min_average_brightness_threshold=120,
 )
 # pylint: enable=duplicate-code
 
