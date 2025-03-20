@@ -16,6 +16,7 @@ MIN_NEW_POINTS_TO_RUN = 10
 MAX_NUM_COMPONENTS = 10
 RNG_SEED = 0
 CENTRE_BOX_SIZE = 500
+MIN_POINTS_PER_CLUSTER = 3
 
 # Test functions use test fixture signature names and access class privates
 # No enable
@@ -37,6 +38,7 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
         MAX_NUM_COMPONENTS,
         RNG_SEED,
         test_logger,
+        MIN_POINTS_PER_CLUSTER,
     )
     assert result
     assert model is not None
@@ -489,3 +491,33 @@ class TestCorrectClusterPositionOutput:
                     break
 
             assert is_match
+
+
+class TestMinimumPointsPerCluster:
+    """
+    Tests that clusters with fewer than the minimum required points are filtered out.
+    """
+
+    __STD_DEV_REG = 1
+
+    def test_outlier_is_filtered(self, cluster_model: cluster_estimation.ClusterEstimation) -> None:
+        """
+        Verify that a single outlier (cluster with only one point) is filtered out,
+        while a valid cluster with enough points is retained.
+        """
+        # Setup
+        valid_detections, valid_cluster_positions = generate_cluster_data([100], self.__STD_DEV_REG)
+        outlier_detections = generate_points_away_from_cluster(
+            num_points_to_generate=1,
+            minimum_distance_from_cluster=20,
+            cluster_positions=valid_cluster_positions,
+        )
+        generated_detections = valid_detections + outlier_detections
+
+        # Run
+        result, detections_in_world = cluster_model.run(generated_detections, False)
+
+        # Test
+        assert result
+        assert detections_in_world is not None
+        assert len(detections_in_world) == 1

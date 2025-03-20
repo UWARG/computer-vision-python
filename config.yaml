@@ -76,6 +76,7 @@ cluster_estimation:
     min_new_points_to_run: 3
     max_num_components: 10
     random_state: 0
+    min_points_per_cluster: 3
 
 communications:
     timeout: 60.0  # seconds
