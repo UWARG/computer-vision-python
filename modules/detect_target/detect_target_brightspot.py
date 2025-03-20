@@ -134,7 +134,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         # pylint: disable-next=broad-exception-caught
         except Exception as exception:
             self.__local_logger.error(
-                f"{time.time()}: Failed to convert to greyscale, exception: {exception}"
+                f"Failed to convert to greyscale, exception: {exception}"
             )
             return False, None
 
@@ -223,7 +223,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         # Process bright spot detection
         result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
         if not result:
-            self.__local_logger.error(f"{time.time()}: Failed to create detections for image.")
+            self.__local_logger.error("Failed to create detections for image.")
             return False, None
 
         # Get Pylance to stop complaining
@@ -238,7 +238,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
                 bounds, DETECTION_LABEL, CONFIDENCE
             )
             if not result:
-                self.__local_logger.error(f"{time.time()}: Failed to create bounding boxes.")
+                self.__local_logger.error("Failed to create bounding boxes.")
                 return False, None
 
             # Get Pylance to stop complaining
@@ -252,7 +252,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         # Logging
         self.__local_logger.info(
-            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
+            f"Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
         )
 
         if self.__filename_prefix != "":
