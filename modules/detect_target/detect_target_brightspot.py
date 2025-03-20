@@ -65,6 +65,7 @@ class DetectTargetBrightspotConfig:
         min_area_pixels: Minimum area in pixels.
         max_area_pixels: Maximum area in pixels.
         min_brightness_threshold: Minimum brightness threshold for bright spots.
+        min_average_brightness_threshold: Minimum absolute average brightness of detected blobs.
         """
         self.brightspot_percentile_threshold = brightspot_percentile_threshold
         self.filter_by_color = filter_by_color
@@ -150,11 +151,8 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
             grey_image, combined_threshold, 255, cv2.THRESH_BINARY
         )
         if threshold_used == 0:
-            self.__local_logger.error(f"{time.time()}: Failed to percentile threshold image.")
+            self.__local_logger.error("Failed to percentile threshold image.")
             return False, None
-
-        # cv2.imshow("Thresholded", bw_image)  # type: ignore
-        # cv2.waitKey(0)  # type: ignore
 
         # Set up SimpleBlobDetector
         params = cv2.SimpleBlobDetector_Params()
@@ -178,9 +176,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         # A lack of detections is not an error, but should still not be forwarded
         if len(keypoints) == 0:
-            self.__local_logger.info(
-                f"{time.time()}: No brightspots detected (before blob average filter)."
-            )
+            self.__local_logger.info("No brightspots detected (before blob average filter).")
             return False, None
 
         # Compute the average brightness of each blob
@@ -221,15 +217,8 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         # A lack of detections is not an error, but should still not be forwarded
         if len(filtered_keypoints) == 0:
-            self.__local_logger.info(
-                f"{time.time()}: No brightspots detected (after blob average filter)."
-            )
+            self.__local_logger.info("No brightspots detected (after blob average filter).")
             return False, None
-
-        # Annotate the image (green circle) with detected keypoints
-        image_annotated = cv2.drawKeypoints(
-            image, filtered_keypoints, None, (0, 255, 0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS
-        )
 
         # Process bright spot detection
         result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
@@ -268,6 +257,15 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
+
+            # Annotate the image (green circle) with detected keypoints
+            image_annotated = cv2.drawKeypoints(
+                image,
+                filtered_keypoints,
+                None,
+                (0, 255, 0),
+                cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
+            )
 
             # Annotated image
             cv2.imwrite(filename + ".png", image_annotated)  # type: ignore

@@ -59,7 +59,7 @@ ULTRALYTICS_CONFIG = detect_target_ultralytics.DetectTargetUltralyticsConfig(
 )
 
 SHOW_ANNOTATIONS = False
-SAVE_NAME = "test"  # No need to save images
+SAVE_NAME = ""  # No need to save images
 
 WORK_COUNT = 3
 DELAY_FOR_SIMULATED_ULTRALYTICS_WORKER = 1  # seconds
