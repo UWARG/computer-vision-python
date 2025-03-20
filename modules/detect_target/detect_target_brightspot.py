@@ -43,6 +43,8 @@ class DetectTargetBrightspotConfig:
         filter_by_area: bool,
         min_area_pixels: int,
         max_area_pixels: int,
+        min_brightness_threshold: int,
+        min_average_brightness_threshold: int,
     ) -> None:
         """
         Initializes the configuration for DetectTargetBrightspot.
@@ -62,6 +64,8 @@ class DetectTargetBrightspotConfig:
         filter_by_area: Whether to filter by area.
         min_area_pixels: Minimum area in pixels.
         max_area_pixels: Maximum area in pixels.
+        min_brightness_threshold: Minimum brightness threshold for bright spots.
+        min_average_brightness_threshold: Minimum absolute average brightness of detected blobs.
         """
         self.brightspot_percentile_threshold = brightspot_percentile_threshold
         self.filter_by_color = filter_by_color
@@ -78,6 +82,8 @@ class DetectTargetBrightspotConfig:
         self.filter_by_area = filter_by_area
         self.min_area_pixels = min_area_pixels
         self.max_area_pixels = max_area_pixels
+        self.min_brightness_threshold = min_brightness_threshold
+        self.min_average_brightness_threshold = min_average_brightness_threshold
 
 
 # pylint: enable=too-many-instance-attributes
@@ -128,20 +134,24 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         # pylint: disable-next=broad-exception-caught
         except Exception as exception:
             self.__local_logger.error(
-                f"{time.time()}: Failed to convert to greyscale, exception: {exception}"
+                f"Failed to convert to greyscale, exception: {exception}"
             )
             return False, None
 
+        # Calculate the percentile threshold for bright spots
         brightspot_threshold = np.percentile(
             grey_image, self.__config.brightspot_percentile_threshold
         )
 
-        # Apply thresholding to isolate bright spots
+        # Compute the maximum of the percentile threshold and the minimum brightness threshold
+        combined_threshold = max(brightspot_threshold, self.__config.min_brightness_threshold)
+
+        # Apply combined thresholding to isolate bright spots
         threshold_used, bw_image = cv2.threshold(
-            grey_image, brightspot_threshold, 255, cv2.THRESH_BINARY
+            grey_image, combined_threshold, 255, cv2.THRESH_BINARY
         )
         if threshold_used == 0:
-            self.__local_logger.error(f"{time.time()}: Failed to threshold image.")
+            self.__local_logger.error("Failed to percentile threshold image.")
             return False, None
 
         # Set up SimpleBlobDetector
@@ -166,25 +176,61 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         # A lack of detections is not an error, but should still not be forwarded
         if len(keypoints) == 0:
-            self.__local_logger.info(f"{time.time()}: No brightspots detected.")
+            self.__local_logger.info("No brightspots detected (before blob average filter).")
             return False, None
 
-        # Annotate the image (green circle) with detected keypoints
-        image_annotated = cv2.drawKeypoints(
-            image, keypoints, None, (0, 255, 0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS
-        )
+        # Compute the average brightness of each blob
+        average_brightness_list = []
+
+        for i, keypoint in enumerate(keypoints):
+            x, y = keypoint.pt  # Center of the blob
+            radius = keypoint.size / 2  # Radius of the blob
+
+            # Define a square region of interest (ROI) around the blob
+            x_min = int(max(0, x - radius))
+            x_max = int(min(grey_image.shape[1], x + radius))
+            y_min = int(max(0, y - radius))
+            y_max = int(min(grey_image.shape[0], y + radius))
+
+            # Create a circular mask for the blob
+            mask = np.zeros((y_max - y_min, x_max - x_min), dtype=np.uint8)
+            # Circle centered at middle of mask
+            cv2.circle(mask, (int(radius), int(radius)), int(radius), 255, -1)
+
+            # Extract the ROI from the grayscale image
+            roi = grey_image[y_min:y_max, x_min:x_max]
+
+            # Apply the mask to the ROI
+            masked_roi = cv2.bitwise_and(roi, roi, mask=mask)
+
+            # Calculate the mean brightness of the blob
+            mean_brightness = cv2.mean(masked_roi, mask=mask)[0]
+            # append index into list to keep track of associated keypoint
+            average_brightness_list.append((mean_brightness, i))
+
+        # filter the blobs by their average brightness
+        filtered_keypoints = []
+        for brightness, idx in average_brightness_list:
+            # Only append associated keypoint if the blob average is bright enough
+            if brightness >= self.__config.min_average_brightness_threshold:
+                filtered_keypoints.append(keypoints[idx])
+
+        # A lack of detections is not an error, but should still not be forwarded
+        if len(filtered_keypoints) == 0:
+            self.__local_logger.info("No brightspots detected (after blob average filter).")
+            return False, None
 
         # Process bright spot detection
         result, detections = detections_and_time.DetectionsAndTime.create(data.timestamp)
         if not result:
-            self.__local_logger.error(f"{time.time()}: Failed to create detections for image.")
+            self.__local_logger.error("Failed to create detections for image.")
             return False, None
 
         # Get Pylance to stop complaining
         assert detections is not None
 
         # Draw bounding boxes around detected keypoints
-        for keypoint in keypoints:
+        for keypoint in filtered_keypoints:
             x, y = keypoint.pt
             size = keypoint.size
             bounds = np.array([x - size / 2, y - size / 2, x + size / 2, y + size / 2])
@@ -192,7 +238,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
                 bounds, DETECTION_LABEL, CONFIDENCE
             )
             if not result:
-                self.__local_logger.error(f"{time.time()}: Failed to create bounding boxes.")
+                self.__local_logger.error("Failed to create bounding boxes.")
                 return False, None
 
             # Get Pylance to stop complaining
@@ -206,11 +252,20 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
 
         # Logging
         self.__local_logger.info(
-            f"{time.time()}: Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
+            f"Count: {self.__counter}. Target detection took {end_time - start_time} seconds. Objects detected: {detections}."
         )
 
         if self.__filename_prefix != "":
             filename = self.__filename_prefix + str(self.__counter)
+
+            # Annotate the image (green circle) with detected keypoints
+            image_annotated = cv2.drawKeypoints(
+                image,
+                filtered_keypoints,
+                None,
+                (0, 255, 0),
+                cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS,
+            )
 
             # Annotated image
             cv2.imwrite(filename + ".png", image_annotated)  # type: ignore

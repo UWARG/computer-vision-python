@@ -37,14 +37,16 @@ detect_target:
     #     min_circularity: 0.01
     #     max_circularity: 1
     #     filter_by_inertia: True
-    #     min_inertia_ratio: 0.2
+    #     min_inertia_ratio: 0.1
     #     max_inertia_ratio: 1
     #     filter_by_convexity: False
     #     min_convexity: 0.01
     #     max_convexity: 1
     #     filter_by_area: True
-    #     min_area_pixels: 50
-    #     max_area_pixels: 640
+    #     min_area_pixels: 160
+    #     max_area_pixels: 2000
+    #     min_brightness_threshold: 50
+    #     min_average_brightness_threshold: 130
 
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
