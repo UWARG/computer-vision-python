@@ -30,7 +30,6 @@ from modules.common.modules.logger import logger
 from modules.common.modules.logger import logger_main_setup
 from modules.common.modules.read_yaml import read_yaml
 from utilities.workers import queue_proxy_wrapper
-from utilities.workers import worker_controller
 from utilities.workers import worker_manager
 
 from modules.video_input import video_input
@@ -43,6 +42,13 @@ from modules.cluster_estimation import cluster_estimation
 from modules import detection_in_world
 from modules.communications import communications
 from modules import object_in_world
+from modules.common.modules.mavlink import drone_odometry_global
+from modules.common.modules import orientation
+from modules.common.modules import position_global
+from modules.common.modules.mavlink import local_global_conversion
+from pymavlink import mavutil
+import threading
+import time
 
 
 CONFIG_FILE_PATH = pathlib.Path("config.yaml")
@@ -177,9 +183,6 @@ def main() -> int:
         main_logger.error(f"{exception}", True)
         return -1
 
-    # Setup
-    controller = worker_controller.WorkerController()
-
     mp_manager = mp.Manager()
     video_input_to_detect_target_queue = queue_proxy_wrapper.QueueProxyWrapper(
         mp_manager,
@@ -252,6 +255,135 @@ def main() -> int:
 
     # From here on, we cook
 
+    def get_odometry(yaw, pitch, roll, lat, lon, alt, flight_mode_string) -> "tuple[bool, drone_odometry_global.DroneOdometryGlobal | None]":
+        """
+        Returns odometry data from the drone.
+        """
+        result, orientation_data = orientation.Orientation.create(
+            yaw,
+            pitch,
+            roll,
+        )
+        if not result:
+            return False, None
+
+        result, position_data = position_global.PositionGlobal.create(
+            lat, 
+            lon, 
+            alt
+        )
+        if not result:
+            return False, None
+
+        if flight_mode_string is None:
+            flight_mode = None
+            return False, None
+        if flight_mode_string == "LOITER":
+            flight_mode = drone_odometry_global.FlightMode.STOPPED
+        if flight_mode_string == "AUTO":
+            flight_mode = drone_odometry_global.FlightMode.MOVING
+        else:
+            flight_mode = drone_odometry_global.FlightMode.MANUAL
+
+        # Get Pylance to stop complaining
+        assert position_data is not None
+        assert orientation_data is not None
+        assert flight_mode is not None
+
+        result, odometry_data = drone_odometry_global.DroneOdometryGlobal.create(
+            position_data, orientation_data, flight_mode
+        )
+        if not result:
+            return False, None
+
+        return True, odometry_data
+
+    def get_odometry_and_time(yaw, pitch, roll, lat, lon, alt, flight_mode_string, home_position) -> "tuple[bool, odometry_and_time.OdometryAndTime | None]":
+        """
+        Returns a possible OdometryAndTime with current timestamp.
+        """
+        result, odometry = get_odometry(yaw, pitch, roll, lat, lon, alt, flight_mode_string)
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry is not None
+
+        result, odometry_local = local_global_conversion.drone_odometry_local_from_global(
+            home_position,
+            odometry,
+        )
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry_local is not None
+
+        result, odometry_and_time_object = odometry_and_time.OdometryAndTime.create(odometry_local)
+        if not result:
+            return False, None
+
+        # Get Pylance to stop complaining
+        assert odometry_and_time_object is not None
+
+        main_logger.info(str(odometry_and_time_object), True)
+
+        return True, odometry_and_time_object
+    
+    def grab_video_input(delay):
+        while True:
+            result, input_device_to_detector = input_device.run()
+            if not result:
+                continue
+
+            #grab from input_device and put into detect_target here
+            input_data = input_device_to_detector
+            if input_data is None:
+                main_logger.info("Recieved type None, exiting.")
+                break
+
+            result, detect_target_to_data_merge = detector.run(input_data)
+            if not result:
+                continue
+
+            detect_target_to_data_merge_array.append(detect_target_to_data_merge)
+            time.sleep(1/5)
+    
+
+    connection = mavutil.mavlink_connection('/dev/ttyAMA0', baud=57600)
+
+    main_logger.info("Waiting for heartbeat...")
+    connection.wait_heartbeat()
+    main_logger.info(f"Connected to system {connection.target_system}")
+
+    # Request RC data at 5 Hz
+    connection.mav.request_data_stream_send(
+        connection.target_system,
+        connection.target_component,
+        mavutil.mavlink.MAV_DATA_STREAM_RC_CHANNELS,
+        5,
+        1
+    )
+
+    # Request position data at 5 Hz
+    connection.mav.request_data_stream_send(
+        connection.target_system,
+        connection.target_component,
+        mavutil.mavlink.MAV_DATA_STREAM_POSITION,
+        5,
+        1
+    )
+
+    # Request ATTITUDE data at 5 Hz
+    connection.mav.request_data_stream_send(
+        connection.target_system,
+        connection.target_component,
+        mavutil.mavlink.MAV_DATA_STREAM_EXTRA1,  # ATTITUDE is in EXTRA1
+        5,
+        1 
+)
+
+
 
     result, input_device = video_input.VideoInput.create(
         VIDEO_INPUT_OPTION,
@@ -282,21 +414,12 @@ def main() -> int:
     # Get Pylance to stop complaining
     assert detector is not None
 
-    result, interface = flight_interface.FlightInterface.create(
-        FLIGHT_INTERFACE_ADDRESS,
-        FLIGHT_INTERFACE_TIMEOUT,
-        FLIGHT_INTERFACE_BAUD_RATE,
-        main_logger
-    )
-    if not result:
-        main_logger.error("Worker failed to create class object", True)
-        return -1
-
-    # Get Pylance to stop complaining
-    assert interface is not None
-
     # TODO: IS THIS NECESSARY????
-    home_position = interface.get_home_position()
+    home_msg = connection.recv_match(type='GLOBAL_POSITION_INT', blocking=True)
+    home_lat  = home_msg.lat / 1e7  # degrees
+    home_lon  = home_msg.lon / 1e7  # degrees
+    home_alt  = home_msg.alt / 1000.0  # meters above MSL
+    home_position = position_global.PositionGlobal.create(home_lat, home_lon, home_alt)
 
     result, locator = geolocation.Geolocation.create(
         camera_intrinsics,
@@ -336,186 +459,224 @@ def main() -> int:
     assert comm is not None
 
 
-
-    # RELAY POSITION 0
-    # THREAD (input_device to detect_target, they also had detect_target threaded to multiple as well) and (flight interface/odometry) here
-    detect_target_to_data_merge_array = []
-    while 1:
-
-        result, input_device_to_detector = input_device.run()
-        if not result:
+    while True:
+        # TODO: choose timeout here and hz above
+        msg = connection.recv_match(blocking=True, timeout=10)
+        if not msg:
             continue
 
-        #grab from input_device and put into detect_target here
-        input_data = input_device_to_detector
-        if input_data is None:
-            main_logger.info("Recieved type None, exiting.")
-            break
+        msg_type = msg.get_type()
 
-        result, detect_target_to_data_merge = detector.run(input_data)
-        if not result:
-            continue
+        if msg_type == 'RC_CHANNELS_RAW':
+            relay = msg.chan7_raw
+            main_logger.info(f"RC Channel 7: {relay}")
 
-        detect_target_to_data_merge_array.append(detect_target_to_data_merge)
+        elif msg_type == 'HEARTBEAT':
+            # Decode mode string
+            flight_mode_string = mavutil.mode_string_v10(msg)
 
+        elif msg_type == 'GLOBAL_POSITION_INT':
+            lat  = msg.lat / 1e7    # degrees
+            lon  = msg.lon / 1e7    # degrees
+            alt  = msg.alt / 1000.0 # meters (above MSL)
+            rel_alt = msg.relative_alt / 1000.0  # meters (above home)
 
-    interface_to_data_merge_array = []
-    while 1:
-
-        # time.sleep(period)
-
-        coordinate = None # Not trying to send out any coords
-
-        result, interface_to_data_merge = interface.run(coordinate)
-        if not result:
-            continue
-
-        interface_to_data_merge_array.append(interface_to_data_merge)
-
-
-    # RELAY POSITION 1
-    while 1: #while 1 but realistically we just want it to do it once so not really...
-        data_merge_to_geolocation_array = []
-        i = 0
-        previous_odometry = interface_to_data_merge_array[i]
-        i += 1
-        current_odometry = interface_to_data_merge_array[i]
-        for detections in detect_target_to_data_merge_array:
-            detections: detections_and_time.DetectionsAndTime
-
-            # For initial odometry
-            if detections.timestamp < previous_odometry.timestamp:
-                continue
-
-            while current_odometry.timestamp < detections.timestamp:
-                previous_odometry = current_odometry
-                i += 1
-                if len(interface_to_data_merge_array) == i:
-                    break
-                current_odometry = interface_to_data_merge_array[i]
-            
-            if len(interface_to_data_merge_array) == i:
-                break
-
-            # Merge with closest timestamp
-            if (detections.timestamp - previous_odometry.timestamp) < (
-                current_odometry.timestamp - detections.timestamp
-            ):
-                # Required for separation
-                result, merged = merged_odometry_detections.MergedOdometryDetections.create(
-                    previous_odometry.odometry_data,
-                    detections.detections,
-                )
-
-                odometry_timestamp = previous_odometry.timestamp
-            else:
-                result, merged = merged_odometry_detections.MergedOdometryDetections.create(
-                    current_odometry.odometry_data,
-                    detections.detections,
-                )
-
-                odometry_timestamp = current_odometry.timestamp
-
-            main_logger.info(
-                f"Odometry timestamp: {odometry_timestamp}, detections timestamp: {detections.timestamp}, detections - odometry: {detections.timestamp - odometry_timestamp}",
-                True,
-            )
-
-            if not result:
-                main_logger.warning("Failed to create merged odometry and detections", True)
-                continue
-
-            main_logger.info(str(merged), True)
-
-            # Get Pylance to stop complaining
-            assert merged is not None
-
-            data_merge_to_geolocation_array.append(merged)
-
-
-        geolocation_to_cluster_estimation_array = []
-        for input_data in data_merge_to_geolocation_array:
-            if not isinstance(input_data, merged_odometry_detections.MergedOdometryDetections):
-                main_logger.warning(f"Skipping unexpected input: {input_data}")
-                continue
-            result, geolocation_to_cluster_estimation = locator.run(input_data)
-            if not result:
-                continue
-
-            geolocation_to_cluster_estimation_array.append(geolocation_to_cluster_estimation)
-
-
-        cluster_estimation_to_communications_array = []
-        for input_data in geolocation_to_cluster_estimation_array:
-
-            is_invalid = False
-
-            for single_input in input_data:
-                if not isinstance(single_input, detection_in_world.DetectionInWorld):
-                    main_logger.warning(
-                        f"Skipping unexpected input: {input_data}, because of unexpected value: {single_input}"
-                    )
-                    is_invalid = True
-                    break
-
-            if is_invalid:
-                continue
-
-            # TODO: When to override
-            result, cluster_estimation_to_communications = estimator.run(input_data, False)
-            if not result:
-                continue
-
-            cluster_estimation_to_communications_array.append(cluster_estimation_to_communications)
-
+        elif msg_type == 'ATTITUDE':
+            roll  = msg.roll   # in radians
+            pitch = msg.pitch  # in radians
+            yaw   = msg.yaw    # in radians
         
-        communications_to_main_array = []
-        communications_to_flight_interface_array = []
-        for input_data in cluster_estimation_to_communications_array:
-            is_invalid = False
 
-            for single_input in input_data:
-                if not isinstance(single_input, object_in_world.ObjectInWorld):
-                    main_logger.warning(
-                        f"Skipping unexpected input: {input_data}, because of unexpected value: {single_input}"
-                    )
-                    is_invalid = True
-                    break
+        if (relay == 100):
+            # RELAY POSITION 0
+            # THREAD (input_device to detect_target, they also had detect_target threaded to multiple as well) and (flight interface/odometry) here
+            detect_target_to_data_merge_array = []
+            thread = threading.Thread(target=grab_video_input)
+            thread.daemon = True  # Daemon = will exit when main program exits
+            thread.start()
 
-            if is_invalid:
-                continue
+            interface_to_data_merge_array = []
+            while 1:
+                msg = connection.recv_match(blocking=True, timeout=10)
+                if not msg:
+                    continue
 
-            result, metadata, list_of_messages = comm.run(input_data)
-            if not result:
-                continue
+                msg_type = msg.get_type()
 
-            communications_to_main_array.append(metadata)
-            communications_to_flight_interface_array.append(metadata)
+                if msg_type == 'RC_CHANNELS_RAW':
+                    relay = msg.chan7_raw
+                    if relay != 100:
+                        break
 
-            for message in list_of_messages:
+                elif msg_type == 'HEARTBEAT':
+                    # Decode mode string
+                    flight_mode_string = mavutil.mode_string_v10(msg)
+
+                elif msg_type == 'GLOBAL_POSITION_INT':
+                    lat  = msg.lat / 1e7    # degrees
+                    lon  = msg.lon / 1e7    # degrees
+                    alt  = msg.alt / 1000.0 # meters (above MSL)
+                    rel_alt = msg.relative_alt / 1000.0  # meters (above home)
+
+                elif msg_type == 'ATTITUDE':
+                    roll  = msg.roll   # in radians
+                    pitch = msg.pitch  # in radians
+                    yaw   = msg.yaw    # in radians
 
                 # time.sleep(period)
 
-                communications_to_main_array.append(message)
-                communications_to_flight_interface_array.append(message)
-        
-        for coordinate in communications_to_flight_interface_array:
-            result, value = interface.run(coordinate)
-            if not result:
-                continue
+                coordinate = None # Not trying to send out any coords
+
+                result, interface_to_data_merge = get_odometry_and_time(yaw, pitch, roll, lat, lon, alt, flight_mode_string, home_position)
+                if not result:
+                    continue
+
+                interface_to_data_merge_array.append(interface_to_data_merge)
             
-            #ignore value here
+            thread.join()
+
+        elif (relay > 100 and relay < 200):
+            # RELAY POSITION 1
+            data_merge_to_geolocation_array = []
+            i = 0
+            previous_odometry = interface_to_data_merge_array[i]
+            i += 1
+            current_odometry = interface_to_data_merge_array[i]
+            for detections in detect_target_to_data_merge_array:
+                detections: detections_and_time.DetectionsAndTime
+
+                # For initial odometry
+                if detections.timestamp < previous_odometry.timestamp:
+                    continue
+
+                while current_odometry.timestamp < detections.timestamp:
+                    previous_odometry = current_odometry
+                    i += 1
+                    if len(interface_to_data_merge_array) == i:
+                        break
+                    current_odometry = interface_to_data_merge_array[i]
+                
+                if len(interface_to_data_merge_array) == i:
+                    break
+
+                # Merge with closest timestamp
+                if (detections.timestamp - previous_odometry.timestamp) < (
+                    current_odometry.timestamp - detections.timestamp
+                ):
+                    # Required for separation
+                    result, merged = merged_odometry_detections.MergedOdometryDetections.create(
+                        previous_odometry.odometry_data,
+                        detections.detections,
+                    )
+
+                    odometry_timestamp = previous_odometry.timestamp
+                else:
+                    result, merged = merged_odometry_detections.MergedOdometryDetections.create(
+                        current_odometry.odometry_data,
+                        detections.detections,
+                    )
+
+                    odometry_timestamp = current_odometry.timestamp
+
+                main_logger.info(
+                    f"Odometry timestamp: {odometry_timestamp}, detections timestamp: {detections.timestamp}, detections - odometry: {detections.timestamp - odometry_timestamp}",
+                    True,
+                )
+
+                if not result:
+                    main_logger.warning("Failed to create merged odometry and detections", True)
+                    continue
+
+                main_logger.info(str(merged), True)
+
+                # Get Pylance to stop complaining
+                assert merged is not None
+
+                data_merge_to_geolocation_array.append(merged)
 
 
-        for cluster_estimations in communications_to_main_array:
-            if cluster_estimations is not None:
-                main_logger.debug(f"Clusters: {cluster_estimations}")
+            geolocation_to_cluster_estimation_array = []
+            for input_data in data_merge_to_geolocation_array:
+                if not isinstance(input_data, merged_odometry_detections.MergedOdometryDetections):
+                    main_logger.warning(f"Skipping unexpected input: {input_data}")
+                    continue
+                result, geolocation_to_cluster_estimation = locator.run(input_data)
+                if not result:
+                    continue
+
+                geolocation_to_cluster_estimation_array.append(geolocation_to_cluster_estimation)
 
 
-    # RELAY POSITION 2
-    while 1:
-        # chill
-        pass
+            cluster_estimation_to_communications_array = []
+            for input_data in geolocation_to_cluster_estimation_array:
+
+                is_invalid = False
+
+                for single_input in input_data:
+                    if not isinstance(single_input, detection_in_world.DetectionInWorld):
+                        main_logger.warning(
+                            f"Skipping unexpected input: {input_data}, because of unexpected value: {single_input}"
+                        )
+                        is_invalid = True
+                        break
+
+                if is_invalid:
+                    continue
+
+                # TODO: When to override
+                result, cluster_estimation_to_communications = estimator.run(input_data, False)
+                if not result:
+                    continue
+
+                cluster_estimation_to_communications_array.append(cluster_estimation_to_communications)
+
+            
+            communications_to_main_array = []
+            communications_to_flight_interface_array = []
+            for input_data in cluster_estimation_to_communications_array:
+                is_invalid = False
+
+                for single_input in input_data:
+                    if not isinstance(single_input, object_in_world.ObjectInWorld):
+                        main_logger.warning(
+                            f"Skipping unexpected input: {input_data}, because of unexpected value: {single_input}"
+                        )
+                        is_invalid = True
+                        break
+
+                if is_invalid:
+                    continue
+
+                result, metadata, list_of_messages = comm.run(input_data)
+                if not result:
+                    continue
+
+                communications_to_main_array.append(metadata)
+                communications_to_flight_interface_array.append(metadata)
+
+                for message in list_of_messages:
+
+                    # time.sleep(period)
+
+                    communications_to_main_array.append(message)
+                    communications_to_flight_interface_array.append(message)
+            
+            for coordinate in communications_to_flight_interface_array:
+                connection.mav.statustext_send(
+                    mavutil.mavlink.MAV_SEVERITY_INFO,  # Severity level (INFO, WARNING, ERROR, etc.)
+                    str(coordinate, encoding="utf-8")         # Message must be in bytes and max 50 chars
+                )
+                
+
+
+            for cluster_estimations in communications_to_main_array:
+                if cluster_estimations is not None:
+                    main_logger.debug(f"Clusters: {cluster_estimations}")
+        
+        # RELAY POSITION 2
+        else:
+            pass
+
 
     cv2.destroyAllWindows()  # type: ignore
 

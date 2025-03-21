@@ -1,7 +1,7 @@
 # Initialize the project for Windows
 
 # Activate venv to prevent accidentally installing into global space
-./venv/Scripts/Activate.ps1
+./venv/bin/Activate.ps1
 
 if($?) {
     # If successfully activated venv
