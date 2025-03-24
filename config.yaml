@@ -1,6 +1,7 @@
 # Global constants for main with CUDA
 
 queue_max_size: 10
+log_timings: false # Enable logging of setup and iteration times of workers
 
 video_input:
     worker_period: 1.0  # seconds
