@@ -17,6 +17,7 @@ from ..common.modules.logger import logger
 
 def data_merge_worker(
     timeout: float,
+    log_timings: bool,
     detections_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     odometry_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -32,7 +33,7 @@ def data_merge_worker(
     Merge work is done in the worker process as the queues and control mechanisms
     are naturally available.
     """
-    setup_start_time = time.time()
+    setup_start_time = time.time() if log_timings else None
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -55,14 +56,14 @@ def data_merge_worker(
         local_logger.error("Queue timed out on startup", True)
         return
 
-    setup_end_time = time.time()
-
-    local_logger.info(
-        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
-    )
+    if log_timings:
+        setup_end_time = time.time()
+        local_logger.info(
+            f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+        )
 
     while not controller.is_exit_requested():
-        iteration_start_time = time.time()
+        iteration_start_time = time.time() if log_timings else None
 
         controller.check_pause()
 
@@ -119,8 +120,8 @@ def data_merge_worker(
 
         output_queue.queue.put(merged)
 
-        iteration_end_time = time.time()
-
-        local_logger.info(
-            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
-        )
+        if log_timings:
+            iteration_end_time = time.time()
+            local_logger.info(
+                f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+            )

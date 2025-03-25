@@ -23,6 +23,7 @@ def detect_target_worker(
         detect_target_brightspot.DetectTargetBrightspotConfig
         | detect_target_ultralytics.DetectTargetUltralyticsConfig
     ),
+    log_timings: bool,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -35,7 +36,7 @@ def detect_target_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    setup_start_time = time.time()
+    setup_start_time = time.time() if log_timings else None
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -63,14 +64,16 @@ def detect_target_worker(
     # Get Pylance to stop complaining
     assert detector is not None
 
-    setup_end_time = time.time()
-
-    local_logger.info(
-        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
-    )
+    # Logging and controller is identical to cluster_estimation_worker.py
+    # pylint: disable=duplicate-code
+    if log_timings:
+        setup_end_time = time.time()
+        local_logger.info(
+            f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+        )
 
     while not controller.is_exit_requested():
-        iteration_start_time = time.time()
+        iteration_start_time = time.time() if log_timings else None
 
         controller.check_pause()
 
@@ -78,6 +81,8 @@ def detect_target_worker(
         if input_data is None:
             local_logger.info("Recieved type None, exiting.")
             break
+
+        # pylint: enable=duplicate-code
 
         if not isinstance(input_data, image_and_time.ImageAndTime):
             local_logger.warning(f"Skipping unexpected input: {input_data}")
@@ -89,8 +94,8 @@ def detect_target_worker(
 
         output_queue.queue.put(value)
 
-        iteration_end_time = time.time()
-
-        local_logger.info(
-            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
-        )
+        if log_timings:
+            iteration_end_time = time.time()
+            local_logger.info(
+                f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+            )

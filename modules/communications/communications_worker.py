@@ -17,6 +17,7 @@ from ..common.modules.logger import logger
 def communications_worker(
     timeout: float,
     period: float,
+    log_timings: bool,
     home_position_queue: queue_proxy_wrapper.QueueProxyWrapper,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -30,7 +31,7 @@ def communications_worker(
     input_queue and output_queue are data queues.
     controller is how the main process communicates to this worker process.
     """
-    setup_start_time = time.time()
+    setup_start_time = time.time() if log_timings else None
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -61,14 +62,14 @@ def communications_worker(
     # Get Pylance to stop complaining
     assert comm is not None
 
-    setup_end_time = time.time()
-
-    local_logger.info(
-        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
-    )
+    if log_timings:
+        setup_end_time = time.time()
+        local_logger.info(
+            f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+        )
 
     while not controller.is_exit_requested():
-        iteration_start_time = time.time()
+        iteration_start_time = time.time() if log_timings else None
 
         controller.check_pause()
 
@@ -105,8 +106,8 @@ def communications_worker(
             output_queue.queue.put(message)
             message_output_queue.queue.put(message)
 
-        iteration_end_time = time.time()
-
-        local_logger.info(
-            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
-        )
+        if log_timings:
+            iteration_end_time = time.time()
+            local_logger.info(
+                f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+            )
