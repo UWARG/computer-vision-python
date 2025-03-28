@@ -65,6 +65,7 @@ class ClusterEstimation:
         random_state: int,
         min_points_per_cluster: int,
         local_logger: logger.Logger,
+        min_points_per_cluster: int,
     ) -> "tuple[bool, ClusterEstimation | None]":
         """
         Data requirement conditions for estimation model to run.
@@ -113,6 +114,7 @@ class ClusterEstimation:
             random_state,
             min_points_per_cluster,
             local_logger,
+            min_points_per_cluster,
         )
 
     def __init__(
@@ -124,6 +126,7 @@ class ClusterEstimation:
         random_state: int,
         min_points_per_cluster: int,
         local_logger: logger.Logger,
+        min_points_per_cluster: int,
     ) -> None:
         """
         Private constructor, use create() method.
