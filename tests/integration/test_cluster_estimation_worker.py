@@ -17,6 +17,7 @@ MIN_ACTIVATION_THRESHOLD = 3
 MIN_NEW_POINTS_TO_RUN = 0
 MAX_NUM_COMPONENTS = 3
 RANDOM_STATE = 0
+MIN_POINTS_PER_CLUSTER = 3
 
 
 def check_output_results(output_queue: queue_proxy_wrapper.QueueProxyWrapper) -> None:
@@ -49,6 +50,7 @@ def test_cluster_estimation_worker() -> int:
             MIN_NEW_POINTS_TO_RUN,
             MAX_NUM_COMPONENTS,
             RANDOM_STATE,
+            MIN_POINTS_PER_CLUSTER,
             input_queue,
             output_queue,
             controller,

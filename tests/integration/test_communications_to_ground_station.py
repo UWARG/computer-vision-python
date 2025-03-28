@@ -1,5 +1,5 @@
 """
-Test MAVLink integration test 
+Test MAVLink integration test
 """
 
 import multiprocessing as mp
