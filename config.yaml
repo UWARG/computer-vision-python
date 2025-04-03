@@ -30,36 +30,23 @@ detect_target:
     #     model_path: "tests/model_example/yolov8s_ultralytics_pretrained_default.pt"  # See autonomy OneDrive for latest model
     # Brightspot config (enum 1)
     config:
-<<<<<<< HEAD
         brightspot_percentile_threshold: 99.99
-=======
-        brightspot_percentile_threshold: 99.9
->>>>>>> e877d9e (config.yaml brightspot changes, test brightspot address changes)
         filter_by_color: True
         blob_color: 255
         filter_by_circularity: False
         min_circularity: 0.01
         max_circularity: 1
         filter_by_inertia: True
-<<<<<<< HEAD
         min_inertia_ratio: 0.1
-=======
-        min_inertia_ratio: 0.2
->>>>>>> e877d9e (config.yaml brightspot changes, test brightspot address changes)
         max_inertia_ratio: 1
         filter_by_convexity: False
         min_convexity: 0.01
         max_convexity: 1
         filter_by_area: True
-<<<<<<< HEAD
         min_area_pixels: 160
         max_area_pixels: 2000
         min_brightness_threshold: 50
         min_average_brightness_threshold: 120
-=======
-        min_area_pixels: 50
-        max_area_pixels: 640
->>>>>>> e877d9e (config.yaml brightspot changes, test brightspot address changes)
 
 flight_interface:
     # Port 5762 connects directly to the simulated auto pilot, which is more realistic
