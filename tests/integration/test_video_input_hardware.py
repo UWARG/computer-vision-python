@@ -6,15 +6,16 @@ import pathlib
 
 from modules.common.modules.camera import camera_factory
 from modules.common.modules.camera import camera_opencv
+from modules.common.modules.camera import camera_picamera2
 from modules.common.modules.logger import logger
 from modules.video_input import video_input
 
 
 # Modify as needed
-CAMERA = camera_factory.CameraOption.OPENCV
+CAMERA = camera_factory.CameraOption.PICAM2
 WIDTH = 640
 HEIGHT = 480
-CONFIG = camera_opencv.ConfigOpenCV(0)
+CONFIG = camera_picamera2.ConfigPiCamera2()
 IMAGE_NAME = None  # Not saving any pictures
 
 
