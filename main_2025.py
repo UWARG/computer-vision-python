@@ -155,6 +155,7 @@ def main() -> int:
         MIN_NEW_POINTS_TO_RUN = config["cluster_estimation"]["min_new_points_to_run"]
         MAX_NUM_COMPONENTS = config["cluster_estimation"]["max_num_components"]
         RANDOM_STATE = config["cluster_estimation"]["random_state"]
+        MIN_POINTS_PER_CLUSTER = config["cluster_estimation"]["min_points_per_cluster"]
 
         COMMUNICATIONS_TIMEOUT = config["communications"]["timeout"]
         COMMUNICATIONS_WORKER_PERIOD = config["communications"]["worker_period"]
@@ -360,6 +361,7 @@ def main() -> int:
             MAX_NUM_COMPONENTS,
             RANDOM_STATE,
             LOG_TIMINGS,
+            MIN_POINTS_PER_CLUSTER,
         ),
         input_queues=[geolocation_to_cluster_estimation_queue],
         output_queues=[cluster_estimation_to_communications_queue],
