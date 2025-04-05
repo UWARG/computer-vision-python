@@ -133,9 +133,7 @@ class DetectTargetBrightspot(base_detect_target.BaseDetectTarget):
         # Catching all exceptions for library call
         # pylint: disable-next=broad-exception-caught
         except Exception as exception:
-            self.__local_logger.error(
-                f"Failed to convert to greyscale, exception: {exception}"
-            )
+            self.__local_logger.error(f"Failed to convert to greyscale, exception: {exception}")
             return False, None
 
         # Calculate the percentile threshold for bright spots
