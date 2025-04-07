@@ -27,7 +27,7 @@ EXPECTED_DETECTIONS_PATHS = [
     for i in range(0, NUMBER_OF_IMAGES_DETECTIONS)
 ]
 
-NUMBER_OF_IMAGES_NO_DETECTIONS = 2
+NUMBER_OF_IMAGES_NO_DETECTIONS = 3
 IMAGE_NO_DETECTIONS_FILES = [
     pathlib.Path(f"ir_no_detections_{i}.png") for i in range(0, NUMBER_OF_IMAGES_NO_DETECTIONS)
 ]
@@ -40,14 +40,16 @@ DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspo
     min_circularity=0.01,
     max_circularity=1,
     filter_by_inertia=True,
-    min_inertia_ratio=0.2,
+    min_inertia_ratio=0.1,
     max_inertia_ratio=1,
     filter_by_convexity=False,
     min_convexity=0.01,
     max_convexity=1,
     filter_by_area=True,
-    min_area_pixels=50,
-    max_area_pixels=640,
+    min_area_pixels=100,
+    max_area_pixels=2000,
+    min_brightness_threshold=50,
+    min_average_brightness_threshold=120,
 )
 
 
@@ -114,6 +116,9 @@ def main() -> int:
         temp_logger.info(f"Annotated image saved to {annotated_image_path}.")
 
     for image_file in IMAGE_NO_DETECTIONS_FILES:
+        image_path = pathlib.Path(TEST_PATH, image_file)
+        image = cv2.imread(str(image_path))  # type: ignore
+        result, image_data = image_and_time.ImageAndTime.create(image)
         result, detections = detector.run(image_data)
         if result:
             temp_logger.error(f"False positive detections in {image_path}.")
