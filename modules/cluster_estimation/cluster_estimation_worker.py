@@ -22,7 +22,6 @@ def cluster_estimation_worker(
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
-    min_points_per_cluster: int,
 ) -> None:
     """
     Estimation worker process.
@@ -70,7 +69,6 @@ def cluster_estimation_worker(
         random_state,
         min_points_per_cluster,
         local_logger,
-        min_points_per_cluster,
     )
     if not result:
         local_logger.error("Worker failed to create class object", True)
