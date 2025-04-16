@@ -8,7 +8,7 @@ from modules.flight_interface import flight_interface
 from modules.common.modules.logger import logger
 
 
-MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
+MAVLINK_CONNECTION_ADDRESS = "/dev/ttyAMA0"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 
