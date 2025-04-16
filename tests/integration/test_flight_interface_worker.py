@@ -13,7 +13,7 @@ from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
 
-MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
+MAVLINK_CONNECTION_ADDRESS = "/dev/ttyAMA0"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
