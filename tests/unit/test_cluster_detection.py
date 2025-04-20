@@ -37,8 +37,8 @@ def cluster_model() -> cluster_estimation.ClusterEstimation:  # type: ignore
         MIN_NEW_POINTS_TO_RUN,
         MAX_NUM_COMPONENTS,
         RNG_SEED,
-        test_logger,
         MIN_POINTS_PER_CLUSTER,
+        test_logger,
     )
     assert result
     assert model is not None
