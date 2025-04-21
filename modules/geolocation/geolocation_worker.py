@@ -17,6 +17,7 @@ from ..common.modules.logger import logger
 def geolocation_worker(
     camera_intrinsics: camera_properties.CameraIntrinsics,
     camera_drone_extrinsics: camera_properties.CameraDroneExtrinsics,
+    log_timings: bool,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
     controller: worker_controller.WorkerController,
@@ -28,7 +29,7 @@ def geolocation_worker(
     controller is how the main process communicates to this worker process.
     """
     # TODO: Handle errors better
-    setup_start_time = time.time()
+    setup_start_time = time.time() if log_timings else None
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -53,14 +54,14 @@ def geolocation_worker(
     # Get Pylance to stop complaining
     assert locator is not None
 
-    setup_end_time = time.time()
-
-    local_logger.info(
-        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
-    )
+    if log_timings:
+        setup_end_time = time.time()
+        local_logger.info(
+            f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+        )
 
     while not controller.is_exit_requested():
-        iteration_start_time = time.time()
+        iteration_start_time = time.time() if log_timings else None
 
         controller.check_pause()
 
@@ -79,8 +80,8 @@ def geolocation_worker(
 
         output_queue.queue.put(value)
 
-        iteration_end_time = time.time()
-
-        local_logger.info(
-            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
-        )
+        if log_timings:
+            iteration_end_time = time.time()
+            local_logger.info(
+                f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+            )

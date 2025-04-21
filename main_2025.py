@@ -85,6 +85,7 @@ def main() -> int:
         # Local constants
         # pylint: disable=invalid-name
         QUEUE_MAX_SIZE = config["queue_max_size"]
+        LOG_TIMINGS = config["log_timings"]
 
         VIDEO_INPUT_WORKER_PERIOD = config["video_input"]["worker_period"]
         VIDEO_INPUT_OPTION = camera_factory.CameraOption(config["video_input"]["camera_enum"])
@@ -248,6 +249,7 @@ def main() -> int:
             VIDEO_INPUT_CAMERA_CONFIG,
             VIDEO_INPUT_IMAGE_NAME,
             VIDEO_INPUT_WORKER_PERIOD,
+            LOG_TIMINGS,
         ),
         input_queues=[],
         output_queues=[video_input_to_detect_target_queue],
@@ -269,6 +271,7 @@ def main() -> int:
             DETECT_TARGET_SHOW_ANNOTATED,
             DETECT_TARGET_OPTION,
             DETECT_TARGET_CONFIG,
+            LOG_TIMINGS,
         ),
         input_queues=[video_input_to_detect_target_queue],
         output_queues=[detect_target_to_data_merge_queue],
@@ -290,6 +293,7 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
+            LOG_TIMINGS,
         ),
         input_queues=[
             flight_interface_decision_queue,
@@ -312,7 +316,7 @@ def main() -> int:
     result, data_merge_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=data_merge_worker.data_merge_worker,
-        work_arguments=(DATA_MERGE_TIMEOUT,),
+        work_arguments=(DATA_MERGE_TIMEOUT, LOG_TIMINGS),
         input_queues=[
             detect_target_to_data_merge_queue,
             flight_interface_to_data_merge_queue,
@@ -334,6 +338,7 @@ def main() -> int:
         work_arguments=(
             camera_intrinsics,
             camera_extrinsics,
+            LOG_TIMINGS,
         ),
         input_queues=[data_merge_to_geolocation_queue],
         output_queues=[geolocation_to_cluster_estimation_queue],
@@ -355,6 +360,7 @@ def main() -> int:
             MIN_NEW_POINTS_TO_RUN,
             MAX_NUM_COMPONENTS,
             RANDOM_STATE,
+            LOG_TIMINGS,
             MIN_POINTS_PER_CLUSTER,
         ),
         input_queues=[geolocation_to_cluster_estimation_queue],
@@ -372,7 +378,7 @@ def main() -> int:
     result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=communications_worker.communications_worker,
-        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD),
+        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD, LOG_TIMINGS),
         input_queues=[
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,

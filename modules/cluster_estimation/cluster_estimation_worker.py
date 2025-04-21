@@ -18,6 +18,7 @@ def cluster_estimation_worker(
     min_new_points_to_run: int,
     max_num_components: int,
     random_state: int,
+    log_timings: bool,
     min_points_per_cluster: int,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     output_queue: queue_proxy_wrapper.QueueProxyWrapper,
@@ -40,6 +41,9 @@ def cluster_estimation_worker(
     random_state: int
         Seed for randomizer, to get consistent results.
 
+    log_timings: bool
+        Whether to log setup and iteration times.
+
     input_queue: queue_proxy_wrapper.QueuePRoxyWrapper
         Data queue.
 
@@ -49,7 +53,7 @@ def cluster_estimation_worker(
     worker_controller: worker_controller.WorkerController
         How the main process communicates to this worker process.
     """
-    setup_start_time = time.time()
+    setup_start_time = time.time() if log_timings else None
 
     worker_name = pathlib.Path(__file__).stem
     process_id = os.getpid()
@@ -77,14 +81,16 @@ def cluster_estimation_worker(
     # Get Pylance to stop complaining
     assert estimator is not None
 
-    setup_end_time = time.time()
-
-    local_logger.info(
-        f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
-    )
+    # Logging and controller is identical to detect_target_worker.py
+    # pylint: disable=duplicate-code
+    if log_timings:
+        setup_end_time = time.time()
+        local_logger.info(
+            f"{time.time()}: Worker setup took {setup_end_time - setup_start_time} seconds."
+        )
 
     while not controller.is_exit_requested():
-        iteration_start_time = time.time()
+        iteration_start_time = time.time() if log_timings else None
 
         controller.check_pause()
 
@@ -92,6 +98,8 @@ def cluster_estimation_worker(
         if input_data is None:
             local_logger.info("Recieved type None, exiting.")
             break
+
+        # pylint: enable=duplicate-code
 
         is_invalid = False
 
@@ -113,8 +121,8 @@ def cluster_estimation_worker(
 
         output_queue.queue.put(value)
 
-        iteration_end_time = time.time()
-
-        local_logger.info(
-            f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
-        )
+        if log_timings:
+            iteration_end_time = time.time()
+            local_logger.info(
+                f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
+            )
