@@ -65,9 +65,9 @@ geolocation:
     resolution_y: 1200
     fov_x: 0.64889
     fov_y: 0.41438
-    camera_position_x: -0.315
-    camera_position_y: -0.33
-    camera_position_z:  0.167
+    camera_position_x: 0
+    camera_position_y: 0
+    camera_position_z: 0
     camera_orientation_yaw: 0.0
     camera_orientation_pitch: -1.57079632679
     camera_orientation_roll: 0.0
