@@ -5,6 +5,7 @@ Gets images from the camera.
 import os
 import pathlib
 import time
+import cv2
 
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
@@ -66,8 +67,12 @@ def video_input_worker(
 
         controller.check_pause()
 
-        time.sleep(period)
-
+        while time.time() - iteration_start_time < period:  # BE CAREFUL HERE! UNITS MAY MISMATCH
+            result, image = input_device.get_raw_image()
+            cv2.imshow("Camera feed", image)
+            
+            if cv2.waitKey(20) & 0xFF == ord("q"): break
+  
         result, value = input_device.run()
         if not result:
             continue
@@ -79,3 +84,5 @@ def video_input_worker(
         local_logger.info(
             f"{time.time()}: Worker iteration took {iteration_end_time - iteration_start_time} seconds."
         )
+        
+    cv2.destroyAllWindows()
