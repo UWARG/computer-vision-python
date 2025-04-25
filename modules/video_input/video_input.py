@@ -72,3 +72,6 @@ class VideoInput:
             self.__logger.save_image(image, self.__maybe_image_name)
 
         return image_and_time.ImageAndTime.create(image)
+    
+    def get_raw_image(self):
+        return self.__device.run()
