@@ -10,6 +10,7 @@ import time
 class QueueProxyWrapper:
     """
     Wrapper for an underlying queue proxy which also stores maxsize.
+    `maxsize <= 0` means the queue has infinite size.
     """
 
     __QUEUE_TIMEOUT = 0.1  # seconds
@@ -29,8 +30,7 @@ class QueueProxyWrapper:
             timeout = self.__QUEUE_TIMEOUT
 
         try:
-            self.queue.put(None, timeout=timeout)
-            for _ in range(1, self.maxsize):
+            for _ in range(self.maxsize):
                 self.queue.put(None, timeout=timeout)
         except queue.Full:
             return
@@ -45,7 +45,8 @@ class QueueProxyWrapper:
             timeout = self.__QUEUE_TIMEOUT
 
         try:
-            self.queue.get(timeout=timeout)
+            for _ in range(self.maxsize):
+                self.queue.get(timeout=timeout)
         except queue.Empty:
             return
 
