@@ -16,7 +16,8 @@ class AutoLandingCommand:
     """
     Command structure for controlling auto-landing operations.
     """
-    def __init__(self, command: str):
+
+    def __init__(self, command: str) -> None:
         self.command = command
 
 
@@ -112,7 +113,7 @@ def _process_commands(
 ) -> None:
     """
     Process all available commands in the command queue.
-    
+
     command_queue: Queue containing AutoLandingCommand objects.
     landing_controller: Controller instance to execute commands on.
     local_logger: Logger for command processing.
@@ -122,12 +123,12 @@ def _process_commands(
             command = command_queue.queue.get_nowait()
             if command is None:
                 break
-                
+
             if isinstance(command, AutoLandingCommand):
                 _execute_command(command, landing_controller, local_logger)
             else:
                 local_logger.warning(f"Received invalid command type: {type(command)}", True)
-                
+
         except:
             # No more commands available
             break
@@ -140,22 +141,24 @@ def _execute_command(
 ) -> None:
     """
     Execute an auto-landing command.
-    
+
     command: Command to execute.
     landing_controller: Controller instance to execute command on.
     local_logger: Logger for command execution.
     """
     local_logger.info(f"Executing command: {command.command}", True)
-    
+
     success = False
     if command.command == "enable":
         success = landing_controller.enable()
     elif command.command == "disable":
         success = landing_controller.disable()
     else:
-        local_logger.error(f"Unknown command: {command.command}. Only 'enable' and 'disable' are supported.", True)
+        local_logger.error(
+            f"Unknown command: {command.command}. Only 'enable' and 'disable' are supported.", True
+        )
         return
-    
+
     if success:
         local_logger.info(f"Command '{command.command}' executed successfully", True)
     else:
