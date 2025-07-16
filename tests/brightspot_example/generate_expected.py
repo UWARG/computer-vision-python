@@ -48,6 +48,8 @@ DETECT_TARGET_BRIGHTSPOT_CONFIG = detect_target_brightspot.DetectTargetBrightspo
     filter_by_area=True,
     min_area_pixels=50,
     max_area_pixels=640,
+    min_brightness_threshold=0,
+    min_average_brightness_threshold=0,
 )
 
 
