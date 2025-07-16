@@ -130,7 +130,7 @@ class AutoLanding:
 
             return selected_index
 
-        elif self.__selection_strategy == DetectionSelectionStrategy.LARGEST_AREA:
+        if self.__selection_strategy == DetectionSelectionStrategy.LARGEST_AREA:
             # Find detection with largest bounding box area
             max_area = 0
             selected_index = 0
@@ -145,7 +145,7 @@ class AutoLanding:
 
             return selected_index
 
-        elif self.__selection_strategy == DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
+        if self.__selection_strategy == DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
             # Find detection with highest confidence
             max_confidence = 0
             selected_index = 0

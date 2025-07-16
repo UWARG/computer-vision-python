@@ -4,6 +4,7 @@ Auto-landing worker.
 
 import os
 import pathlib
+import queue
 import time
 
 from utilities.workers import queue_proxy_wrapper
@@ -94,7 +95,7 @@ def auto_landing_worker(
         input_data = None
         try:
             input_data = input_queue.queue.get_nowait()
-        except:
+        except queue.Empty:
             # No data available, continue
             pass
 
@@ -129,7 +130,7 @@ def _process_commands(
             else:
                 local_logger.warning(f"Received invalid command type: {type(command)}", True)
 
-        except Exception:
+        except queue.Empty:
             # No more commands available
             break
 
