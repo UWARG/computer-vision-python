@@ -214,7 +214,7 @@ class AutoLanding:
 
 class AutoLandingController:
     """
-    Simple controller for turning auto-landing on/off.
+    Controller for turning auto-landing on/off.
     """
 
     __create_key = object()
