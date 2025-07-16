@@ -111,7 +111,7 @@ class AutoLanding:
         if self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION:
             return 0
 
-        elif self.__selection_strategy == DetectionSelectionStrategy.NEAREST_TO_CENTER:
+        if self.__selection_strategy == DetectionSelectionStrategy.NEAREST_TO_CENTER:
             # Find detection closest to image center
             image_center_x = self.im_w / 2
             image_center_y = self.im_h / 2
@@ -269,9 +269,8 @@ class AutoLandingController:
                 self.__enabled = True
                 self.__logger.info("Auto-landing system enabled", True)
                 return True
-            else:
-                self.__logger.warning("Auto-landing system already enabled", True)
-                return False
+            self.__logger.warning("Auto-landing system already enabled", True)
+            return False
 
     def disable(self) -> bool:
         """
@@ -284,9 +283,8 @@ class AutoLandingController:
                 self.__enabled = False
                 self.__logger.info("Auto-landing system disabled", True)
                 return True
-            else:
-                self.__logger.warning("Auto-landing system already disabled", True)
-                return False
+            self.__logger.warning("Auto-landing system already disabled", True)
+            return False
 
     def process_detections(
         self, odometry_detections: merged_odometry_detections.MergedOdometryDetections

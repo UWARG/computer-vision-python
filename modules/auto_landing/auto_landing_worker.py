@@ -129,7 +129,7 @@ def _process_commands(
             else:
                 local_logger.warning(f"Received invalid command type: {type(command)}", True)
 
-        except:
+        except Exception:
             # No more commands available
             break
 
