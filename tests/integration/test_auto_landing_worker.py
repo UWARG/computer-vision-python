@@ -94,7 +94,9 @@ def create_test_detection(
     return detection
 
 
-def calculate_expected_angles(detection_bbox: list, fov_x_deg: float, fov_y_deg: float, im_w: float, im_h: float) -> tuple[float, float]:
+def calculate_expected_angles(
+    detection_bbox: list, fov_x_deg: float, fov_y_deg: float, im_w: float, im_h: float
+) -> tuple[float, float]:
     """
     Calculates the expected angle_x and angle_y for a given detection bounding box
     and camera parameters, mirroring the logic in auto_landing.py.
@@ -138,8 +140,6 @@ def main() -> int:
         local_logger.error(f"Config file missing required key: {e}")
         return -1
 
-    
-
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -156,7 +156,7 @@ def main() -> int:
             image_height,
             image_width,
             WORKER_PERIOD,
-            detection_strategy, # Explicitly pass the strategy to be tested
+            detection_strategy,  # Explicitly pass the strategy to be tested
             input_queue,
             output_queue,
             controller,
@@ -193,11 +193,11 @@ def main() -> int:
 
     # Test 2: Verify strategy with multiple detections
     local_logger.info(f"--- Test 2: Verifying {detection_strategy.value} strategy ---")
-    
+
     # This is the first detection in the list
     detection_first_bbox = [100, 100, 200, 200]
     detection_first = create_test_detection(detection_first_bbox, 1, 0.7)
-    
+
     # This detection is at the center and has higher confidence
     center_x = image_width / 2
     center_y = image_height / 2
@@ -237,10 +237,12 @@ def main() -> int:
         )
 
     # Verify the calculated angles using a tolerance for float comparison
-    assert math.isclose(landing_info2.angle_x, expected_angle_x, rel_tol=1e-7), \
-        f"Expected angle_x to be {expected_angle_x}, but got {landing_info2.angle_x}"
-    assert math.isclose(landing_info2.angle_y, expected_angle_y, rel_tol=1e-7), \
-        f"Expected angle_y to be {expected_angle_y}, but got {landing_info2.angle_y}"
+    assert math.isclose(
+        landing_info2.angle_x, expected_angle_x, rel_tol=1e-7
+    ), f"Expected angle_x to be {expected_angle_x}, but got {landing_info2.angle_x}"
+    assert math.isclose(
+        landing_info2.angle_y, expected_angle_y, rel_tol=1e-7
+    ), f"Expected angle_y to be {expected_angle_y}, but got {landing_info2.angle_y}"
     local_logger.info("--- Test 2 Passed ---")
 
     # Cleanup

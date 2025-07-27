@@ -101,7 +101,10 @@ class AutoLanding:
         if not detections:
             return None
 
-        if len(detections) == 1 or self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION:
+        if (
+            len(detections) == 1
+            or self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION
+        ):
             return 0
 
         if self.__selection_strategy == DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
