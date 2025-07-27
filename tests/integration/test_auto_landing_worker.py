@@ -6,6 +6,7 @@ import datetime
 import multiprocessing as mp
 import pathlib
 import time
+import math
 
 import numpy as np
 
@@ -17,18 +18,17 @@ from modules.common.modules import orientation
 from modules.common.modules import position_local
 from modules.common.modules.mavlink import drone_odometry_local
 from modules.common.modules.logger import logger
+from modules.common.modules.read_yaml import read_yaml
 from utilities.workers import queue_proxy_wrapper
 from utilities.workers import worker_controller
 
-# Worker parameters
-FOV_X = 90.0  # degrees
-FOV_Y = 90.0  # degrees
-IMAGE_HEIGHT = 640.0  # pixels
-IMAGE_WIDTH = 640.0  # pixels
+
+# Test-specific parameters
 WORKER_PERIOD = 0.1  # seconds
-# The worker now defaults to HIGHEST_CONFIDENCE, so we test for that
-DETECTION_STRATEGY = auto_landing.DetectionSelectionStrategy.HIGHEST_CONFIDENCE
 LOG_TIMINGS = False  # Disable timing logging for the test
+CONFIG_FILE_PATH = pathlib.Path("config.yaml")
+detection_strategy = auto_landing.DetectionSelectionStrategy.FIRST_DETECTION
+# detection_strategy = auto_landing.DetectionSelectionStrategy.HIGHEST_CONFIDENCE
 
 # Ensure logs directory exists and create timestamped subdirectory
 LOG_DIR = pathlib.Path("logs")
@@ -94,6 +94,20 @@ def create_test_detection(
     return detection
 
 
+def calculate_expected_angles(detection_bbox: list, fov_x_deg: float, fov_y_deg: float, im_w: float, im_h: float) -> tuple[float, float]:
+    """
+    Calculates the expected angle_x and angle_y for a given detection bounding box
+    and camera parameters, mirroring the logic in auto_landing.py.
+    Assumes fov_x_deg and fov_y_deg are in degrees.
+    """
+    x_center = (detection_bbox[0] + detection_bbox[2]) / 2
+    y_center = (detection_bbox[1] + detection_bbox[3]) / 2
+
+    angle_x = (x_center - im_w / 2) * (fov_x_deg * (math.pi / 180)) / im_w
+    angle_y = (y_center - im_h / 2) * (fov_y_deg * (math.pi / 180)) / im_h
+    return angle_x, angle_y
+
+
 def main() -> int:
     """
     Main function.
@@ -104,6 +118,28 @@ def main() -> int:
     assert result  # Logger initialization should succeed
     assert local_logger is not None
 
+    # Read config file
+    result, config = read_yaml.open_config(CONFIG_FILE_PATH)
+    assert result and config is not None, "Failed to read config file"
+
+    # Check if the feature is enabled in the config
+    auto_landing_config = config.get("auto_landing", {})
+    if not auto_landing_config.get("enabled", False):
+        local_logger.info("Auto-landing is disabled in config.yaml, skipping test.")
+        return 0
+
+    # Extract parameters from config
+    try:
+        fov_x = config["geolocation"]["fov_x"]
+        fov_y = config["geolocation"]["fov_y"]
+        image_height = config["video_input"]["height"]
+        image_width = config["video_input"]["width"]
+    except KeyError as e:
+        local_logger.error(f"Config file missing required key: {e}")
+        return -1
+
+    
+
     # Setup
     controller = worker_controller.WorkerController()
 
@@ -111,16 +147,16 @@ def main() -> int:
     input_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     output_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
-    # Create worker process
+    # Create worker process using parameters from config
     worker = mp.Process(
         target=auto_landing_worker.auto_landing_worker,
         args=(
-            FOV_X,
-            FOV_Y,
-            IMAGE_HEIGHT,
-            IMAGE_WIDTH,
+            fov_x,
+            fov_y,
+            image_height,
+            image_width,
             WORKER_PERIOD,
-            DETECTION_STRATEGY,
+            detection_strategy, # Explicitly pass the strategy to be tested
             input_queue,
             output_queue,
             controller,
@@ -135,7 +171,8 @@ def main() -> int:
 
     # Test 1: Send a single detection and verify it's processed
     local_logger.info("--- Test 1: Processing single detection ---")
-    detection1 = create_test_detection([200, 200, 400, 400], 1, 0.9)
+    detection1_bbox = [200, 200, 400, 400]
+    detection1 = create_test_detection(detection1_bbox, 1, 0.9)
     simulate_detection_input(
         input_queue,
         [detection1],
@@ -154,34 +191,57 @@ def main() -> int:
     assert hasattr(landing_info, "target_dist")
     local_logger.info("--- Test 1 Passed ---")
 
-    # Test 2: Test with multiple detections (should use HIGHEST_CONFIDENCE strategy)
-    local_logger.info("--- Test 2: Processing multiple detections with HIGHEST_CONFIDENCE ---")
-    detection_low_confidence = create_test_detection([100, 100, 200, 200], 1, 0.7)
-    detection_high_confidence = create_test_detection([320, 320, 320, 320], 2, 0.95) # This one should be chosen
+    # Test 2: Verify strategy with multiple detections
+    local_logger.info(f"--- Test 2: Verifying {detection_strategy.value} strategy ---")
+    
+    # This is the first detection in the list
+    detection_first_bbox = [100, 100, 200, 200]
+    detection_first = create_test_detection(detection_first_bbox, 1, 0.7)
+    
+    # This detection is at the center and has higher confidence
+    center_x = image_width / 2
+    center_y = image_height / 2
+    detection_center_bbox = [center_x, center_y, center_x, center_y]
+    detection_center = create_test_detection(detection_center_bbox, 2, 0.95)
+
+    # Order matters for FIRST_DETECTION strategy
+    detections_for_test_2 = [detection_first, detection_center]
 
     simulate_detection_input(
         input_queue,
-        [detection_low_confidence, detection_high_confidence],
+        detections_for_test_2,
         (0.0, 0.0, -100.0),  # 100 meters above ground
         (0.0, 0.0, 0.0),
     )
 
     time.sleep(0.2)
 
-    # Should have output for the detection with the highest confidence
+    # Should have output
     assert not output_queue.queue.empty()
     landing_info2 = output_queue.queue.get_nowait()
     assert landing_info2 is not None
 
-    # To verify the correct detection was chosen, we can check the calculated angles.
-    # The high confidence detection is at (320, 320), which is the center of the 640x640 image.
-    # Therefore, the angles should be 0.
-    assert landing_info2.angle_x == 0.0
-    assert landing_info2.angle_y == 0.0
-    local_logger.info("--- Test 2 Passed ---")
+    # Determine expected angles based on the strategy
+    expected_angle_x = 0.0
+    expected_angle_y = 0.0
 
-    # The case of "no detections" is handled by the worker's queue.get_nowait() exception.
-    # No specific test is needed for an empty detection list as the data structure does not allow it.
+    if detection_strategy == auto_landing.DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
+        # If HIGHEST_CONFIDENCE, it should pick detection_center
+        expected_angle_x, expected_angle_y = calculate_expected_angles(
+            detection_center_bbox, fov_x, fov_y, image_width, image_height
+        )
+    elif detection_strategy == auto_landing.DetectionSelectionStrategy.FIRST_DETECTION:
+        # If FIRST_DETECTION, it should pick detection_first
+        expected_angle_x, expected_angle_y = calculate_expected_angles(
+            detection_first_bbox, fov_x, fov_y, image_width, image_height
+        )
+
+    # Verify the calculated angles using a tolerance for float comparison
+    assert math.isclose(landing_info2.angle_x, expected_angle_x, rel_tol=1e-7), \
+        f"Expected angle_x to be {expected_angle_x}, but got {landing_info2.angle_x}"
+    assert math.isclose(landing_info2.angle_y, expected_angle_y, rel_tol=1e-7), \
+        f"Expected angle_y to be {expected_angle_y}, but got {landing_info2.angle_y}"
+    local_logger.info("--- Test 2 Passed ---")
 
     # Cleanup
     controller.request_exit()
