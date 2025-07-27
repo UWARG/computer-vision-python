@@ -5,7 +5,6 @@ for use with LANDING_TARGET MAVLink command.
 
 import math
 from enum import Enum
-import threading
 
 from .. import merged_odometry_detections
 from ..common.modules.logger import logger
@@ -170,94 +169,3 @@ class AutoLanding:
         )
 
         return True, AutoLandingInformation(angle_x, angle_y, target_to_vehicle_dist)
-
-
-class AutoLandingController:
-    """
-    Controller for turning auto-landing on/off.
-    """
-
-    __create_key = object()
-
-    @classmethod
-    def create(
-        cls,
-        auto_landing: AutoLanding,
-        local_logger: logger.Logger,
-    ) -> "tuple[bool, AutoLandingController | None]":
-        """
-        Create an AutoLandingController instance.
-
-        auto_landing: The AutoLanding instance to control.
-        local_logger: Logger instance for logging.
-
-        Returns an AutoLandingController object.
-        """
-        return True, AutoLandingController(cls.__create_key, auto_landing, local_logger)
-
-    def __init__(
-        self,
-        class_private_create_key: object,
-        auto_landing: AutoLanding,
-        local_logger: logger.Logger,
-    ) -> None:
-        """
-        Private constructor, use create() method.
-        """
-        assert class_private_create_key is AutoLandingController.__create_key, "Use create() method"
-
-        self.__auto_landing = auto_landing
-        self.__logger = local_logger
-        self.__enabled = False
-        self.__enabled_lock = threading.Lock()
-
-    def is_enabled(self) -> bool:
-        """
-        Check if auto-landing is enabled.
-        """
-        with self.__enabled_lock:
-            return self.__enabled
-
-    def enable(self) -> bool:
-        """
-        Enable auto-landing system.
-
-        Returns True if successfully enabled, False otherwise.
-        """
-        with self.__enabled_lock:
-            if not self.__enabled:
-                self.__enabled = True
-                self.__logger.info("Auto-landing system enabled", True)
-                return True
-            self.__logger.warning("Auto-landing system already enabled", True)
-            return False
-
-    def disable(self) -> bool:
-        """
-        Disable auto-landing system.
-
-        Returns True if successfully disabled, False otherwise.
-        """
-        with self.__enabled_lock:
-            if self.__enabled:
-                self.__enabled = False
-                self.__logger.info("Auto-landing system disabled", True)
-                return True
-            self.__logger.warning("Auto-landing system already disabled", True)
-            return False
-
-    def process_detections(
-        self, odometry_detections: merged_odometry_detections.MergedOdometryDetections
-    ) -> "tuple[bool, AutoLandingInformation | None]":
-        """
-        Process detections if auto-landing is enabled.
-
-        Returns landing information if processing was successful, None otherwise.
-        """
-        with self.__enabled_lock:
-            if not self.__enabled:
-                return False, None
-
-        # Process the detections using the auto-landing module
-        result, landing_info = self.__auto_landing.run(odometry_detections)
-        return result, landing_info
