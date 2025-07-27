@@ -5,7 +5,6 @@ for use with LANDING_TARGET MAVLink command.
 
 import math
 from enum import Enum
-from typing import Optional
 import threading
 
 from .. import merged_odometry_detections
@@ -96,7 +95,7 @@ class AutoLanding:
         self.__logger = local_logger
         self.__selection_strategy = selection_strategy
 
-    def _select_detection(self, detections: list) -> Optional[int]:
+    def _select_detection(self, detections: list) -> int | None:
         """
         Select which detection to use based on the configured strategy.
 
