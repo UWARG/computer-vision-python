@@ -16,10 +16,8 @@ class DetectionSelectionStrategy(Enum):
     Strategies for selecting which detection to use when multiple targets are detected.
     """
 
-    NEAREST_TO_CENTER = "nearest_to_center"  # Choose detection closest to image center
-    LARGEST_AREA = "largest_area"  # Choose detection with largest bounding box area
-    HIGHEST_CONFIDENCE = "highest_confidence"  # Choose detection with highest confidence
     FIRST_DETECTION = "first_detection"  # Use first detection in list (original behavior)
+    HIGHEST_CONFIDENCE = "highest_confidence"  # Choose detection with highest confidence
 
 
 class AutoLandingInformation:
@@ -57,7 +55,7 @@ class AutoLanding:
         im_h: float,
         im_w: float,
         local_logger: logger.Logger,
-        selection_strategy: DetectionSelectionStrategy = DetectionSelectionStrategy.NEAREST_TO_CENTER,
+        selection_strategy: DetectionSelectionStrategy = DetectionSelectionStrategy.FIRST_DETECTION,
     ) -> "tuple [bool, AutoLanding | None ]":
         """
         fov_x: The horizontal camera field of view in degrees.
@@ -104,45 +102,8 @@ class AutoLanding:
         if not detections:
             return None
 
-        if len(detections) == 1:
+        if len(detections) == 1 or self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION:
             return 0
-
-        if self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION:
-            return 0
-
-        if self.__selection_strategy == DetectionSelectionStrategy.NEAREST_TO_CENTER:
-            # Find detection closest to image center
-            image_center_x = self.im_w / 2
-            image_center_y = self.im_h / 2
-
-            min_distance = float("inf")
-            selected_index = 0
-
-            for i, detection in enumerate(detections):
-                det_center_x, det_center_y = detection.get_centre()
-                distance = math.sqrt(
-                    (det_center_x - image_center_x) ** 2 + (det_center_y - image_center_y) ** 2
-                )
-                if distance < min_distance:
-                    min_distance = distance
-                    selected_index = i
-
-            return selected_index
-
-        if self.__selection_strategy == DetectionSelectionStrategy.LARGEST_AREA:
-            # Find detection with largest bounding box area
-            max_area = 0
-            selected_index = 0
-
-            for i, detection in enumerate(detections):
-                width = detection.x_2 - detection.x_1
-                height = detection.y_2 - detection.y_1
-                area = width * height
-                if area > max_area:
-                    max_area = area
-                    selected_index = i
-
-            return selected_index
 
         if self.__selection_strategy == DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
             # Find detection with highest confidence
