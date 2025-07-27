@@ -26,7 +26,8 @@ FOV_Y = 90.0  # degrees
 IMAGE_HEIGHT = 640.0  # pixels
 IMAGE_WIDTH = 640.0  # pixels
 WORKER_PERIOD = 0.1  # seconds
-DETECTION_STRATEGY = auto_landing.DetectionSelectionStrategy.NEAREST_TO_CENTER
+# The worker now defaults to HIGHEST_CONFIDENCE, so we test for that
+DETECTION_STRATEGY = auto_landing.DetectionSelectionStrategy.HIGHEST_CONFIDENCE
 LOG_TIMINGS = False  # Disable timing logging for the test
 
 # Ensure logs directory exists and create timestamped subdirectory
@@ -109,7 +110,6 @@ def main() -> int:
     mp_manager = mp.Manager()
     input_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
     output_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
-    command_queue = queue_proxy_wrapper.QueueProxyWrapper(mp_manager)
 
     # Create worker process
     worker = mp.Process(
@@ -123,7 +123,6 @@ def main() -> int:
             DETECTION_STRATEGY,
             input_queue,
             output_queue,
-            command_queue,
             controller,
         ),
     )
@@ -134,33 +133,14 @@ def main() -> int:
     # Give worker time to initialize
     time.sleep(0.5)
 
-    # Test 1: Worker should not process detections when disabled (default state)
+    # Test 1: Send a single detection and verify it's processed
+    local_logger.info("--- Test 1: Processing single detection ---")
     detection1 = create_test_detection([200, 200, 400, 400], 1, 0.9)
     simulate_detection_input(
         input_queue,
         [detection1],
         (0.0, 0.0, -50.0),  # 50 meters above ground
         (0.0, 0.0, 0.0),
-    )
-
-    time.sleep(0.2)
-
-    # Should have no output since auto-landing is disabled by default
-    assert output_queue.queue.empty()
-
-    # Test 2: Enable auto-landing and verify it processes detections
-    enable_command = auto_landing_worker.AutoLandingCommand("enable")
-    command_queue.queue.put(enable_command)
-
-    time.sleep(0.2)
-
-    # Now send the same detection - should be processed
-    detection2 = create_test_detection([300, 300, 500, 500], 2, 0.85)
-    simulate_detection_input(
-        input_queue,
-        [detection2],
-        (10.0, 5.0, -75.0),  # 75 meters above ground
-        (0.1, 0.0, 0.0),
     )
 
     time.sleep(0.2)
@@ -172,64 +152,42 @@ def main() -> int:
     assert hasattr(landing_info, "angle_x")
     assert hasattr(landing_info, "angle_y")
     assert hasattr(landing_info, "target_dist")
+    local_logger.info("--- Test 1 Passed ---")
 
-    # Test 3: Test with multiple detections (should use NEAREST_TO_CENTER strategy)
-    detection3 = create_test_detection([100, 100, 200, 200], 1, 0.7)  # Far from center
-    detection4 = create_test_detection([310, 310, 330, 330], 2, 0.8)  # Close to center (320, 320)
+    # Test 2: Test with multiple detections (should use HIGHEST_CONFIDENCE strategy)
+    local_logger.info("--- Test 2: Processing multiple detections with HIGHEST_CONFIDENCE ---")
+    detection_low_confidence = create_test_detection([100, 100, 200, 200], 1, 0.7)
+    detection_high_confidence = create_test_detection([320, 320, 320, 320], 2, 0.95) # This one should be chosen
 
     simulate_detection_input(
         input_queue,
-        [detection3, detection4],
+        [detection_low_confidence, detection_high_confidence],
         (0.0, 0.0, -100.0),  # 100 meters above ground
         (0.0, 0.0, 0.0),
     )
 
     time.sleep(0.2)
 
-    # Should have output for the detection closest to center
+    # Should have output for the detection with the highest confidence
     assert not output_queue.queue.empty()
     landing_info2 = output_queue.queue.get_nowait()
     assert landing_info2 is not None
 
-    # Test 4: Disable auto-landing and verify it stops processing
-    disable_command = auto_landing_worker.AutoLandingCommand("disable")
-    command_queue.queue.put(disable_command)
+    # To verify the correct detection was chosen, we can check the calculated angles.
+    # The high confidence detection is at (320, 320), which is the center of the 640x640 image.
+    # Therefore, the angles should be 0.
+    assert landing_info2.angle_x == 0.0
+    assert landing_info2.angle_y == 0.0
+    local_logger.info("--- Test 2 Passed ---")
 
-    time.sleep(0.2)
-
-    # Send another detection - should not be processed
-    detection5 = create_test_detection([400, 400, 600, 600], 3, 0.95)
-    simulate_detection_input(
-        input_queue,
-        [detection5],
-        (0.0, 0.0, -60.0),
-        (0.0, 0.0, 0.0),
-    )
-
-    time.sleep(0.2)
-
-    # Should have no new output
-    assert output_queue.queue.empty()
-
-    # Test 5: Test invalid command handling
-    invalid_command = auto_landing_worker.AutoLandingCommand("invalid_command")
-    command_queue.queue.put(invalid_command)
-
-    time.sleep(0.2)
-
-    # Worker should continue running despite invalid command
-    assert worker.is_alive()
-
-    # Test 6: Test with no detections (empty detection list should not crash)
-    # This should not create a MergedOdometryDetections object since it requires non-empty detections
-    # So we just verify the worker continues running
+    # The case of "no detections" is handled by the worker's queue.get_nowait() exception.
+    # No specific test is needed for an empty detection list as the data structure does not allow it.
 
     # Cleanup
     controller.request_exit()
 
     # Drain queues
     input_queue.fill_and_drain_queue()
-    command_queue.fill_and_drain_queue()
 
     # Wait for worker to finish
     worker.join(timeout=5.0)
