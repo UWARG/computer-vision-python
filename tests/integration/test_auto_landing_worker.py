@@ -27,6 +27,7 @@ CONFIG_FILE_PATH = pathlib.Path("config.yaml")
 detection_strategy = auto_landing.DetectionSelectionStrategy.FIRST_DETECTION
 # detection_strategy = auto_landing.DetectionSelectionStrategy.HIGHEST_CONFIDENCE
 
+
 def simulate_detection_input(
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     detections: list,
