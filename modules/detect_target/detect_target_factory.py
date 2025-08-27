@@ -30,7 +30,10 @@ def create_detect_target(
     local_logger: logger.Logger,
 ) -> tuple[bool, base_detect_target.BaseDetectTarget | None]:
     """
-    Construct detect target class at runtime.
+    Factory function to create a detection target object.
+
+    Return:
+    Success, detect target object.
     """
     match detect_target_option:
         case DetectTargetOption.ML_ULTRALYTICS:
