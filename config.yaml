@@ -82,3 +82,6 @@ cluster_estimation:
 communications:
     timeout: 60.0  # seconds
     worker_period: 0.5 # seconds
+
+auto_landing:
+    enabled: true
