@@ -72,7 +72,7 @@ def auto_landing_worker(
             input_data = input_queue.queue.get_nowait()
         except queue.Empty:
             # No data available, continue
-            pass
+            continue
 
         if input_data is not None:
             result, landing_info = auto_lander.run(input_data)
