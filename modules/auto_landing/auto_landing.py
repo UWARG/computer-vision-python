@@ -4,9 +4,19 @@ for use with LANDING_TARGET MAVLink command.
 """
 
 import math
+from enum import Enum
 
 from .. import merged_odometry_detections
 from ..common.modules.logger import logger
+
+
+class DetectionSelectionStrategy(Enum):
+    """
+    Strategies for selecting which detection to use when multiple targets are detected.
+    """
+
+    FIRST_DETECTION = "first_detection"  # Use first detection in list (original behavior)
+    HIGHEST_CONFIDENCE = "highest_confidence"  # Choose detection with highest confidence
 
 
 class AutoLandingInformation:
@@ -44,17 +54,21 @@ class AutoLanding:
         im_h: float,
         im_w: float,
         local_logger: logger.Logger,
+        selection_strategy: DetectionSelectionStrategy = DetectionSelectionStrategy.FIRST_DETECTION,
     ) -> "tuple [bool, AutoLanding | None ]":
         """
         fov_x: The horizontal camera field of view in degrees.
         fov_y: The vertical camera field of view in degrees.
         im_w: Width of image.
         im_h: Height of image.
+        selection_strategy: Strategy for selecting which detection to use when multiple targets are detected.
 
         Returns an AutoLanding object.
         """
 
-        return True, AutoLanding(cls.__create_key, fov_x, fov_y, im_h, im_w, local_logger)
+        return True, AutoLanding(
+            cls.__create_key, fov_x, fov_y, im_h, im_w, local_logger, selection_strategy
+        )
 
     def __init__(
         self,
@@ -64,6 +78,7 @@ class AutoLanding:
         im_h: float,
         im_w: float,
         local_logger: logger.Logger,
+        selection_strategy: DetectionSelectionStrategy,
     ) -> None:
         """
         Private constructor, use create() method.
@@ -75,10 +90,41 @@ class AutoLanding:
         self.im_h = im_h
         self.im_w = im_w
         self.__logger = local_logger
+        self.__selection_strategy = selection_strategy
+
+    def _select_detection(self, detections: list) -> int | None:
+        """
+        Select which detection to use based on the configured strategy.
+
+        Returns the index of the selected detection, or None if no suitable detection found.
+        """
+        if not detections:
+            return None
+
+        if (
+            len(detections) == 1
+            or self.__selection_strategy == DetectionSelectionStrategy.FIRST_DETECTION
+        ):
+            return 0
+
+        if self.__selection_strategy == DetectionSelectionStrategy.HIGHEST_CONFIDENCE:
+            # Find detection with highest confidence
+            max_confidence = 0
+            selected_index = 0
+
+            for i, detection in enumerate(detections):
+                if detection.confidence > max_confidence:
+                    max_confidence = detection.confidence
+                    selected_index = i
+
+            return selected_index
+
+        # Default fallback
+        return 0
 
     def run(
         self, odometry_detections: merged_odometry_detections.MergedOdometryDetections
-    ) -> "tuple[bool, AutoLandingInformation]":
+    ) -> "tuple[bool, AutoLandingInformation | None]":
         """
         Calculates the x and y angles in radians of the bounding box based on its center.
 
@@ -87,8 +133,26 @@ class AutoLanding:
         Returns an AutoLandingInformation object.
         """
 
-        # TODO: Devise better algorithm to pick which detection to land at if several are detected
-        x_center, y_center = odometry_detections.detections[0].get_centre()
+        # Check if we have any detections
+        if not odometry_detections.detections:
+            self.__logger.warning("No detections available for auto-landing", True)
+            return False, None
+
+        # Select which detection to use
+        selected_index = self._select_detection(odometry_detections.detections)
+        if selected_index is None:
+            self.__logger.error("Failed to select detection for auto-landing", True)
+            return False, None
+
+        selected_detection = odometry_detections.detections[selected_index]
+
+        # Log selection information
+        self.__logger.info(
+            f"Selected detection {selected_index + 1}/{len(odometry_detections.detections)} using strategy: {self.__selection_strategy.value}",
+            True,
+        )
+
+        x_center, y_center = selected_detection.get_centre()
 
         angle_x = (x_center - self.im_w / 2) * (self.fov_x * (math.pi / 180)) / self.im_w
         angle_y = (y_center - self.im_h / 2) * (self.fov_y * (math.pi / 180)) / self.im_h
