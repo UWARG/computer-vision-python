@@ -36,7 +36,9 @@ class FlightInterface:
         if enable_hitl:
             if images_path is None:
                 return False, None
-            result, controller = flight_controller.FlightController.create(address, baud_rate, enable_hitl, images_path=images_path)
+            result, controller = flight_controller.FlightController.create(
+                address, baud_rate, enable_hitl, images_path=images_path
+            )
         else:
             result, controller = flight_controller.FlightController.create(address, baud_rate)
 

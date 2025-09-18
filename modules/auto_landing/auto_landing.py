@@ -1,6 +1,6 @@
-""" 
-Auto-landing script that calculates the necessary parameters 
-for use with LANDING_TARGET MAVLink command. 
+"""
+Auto-landing script that calculates the necessary parameters
+for use with LANDING_TARGET MAVLink command.
 """
 
 import math
