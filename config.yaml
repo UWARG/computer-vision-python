@@ -56,6 +56,7 @@ flight_interface:
     timeout: 30.0  # seconds
     baud_rate: 57600  # symbol rate
     worker_period: 0.1  # seconds
+    enable_hitl: false # bool
 
 data_merge:
     timeout: 60.0  # seconds

@@ -25,6 +25,7 @@ class FlightInterface:
         timeout_home: float,
         baud_rate: int,
         local_logger: logger.Logger,
+        enable_hitl: bool = False,
     ) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP address or port.

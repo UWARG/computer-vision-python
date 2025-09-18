@@ -50,6 +50,7 @@ def main() -> int:
         action="store_true",
         help="option to show annotated image",
     )
+    parser.add_argument("--enable-hitl", action="store_true", help="enable the hitl workflow")
     args = parser.parse_args()
 
     # Configuration settings
@@ -137,6 +138,7 @@ def main() -> int:
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
         FLIGHT_INTERFACE_BAUD_RATE = config["flight_interface"]["baud_rate"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
+        FLIGHT_INTERFACE_ENABLE_HITL = config["flight_interface"]["enable_hitl"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
 
@@ -293,6 +295,7 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
+            FLIGHT_INTERFACE_ENABLE_HITL,
             LOG_TIMINGS,
         ),
         input_queues=[

@@ -18,6 +18,7 @@ def flight_interface_worker(
     timeout: float,
     baud_rate: int,
     period: float,
+    enable_hitl: bool,
     log_timings: bool,
     input_queue: queue_proxy_wrapper.QueueProxyWrapper,
     coordinates_input_queue: queue_proxy_wrapper.QueueProxyWrapper,
