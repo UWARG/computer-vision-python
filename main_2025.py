@@ -50,6 +50,7 @@ def main() -> int:
         action="store_true",
         help="option to show annotated image",
     )
+    parser.add_argument("--enable_hitl", action="store_true", help="enable the hitl workflow")
     args = parser.parse_args()
 
     # Configuration settings
@@ -129,7 +130,8 @@ def main() -> int:
                 )
             case _:
                 main.logger.error(
-                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}", True
+                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}",
+                    True,
                 )
                 return -1
 
@@ -137,6 +139,11 @@ def main() -> int:
         FLIGHT_INTERFACE_TIMEOUT = config["flight_interface"]["timeout"]
         FLIGHT_INTERFACE_BAUD_RATE = config["flight_interface"]["baud_rate"]
         FLIGHT_INTERFACE_WORKER_PERIOD = config["flight_interface"]["worker_period"]
+        if args.enable_hitl:
+            FLIGHT_INTERFACE_ENABLE_HITL = True
+        else:
+            FLIGHT_INTERFACE_ENABLE_HITL = config["flight_interface"]["enable_hitl"]
+        FLIGHT_INTERFACE_IMAGES_PATH = config["flight_interface"]["images_path"]
 
         DATA_MERGE_TIMEOUT = config["data_merge"]["timeout"]
 
@@ -293,6 +300,8 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
+            FLIGHT_INTERFACE_ENABLE_HITL,
+            FLIGHT_INTERFACE_IMAGES_PATH,
             LOG_TIMINGS,
         ),
         input_queues=[
@@ -378,7 +387,11 @@ def main() -> int:
     result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=communications_worker.communications_worker,
-        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD, LOG_TIMINGS),
+        work_arguments=(
+            COMMUNICATIONS_TIMEOUT,
+            COMMUNICATIONS_WORKER_PERIOD,
+            LOG_TIMINGS,
+        ),
         input_queues=[
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,

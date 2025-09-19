@@ -25,13 +25,23 @@ class FlightInterface:
         timeout_home: float,
         baud_rate: int,
         local_logger: logger.Logger,
+        images_path: str | None,
+        enable_hitl: bool,
     ) -> "tuple[bool, FlightInterface | None]":
         """
         address: TCP address or port.
         timeout_home: Timeout for home location in seconds.
         baud_rate: Baud rate for the connection.
         """
-        result, controller = flight_controller.FlightController.create(address, baud_rate)
+        if enable_hitl:
+            if images_path is None:
+                return False, None
+            result, controller = flight_controller.FlightController.create(
+                address, baud_rate, enable_hitl, images_path=images_path
+            )
+        else:
+            result, controller = flight_controller.FlightController.create(address, baud_rate)
+
         if not result:
             local_logger.error("controller could not be created", True)
             return False, None
