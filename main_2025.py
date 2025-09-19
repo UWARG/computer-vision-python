@@ -130,7 +130,8 @@ def main() -> int:
                 )
             case _:
                 main.logger.error(
-                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}", True
+                    f"Inputted an invalid detect target option: {DETECT_TARGET_OPTION}",
+                    True,
                 )
                 return -1
 
@@ -386,7 +387,11 @@ def main() -> int:
     result, communications_worker_properties = worker_manager.WorkerProperties.create(
         count=1,
         target=communications_worker.communications_worker,
-        work_arguments=(COMMUNICATIONS_TIMEOUT, COMMUNICATIONS_WORKER_PERIOD, LOG_TIMINGS),
+        work_arguments=(
+            COMMUNICATIONS_TIMEOUT,
+            COMMUNICATIONS_WORKER_PERIOD,
+            LOG_TIMINGS,
+        ),
         input_queues=[
             flight_interface_to_communications_queue,
             cluster_estimation_to_communications_queue,

@@ -57,7 +57,7 @@ flight_interface:
     baud_rate: 57600  # symbol rate
     worker_period: 0.1  # seconds
     enable_hitl: false # bool
-    images_path: "./tests/integration/" # file path
+    images_path: "tests/brightspot_example" # file path
 
 data_merge:
     timeout: 60.0  # seconds
