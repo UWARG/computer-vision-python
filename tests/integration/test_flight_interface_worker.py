@@ -17,6 +17,8 @@ MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
 FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
+FLIGHT_ENABLE_HITL = False # bool
+FLIGHT_IMAGE_PATH = "tests/brightspot_example" # file path
 
 
 def apply_decision_test(
@@ -115,6 +117,8 @@ def main() -> int:
             FLIGHT_INTERFACE_TIMEOUT,
             FLIGHT_INTERFACE_BAUD_RATE,
             FLIGHT_INTERFACE_WORKER_PERIOD,
+            FLIGHT_ENABLE_HITL,
+            FLIGHT_IMAGE_PATH,
             in_queue,  # Added input_queue
             communications_in_queue,
             out_queue,

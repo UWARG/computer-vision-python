@@ -11,6 +11,9 @@ from modules.common.modules.logger import logger
 MAVLINK_CONNECTION_ADDRESS = "tcp:localhost:14550"
 FLIGHT_INTERFACE_TIMEOUT = 10.0  # seconds
 FLIGHT_INTERFACE_BAUD_RATE = 57600  # symbol rate
+FLIGHT_INTERFACE_WORKER_PERIOD = 0.1  # seconds
+FLIGHT_ENABLE_HITL = False # bool
+FLIGHT_IMAGE_PATH = "tests/brightspot_example" # file path
 
 
 def main() -> int:
@@ -29,6 +32,8 @@ def main() -> int:
         FLIGHT_INTERFACE_TIMEOUT,
         FLIGHT_INTERFACE_BAUD_RATE,
         local_logger,
+        FLIGHT_IMAGE_PATH,
+        FLIGHT_ENABLE_HITL,
     )
     assert result
     assert interface is not None
